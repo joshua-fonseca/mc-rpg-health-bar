@@ -6,7 +6,6 @@ import com.joshuafonseca.rpghealthbar.config.HealthUnit;
 import net.minecraft.Util;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.util.FastColor;
 import net.minecraft.util.Mth;
 
 /** Draws the bar group at a layout. Used by the HUD layer and the position editor's preview. */
@@ -68,11 +67,11 @@ public final class HudRenderer {
         int x = layout.x();
         int y = layout.healthY();
         BarRenderer.drawTrack(graphics, x, y, HudLayout.WIDTH, HudLayout.MAIN_BAR_HEIGHT, true);
+        BarRenderer.drawFill(graphics, x, y, HudLayout.WIDTH, HudLayout.MAIN_BAR_HEIGHT, true, health / maxHealth, HEALTH_COLOR, true);
         if (live) {
             float trail = HEALTH_TRAIL.update(health);
-            BarRenderer.drawFill(graphics, x, y, HudLayout.WIDTH, HudLayout.MAIN_BAR_HEIGHT, true, trail / maxHealth, HEALTH_LOST_COLOR, false);
+            BarRenderer.drawSection(graphics, x, y, HudLayout.WIDTH, HudLayout.MAIN_BAR_HEIGHT, true, health / maxHealth, trail / maxHealth, HEALTH_LOST_COLOR, false, 1.0F);
         }
-        BarRenderer.drawFill(graphics, x, y, HudLayout.WIDTH, HudLayout.MAIN_BAR_HEIGHT, true, health / maxHealth, HEALTH_COLOR, true);
         if (absorption > 0) {
             BarRenderer.drawFill(graphics, x, y, HudLayout.WIDTH, HudLayout.MAIN_BAR_HEIGHT, true, absorption / maxHealth, ABSORPTION_COLOR, absorption < maxHealth);
         }
@@ -103,17 +102,16 @@ public final class HudRenderer {
         int y = layout.manaY();
         BarRenderer.drawTrack(graphics, x, y, HudLayout.WIDTH, HudLayout.MAIN_BAR_HEIGHT, true);
         if (maxMana > 0) {
+            BarRenderer.drawFill(graphics, x, y, HudLayout.WIDTH, HudLayout.MAIN_BAR_HEIGHT, true, mana / maxMana, MANA_COLOR, true);
             if (live) {
                 float trail = MANA_TRAIL.update(mana);
-                BarRenderer.drawFill(graphics, x, y, HudLayout.WIDTH, HudLayout.MAIN_BAR_HEIGHT, true, trail / maxMana, MANA_LOST_COLOR, false);
+                BarRenderer.drawSection(graphics, x, y, HudLayout.WIDTH, HudLayout.MAIN_BAR_HEIGHT, true, mana / maxMana, trail / maxMana, MANA_LOST_COLOR, false, 1.0F);
             }
-            BarRenderer.drawFill(graphics, x, y, HudLayout.WIDTH, HudLayout.MAIN_BAR_HEIGHT, true, mana / maxMana, MANA_COLOR, true);
             float cost = values.mana().hoveredCost();
             if (cost > 0) {
-                // The mana the hovered spell would use, pulsing between dark and normal blue.
+                // The mana the hovered spell would use, pulsing between normal and dark blue.
                 float pulse = 0.5F - 0.5F * Mth.cos((float) (Util.getMillis() % COST_PULSE_MILLIS) / COST_PULSE_MILLIS * Mth.TWO_PI);
-                int color = FastColor.ARGB32.lerp(pulse, MANA_COLOR, MANA_COST_COLOR);
-                BarRenderer.drawSection(graphics, x, y, HudLayout.WIDTH, HudLayout.MAIN_BAR_HEIGHT, true, (mana - cost) / maxMana, mana / maxMana, color, true);
+                BarRenderer.drawSection(graphics, x, y, HudLayout.WIDTH, HudLayout.MAIN_BAR_HEIGHT, true, (mana - cost) / maxMana, mana / maxMana, MANA_COST_COLOR, true, pulse);
             }
         }
         if (ClientConfig.SHOW_MANA_TEXT.get()) {

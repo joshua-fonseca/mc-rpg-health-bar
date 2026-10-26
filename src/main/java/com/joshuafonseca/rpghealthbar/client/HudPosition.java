@@ -103,11 +103,6 @@ public final class HudPosition {
         return new Offset(Mth.clamp(offset.x(), minX, Math.max(minX, maxX)), Mth.clamp(offset.y(), minY, Math.max(minY, maxY)));
     }
 
-    @Nullable
-    public static Offset preview() {
-        return preview;
-    }
-
     public static void setPreview(@Nullable Offset offset) {
         preview = offset;
     }

@@ -1,7 +1,15 @@
 package com.joshuafonseca.rpghealthbar.client;
 
+import com.joshuafonseca.rpghealthbar.RpgHealthBar;
+import com.mojang.blaze3d.platform.NativeImage;
+import com.mojang.blaze3d.systems.RenderSystem;
+import java.util.HashMap;
+import java.util.Map;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.renderer.texture.DynamicTexture;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 
 /**
@@ -10,6 +18,9 @@ import net.minecraft.util.Mth;
  * <p>
  * Framed bars (health, mana) have a 1px border around the shaded rows; frameless ones (armor,
  * hunger) are just the shaded rows.
+ * <p>
+ * Each full bar is painted once into a small texture per color, so a frame only draws a few
+ * textured strips. Only the fill's brighter end, which moves with the fill, is drawn pixel by pixel.
  */
 public final class BarRenderer {
     /** The empty part, using the XP bar background's colors: dark border, lighter edges, darker middle. */
@@ -31,6 +42,12 @@ public final class BarRenderer {
     private static final float END_BRIGHTEN = 0.18F;
     /** The last column is mixed this much toward white, keeping the rows' shading. */
     private static final float TIP_WHITE = 0.7F;
+
+    /** A full bar of one color and size, painted once and reused every frame. */
+    private record Style(int color, int width, int height, boolean framed) {
+    }
+
+    private static final Map<Style, ResourceLocation> TEXTURES = new HashMap<>();
 
     private BarRenderer() {
     }
@@ -64,64 +81,30 @@ public final class BarRenderer {
      * @param brightEnd whether the last few columns brighten slightly, ending in a near-white tip
      */
     public static void drawFill(GuiGraphics graphics, int x, int y, int width, int height, boolean framed, float fraction, int color, boolean brightEnd) {
-        int inset = framed ? 1 : 0;
-        int fillWidth = Math.round((width - 2 * inset) * Mth.clamp(fraction, 0.0F, 1.0F));
+        int fillWidth = columns(width, framed, fraction);
         if (fillWidth <= 0) {
             return;
         }
-        drawColumns(graphics, x, y, width, height, framed, 0, fillWidth, fillWidth, color, brightEnd);
-    }
-
-    /**
-     * Recolors part of a fill drawn with {@link #drawFill}, from {@code fromFraction} to the fill's end
-     * at {@code fillFraction}, in the same style. The fill's tip (if {@code brightEnd}) is kept.
-     */
-    public static void drawSection(GuiGraphics graphics, int x, int y, int width, int height, boolean framed, float fromFraction, float fillFraction, int color, boolean brightEnd) {
-        int inner = width - 2 * (framed ? 1 : 0);
-        int fillWidth = Math.round(inner * Mth.clamp(fillFraction, 0.0F, 1.0F));
-        int start = Math.round(inner * Mth.clamp(fromFraction, 0.0F, 1.0F));
-        int end = brightEnd ? fillWidth - 1 : fillWidth;
-        if (end > start) {
-            drawColumns(graphics, x, y, width, height, framed, start, end, fillWidth, color, false);
+        drawColumns(graphics, x, y, width, height, framed, 0, fillWidth, color, 1.0F);
+        if (brightEnd) {
+            drawBrightEnd(graphics, x, y, width, height, framed, fillWidth, color);
         }
     }
 
-    /** Draws fill columns {@code start} to {@code end} (exclusive) of a fill {@code fillWidth} wide. */
-    private static void drawColumns(GuiGraphics graphics, int x, int y, int width, int height, boolean framed, int start, int end, int fillWidth, int color, boolean brightEnd) {
-        int inset = framed ? 1 : 0;
-        int rows = height - 2 * inset;
-        float[] shades = rows == 5 ? ROWS_5 : rows == 3 ? ROWS_3 : null;
-        graphics.drawManaged(() -> {
-            for (int i = start; i < end; i++) {
-                int column = x + inset + i;
-                float brighten = brightEnd ? END_BRIGHTEN * Math.max(0, END_WIDTH - (fillWidth - 1 - i)) / END_WIDTH : 0.0F;
-                for (int row = 0; row < rows; row++) {
-                    boolean corner = !framed && (row == 0 || row == rows - 1) && (column == x || column == x + width - 1);
-                    if (corner) {
-                        continue;
-                    }
-                    float shade = (shades != null ? shades[row] : 1.0F) + brighten + noise(i, row);
-                    int pixel = scale(color, shade);
-                    if (brightEnd && i == fillWidth - 1) {
-                        pixel = scale(mix(color, 0xFFFFFFFF, TIP_WHITE), shades != null ? shades[row] : 1.0F);
-                    }
-                    int rowY = y + inset + row;
-                    graphics.fill(column, rowY, column + 1, rowY + 1, pixel);
-                }
-                if (framed) {
-                    // Tint the border along the filled part, as the XP bar's progress sprite does.
-                    int border = scale(color, BORDER_BRIGHTNESS + noise(i, -1));
-                    graphics.fill(column, y, column + 1, y + 1, border);
-                    graphics.fill(column, y + height - 1, column + 1, y + height, scale(color, BORDER_BRIGHTNESS + noise(i, rows)));
-                    if (i == 0) {
-                        graphics.fill(x, y + 1, x + 1, y + height - 1, border);
-                    }
-                    if (column == x + width - 2) {
-                        graphics.fill(x + width - 1, y + 1, x + width, y + height - 1, border);
-                    }
-                }
-            }
-        });
+    /**
+     * Draws the fill's style in another color from {@code fromFraction} to {@code toFraction}, e.g.
+     * the darker section just lost, or a spell's cost.
+     *
+     * @param keepTip leave the last column alone, so a fill's tip ending at {@code toFraction} stays visible
+     * @param alpha   opacity over what's already drawn (1 for opaque)
+     */
+    public static void drawSection(GuiGraphics graphics, int x, int y, int width, int height, boolean framed,
+                                   float fromFraction, float toFraction, int color, boolean keepTip, float alpha) {
+        int start = columns(width, framed, fromFraction);
+        int end = columns(width, framed, toFraction) - (keepTip ? 1 : 0);
+        if (end > start) {
+            drawColumns(graphics, x, y, width, height, framed, start, end, color, alpha);
+        }
     }
 
     /** Text on the left side of the bar, vertically centered. */
@@ -129,6 +112,115 @@ public final class BarRenderer {
         // Digits are 7px tall; the shadow adds 1px below and doesn't count toward centering.
         int textY = y + Math.floorDiv(height - 7, 2);
         graphics.drawString(font, text, x + TEXT_PADDING, textY, TEXT_COLOR, true);
+    }
+
+    /** How many fill columns a fraction covers. */
+    private static int columns(int width, boolean framed, float fraction) {
+        int inner = width - (framed ? 2 : 0);
+        return Math.round(inner * Mth.clamp(fraction, 0.0F, 1.0F));
+    }
+
+    /**
+     * Draws fill columns {@code start} to {@code end} (exclusive) from the bar's texture. Framed bars
+     * include the border around those columns: the left border with the first column, and the right
+     * border once the fill reaches it.
+     */
+    private static void drawColumns(GuiGraphics graphics, int x, int y, int width, int height, boolean framed,
+                                    int start, int end, int color, float alpha) {
+        int u0 = start;
+        int u1 = end;
+        if (framed) {
+            int inner = width - 2;
+            u0 = start == 0 ? 0 : start + 1;
+            u1 = end == inner ? width : end + 1;
+        }
+        ResourceLocation texture = texture(new Style(color, width, height, framed));
+        RenderSystem.enableBlend();
+        graphics.setColor(1.0F, 1.0F, 1.0F, alpha);
+        graphics.blit(texture, x + u0, y, u0, 0, u1 - u0, height, width, height);
+        graphics.setColor(1.0F, 1.0F, 1.0F, 1.0F);
+        RenderSystem.disableBlend();
+    }
+
+    /** Redraws the fill's last few columns brighter, ending in a near-white tip. */
+    private static void drawBrightEnd(GuiGraphics graphics, int x, int y, int width, int height, boolean framed, int fillWidth, int color) {
+        int inset = framed ? 1 : 0;
+        int rows = height - 2 * inset;
+        float[] shades = shades(rows);
+        graphics.drawManaged(() -> {
+            for (int i = Math.max(0, fillWidth - END_WIDTH); i < fillWidth; i++) {
+                int column = x + inset + i;
+                float brighten = END_BRIGHTEN * (END_WIDTH - (fillWidth - 1 - i)) / END_WIDTH;
+                boolean tip = i == fillWidth - 1;
+                for (int row = 0; row < rows; row++) {
+                    if (!framed && (row == 0 || row == rows - 1) && (column == x || column == x + width - 1)) {
+                        continue;
+                    }
+                    int pixel = tip
+                            ? scale(mix(color, 0xFFFFFFFF, TIP_WHITE), shades[row])
+                            : scale(color, shades[row] + brighten + noise(i, row));
+                    int rowY = y + inset + row;
+                    graphics.fill(column, rowY, column + 1, rowY + 1, pixel);
+                }
+            }
+        });
+    }
+
+    /** The texture for a style, painted on first use. */
+    private static ResourceLocation texture(Style style) {
+        ResourceLocation location = TEXTURES.get(style);
+        if (location == null) {
+            location = ResourceLocation.fromNamespaceAndPath(RpgHealthBar.MODID, String.format("bar/%08x_%dx%d%s",
+                    style.color(), style.width(), style.height(), style.framed() ? "_framed" : ""));
+            Minecraft.getInstance().getTextureManager().register(location, new DynamicTexture(paint(style)));
+            TEXTURES.put(style, location);
+        }
+        return location;
+    }
+
+    /** A completely full bar of the style; transparent where the corners are rounded off. */
+    private static NativeImage paint(Style style) {
+        int width = style.width();
+        int height = style.height();
+        int color = style.color();
+        int inset = style.framed() ? 1 : 0;
+        int rows = height - 2 * inset;
+        int inner = width - 2 * inset;
+        float[] shades = shades(rows);
+        NativeImage image = new NativeImage(width, height, true);
+        for (int px = 0; px < width; px++) {
+            for (int py = 0; py < height; py++) {
+                boolean cornerX = px == 0 || px == width - 1;
+                boolean cornerY = py == 0 || py == height - 1;
+                int pixel;
+                if (cornerX && cornerY) {
+                    pixel = 0;
+                } else if (style.framed() && cornerY) {
+                    // Top and bottom border, tinted along the fill as the XP bar's progress sprite is.
+                    pixel = scale(color, BORDER_BRIGHTNESS + noise(px - 1, py == 0 ? -1 : rows));
+                } else if (style.framed() && cornerX) {
+                    pixel = scale(color, BORDER_BRIGHTNESS + noise(px == 0 ? 0 : inner - 1, -1));
+                } else {
+                    int row = py - inset;
+                    int column = px - inset;
+                    pixel = scale(color, shades[row] + noise(column, row));
+                }
+                image.setPixelRGBA(px, py, toAbgr(pixel));
+            }
+        }
+        return image;
+    }
+
+    private static float[] shades(int rows) {
+        if (rows == 5) {
+            return ROWS_5;
+        }
+        if (rows == 3) {
+            return ROWS_3;
+        }
+        float[] flat = new float[rows];
+        java.util.Arrays.fill(flat, 1.0F);
+        return flat;
     }
 
     /** Lighter rows at the top and bottom of the track, darkest in the middle. */
@@ -166,5 +258,10 @@ public final class BarRenderer {
         int g = Mth.clamp(Math.round(((color >> 8) & 0xFF) * factor), 0, 255);
         int b = Mth.clamp(Math.round((color & 0xFF) * factor), 0, 255);
         return 0xFF000000 | (r << 16) | (g << 8) | b;
+    }
+
+    /** NativeImage stores pixels as ABGR. */
+    private static int toAbgr(int argb) {
+        return (argb & 0xFF00FF00) | ((argb & 0xFF) << 16) | ((argb >> 16) & 0xFF);
     }
 }
