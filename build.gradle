@@ -27,7 +27,12 @@ sourceSets.main.resources {
 }
 
 repositories {
-    // Add here additional repositories if required by some of the dependencies below.
+    // Iron's Spells 'n Spellbooks and Iron's Lib
+    maven { url = "https://code.redspace.io/releases" }
+    // Runtime-only libraries Iron's Spells needs, for testing in the dev client
+    maven { url = "https://maven.theillusivec4.top/" }
+    maven { url = "https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/" }
+    maven { url = "https://maven.kosmx.dev/" }
 }
 
 base {
@@ -91,27 +96,18 @@ configurations {
 }
 
 dependencies {
-    // Example optional mod dependency with JEI
-    // The JEI API is declared for compile time use, while the full JEI artifact is used at runtime
-    // compileOnly "mezz.jei:jei-${mc_version}-common-api:${jei_version}"
-    // compileOnly "mezz.jei:jei-${mc_version}-neoforge-api:${jei_version}"
-    // We add the full version to localRuntime, not runtimeOnly, so that we do not publish a dependency on it
-    // localRuntime "mezz.jei:jei-${mc_version}-neoforge:${jei_version}"
+    // Iron's Spells is optional: compiled against, but never required at runtime.
+    compileOnly "io.redspace:irons_spellbooks:${irons_spellbooks_version}"
 
-    // Example mod dependency using a mod jar from ./libs with a flat dir repository
-    // This maps to ./libs/coolmod-${mc_version}-${coolmod_version}.jar
-    // The group id is ignored when searching -- in this case, it is "blank"
-    // implementation "blank:coolmod-${mc_version}:${coolmod_version}"
-
-    // Example mod dependency using a file as dependency
-    // implementation files("libs/coolmod-${mc_version}-${coolmod_version}.jar")
-
-    // Example project dependency using a sister or child project:
-    // implementation project(":myproject")
-
-    // For more info:
-    // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
-    // http://www.gradle.org/docs/current/userguide/dependency_management.html
+    // `./gradlew runClient -PwithIronsSpells` launches the dev client with Iron's Spells and its
+    // dependencies; without the flag the dev client runs without it, to test the mod on its own.
+    if (project.hasProperty('withIronsSpells')) {
+        localRuntime("io.redspace:irons_spellbooks:${irons_spellbooks_version}") { transitive = false }
+        localRuntime("io.redspace:irons_lib:${irons_lib_version}") { transitive = false }
+        localRuntime("top.theillusivec4.curios:curios-neoforge:${curios_version}") { transitive = false }
+        localRuntime("software.bernie.geckolib:geckolib-neoforge-1.21.1:${geckolib_version}") { transitive = false }
+        localRuntime("dev.kosmx.player-anim:player-animation-lib-forge:${player_animator_version}") { transitive = false }
+    }
 }
 
 // This block of code expands all declared replace properties in the specified resource targets.

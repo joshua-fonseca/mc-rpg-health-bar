@@ -9,4 +9,7 @@ Requires Java 21.
 ```sh
 ./gradlew build      # builds the jar into build/libs/
 ./gradlew runClient  # launches a dev Minecraft client with the mod loaded
+./gradlew runClient -PwithIronsSpells  # same, plus Iron's Spells and its dependencies
 ```
+
+Iron's Spells is an optional dependency. Without it installed, the mana bar is simply not shown.

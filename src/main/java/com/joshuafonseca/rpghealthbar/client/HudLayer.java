@@ -1,5 +1,6 @@
 package com.joshuafonseca.rpghealthbar.client;
 
+import com.joshuafonseca.rpghealthbar.compat.IronsSpellsCompat;
 import com.joshuafonseca.rpghealthbar.config.ClientConfig;
 import com.joshuafonseca.rpghealthbar.config.HalfBarMode;
 import net.minecraft.client.DeltaTracker;
@@ -13,6 +14,7 @@ import net.minecraft.world.entity.player.Player;
 public class HudLayer implements LayeredDraw.Layer {
     private static final int HEALTH_COLOR = 0xFFE03030;
     private static final int ABSORPTION_COLOR = 0xFFF0C030;
+    private static final int MANA_COLOR = 0xFF30A0F0;
     private static final int ARMOR_COLOR = 0xFFE0E0E0;
     private static final int HUNGER_COLOR = 0xFFE08020;
     /** Vanilla's HUD shows at most 20 armor points and 20 food points. */
@@ -33,9 +35,13 @@ public class HudLayer implements LayeredDraw.Layer {
 
         boolean showArmor = ClientConfig.ARMOR_MODE.get() == HalfBarMode.BAR;
         boolean showHunger = ClientConfig.HUNGER_MODE.get() == HalfBarMode.BAR;
-        HudLayout layout = HudLayout.compute(graphics.guiWidth(), graphics.guiHeight(), showArmor || showHunger);
+        boolean showMana = IronsSpellsCompat.isLoaded();
+        HudLayout layout = HudLayout.compute(graphics.guiWidth(), graphics.guiHeight(), showArmor || showHunger, showMana);
         renderHalfBars(graphics, player, layout, showArmor, showHunger);
         renderHealth(graphics, minecraft, player, layout);
+        if (showMana) {
+            renderMana(graphics, minecraft, player, layout);
+        }
         reserveVanillaSpace(minecraft.gui, graphics.guiHeight(), layout);
     }
 
@@ -72,6 +78,20 @@ public class HudLayer implements LayeredDraw.Layer {
                 ? NumberText.format(health) + "+" + NumberText.format(absorption) + "/" + NumberText.format(maxHealth)
                 : NumberText.format(health) + "/" + NumberText.format(maxHealth);
         BarRenderer.drawLabel(graphics, minecraft.font, x, y, HudLayout.MAIN_BAR_HEIGHT, text);
+    }
+
+    private static void renderMana(GuiGraphics graphics, Minecraft minecraft, Player player, HudLayout layout) {
+        float mana = IronsSpellsCompat.mana();
+        float maxMana = IronsSpellsCompat.maxMana(player);
+
+        int x = layout.x();
+        int y = layout.manaY();
+        BarRenderer.drawFrame(graphics, x, y, HudLayout.WIDTH, HudLayout.MAIN_BAR_HEIGHT);
+        if (maxMana > 0) {
+            BarRenderer.drawFill(graphics, x, y, HudLayout.WIDTH, HudLayout.MAIN_BAR_HEIGHT, mana / maxMana, MANA_COLOR);
+        }
+        BarRenderer.drawLabel(graphics, minecraft.font, x, y, HudLayout.MAIN_BAR_HEIGHT,
+                NumberText.format(mana) + "/" + NumberText.format(maxMana));
     }
 
     /**

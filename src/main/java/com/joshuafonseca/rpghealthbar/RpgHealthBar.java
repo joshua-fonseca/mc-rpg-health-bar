@@ -2,6 +2,7 @@ package com.joshuafonseca.rpghealthbar;
 
 import com.joshuafonseca.rpghealthbar.client.HudLayer;
 import com.joshuafonseca.rpghealthbar.client.screen.RpgConfigScreen;
+import com.joshuafonseca.rpghealthbar.compat.IronsSpellsCompat;
 import com.joshuafonseca.rpghealthbar.config.ClientConfig;
 import com.joshuafonseca.rpghealthbar.config.HalfBarMode;
 import com.mojang.logging.LogUtils;
@@ -43,6 +44,7 @@ public class RpgHealthBar {
     private static void hideVanillaLayers(RenderGuiLayerEvent.Pre event) {
         ResourceLocation name = event.getName();
         if (name.equals(VanillaGuiLayers.PLAYER_HEALTH)
+                || name.equals(IronsSpellsCompat.MANA_OVERLAY)
                 || (name.equals(VanillaGuiLayers.ARMOR_LEVEL) && ClientConfig.ARMOR_MODE.get() != HalfBarMode.VANILLA)
                 || (name.equals(VanillaGuiLayers.FOOD_LEVEL) && ClientConfig.HUNGER_MODE.get() != HalfBarMode.VANILLA)) {
             event.setCanceled(true);
