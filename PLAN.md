@@ -41,12 +41,12 @@ Everything above the hotbar, including the XP bar, is one **movable set**.
 ### 1.3 Armor bar (white), half width
 - Above the health bar, left half. No text.
 - Fill = `player.getArmorValue() / 20`, using the vanilla HUD max of 20. Values over 20 show as a full bar.
-- Display mode: Bar (default), Vanilla icons, or Hidden.
+- Display mode: Vanilla icons (default), Bar, or Hidden.
 
 ### 1.4 Hunger bar (orange), half width
 - Above the health bar, right half. No text.
 - Fill = `foodData.getFoodLevel() / 20`. **Shows hunger, not saturation.**
-- Display mode: Bar (default), Vanilla icons, or Hidden.
+- Display mode: Vanilla icons (default), Bar, or Hidden.
 
 ### 1.5 Vanilla elements left as-is
 - **Air bubbles** (underwater) and **mount health** (horses, etc.) stay vanilla.
@@ -57,8 +57,8 @@ Everything above the hotbar, including the XP bar, is one **movable set**.
 
 ### 1.6 Armor / hunger display modes (in-game, no restart)
 - `armorMode` and `hungerMode`, each one of:
-  - `BAR` (default): our half-width bar
-  - `VANILLA`: the vanilla icons, in the same row as the half bars (the row grows to the icons' 9px height and the bar is centered vertically in it)
+  - `VANILLA` (default): the vanilla icons, in the same row as the half bars (the row grows to the icons' 9px height and the bar is centered vertically in it)
+  - `BAR`: our half-width bar
   - `HIDDEN`: not shown
 - Stored in a NeoForge **client** config (`config/rpghealthbar-client.toml`).
 - The renderer reads config values every frame, so changes apply right away.
@@ -66,13 +66,14 @@ Everything above the hotbar, including the XP bar, is one **movable set**.
 
 ### 1.7 Config screen + "Move HUD" editor
 The mod provides its own config screen, opened from Mods menu → RPG Health Bar → Config, through `IConfigScreenFactory`:
-- **Armor: Bar / Vanilla / Hidden**: each click cycles to the next mode
-- **Hunger: Bar / Vanilla / Hidden**: each click cycles to the next mode
+- **Armor: Vanilla / Bar / Hidden**: each click cycles to the next mode
+- **Hunger: Vanilla / Bar / Hidden**: each click cycles to the next mode
 - **Health Units: HP (20) / Hearts (10)**
 - **Absorption: Separate (16+4/20) / Combined (20/20)**
 - **Move HUD**: opens the position editor
 - **Reset Position**: puts the HUD back in the default spot above the hotbar
 - **Done**
+- Hovering over a button shows a tooltip listing its possible values and what each does.
 
 **Position editor** (`HudEditScreen`):
 - Shows the whole bar group as a preview (with placeholder values if needed) and an outline around it.
