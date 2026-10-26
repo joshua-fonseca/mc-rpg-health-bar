@@ -81,6 +81,8 @@ The mod provides its own config screen, opened from Mods menu → RPG Health Bar
 
 The point of this is to let players move the bars away from **Double Hotbar**, **Armor Status HUD**, or any other mod drawing near the hotbar.
 
+**No mod-specific handling:** the default layout always assumes the single vanilla hotbar. The mod doesn't detect or adjust for other HUD mods; the player moves the whole set if something overlaps it.
+
 ---
 
 ## 2. Technical approach
