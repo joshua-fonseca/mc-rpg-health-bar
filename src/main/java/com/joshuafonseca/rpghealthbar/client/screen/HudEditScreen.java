@@ -23,7 +23,6 @@ public class HudEditScreen extends Screen {
     private static final int BUTTON_WIDTH = 70;
     private static final int BUTTON_HEIGHT = 20;
     private static final int BUTTON_GAP = 4;
-    private static final int OUTLINE_COLOR = 0xFFFFFF55;
     private static final int XP_BAR_PREVIEW_COLOR = 0xFF80FF20;
 
     /** Title, hint and buttons; moved to whichever half of the screen the HUD isn't in. */
@@ -127,9 +126,6 @@ public class HudEditScreen extends Screen {
             }
             graphics.pose().popPose();
         }
-
-        HudPosition.Bounds box = frame.bounds().offset(offset);
-        graphics.renderOutline(box.left() - 2, box.top() - 2, box.right() - box.left() + 4, box.bottom() - box.top() + 4, OUTLINE_COLOR);
 
         graphics.drawCenteredString(this.font, this.title, this.width / 2, controlsTop, 0xFFFFFF);
         graphics.drawCenteredString(this.font, Component.translatable("rpghealthbar.edit.hint"), this.width / 2, controlsTop + 10, 0xC0C0C0);

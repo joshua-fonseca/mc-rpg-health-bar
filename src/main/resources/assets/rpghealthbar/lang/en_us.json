@@ -10,7 +10,7 @@
   "rpghealthbar.config.offsetX": "Horizontal Offset",
   "rpghealthbar.config.offsetY": "Vertical Offset",
   "rpghealthbar.edit.title": "Move HUD",
-  "rpghealthbar.edit.hint": "Drag the outlined HUD to move it. Arrow keys nudge (Shift: 10px).",
+  "rpghealthbar.edit.hint": "Drag the HUD to move it. Arrow keys nudge (Shift: 10px).",
   "rpghealthbar.edit.save": "Save",
   "rpghealthbar.edit.reset": "Reset",
   "rpghealthbar.config.anchor": "Anchor",
