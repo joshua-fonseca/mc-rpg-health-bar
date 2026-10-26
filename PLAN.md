@@ -138,6 +138,7 @@ The point of this is to let players move the bars away from **Double Hotbar**, *
 - Health / mana bars: full width, 7 px tall (just fits the text, vertically centered), with a 1 px border. Corners are rounded like the XP bar (corner pixels left out).
 - Health / mana fills: the last 6 px brighten gradually (up to 18%), ending in a near-white tip column that keeps the rows' shading.
 - Losing health or mana: the lost section stays as a darker red/blue for 0.75 s, then shrinks smoothly to the new value (gone in well under a second). Gains show at once. Only on the real HUD, not the editor's placeholder preview.
+- Spell cost preview: while Iron's spell wheel is open, the hovered spell's mana cost is shown at the right end of the mana fill, pulsing between dark and normal blue (0.8 s period). Read from Iron's private `SpellWheelOverlay.wheelSelection` by reflection, behind its own safety net (if it fails, only the preview turns off).
 - Armor / hunger bars: `(182 - gap) / 2` wide each, 3 px tall, no border, rounded corners.
 - 2 px between the armor/hunger, health and mana rows, the same as between the XP bar and the hotbar.
 - Default position: the bars sit 2 px above the XP bar; the level number sits on the XP bar.

@@ -17,11 +17,17 @@ public final class IronsSpellsCompat {
 
     /** Cleared if reading mana ever fails, e.g. a future Iron's version renamed something we use. */
     private static boolean available = ModList.get().isLoaded(MODID);
+    /** Cleared separately if reading the spell wheel fails, so the mana bar itself keeps working. */
+    private static boolean wheelAvailable = true;
 
     private IronsSpellsCompat() {
     }
 
-    public record Mana(float current, float max) {
+    /**
+     * @param hoveredCost mana cost of the spell hovered in Iron's spell wheel, or 0 when the wheel
+     *                    is closed
+     */
+    public record Mana(float current, float max, float hoveredCost) {
     }
 
     /** Whether the mana bar should be part of the layout. */
@@ -39,12 +45,30 @@ public final class IronsSpellsCompat {
         if (!available) {
             return null;
         }
+        float current;
+        float max;
         try {
-            return new Mana(IronsSpellsMana.mana(), IronsSpellsMana.maxMana(player));
+            current = IronsSpellsMana.mana();
+            max = IronsSpellsMana.maxMana(player);
         } catch (LinkageError | RuntimeException e) {
             available = false;
             RpgHealthBar.LOGGER.warn("Couldn't read mana from Iron's Spells; this version may not be supported. The mana bar is turned off.", e);
             return null;
+        }
+        return new Mana(current, max, hoveredCost(player));
+    }
+
+    /** 0 if the wheel is closed, nothing is hovered yet, or the wheel can't be read. */
+    private static float hoveredCost(Player player) {
+        if (!wheelAvailable) {
+            return 0;
+        }
+        try {
+            return IronsSpellsMana.hoveredSpellCost(player);
+        } catch (LinkageError | ReflectiveOperationException | RuntimeException e) {
+            wheelAvailable = false;
+            RpgHealthBar.LOGGER.warn("Couldn't read Iron's Spells' spell wheel; this version may not be supported. Spell costs won't be previewed on the mana bar.", e);
+            return 0;
         }
     }
 }

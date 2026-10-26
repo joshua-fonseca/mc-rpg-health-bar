@@ -13,7 +13,7 @@ public record HudValues(float health, float maxHealth, float absorption, float a
 
     /** Shown in the position editor when there's no player to read from (e.g. opened from the title screen). */
     public static HudValues placeholder() {
-        IronsSpellsCompat.Mana mana = IronsSpellsCompat.isAvailable() ? new IronsSpellsCompat.Mana(100, 100) : null;
+        IronsSpellsCompat.Mana mana = IronsSpellsCompat.isAvailable() ? new IronsSpellsCompat.Mana(100, 100, 0) : null;
         return new HudValues(20, 20, 0, 10, 20, mana);
     }
 }

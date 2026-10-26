@@ -69,18 +69,38 @@ public final class BarRenderer {
         if (fillWidth <= 0) {
             return;
         }
+        drawColumns(graphics, x, y, width, height, framed, 0, fillWidth, fillWidth, color, brightEnd);
+    }
+
+    /**
+     * Recolors part of a fill drawn with {@link #drawFill}, from {@code fromFraction} to the fill's end
+     * at {@code fillFraction}, in the same style. The fill's tip (if {@code brightEnd}) is kept.
+     */
+    public static void drawSection(GuiGraphics graphics, int x, int y, int width, int height, boolean framed, float fromFraction, float fillFraction, int color, boolean brightEnd) {
+        int inner = width - 2 * (framed ? 1 : 0);
+        int fillWidth = Math.round(inner * Mth.clamp(fillFraction, 0.0F, 1.0F));
+        int start = Math.round(inner * Mth.clamp(fromFraction, 0.0F, 1.0F));
+        int end = brightEnd ? fillWidth - 1 : fillWidth;
+        if (end > start) {
+            drawColumns(graphics, x, y, width, height, framed, start, end, fillWidth, color, false);
+        }
+    }
+
+    /** Draws fill columns {@code start} to {@code end} (exclusive) of a fill {@code fillWidth} wide. */
+    private static void drawColumns(GuiGraphics graphics, int x, int y, int width, int height, boolean framed, int start, int end, int fillWidth, int color, boolean brightEnd) {
+        int inset = framed ? 1 : 0;
         int rows = height - 2 * inset;
         float[] shades = rows == 5 ? ROWS_5 : rows == 3 ? ROWS_3 : null;
         graphics.drawManaged(() -> {
-            for (int i = 0; i < fillWidth; i++) {
+            for (int i = start; i < end; i++) {
                 int column = x + inset + i;
-                float end = brightEnd ? END_BRIGHTEN * Math.max(0, END_WIDTH - (fillWidth - 1 - i)) / END_WIDTH : 0.0F;
+                float brighten = brightEnd ? END_BRIGHTEN * Math.max(0, END_WIDTH - (fillWidth - 1 - i)) / END_WIDTH : 0.0F;
                 for (int row = 0; row < rows; row++) {
                     boolean corner = !framed && (row == 0 || row == rows - 1) && (column == x || column == x + width - 1);
                     if (corner) {
                         continue;
                     }
-                    float shade = (shades != null ? shades[row] : 1.0F) + end + noise(i, row);
+                    float shade = (shades != null ? shades[row] : 1.0F) + brighten + noise(i, row);
                     int pixel = scale(color, shade);
                     if (brightEnd && i == fillWidth - 1) {
                         pixel = scale(mix(color, 0xFFFFFFFF, TIP_WHITE), shades != null ? shades[row] : 1.0F);

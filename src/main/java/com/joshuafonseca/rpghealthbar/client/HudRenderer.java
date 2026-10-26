@@ -3,8 +3,11 @@ package com.joshuafonseca.rpghealthbar.client;
 import com.joshuafonseca.rpghealthbar.config.AbsorptionDisplay;
 import com.joshuafonseca.rpghealthbar.config.ClientConfig;
 import com.joshuafonseca.rpghealthbar.config.HealthUnit;
+import net.minecraft.Util;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.util.FastColor;
+import net.minecraft.util.Mth;
 
 /** Draws the bar group at a layout. Used by the HUD layer and the position editor's preview. */
 public final class HudRenderer {
@@ -16,6 +19,9 @@ public final class HudRenderer {
     /** The section just lost, shown briefly before it shrinks away. */
     private static final int HEALTH_LOST_COLOR = 0xFF6A1414;
     private static final int MANA_LOST_COLOR = 0xFF143C64;
+    /** The hovered spell's cost blinks between the mana color and this, once per period. */
+    private static final int MANA_COST_COLOR = 0xFF143C64;
+    private static final long COST_PULSE_MILLIS = 800;
     private static final BarTrail HEALTH_TRAIL = new BarTrail();
     private static final BarTrail MANA_TRAIL = new BarTrail();
     /** Vanilla's HUD shows at most 20 armor points and 20 food points. */
@@ -102,6 +108,13 @@ public final class HudRenderer {
                 BarRenderer.drawFill(graphics, x, y, HudLayout.WIDTH, HudLayout.MAIN_BAR_HEIGHT, true, trail / maxMana, MANA_LOST_COLOR, false);
             }
             BarRenderer.drawFill(graphics, x, y, HudLayout.WIDTH, HudLayout.MAIN_BAR_HEIGHT, true, mana / maxMana, MANA_COLOR, true);
+            float cost = values.mana().hoveredCost();
+            if (cost > 0) {
+                // The mana the hovered spell would use, pulsing between dark and normal blue.
+                float pulse = 0.5F - 0.5F * Mth.cos((float) (Util.getMillis() % COST_PULSE_MILLIS) / COST_PULSE_MILLIS * Mth.TWO_PI);
+                int color = FastColor.ARGB32.lerp(pulse, MANA_COLOR, MANA_COST_COLOR);
+                BarRenderer.drawSection(graphics, x, y, HudLayout.WIDTH, HudLayout.MAIN_BAR_HEIGHT, true, (mana - cost) / maxMana, mana / maxMana, color, true);
+            }
         }
         if (ClientConfig.SHOW_MANA_TEXT.get()) {
             BarRenderer.drawLabel(graphics, font, x, y, HudLayout.MAIN_BAR_HEIGHT,
