@@ -8,9 +8,11 @@ Reference mockup: `Screenshot 2026-10-26 140202.png`
  [ armor (white) ......... ][ hunger (orange) ........ ]   <- half width each, side by side, thin, no text
  [ 20+4/20  health (red, yellow absorption overlay) .. ]   <- full hotbar width
  [ 6/10     mana (blue) .............................. ]   <- full hotbar width (only if Iron's Spells is installed)
- [ xp bar (vanilla, green) ........ 39 ............... ]
- [ hotbar ]
+ [ xp bar (vanilla, green) ........ 39 ............... ]   <- vanilla look, but moves with the group
+ [ hotbar ]                                                <- stays put
 ```
+
+Everything above the hotbar, including the XP bar, is one **movable set**.
 
 ---
 
@@ -47,7 +49,8 @@ Reference mockup: `Screenshot 2026-10-26 140202.png`
 
 ### 1.5 Vanilla elements left as-is
 - **Air bubbles** (underwater) and **mount health** (horses, etc.) stay vanilla.
-- XP bar and hotbar stay vanilla.
+- The hotbar stays vanilla and doesn't move.
+- The **XP bar, XP level number and horse jump meter** keep their vanilla look but **move with the group** (see 1.7).
 - ⚠ Vanilla draws air bubbles and mount hearts in the same row as hunger, so they may overlap the new bars. They need to be checked during testing (see milestone 7). If they do overlap, they can be shifted up by the group's height with a pose-stack translate around those vanilla layers, without restyling them.
 
 ### 1.6 Armor / hunger display modes (in-game, no restart)
@@ -70,6 +73,7 @@ The mod provides its own config screen, opened from Mods menu → RPG Health Bar
 **Position editor** (`HudEditScreen`):
 - Shows the whole bar group as a preview (with placeholder values if needed) and an outline around it.
 - Click and drag to move the **whole set together** (the bars can't be moved one at a time).
+- The set includes the **vanilla XP bar, XP level number and horse jump meter**, so they stay under the bars wherever the group goes. Without this, moving the bars up to make room for Double Hotbar would leave the XP bar behind under the second hotbar.
 - The group is kept fully on screen while dragging.
 - **Save** button: saves the position and goes back to the config screen.
 - **Cancel** button / ESC: discards the change.
@@ -97,6 +101,7 @@ The point of this is to let players move the bars away from **Double Hotbar**, *
   - Iron's Spells mana layer (by its layer ID, only when the mod is loaded)
 - Draw bars with `GuiGraphics.fill(...)` (flat colors) at first; textured sprites can come later in polish.
 - Draw text with `GuiGraphics.drawString(font, text, x, y, color, shadow)`.
+- Move vanilla layers with the group by shifting them by the group's offset with `pose().pushPose()` + `translate` in `RenderGuiLayerEvent.Pre` and `popPose()` in `Post`, for `EXPERIENCE_BAR`, `EXPERIENCE_LEVEL` and `JUMP_METER`. The Pre listener runs at the lowest priority, so it only pushes if no other mod cancelled the layer, which keeps every push matched by a pop.
 - Don't draw the HUD in spectator mode, in creative, or when the HUD is hidden (F1), the same as vanilla.
 
 ### 2.3 Classes (draft)
@@ -137,7 +142,7 @@ The point of this is to let players move the bars away from **Double Hotbar**, *
 3. **Armor + hunger bars**: half-width bars side by side, vanilla armor/hunger icons hidden.
 4. **Config + config screen**: toggles work live from the in-game config screen.
 5. **Iron's Spells compat**: mana bar, Iron's own bar hidden, no crash or mana bar without Iron's.
-6. **Move HUD editor**: drag the group, Save/Cancel, Reset; position persists.
+6. **Move HUD editor**: drag the group (including the XP bar, level number and jump meter), Save/Cancel, Reset; position persists.
 7. **Vanilla overlap check**: air bubbles and mount health don't collide with the bars, and get shifted if needed.
 8. **Polish + modpack test**: textures (optional), test in the full Antarchy Craft modpack (Double Hotbar, Armor Status HUD, Configured, Jade, Xaero's).
 9. **Release**: build jar, README.
@@ -156,6 +161,7 @@ The point of this is to let players move the bars away from **Double Hotbar**, *
 - [ ] Air bubbles and mount health are still visible and not covered
 - [ ] Creative / spectator / F1 hide the HUD correctly
 - [ ] Can be moved clear of Double Hotbar + Armor Status HUD
+- [ ] XP bar, level number and horse jump meter move with the group
 
 ---
 
