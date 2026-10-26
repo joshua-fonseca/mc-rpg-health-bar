@@ -13,5 +13,11 @@
   "rpghealthbar.edit.hint": "Drag the outlined HUD to move it. Arrow keys nudge (Shift: 10px).",
   "rpghealthbar.edit.save": "Save",
   "rpghealthbar.edit.reset": "Reset",
-  "rpghealthbar.config.anchor": "Anchor"
+  "rpghealthbar.config.anchor": "Anchor",
+  "rpghealthbar.config.healthUnit": "Health Units",
+  "rpghealthbar.config.healthUnit.hp": "HP (20)",
+  "rpghealthbar.config.healthUnit.hearts": "Hearts (10)",
+  "rpghealthbar.config.absorptionDisplay": "Absorption",
+  "rpghealthbar.config.absorptionDisplay.separate": "Separate (16+4/20)",
+  "rpghealthbar.config.absorptionDisplay.combined": "Combined (20/20)"
 }

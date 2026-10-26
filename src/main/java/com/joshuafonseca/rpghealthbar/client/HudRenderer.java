@@ -1,5 +1,8 @@
 package com.joshuafonseca.rpghealthbar.client;
 
+import com.joshuafonseca.rpghealthbar.config.AbsorptionDisplay;
+import com.joshuafonseca.rpghealthbar.config.ClientConfig;
+import com.joshuafonseca.rpghealthbar.config.HealthUnit;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 
@@ -54,10 +57,20 @@ public final class HudRenderer {
             BarRenderer.drawFill(graphics, x, y, HudLayout.WIDTH, HudLayout.MAIN_BAR_HEIGHT, absorption / maxHealth, ABSORPTION_COLOR);
         }
 
-        String text = absorption > 0
-                ? NumberText.format(health) + "+" + NumberText.format(absorption) + "/" + NumberText.format(maxHealth)
-                : NumberText.format(health) + "/" + NumberText.format(maxHealth);
-        BarRenderer.drawLabel(graphics, font, x, y, HudLayout.MAIN_BAR_HEIGHT, text);
+        BarRenderer.drawLabel(graphics, font, x, y, HudLayout.MAIN_BAR_HEIGHT, healthText(health, absorption, maxHealth));
+    }
+
+    /** E.g. "16+4/20", "20/20" with absorption combined, or "8+2/10" in hearts; rounded to 0.5. */
+    private static String healthText(float health, float absorption, float maxHealth) {
+        HealthUnit unit = ClientConfig.HEALTH_UNIT.get();
+        String max = NumberText.formatHalves(unit.fromHp(maxHealth));
+        if (absorption <= 0) {
+            return NumberText.formatHalves(unit.fromHp(health)) + "/" + max;
+        }
+        if (ClientConfig.ABSORPTION_DISPLAY.get() == AbsorptionDisplay.COMBINED) {
+            return NumberText.formatHalves(unit.fromHp(health + absorption)) + "/" + max;
+        }
+        return NumberText.formatHalves(unit.fromHp(health)) + "+" + NumberText.formatHalves(unit.fromHp(absorption)) + "/" + max;
     }
 
     private static void renderMana(GuiGraphics graphics, Font font, HudLayout layout, HudValues values) {

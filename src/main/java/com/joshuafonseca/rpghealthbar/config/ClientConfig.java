@@ -16,6 +16,16 @@ public final class ClientConfig {
             .translation("rpghealthbar.config.hungerMode")
             .defineEnum("hungerMode", HalfBarMode.BAR);
 
+    public static final ModConfigSpec.EnumValue<HealthUnit> HEALTH_UNIT = BUILDER
+            .comment("Unit for the numbers on the health bar: HP (20 for a full vanilla bar) or HEARTS (HP / 2, so 10).")
+            .translation("rpghealthbar.config.healthUnit")
+            .defineEnum("healthUnit", HealthUnit.HP);
+
+    public static final ModConfigSpec.EnumValue<AbsorptionDisplay> ABSORPTION_DISPLAY = BUILDER
+            .comment("How absorption is written on the health bar: SEPARATE (16+4/20) or COMBINED (20/20).")
+            .translation("rpghealthbar.config.absorptionDisplay")
+            .defineEnum("absorptionDisplay", AbsorptionDisplay.SEPARATE);
+
     // Position: set by dragging the HUD in Config → Move HUD; not meant to be edited by hand.
     // The HUD's matching point (e.g. its bottom-center for BOTTOM_CENTER) is placed at the anchor's
     // screen point plus the offset. The default sits just above the hotbar.

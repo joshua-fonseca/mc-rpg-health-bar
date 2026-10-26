@@ -23,10 +23,11 @@ Everything above the hotbar, including the XP bar, is one **movable set**.
 - Max is read live from `player.getMaxHealth()` every frame, so attribute modifiers (Apothic Attributes, effects, gear, etc.) are reflected automatically. Not fixed at 20.
 - Red fill = `health / maxHealth`, clamped 0–1.
 - **Absorption**: drawn as a yellow/gold overlay on the HP bar, starting from the left. Width = `absorption / maxHealth`, clamped to the full bar.
-- **Text** (left side of the bar), in HP, not hearts:
+- **Text** (left side of the bar):
   - No absorption: `current/max` → `20/20`
-  - With absorption: `current+absorption/max` → `20+4/20`
-  - Fractions show one decimal: `17.5/20`. Whole numbers have no `.0`.
+  - With absorption, **Separate** (default): `current+absorption/max` → `16+4/20`; **Combined**: `sum/max` → `20/20`
+  - **Health Units**: HP (default, `20/20`) or Hearts (HP / 2, `10/10`)
+  - Rounded to the nearest 0.5 (after converting units), so always a whole number or x.5: `16.5/20`. Whole numbers have no `.0`.
 
 ### 1.2 Mana bar (blue)
 - Directly below the health bar, same width.
@@ -67,6 +68,8 @@ Everything above the hotbar, including the XP bar, is one **movable set**.
 The mod provides its own config screen, opened from Mods menu → RPG Health Bar → Config, through `IConfigScreenFactory`:
 - **Armor: Bar / Vanilla / Hidden**: each click cycles to the next mode
 - **Hunger: Bar / Vanilla / Hidden**: each click cycles to the next mode
+- **Health Units: HP (20) / Hearts (10)**
+- **Absorption: Separate (16+4/20) / Combined (20/20)**
 - **Move HUD**: opens the position editor
 - **Reset Position**: puts the HUD back in the default spot above the hotbar
 - **Done**

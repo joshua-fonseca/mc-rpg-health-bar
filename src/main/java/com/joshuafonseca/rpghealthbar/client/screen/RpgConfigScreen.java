@@ -1,7 +1,9 @@
 package com.joshuafonseca.rpghealthbar.client.screen;
 
+import com.joshuafonseca.rpghealthbar.config.AbsorptionDisplay;
 import com.joshuafonseca.rpghealthbar.config.ClientConfig;
 import com.joshuafonseca.rpghealthbar.config.HalfBarMode;
+import com.joshuafonseca.rpghealthbar.config.HealthUnit;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.CycleButton;
@@ -25,7 +27,7 @@ public class RpgConfigScreen extends Screen {
     @Override
     protected void init() {
         int x = this.width / 2 - BUTTON_WIDTH / 2;
-        int y = this.height / 4;
+        int y = 36;
 
         // Each click cycles Bar → Vanilla → Hidden.
         addRenderableWidget(CycleButton.builder(HalfBarMode::displayName)
@@ -40,6 +42,20 @@ public class RpgConfigScreen extends Screen {
                 .withInitialValue(ClientConfig.HUNGER_MODE.get())
                 .create(x, y, BUTTON_WIDTH, BUTTON_HEIGHT, Component.translatable("rpghealthbar.config.hungerMode"),
                         (button, value) -> ClientConfig.set(ClientConfig.HUNGER_MODE, value)));
+        y += ROW_SPACING;
+
+        addRenderableWidget(CycleButton.builder(HealthUnit::displayName)
+                .withValues(HealthUnit.values())
+                .withInitialValue(ClientConfig.HEALTH_UNIT.get())
+                .create(x, y, BUTTON_WIDTH, BUTTON_HEIGHT, Component.translatable("rpghealthbar.config.healthUnit"),
+                        (button, value) -> ClientConfig.set(ClientConfig.HEALTH_UNIT, value)));
+        y += ROW_SPACING;
+
+        addRenderableWidget(CycleButton.builder(AbsorptionDisplay::displayName)
+                .withValues(AbsorptionDisplay.values())
+                .withInitialValue(ClientConfig.ABSORPTION_DISPLAY.get())
+                .create(x, y, BUTTON_WIDTH, BUTTON_HEIGHT, Component.translatable("rpghealthbar.config.absorptionDisplay"),
+                        (button, value) -> ClientConfig.set(ClientConfig.ABSORPTION_DISPLAY, value)));
         y += ROW_SPACING;
 
         addRenderableWidget(Button.builder(Component.translatable("rpghealthbar.config.moveHud"), button -> this.minecraft.setScreen(new HudEditScreen(this)))
