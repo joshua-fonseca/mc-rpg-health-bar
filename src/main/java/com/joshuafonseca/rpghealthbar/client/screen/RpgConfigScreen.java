@@ -40,6 +40,19 @@ public class RpgConfigScreen extends Screen {
                 .withInitialValue(ClientConfig.HUNGER_MODE.get())
                 .create(x, y, BUTTON_WIDTH, BUTTON_HEIGHT, Component.translatable("rpghealthbar.config.hungerMode"),
                         (button, value) -> ClientConfig.set(ClientConfig.HUNGER_MODE, value)));
+        y += ROW_SPACING;
+
+        addRenderableWidget(Button.builder(Component.translatable("rpghealthbar.config.moveHud"), button -> this.minecraft.setScreen(new HudEditScreen(this)))
+                .bounds(x, y, BUTTON_WIDTH, BUTTON_HEIGHT)
+                .build());
+        y += ROW_SPACING;
+
+        addRenderableWidget(Button.builder(Component.translatable("rpghealthbar.config.resetPosition"), button -> {
+                    ClientConfig.OFFSET_X.set(0);
+                    ClientConfig.set(ClientConfig.OFFSET_Y, 0);
+                })
+                .bounds(x, y, BUTTON_WIDTH, BUTTON_HEIGHT)
+                .build());
 
         addRenderableWidget(Button.builder(CommonComponents.GUI_DONE, button -> onClose())
                 .bounds(x, this.height - 28, BUTTON_WIDTH, BUTTON_HEIGHT)

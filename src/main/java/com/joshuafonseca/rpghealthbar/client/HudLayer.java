@@ -1,6 +1,5 @@
 package com.joshuafonseca.rpghealthbar.client;
 
-import com.joshuafonseca.rpghealthbar.compat.IronsSpellsCompat;
 import com.joshuafonseca.rpghealthbar.config.ClientConfig;
 import com.joshuafonseca.rpghealthbar.config.HalfBarMode;
 import net.minecraft.client.DeltaTracker;
@@ -12,86 +11,48 @@ import net.minecraft.world.entity.player.Player;
 
 /** Draws the whole bar group. */
 public class HudLayer implements LayeredDraw.Layer {
-    private static final int HEALTH_COLOR = 0xFFE03030;
-    private static final int ABSORPTION_COLOR = 0xFFF0C030;
-    private static final int MANA_COLOR = 0xFF30A0F0;
-    private static final int ARMOR_COLOR = 0xFFE0E0E0;
-    private static final int HUNGER_COLOR = 0xFFE08020;
-    /** Vanilla's HUD shows at most 20 armor points and 20 food points. */
-    private static final float MAX_ARMOR = 20.0F;
-    private static final float MAX_FOOD = 20.0F;
-
     @Override
     public void render(GuiGraphics graphics, DeltaTracker deltaTracker) {
         Minecraft minecraft = Minecraft.getInstance();
-        // Modded layers don't inherit the conditions of the vanilla group they're inserted into,
-        // so repeat vanilla's checks: hidden with F1, and only in survival/adventure.
-        if (minecraft.options.hideGui || minecraft.gameMode == null || !minecraft.gameMode.canHurtPlayer()) {
-            return;
-        }
-        if (!(minecraft.getCameraEntity() instanceof Player player)) {
+        if (!isVisible(minecraft) || !(minecraft.getCameraEntity() instanceof Player player)) {
             return;
         }
 
-        boolean showArmor = ClientConfig.ARMOR_MODE.get() == HalfBarMode.BAR;
-        boolean showHunger = ClientConfig.HUNGER_MODE.get() == HalfBarMode.BAR;
-        IronsSpellsCompat.Mana mana = IronsSpellsCompat.read(player);
-        HudLayout layout = HudLayout.compute(graphics.guiWidth(), graphics.guiHeight(), showArmor || showHunger, mana != null);
-        renderHalfBars(graphics, player, layout, showArmor, showHunger);
-        renderHealth(graphics, minecraft, player, layout);
-        if (mana != null) {
-            renderMana(graphics, minecraft, mana, layout);
-        }
-        reserveVanillaSpace(minecraft.gui, graphics.guiHeight(), layout);
+        HudValues values = HudValues.of(player);
+        Frame frame = Frame.compute(graphics.guiWidth(), graphics.guiHeight(), values.mana() != null);
+        // Reserved at the default position: the vanilla rows stacked above are shifted along with
+        // everything else by HudPositionMover.
+        reserveVanillaSpace(minecraft.gui, graphics.guiHeight(), frame.layout());
+
+        graphics.pose().pushPose();
+        graphics.pose().translate(frame.offset().x(), frame.offset().y(), 0);
+        HudRenderer.render(graphics, minecraft.font, frame.layout(), values, frame.showArmor(), frame.showHunger());
+        graphics.pose().popPose();
     }
 
-    /** Each bar keeps its own half when the other one isn't shown as a bar. */
-    private static void renderHalfBars(GuiGraphics graphics, Player player, HudLayout layout, boolean showArmor, boolean showHunger) {
-        int y = layout.halfBarY();
-        int width = HudLayout.HALF_BAR_WIDTH;
-        int height = HudLayout.HALF_BAR_HEIGHT;
-
-        if (showArmor) {
-            BarRenderer.drawFrame(graphics, layout.x(), y, width, height);
-            BarRenderer.drawFill(graphics, layout.x(), y, width, height, player.getArmorValue() / MAX_ARMOR, ARMOR_COLOR);
-        }
-        if (showHunger) {
-            BarRenderer.drawFrame(graphics, layout.hungerX(), y, width, height);
-            BarRenderer.drawFill(graphics, layout.hungerX(), y, width, height, player.getFoodData().getFoodLevel() / MAX_FOOD, HUNGER_COLOR);
-        }
+    /**
+     * Modded layers don't inherit the conditions of the vanilla group they're inserted into, so
+     * repeat vanilla's checks: hidden with F1, and only in survival/adventure.
+     */
+    public static boolean isVisible(Minecraft minecraft) {
+        return !minecraft.options.hideGui && minecraft.gameMode != null && minecraft.gameMode.canHurtPlayer()
+                && minecraft.getCameraEntity() instanceof Player;
     }
 
-    private static void renderHealth(GuiGraphics graphics, Minecraft minecraft, Player player, HudLayout layout) {
-        float health = player.getHealth();
-        float maxHealth = player.getMaxHealth();
-        float absorption = player.getAbsorptionAmount();
+    /** Layout, display settings and position for the current frame. */
+    public record Frame(HudLayout layout, HudPosition.Bounds bounds, HudPosition.Offset offset, boolean showArmor, boolean showHunger) {
+        public static Frame compute(int screenWidth, int screenHeight, boolean showMana) {
+            HalfBarMode armorMode = ClientConfig.ARMOR_MODE.get();
+            HalfBarMode hungerMode = ClientConfig.HUNGER_MODE.get();
+            boolean showArmor = armorMode == HalfBarMode.BAR;
+            boolean showHunger = hungerMode == HalfBarMode.BAR;
+            boolean vanillaIconsAbove = armorMode == HalfBarMode.VANILLA || hungerMode == HalfBarMode.VANILLA;
 
-        int x = layout.x();
-        int y = layout.healthY();
-        BarRenderer.drawFrame(graphics, x, y, HudLayout.WIDTH, HudLayout.MAIN_BAR_HEIGHT);
-        BarRenderer.drawFill(graphics, x, y, HudLayout.WIDTH, HudLayout.MAIN_BAR_HEIGHT, health / maxHealth, HEALTH_COLOR);
-        if (absorption > 0) {
-            BarRenderer.drawFill(graphics, x, y, HudLayout.WIDTH, HudLayout.MAIN_BAR_HEIGHT, absorption / maxHealth, ABSORPTION_COLOR);
+            HudLayout layout = HudLayout.compute(screenWidth, screenHeight, showArmor || showHunger, showMana);
+            HudPosition.Bounds bounds = HudPosition.bounds(screenHeight, layout, vanillaIconsAbove);
+            HudPosition.Offset offset = HudPosition.current(screenWidth, screenHeight, bounds);
+            return new Frame(layout, bounds, offset, showArmor, showHunger);
         }
-
-        String text = absorption > 0
-                ? NumberText.format(health) + "+" + NumberText.format(absorption) + "/" + NumberText.format(maxHealth)
-                : NumberText.format(health) + "/" + NumberText.format(maxHealth);
-        BarRenderer.drawLabel(graphics, minecraft.font, x, y, HudLayout.MAIN_BAR_HEIGHT, text);
-    }
-
-    private static void renderMana(GuiGraphics graphics, Minecraft minecraft, IronsSpellsCompat.Mana values, HudLayout layout) {
-        float mana = values.current();
-        float maxMana = values.max();
-
-        int x = layout.x();
-        int y = layout.manaY();
-        BarRenderer.drawFrame(graphics, x, y, HudLayout.WIDTH, HudLayout.MAIN_BAR_HEIGHT);
-        if (maxMana > 0) {
-            BarRenderer.drawFill(graphics, x, y, HudLayout.WIDTH, HudLayout.MAIN_BAR_HEIGHT, mana / maxMana, MANA_COLOR);
-        }
-        BarRenderer.drawLabel(graphics, minecraft.font, x, y, HudLayout.MAIN_BAR_HEIGHT,
-                NumberText.format(mana) + "/" + NumberText.format(maxMana));
     }
 
     /**

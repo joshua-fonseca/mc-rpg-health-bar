@@ -16,6 +16,17 @@ public final class ClientConfig {
             .translation("rpghealthbar.config.hungerMode")
             .defineEnum("hungerMode", HalfBarMode.BAR);
 
+    // Set by dragging the HUD in Config → Move HUD; not meant to be edited by hand.
+    public static final ModConfigSpec.IntValue OFFSET_X = BUILDER
+            .comment("Horizontal offset of the HUD from its default position, in GUI pixels. Set with Config → Move HUD.")
+            .translation("rpghealthbar.config.offsetX")
+            .defineInRange("offsetX", 0, -10000, 10000);
+
+    public static final ModConfigSpec.IntValue OFFSET_Y = BUILDER
+            .comment("Vertical offset of the HUD from its default position, in GUI pixels. Set with Config → Move HUD.")
+            .translation("rpghealthbar.config.offsetY")
+            .defineInRange("offsetY", 0, -10000, 10000);
+
     public static final ModConfigSpec SPEC = BUILDER.build();
 
     private ClientConfig() {

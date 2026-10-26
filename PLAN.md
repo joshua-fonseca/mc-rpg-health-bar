@@ -75,8 +75,12 @@ The mod provides its own config screen, opened from Mods menu → RPG Health Bar
 - Click and drag to move the **whole set together** (the bars can't be moved one at a time).
 - The set includes the **vanilla XP bar, XP level number and horse jump meter**, so they stay under the bars wherever the group goes. Without this, moving the bars up to make room for Double Hotbar would leave the XP bar behind under the second hotbar.
 - The group is kept fully on screen while dragging.
+- Arrow keys nudge the set by 1 pixel (10 with Shift).
 - **Save** button: saves the position and goes back to the config screen.
+- **Reset** button: moves the set back to the default spot (still needs Save).
 - **Cancel** button / ESC: discards the change.
+- The title, hint and buttons sit in whichever half of the screen the HUD isn't in, so they never cover it.
+- In a world, the real HUD moves live while dragging. From the title screen (or in creative, where the bars aren't drawn), a preview with placeholder values is shown instead.
 - There's no need to type X/Y numbers. Internally the position is saved as an offset from the bottom-center of the screen, so it stays put across window resizes and GUI scale changes. These offset values are stored in the config file but aren't shown as editable fields.
 
 The point of this is to let players move the bars away from **Double Hotbar**, **Armor Status HUD**, or any other mod drawing near the hotbar.

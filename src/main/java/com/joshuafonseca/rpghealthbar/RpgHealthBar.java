@@ -1,6 +1,7 @@
 package com.joshuafonseca.rpghealthbar;
 
 import com.joshuafonseca.rpghealthbar.client.HudLayer;
+import com.joshuafonseca.rpghealthbar.client.HudPositionMover;
 import com.joshuafonseca.rpghealthbar.client.screen.RpgConfigScreen;
 import com.joshuafonseca.rpghealthbar.compat.IronsSpellsCompat;
 import com.joshuafonseca.rpghealthbar.config.ClientConfig;
@@ -8,6 +9,7 @@ import com.joshuafonseca.rpghealthbar.config.HalfBarMode;
 import com.mojang.logging.LogUtils;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
@@ -33,6 +35,9 @@ public class RpgHealthBar {
         modContainer.registerExtensionPoint(IConfigScreenFactory.class, (container, parent) -> new RpgConfigScreen(parent));
         modEventBus.addListener(RpgHealthBar::registerGuiLayers);
         NeoForge.EVENT_BUS.addListener(RpgHealthBar::hideVanillaLayers);
+        // Lowest priority: only shift a layer if nothing else cancelled it, so every push is popped.
+        NeoForge.EVENT_BUS.addListener(EventPriority.LOWEST, HudPositionMover::onPre);
+        NeoForge.EVENT_BUS.addListener(HudPositionMover::onPost);
     }
 
     private static void registerGuiLayers(RegisterGuiLayersEvent event) {
