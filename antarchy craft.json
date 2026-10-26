@@ -1,0 +1,1921 @@
+[
+    {
+        "authors": [
+            "Lapis256"
+        ],
+        "filename": "AE2MEGAThings-1.21.1-2.0.4.jar",
+        "name": "AE2 MEGA Things",
+        "url": "https://www.curseforge.com/projects/1150075",
+        "version": "2.0.4"
+    },
+    {
+        "authors": [
+            "ProjectET, Technici4n"
+        ],
+        "filename": "AE2-Things-1.4.2-beta.jar",
+        "name": "AE2 Things",
+        "url": "https://www.curseforge.com/projects/609977",
+        "version": "1.4.2-beta"
+    },
+    {
+        "authors": [
+            "mari_023, Ridanisaurus"
+        ],
+        "filename": "ae2wtlib-19.5.0.jar",
+        "name": "AE2WTLib",
+        "url": "https://www.curseforge.com/projects/459929",
+        "version": "19.5.0"
+    },
+    {
+        "authors": [
+            "aaronhowser1"
+        ],
+        "filename": "aaron-1.21.1-1.20.0-build.28.jar",
+        "name": "Aaron",
+        "url": "https://www.curseforge.com/projects/1384284",
+        "version": "1.20.0"
+    },
+    {
+        "authors": [
+            "Alex Nijjar <alex@terrarium.earth>"
+        ],
+        "filename": "adastra-1.21.1-1.16.25-neoforge.jar",
+        "name": "Ad Astra",
+        "url": "https://www.curseforge.com/projects/635042",
+        "version": "1.16.25"
+    },
+    {
+        "authors": [
+            "Veydiz"
+        ],
+        "filename": "ad_astra_more_structures-1.21.1-neoforge.jar",
+        "name": "Ad Astra: More Structures",
+        "url": "https://www.curseforge.com/projects/1311898",
+        "version": "1.0.2"
+    },
+    {
+        "authors": [
+            "Alexthe668, Noonyeyz, Raguto"
+        ],
+        "filename": "alexscaves-2.0.10.jar",
+        "name": "Alex's Caves",
+        "url": "https://www.curseforge.com/projects/1420348",
+        "version": "2.0.10"
+    },
+    {
+        "authors": [
+            "frikinjay"
+        ],
+        "filename": "Almanac-1.21.1-2-neoforge-1.5.2.jar",
+        "name": "Almanac",
+        "url": "https://www.curseforge.com/projects/1115285",
+        "version": "1.5.2"
+    },
+    {
+        "authors": [
+            "Jaredlll08"
+        ],
+        "filename": "AmbientEnvironment-neoforge-1.21.1-18.0.0.2.jar",
+        "name": "AmbientEnvironment",
+        "url": "https://www.curseforge.com/projects/320163",
+        "version": "18.0.0.2"
+    },
+    {
+        "authors": [
+            "CreativeMD",
+            "AriaFreeze"
+        ],
+        "filename": "AmbientSounds_NEOFORGE_v6.3.8_mc1.21.1.jar",
+        "name": "AmbientSounds",
+        "url": "https://www.curseforge.com/projects/254284",
+        "version": "6.3.8"
+    },
+    {
+        "authors": [
+            "ItsSmudgy"
+        ],
+        "filename": "ancient_dried_spawn_eggs-1.0.1-neoforge-1.21.1.jar",
+        "name": "Ancient Dried Spawn Eggs",
+        "url": "https://www.curseforge.com/projects/1545589",
+        "version": "1.0.1"
+    },
+    {
+        "authors": [
+            "CraisinLord"
+        ],
+        "filename": "antos-neoforge-1.21.1-1.2.2.jar",
+        "name": "AntOS",
+        "url": "https://www.curseforge.com/projects/1700593",
+        "version": "1.2.2"
+    },
+    {
+        "authors": [
+            "CraisinLord"
+        ],
+        "filename": "antarchy-2.1.1+1.21.1-neoforge.jar",
+        "name": "Antarchy",
+        "url": "https://www.curseforge.com/projects/1504802",
+        "version": "2.1.1+1.21.1-neoforge"
+    },
+    {
+        "authors": [
+            "mistersecret312"
+        ],
+        "filename": "aperture_innovations-neoforge-2.1.1.jar",
+        "name": "Aperture Innovations",
+        "url": "https://www.curseforge.com/projects/1403821",
+        "version": "2.1.1"
+    },
+    {
+        "authors": [
+            "Shadows_of_Fire"
+        ],
+        "filename": "Apotheosis-1.21.1-8.8.0.jar",
+        "name": "Apotheosis",
+        "url": "https://www.curseforge.com/projects/313970",
+        "version": "8.8.0"
+    },
+    {
+        "authors": [
+            "Shadows_of_Fire"
+        ],
+        "filename": "ApothicAttributes-1.21.1-2.10.1.jar",
+        "name": "Apothic Attributes",
+        "url": "https://www.curseforge.com/projects/898963",
+        "version": "2.10.1"
+    },
+    {
+        "authors": [
+            "MuonR"
+        ],
+        "filename": "apothiccombat-1.2.1.jar",
+        "name": "Apothic Combat",
+        "url": "https://www.curseforge.com/projects/986982",
+        "version": "1.2.1"
+    },
+    {
+        "authors": [
+            "Shadows_of_Fire"
+        ],
+        "filename": "ApothicEnchanting-1.21.1-1.6.2.jar",
+        "name": "Apothic Enchanting",
+        "url": "https://www.curseforge.com/projects/1063926",
+        "version": "1.6.2"
+    },
+    {
+        "authors": [
+            "Shadows_of_Fire"
+        ],
+        "filename": "ApothicSpawners-1.21.1-1.4.0.jar",
+        "name": "Apothic Spawners",
+        "url": "https://www.curseforge.com/projects/986583",
+        "version": "1.4.0"
+    },
+    {
+        "authors": [
+            "Team AppliedEnergistics"
+        ],
+        "filename": "appliedenergistics2-19.2.17.jar",
+        "name": "Applied Energistics 2",
+        "url": "https://www.curseforge.com/projects/223794",
+        "version": "19.2.17"
+    },
+    {
+        "authors": [
+            "shedaniel"
+        ],
+        "filename": "architectury-13.0.11-neoforge.jar",
+        "name": "Architectury",
+        "url": "https://www.curseforge.com/projects/419699",
+        "version": "13.0.11"
+    },
+    {
+        "authors": [
+            "bspkrs, Bobsans"
+        ],
+        "filename": "[1.21.1] Armor Status HUD-1.5.2.jar",
+        "name": "Armor Status HUD",
+        "url": "https://www.curseforge.com/projects/388293",
+        "version": "1.5.2"
+    },
+    {
+        "authors": [
+            "ochotonida"
+        ],
+        "filename": "artifacts-neoforge-13.2.5.jar",
+        "name": "Artifacts",
+        "url": "https://www.curseforge.com/projects/312353",
+        "version": "13.2.5"
+    },
+    {
+        "authors": [
+            "Astryxion"
+        ],
+        "filename": "miners dream neoforge 1.21.1 v1.0.0.jar",
+        "name": "Astryxion's Miner's Dream",
+        "url": "https://www.curseforge.com/projects/1383273",
+        "version": "1.0.0"
+    },
+    {
+        "authors": [
+            "decce"
+        ],
+        "filename": "asynclogger-2.2.2+1.21.1-neoforge.jar",
+        "name": "Async Logger",
+        "url": "https://www.curseforge.com/projects/1491426",
+        "version": "2.2.2+1.21.1-neoforge"
+    },
+    {
+        "authors": [
+            "Harvey_Husky"
+        ],
+        "filename": "AsyncParticles-21.1.4.5+1.21.1.jar",
+        "name": "AsyncParticles",
+        "url": "https://www.curseforge.com/projects/1215753",
+        "version": "21.1.4.5"
+    },
+    {
+        "authors": [
+            "Iron431"
+        ],
+        "filename": "atlas_api-1.21.1-1.2.0.jar",
+        "name": "Atlas API",
+        "url": "https://www.curseforge.com/projects/1145462",
+        "version": "1.21.1-1.2.0"
+    },
+    {
+        "authors": [
+            "Darkhax"
+        ],
+        "filename": "attributefix-neoforge-1.21.1-21.1.3.jar",
+        "name": "AttributeFix",
+        "url": "https://www.curseforge.com/projects/280510",
+        "version": "21.1.3"
+    },
+    {
+        "authors": [
+            "quaternary"
+        ],
+        "filename": "auto_third_person-neo-1.21.1-2.2.jar",
+        "name": "Auto Third Person",
+        "url": "https://www.curseforge.com/projects/297818",
+        "version": "2.2"
+    },
+    {
+        "authors": [
+            "AzureDoom, Bvanseg, DerToaster, ZigyTheBird, Gecko, Eliot, Chappie, Tslat"
+        ],
+        "filename": "azurelib-neo-1.21.1-3.1.11.jar",
+        "name": "AzureLib",
+        "url": "https://www.curseforge.com/projects/817423",
+        "version": "3.1.11"
+    },
+    {
+        "authors": [
+            "Daedelus"
+        ],
+        "filename": "bettercombat-neoforge-2.4.0+1.21.1.jar",
+        "name": "Better Combat",
+        "url": "https://www.curseforge.com/projects/639842",
+        "version": "2.4.0+1.21.1"
+    },
+    {
+        "authors": [
+            "TerraformersMC, gniftygnome"
+        ],
+        "filename": "biolith-neoforge-3.0.12.jar",
+        "name": "Biolith",
+        "url": "https://www.curseforge.com/projects/852512",
+        "version": "3.0.12"
+    },
+    {
+        "authors": [
+            "MoePus"
+        ],
+        "filename": "biomespy-neoforge-1.21.1-1.3.3.jar",
+        "name": "BiomeSpy",
+        "url": "https://www.curseforge.com/projects/1376024",
+        "version": "1.3.3"
+    },
+    {
+        "authors": [
+            "Darkhax"
+        ],
+        "filename": "bookshelf-neoforge-1.21.1-21.1.81.jar",
+        "name": "Bookshelf",
+        "url": "https://www.curseforge.com/projects/228525",
+        "version": "21.1.81"
+    },
+    {
+        "authors": [
+            "Toni, Mephodio"
+        ],
+        "filename": "cerulean-neoforge-1.0.0-1.21.1.jar",
+        "name": "Cerulean",
+        "url": "https://www.curseforge.com/projects/1204890",
+        "version": "1.0.0"
+    },
+    {
+        "authors": [
+            "ChoiceTheorem"
+        ],
+        "filename": "[Neoforge]ctov-3.6.3.jar",
+        "name": "ChoiceTheorem's Overhauled Village",
+        "url": "https://www.curseforge.com/projects/623908",
+        "version": "3.6.3"
+    },
+    {
+        "authors": [
+            "Alexthe666"
+        ],
+        "filename": "citadel-1.21.1-2.7.6.jar",
+        "name": "Citadel",
+        "url": "https://www.curseforge.com/projects/1415723",
+        "version": "2.7.6"
+    },
+    {
+        "authors": [
+            "Alexthe666"
+        ],
+        "filename": "citadel-2.7.0-1.21.1.jar",
+        "name": "Citadel",
+        "url": "https://www.curseforge.com/projects/331936",
+        "version": "2.7.0"
+    },
+    {
+        "authors": [
+            "cassiancc"
+        ],
+        "filename": "clickthrough-plus-neoforge-3.5.0+1.21.1.jar",
+        "name": "ClickThrough Plus",
+        "url": "https://www.curseforge.com/projects/1122678",
+        "version": "3.5.0+1.21.1"
+    },
+    {
+        "authors": [
+            "shedaniel"
+        ],
+        "filename": "cloth-config-15.0.140-neoforge.jar",
+        "name": "Cloth Config v15 API",
+        "url": "https://www.curseforge.com/projects/348521",
+        "version": "15.0.140"
+    },
+    {
+        "authors": [
+            "Jared"
+        ],
+        "filename": "Clumps-neoforge-1.21.1-19.0.0.1.jar",
+        "name": "Clumps",
+        "url": "https://www.curseforge.com/projects/256717",
+        "version": "19.0.0.1"
+    },
+    {
+        "authors": [
+            "Rick South"
+        ],
+        "filename": "collective-1.21.1-8.39.jar",
+        "name": "Collective",
+        "url": "https://www.curseforge.com/projects/342584",
+        "version": "8.39"
+    },
+    {
+        "authors": [
+            "CodexAdrian"
+        ],
+        "filename": "common-storage-lib-neoforge-1.21.1-0.0.10.jar",
+        "name": "Common Storage Lib: Core",
+        "url": "https://www.curseforge.com/projects/1028211",
+        "version": "0.0.10"
+    },
+    {
+        "authors": [
+            "MrCrayfish"
+        ],
+        "filename": "configured-neoforge-1.21.1-2.6.3.jar",
+        "name": "Configured",
+        "url": "https://www.curseforge.com/projects/457570",
+        "version": "2.6.3"
+    },
+    {
+        "authors": [
+            "Jaredlll08"
+        ],
+        "filename": "Controlling-neoforge-1.21.1-19.0.5.jar",
+        "name": "Controlling",
+        "url": "https://www.curseforge.com/projects/250398",
+        "version": "19.0.5"
+    },
+    {
+        "authors": [
+            "Corail31"
+        ],
+        "filename": "tombstone-neoforge-1.21.1-9.5.2.jar",
+        "name": "Corail Tombstone",
+        "url": "https://www.curseforge.com/projects/243707",
+        "version": "9.5.2"
+    },
+    {
+        "authors": [
+            "To_Craft"
+        ],
+        "filename": "craftedcore-5.8.2.jar",
+        "name": "CraftedCore",
+        "url": "https://www.curseforge.com/projects/923377",
+        "version": "5.8.2"
+    },
+    {
+        "authors": [
+            "Drex"
+        ],
+        "filename": "crashexploitfixer-neoforge-2.0.0+1.21.4.jar",
+        "name": "CrashExploitFixer",
+        "url": "https://www.curseforge.com/projects/1079896",
+        "version": "2.0.0"
+    },
+    {
+        "authors": [
+            "CreativeMD"
+        ],
+        "filename": "CreativeCore_NEOFORGE_v2.13.41_mc1.21.1.jar",
+        "name": "CreativeCore",
+        "url": "https://www.curseforge.com/projects/257814",
+        "version": "2.13.41"
+    },
+    {
+        "authors": [
+            "VeroxUniverse, Linkershim"
+        ],
+        "filename": "crystal_chronicles-0.1.3-alpha.jar",
+        "name": "CrystalChronicles",
+        "url": "https://www.curseforge.com/projects/1153374",
+        "version": "0.1.3-alpha"
+    },
+    {
+        "authors": [
+            "BlakeBr0"
+        ],
+        "filename": "Cucumber-1.21.1-8.0.16.jar",
+        "name": "Cucumber Library",
+        "url": "https://www.curseforge.com/projects/272335",
+        "version": "8.0.16"
+    },
+    {
+        "authors": [
+            "Someaddon"
+        ],
+        "filename": "cupboard-1.21.1-4.2.jar",
+        "name": "Cupboard mod",
+        "url": "https://www.curseforge.com/projects/326652",
+        "version": "4.2"
+    },
+    {
+        "authors": [
+            "C4"
+        ],
+        "filename": "curios-neoforge-9.5.1+1.21.1.jar",
+        "name": "Curios API",
+        "url": "https://www.curseforge.com/projects/309927",
+        "version": "9.5.1+1.21.1"
+    },
+    {
+        "authors": [
+            "rubensworks (aka kroeser)"
+        ],
+        "filename": "cyclopscore-1.21.1-neoforge-1.30.0.jar",
+        "name": "Cyclops Core",
+        "url": "https://www.curseforge.com/projects/232758",
+        "version": "1.30.0"
+    },
+    {
+        "authors": [
+            "Astryxion"
+        ],
+        "filename": "damageindicatorsneoforge-1.21.1-1.1.0.jar",
+        "name": "Damage Indicators (Expanded)",
+        "url": "https://www.curseforge.com/projects/1469961",
+        "version": "1.21.1-1.1.0"
+    },
+    {
+        "authors": [
+            "Toni"
+        ],
+        "filename": "despawntweaks-neoforge-1.0.0-1.21.1.jar",
+        "name": "Despawn Tweaks",
+        "url": "https://www.curseforge.com/projects/1191080",
+        "version": "1.0.0"
+    },
+    {
+        "authors": [
+            "Catastrophe573"
+        ],
+        "filename": "dimdungeons-209-neoforge-1.21.1.jar",
+        "name": "Dimensional Dungeons",
+        "url": "https://www.curseforge.com/projects/352222",
+        "version": "209"
+    },
+    {
+        "authors": [
+            "Lupin, Jason13"
+        ],
+        "filename": "disenchanting_table-merged-1.21.1-5.0.2.jar",
+        "name": "Dis-Enchanting Table",
+        "url": "https://www.curseforge.com/projects/933354",
+        "version": "5.0.2"
+    },
+    {
+        "authors": [
+            "ascpixi"
+        ],
+        "filename": "disconnect-packet-fix-neoforge-2.0.1.jar",
+        "name": "Disconnect Packet Fix",
+        "url": "https://www.curseforge.com/projects/1173964",
+        "version": "2.0.1"
+    },
+    {
+        "authors": [
+            "DrGmes"
+        ],
+        "filename": "DoctorWhoMod-1.21.1-neoforge-1.0.16.jar",
+        "name": "DoctorWhoMod",
+        "url": "https://www.curseforge.com/projects/884515",
+        "version": "1.0.16"
+    },
+    {
+        "authors": [
+            "Rick South"
+        ],
+        "filename": "doubledoors-1.21.1-7.2.jar",
+        "name": "Double Doors",
+        "url": "https://www.curseforge.com/projects/348831",
+        "version": "7.2"
+    },
+    {
+        "authors": [
+            "sidezbros"
+        ],
+        "filename": "double_hotbar-1.2.3-mc1.21.1-neoforge.jar",
+        "name": "Double Hotbar",
+        "url": "https://www.curseforge.com/projects/1563792",
+        "version": "1.2.3-mc1.21.1-neoforge"
+    },
+    {
+        "authors": [
+            "xiroc"
+        ],
+        "filename": "DungeonCrawl-NeoForge-1.21-2.3.17.jar",
+        "name": "Dungeon Crawl",
+        "url": "https://www.curseforge.com/projects/324973",
+        "version": "2.3.17"
+    },
+    {
+        "authors": [
+            "Kall"
+        ],
+        "filename": "duplicationless-1.21.1-1.2.1.jar",
+        "name": "Duplicationless",
+        "url": "https://www.curseforge.com/projects/1380105",
+        "version": "1.21.1-1.2.1"
+    },
+    {
+        "authors": [
+            "juliand665 & LostLuma"
+        ],
+        "filename": "dynamic-fps-3.11.4+minecraft-1.21.0-neoforge.jar",
+        "name": "Dynamic FPS",
+        "url": "https://www.curseforge.com/projects/335493",
+        "version": "3.11.4"
+    },
+    {
+        "authors": [
+            "AtomicStryker"
+        ],
+        "filename": "dynamiclights-1.21.1.2NF.jar",
+        "name": "Dynamic Lights",
+        "url": "https://www.curseforge.com/projects/227874",
+        "version": "1.21.1.2NF"
+    },
+    {
+        "authors": [
+            "OreCruncher"
+        ],
+        "filename": "dynamicsurroundings-neoforge-1.21.1-0.4.5.jar",
+        "name": "Dynamic Surroundings",
+        "url": "https://www.curseforge.com/projects/238891",
+        "version": "0.4.5"
+    },
+    {
+        "authors": [
+            "Buuz135"
+        ],
+        "filename": "dysoncubeproject-1.0.5.jar",
+        "name": "Dyson Cube Project",
+        "url": "https://www.curseforge.com/projects/1345066",
+        "version": "1.0.5"
+    },
+    {
+        "authors": [
+            "Darkhax"
+        ],
+        "filename": "enchdesc-neoforge-1.21.1-21.1.10.jar",
+        "name": "EnchantmentDescriptions",
+        "url": "https://www.curseforge.com/projects/250419",
+        "version": "21.1.10"
+    },
+    {
+        "authors": [
+            "Keltmaldan"
+        ],
+        "filename": "enhanced_enchanting-2.1.4.1-neoforge-1.21.1.jar",
+        "name": "Enhanced Enchanting",
+        "url": "https://www.curseforge.com/projects/1332588",
+        "version": "2.1.4.1"
+    },
+    {
+        "authors": [
+            "tr7zw"
+        ],
+        "filename": "entityculling-neoforge-1.10.5-mc1.21.1.jar",
+        "name": "EntityCulling",
+        "url": "https://www.curseforge.com/projects/448233",
+        "version": "1.10.5"
+    },
+    {
+        "authors": [
+            "rubensworks (aka kroeser)"
+        ],
+        "filename": "evilcraft-1.21.1-neoforge-1.2.96.jar",
+        "name": "EvilCraft",
+        "url": "https://www.curseforge.com/projects/74610",
+        "version": "1.2.96"
+    },
+    {
+        "authors": [
+            "aaronhowser1"
+        ],
+        "filename": "excessive-utilities-1.21.1-1.9.0-build.28.jar",
+        "name": "Excessive Utilities",
+        "url": "https://www.curseforge.com/projects/1482270",
+        "version": "1.9.0"
+    },
+    {
+        "authors": [
+            "ChaosTheDude"
+        ],
+        "filename": "ExplorersCompass-1.21.1-3.4.0-neoforge.jar",
+        "name": "Explorer's Compass",
+        "url": "https://www.curseforge.com/projects/491794",
+        "version": "1.21.1-3.4.0-neoforge"
+    },
+    {
+        "authors": [
+            "FTB Team"
+        ],
+        "filename": "ftb-chunks-neoforge-2101.1.20.jar",
+        "name": "FTB Chunks",
+        "url": "https://www.curseforge.com/projects/314906",
+        "version": "2101.1.20"
+    },
+    {
+        "authors": [
+            "FTB Team"
+        ],
+        "filename": "ftb-library-neoforge-2101.1.36.jar",
+        "name": "FTB Library",
+        "url": "https://www.curseforge.com/projects/404465",
+        "version": "2101.1.36"
+    },
+    {
+        "authors": [
+            "FTB Team"
+        ],
+        "filename": "ftb-quests-neoforge-2101.1.35.jar",
+        "name": "FTB Quests",
+        "url": "https://www.curseforge.com/projects/289412",
+        "version": "2101.1.35"
+    },
+    {
+        "authors": [
+            "FTB Team"
+        ],
+        "filename": "ftb-teams-neoforge-2101.1.10.jar",
+        "name": "FTB Teams",
+        "url": "https://www.curseforge.com/projects/404468",
+        "version": "2101.1.10"
+    },
+    {
+        "authors": [
+            "FTB Team"
+        ],
+        "filename": "ftb-ultimine-neoforge-2101.1.15.jar",
+        "name": "FTB Ultimine",
+        "url": "https://www.curseforge.com/projects/386134",
+        "version": "2101.1.15"
+    },
+    {
+        "authors": [
+            "FTB Team"
+        ],
+        "filename": "ftb-xmod-compat-neoforge-21.1.11.jar",
+        "name": "FTB XMod Compat",
+        "url": "https://www.curseforge.com/projects/889915",
+        "version": "21.1.11"
+    },
+    {
+        "authors": [
+            "Rakambda"
+        ],
+        "filename": "FallingTree-1.21.1-1.21.1.11.jar",
+        "name": "FallingTree",
+        "url": "https://www.curseforge.com/projects/349559",
+        "version": "1.21.1.11"
+    },
+    {
+        "authors": [
+            "Hantonik, TominoCZ"
+        ],
+        "filename": "FancyBlockParticles-1.21.1-neoforge-21.1.6.0.jar",
+        "name": "FancyBlockParticles",
+        "url": "https://www.curseforge.com/projects/937011",
+        "version": "21.1.6.0"
+    },
+    {
+        "authors": [
+            "Shadows_of_Fire"
+        ],
+        "filename": "FastSuite-1.21.1-6.0.7.jar",
+        "name": "Fast Suite",
+        "url": "https://www.curseforge.com/projects/475117",
+        "version": "6.0.7"
+    },
+    {
+        "authors": [
+            "dnlayu"
+        ],
+        "filename": "fastboot-1.21.x-v1.3neo.jar",
+        "name": "FastBoot",
+        "url": "https://www.curseforge.com/projects/1030285",
+        "version": "1.3.0"
+    },
+    {
+        "authors": [
+            "malte0811"
+        ],
+        "filename": "ferritecore-7.0.3-neoforge.jar",
+        "name": "Ferrite Core",
+        "url": "https://www.curseforge.com/projects/429235",
+        "version": "7.0.3"
+    },
+    {
+        "authors": [
+            "MoePus"
+        ],
+        "filename": "flerovium-neoforge-1.21.1-1.1.2-all.jar",
+        "name": "Flerovium",
+        "url": "https://www.curseforge.com/projects/1142875",
+        "version": "1.1.2"
+    },
+    {
+        "authors": [
+            "Sonar Sonic, BloCamLimb"
+        ],
+        "filename": "FluxNetworks-1.21.1-8.0.0.jar",
+        "name": "Flux Networks",
+        "url": "https://www.curseforge.com/projects/248020",
+        "version": "8.0.0"
+    },
+    {
+        "authors": [
+            "Fuzs"
+        ],
+        "filename": "ForgeConfigAPIPort-v21.1.6-1.21.1-NeoForge.jar",
+        "name": "Forge Config API Port",
+        "url": "https://www.curseforge.com/projects/547434",
+        "version": "21.1.6"
+    },
+    {
+        "authors": [
+            "Obscuria"
+        ],
+        "filename": "fragmentum-5.0.0+1.21.1-neoforge.jar",
+        "name": "Fragmentum",
+        "url": "https://www.curseforge.com/projects/1123977",
+        "version": "5.0.0"
+    },
+    {
+        "authors": [
+            "hashalite,Matt Sturgeon"
+        ],
+        "filename": "freecam-neoforge-1.3.0+mc1.21.jar",
+        "name": "Freecam",
+        "url": "https://www.curseforge.com/projects/557076",
+        "version": "1.3.0+mc1.21"
+    },
+    {
+        "authors": [
+            "SuperMartijn642"
+        ],
+        "filename": "fusion-1.3.5-neoforge-mc1.21.1.jar",
+        "name": "Fusion",
+        "url": "https://www.curseforge.com/projects/854949",
+        "version": "1.3.5"
+    },
+    {
+        "authors": [
+            "fzzyhmstrs"
+        ],
+        "filename": "fzzy_config-0.7.6+1.21+neoforge.jar",
+        "name": "Fzzy Config",
+        "url": "https://www.curseforge.com/projects/1005914",
+        "version": "0.7.6+1.21+neoforge"
+    },
+    {
+        "authors": [
+            "HyCraftHD"
+        ],
+        "filename": "gjeb-neoforge-1.21.1-1.3.0.40.jar",
+        "name": "GJEB (GammaJustExtremeBright)",
+        "url": "https://www.curseforge.com/projects/347604",
+        "version": "1.3.0.40"
+    },
+    {
+        "authors": [
+            "Gecko, Eliot, AzureDoom, DerToaster, Tslat, Witixin"
+        ],
+        "filename": "geckolib-neoforge-1.21.1-4.9.2.jar",
+        "name": "GeckoLib 4",
+        "url": "https://www.curseforge.com/projects/388172",
+        "version": "4.9.2"
+    },
+    {
+        "authors": [
+            "decce"
+        ],
+        "filename": "gnetum-3.3.6.jar",
+        "name": "Gnetum",
+        "url": "https://www.curseforge.com/projects/1220460",
+        "version": "3.3.6"
+    },
+    {
+        "authors": [
+            "zerokg2004"
+        ],
+        "filename": "GravityGunRevival-1.21.1-1.3.0.jar",
+        "name": "Gravity Gun Revival",
+        "url": "https://www.curseforge.com/projects/1452616",
+        "version": "1.2.1"
+    },
+    {
+        "authors": [
+            "shartte"
+        ],
+        "filename": "guideme-21.1.16.jar",
+        "name": "GuideME",
+        "url": "https://www.curseforge.com/projects/1173950",
+        "version": "21.1.16"
+    },
+    {
+        "authors": [
+            "iChun, guivnf"
+        ],
+        "filename": "HatsRenewed-21.1.1-mc1.21.1-neoforge.jar",
+        "name": "HatsRenewed",
+        "url": "https://www.curseforge.com/projects/1526345",
+        "version": "21.1.1-mc1.21.1"
+    },
+    {
+        "authors": [
+            "Bizarre Cube"
+        ],
+        "filename": "hide-item-frame-1.5.2-neoforge+1.21.jar",
+        "name": "Hide Item Frame",
+        "url": "https://www.curseforge.com/projects/1217060",
+        "version": "1.5.2-neoforge+1.21"
+    },
+    {
+        "authors": [
+            "Grend"
+        ],
+        "filename": "Iceberg-1.21.1-neoforge-1.3.2.jar",
+        "name": "Iceberg",
+        "url": "https://www.curseforge.com/projects/520110",
+        "version": "1.3.2"
+    },
+    {
+        "authors": [
+            "RK_01"
+        ],
+        "filename": "ImmediatelyFast-NeoForge-1.6.11+1.21.1.jar",
+        "name": "ImmediatelyFast",
+        "url": "https://www.curseforge.com/projects/686911",
+        "version": "1.6.11+1.21.1"
+    },
+    {
+        "authors": [
+            "Toni, ElocinDev, MehVahdJukaar"
+        ],
+        "filename": "immersivedamageindicators-neoforge-1.0.0-1.21.1.jar",
+        "name": "Immersive Damage Indicators",
+        "url": "https://www.curseforge.com/projects/1255453",
+        "version": "1.0.0"
+    },
+    {
+        "authors": [
+            "Toni"
+        ],
+        "filename": "immersivemessages-neoforge-1.0.18-1.21.1.jar",
+        "name": "Immersive Messages API",
+        "url": "https://www.curseforge.com/projects/1109713",
+        "version": "1.0.18"
+    },
+    {
+        "authors": [
+            "Buuz135"
+        ],
+        "filename": "industrialforegoing-1.21-3.6.38.jar",
+        "name": "Industrial Foregoing",
+        "url": "https://www.curseforge.com/projects/266515",
+        "version": "1.21-3.6.38"
+    },
+    {
+        "authors": [
+            "Buuz135, Rid"
+        ],
+        "filename": "industrial-foregoing-souls-1.21.1-1.10.4.jar",
+        "name": "Industrial Foregoing Souls",
+        "url": "https://www.curseforge.com/projects/904394",
+        "version": "1.10.4"
+    },
+    {
+        "authors": [
+            "AtomicStryker"
+        ],
+        "filename": "infernalmobs-1.21.1.3NF.jar",
+        "name": "Infernal Mobs",
+        "url": "https://www.curseforge.com/projects/227875",
+        "version": "1.21.1.3NF"
+    },
+    {
+        "authors": [
+            "ArchonicCinnamon, cassiancc"
+        ],
+        "filename": "infinity-2.7.3+1.21.1-neoforge.jar",
+        "name": "Infinite Dimensions",
+        "url": "https://www.curseforge.com/projects/981829",
+        "version": "2.7.3+1.21.1"
+    },
+    {
+        "authors": [
+            "CraisinLord"
+        ],
+        "filename": "integrated_api-neoforge-1.21.1-1.9.0.jar",
+        "name": "Integrated API",
+        "url": "https://www.curseforge.com/projects/817709",
+        "version": "1.9.0"
+    },
+    {
+        "authors": [
+            "Purplicious_Cow, cy4n"
+        ],
+        "filename": "inventorypets-2.2.9.jar",
+        "name": "Inventory Pets",
+        "url": "https://www.curseforge.com/projects/229380",
+        "version": "2.2.9"
+    },
+    {
+        "authors": [
+            "coderbot, IMS212"
+        ],
+        "filename": "iris-neoforge-1.8.12+mc1.21.1.jar",
+        "name": "Iris",
+        "url": "https://www.curseforge.com/projects/455508",
+        "version": "1.8.12-snapshot+mc1.21.1-local"
+    },
+    {
+        "authors": [
+            "SpacEagle17"
+        ],
+        "filename": "iris_shader_folder-1.4.2-neoforge.jar",
+        "name": "Iris Shader Folder",
+        "url": "https://www.curseforge.com/projects/1351246",
+        "version": "1.4.2-neoforge"
+    },
+    {
+        "authors": [
+            "cpw, alexbegt, progwml6"
+        ],
+        "filename": "ironchest-1.21-neoforge-16.0.7.jar",
+        "name": "Iron Chests",
+        "url": "https://www.curseforge.com/projects/228756",
+        "version": "1.21-neoforge-16.0.7"
+    },
+    {
+        "authors": [
+            "Qelifern (pizzaatime), XenoMustache"
+        ],
+        "filename": "ironfurnaces-neoforge-1.21.1-4.3.2.jar",
+        "name": "Iron Furnaces",
+        "url": "https://www.curseforge.com/projects/237664",
+        "version": "4.3.2"
+    },
+    {
+        "authors": [
+            "MuonR"
+        ],
+        "filename": "irons_apothic-2.2.6.jar",
+        "name": "Iron's Apothic",
+        "url": "https://www.curseforge.com/projects/1244863",
+        "version": "2.2.6"
+    },
+    {
+        "authors": [
+            "Iron431"
+        ],
+        "filename": "irons_jewelry-1.21.1-2.0.2.jar",
+        "name": "Iron's Gems 'n Jewelry",
+        "url": "https://www.curseforge.com/projects/1101111",
+        "version": "1.21.1-2.0.2"
+    },
+    {
+        "filename": "irons_lib-1.21.1-2.1.0.jar",
+        "name": "Iron's Lib",
+        "url": "https://www.curseforge.com/projects/1492763",
+        "version": "1.21.1-2.1.0"
+    },
+    {
+        "authors": [
+            "Iron431, Lab3"
+        ],
+        "filename": "irons_spellbooks-1.21.1-3.16.2.jar",
+        "name": "Iron's Spells 'n Spellbooks",
+        "url": "https://www.curseforge.com/projects/855414",
+        "version": "1.21.1-3.16.2"
+    },
+    {
+        "authors": [
+            "decce"
+        ],
+        "filename": "Ixeris-4.6.8+1.21.1-neoforge.jar",
+        "name": "Ixeris",
+        "url": "https://www.curseforge.com/projects/1285307",
+        "version": "4.6.8+1.21.1-neoforge"
+    },
+    {
+        "authors": [
+            "Snownee"
+        ],
+        "filename": "Jade-1.21.1-NeoForge-15.10.5.jar",
+        "name": "Jade",
+        "url": "https://www.curseforge.com/projects/324717",
+        "version": "15.10.5+neoforge"
+    },
+    {
+        "authors": [
+            "mezz"
+        ],
+        "filename": "jei-1.21.1-neoforge-19.27.0.336.jar",
+        "name": "Just Enough Items",
+        "url": "https://www.curseforge.com/projects/238222",
+        "version": "19.27.0.336"
+    },
+    {
+        "authors": [
+            "Keksuccino"
+        ],
+        "filename": "justzoom_neoforge_2.1.0_MC_1.21.1.jar",
+        "name": "Just Zoom",
+        "url": "https://www.curseforge.com/projects/561885",
+        "version": "2.1.0"
+    },
+    {
+        "authors": [
+            "Keksuccino"
+        ],
+        "filename": "konkrete_neoforge_1.9.9_MC_1.21.jar",
+        "name": "Konkrete",
+        "url": "https://www.curseforge.com/projects/410295",
+        "version": "1.9.9"
+    },
+    {
+        "filename": "kotlinforforge-5.12.0-all.jar",
+        "name": "Kotlin for Forge",
+        "url": "https://www.curseforge.com/projects/351264",
+        "version": "8335665"
+    },
+    {
+        "authors": [
+            "404, tuxed"
+        ],
+        "filename": "krypton_fnp-neoforge-1.21.1-0.2.28.1-1.21.1.jar",
+        "name": "Krypton FNP",
+        "url": "https://www.curseforge.com/projects/1269169",
+        "version": "0.2.28.1-1.21.1"
+    },
+    {
+        "authors": [
+            "VidTu"
+        ],
+        "filename": "Ksyxis-1.4.5.jar",
+        "name": "Ksyxis",
+        "url": "https://www.curseforge.com/projects/537533",
+        "version": "1.4.5"
+    },
+    {
+        "authors": [
+            "L_Ender"
+        ],
+        "filename": "L_Ender's Cataclysm 1.21.1-3.32.jar",
+        "name": "L_Ender's Cataclysm 1.21.1",
+        "url": "https://www.curseforge.com/projects/551586",
+        "version": "3.32"
+    },
+    {
+        "authors": [
+            "frikinjay"
+        ],
+        "filename": "letmedespawn-1.21.x-neoforge-1.5.0.jar",
+        "name": "Let Me Despawn",
+        "url": "https://www.curseforge.com/projects/663477",
+        "version": "1.5.0"
+    },
+    {
+        "authors": [
+            "2No2Name, JellySquid"
+        ],
+        "filename": "lithium-neoforge-0.15.4+mc1.21.1.jar",
+        "name": "Lithium",
+        "url": "https://www.curseforge.com/projects/360438",
+        "version": "0.15.4+mc1.21.1"
+    },
+    {
+        "authors": [
+            "Apollo"
+        ],
+        "filename": "lithostitched-1.8.0+beta6-neoforge-21.1.jar",
+        "name": "Lithostitched",
+        "url": "https://www.curseforge.com/projects/936015",
+        "version": "1.8.0+beta6"
+    },
+    {
+        "authors": [
+            "Noobanidus"
+        ],
+        "filename": "lootr-neoforge-1.21.1-1.11.37.122.jar",
+        "name": "Lootr",
+        "url": "https://www.curseforge.com/projects/361276",
+        "version": "1.21.1-1.11.37.122"
+    },
+    {
+        "authors": [
+            "90"
+        ],
+        "filename": "megacells-4.11.0.jar",
+        "name": "MEGA Cells",
+        "url": "https://www.curseforge.com/projects/622112",
+        "version": "4.11.0"
+    },
+    {
+        "authors": [
+            "Alextimus9, U1timateJ7"
+        ],
+        "filename": "marvel-2.1.0-pre6-1.21.1-neoforge.jar",
+        "name": "Marvel Superheroes",
+        "url": "https://www.curseforge.com/projects/475642",
+        "version": "2.1.0-pre6"
+    },
+    {
+        "authors": [
+            "Keksuccino"
+        ],
+        "filename": "melody_neoforge_1.0.10_MC_1.21.jar",
+        "name": "Melody",
+        "url": "https://www.curseforge.com/projects/938643",
+        "version": "1.0.10"
+    },
+    {
+        "authors": [
+            "Mehvahdjukaar, Bonusboni, Gooigipunch, Plantkillable"
+        ],
+        "filename": "dummmmmmy-1.21-2.0.12-neoforge.jar",
+        "name": "MmmMmmMmmMmm",
+        "url": "https://www.curseforge.com/projects/225738",
+        "version": "1.21-2.0.12"
+    },
+    {
+        "authors": [
+            "mezz"
+        ],
+        "filename": "modnametooltip-1.21.1-neoforge-2.3.0.jar",
+        "name": "Mod Name Tooltip",
+        "url": "https://www.curseforge.com/projects/238747",
+        "version": "2.3.0"
+    },
+    {
+        "authors": [
+            "embeddedt"
+        ],
+        "filename": "modernfix-neoforge-5.27.24+mc1.21.1.jar",
+        "name": "ModernFix",
+        "url": "https://www.curseforge.com/projects/790626",
+        "version": "5.27.24+mc1.21.1"
+    },
+    {
+        "authors": [
+            "Lupin, Jason13"
+        ],
+        "filename": "monolib-neoforge-1.21.1-4.1.0.jar",
+        "name": "MonoLib",
+        "url": "https://www.curseforge.com/projects/968432",
+        "version": "4.1.0"
+    },
+    {
+        "authors": [
+            "FinnDog"
+        ],
+        "filename": "moogs_structures-neoforge-1.21.1-3.0.1.jar",
+        "name": "Moog's Structure Lib",
+        "url": "https://www.curseforge.com/projects/1337167",
+        "version": "3.0.1"
+    },
+    {
+        "authors": [
+            "FinnDog"
+        ],
+        "filename": "MoogsEndStructures-1.21-2.0.3.jar",
+        "name": "MoogsEndStructures",
+        "url": "https://www.curseforge.com/projects/892382",
+        "version": "2.0.3"
+    },
+    {
+        "authors": [
+            "FinnDog",
+            "Phantax"
+        ],
+        "filename": "MoogsSoaringStructures-universal-1.21-2.2.0.jar",
+        "name": "MoogsSoaringStructures",
+        "url": "https://www.curseforge.com/projects/1040210",
+        "version": "2.2.0"
+    },
+    {
+        "authors": [
+            "MehVahdJukaar"
+        ],
+        "filename": "moonlight-neoforge-1.21.1-3.0.22.jar",
+        "name": "Moonlight Lib",
+        "url": "https://www.curseforge.com/projects/499980",
+        "version": "1.21.1-3.0.22"
+    },
+    {
+        "authors": [
+            "Ivan Molodetskikh (YaLTeR)"
+        ],
+        "filename": "MouseTweaks-neoforge-mc1.21-2.26.1.jar",
+        "name": "Mouse Tweaks",
+        "url": "https://www.curseforge.com/projects/60089",
+        "version": "2.26.1"
+    },
+    {
+        "authors": [
+            "shcott21, Chumbanotz, Fuzs, tdstress"
+        ],
+        "filename": "MutantMonsters-v21.1.1-1.21.1-NeoForge.jar",
+        "name": "Mutant Monsters",
+        "url": "https://www.curseforge.com/projects/852665",
+        "version": "21.1.1"
+    },
+    {
+        "authors": [
+            "studioREWIRED"
+        ],
+        "filename": "mystcraft_reborn-1.4.2 Beta-all.jar",
+        "name": "Mystcraft: Reborn",
+        "url": "https://www.curseforge.com/projects/1471372",
+        "version": "1.4.2 Beta"
+    },
+    {
+        "authors": [
+            "BlakeBr0"
+        ],
+        "filename": "MysticalAgriculture-1.21.1-8.0.27.jar",
+        "name": "Mystical Agriculture",
+        "url": "https://www.curseforge.com/projects/246640",
+        "version": "8.0.27"
+    },
+    {
+        "authors": [
+            "Electrolyte"
+        ],
+        "filename": "matc-1.7.1.jar",
+        "name": "Mystical Agriculture Tiered Crystals",
+        "url": "https://www.curseforge.com/projects/299045",
+        "version": "1.7.1"
+    },
+    {
+        "authors": [
+            "ChaosTheDude"
+        ],
+        "filename": "NaturesCompass-1.21.1-3.4.0-neoforge.jar",
+        "name": "Nature's Compass",
+        "url": "https://www.curseforge.com/projects/252848",
+        "version": "1.21.1-3.4.0-neoforge"
+    },
+    {
+        "authors": [
+            "Steveplays28"
+        ],
+        "filename": "noisium-neoforge-2.7.0+mc1.21-1.21.1.jar",
+        "name": "Noisium",
+        "url": "https://www.curseforge.com/projects/1357563",
+        "version": "2.7.0+mc1.21-1.21.1"
+    },
+    {
+        "authors": [
+            "skyjay1, Chanicle, KiriCattus"
+        ],
+        "filename": "nomadictents-21.1.0.jar",
+        "name": "Nomadic Tents",
+        "url": "https://www.curseforge.com/projects/238794",
+        "version": "21.1.0"
+    },
+    {
+        "authors": [
+            "tr7zw"
+        ],
+        "filename": "notenoughanimations-neoforge-1.12.4-mc1.21.1.jar",
+        "name": "NotEnoughAnimations",
+        "url": "https://www.curseforge.com/projects/433760",
+        "version": "1.12.4"
+    },
+    {
+        "authors": [
+            "Stardust Labs"
+        ],
+        "filename": "Nullscape_1.21.x_v1.2.14.jar",
+        "name": "Nullscape",
+        "url": "https://www.curseforge.com/projects/570354",
+        "version": "1.2.14"
+    },
+    {
+        "authors": [
+            "Obscuria"
+        ],
+        "filename": "obscure_tooltips-neoforge-1.21.1-4.2.5.jar",
+        "name": "Obscure Tooltips",
+        "url": "https://www.curseforge.com/projects/715660",
+        "version": "4.2.5"
+    },
+    {
+        "authors": [
+            "OctoStudios"
+        ],
+        "filename": "OctoLib-NEOFORGE-0.6.2+1.21.jar",
+        "name": "OctoLib",
+        "url": "https://www.curseforge.com/projects/916747",
+        "version": "0.6.2"
+    },
+    {
+        "authors": [
+            "fzzyhmstrs"
+        ],
+        "filename": "particle_core-0.3.3+1.21+neoforge.jar",
+        "name": "Particle Core",
+        "url": "https://www.curseforge.com/projects/985426",
+        "version": "0.3.3+1.21+neoforge"
+    },
+    {
+        "authors": [
+            "Vazkii"
+        ],
+        "filename": "Patchouli-1.21.1-93-NEOFORGE.jar",
+        "name": "Patchouli",
+        "url": "https://www.curseforge.com/projects/306770",
+        "version": "1.21.1-93-NEOFORGE"
+    },
+    {
+        "authors": [
+            "Virtuoel"
+        ],
+        "filename": "Pehkui-3.8.3+1.21-neoforge.jar",
+        "name": "Pehkui",
+        "url": "https://www.curseforge.com/projects/319596",
+        "version": "3.8.3+1.21-neoforge"
+    },
+    {
+        "authors": [
+            "Max Henkel"
+        ],
+        "filename": "pipez-neoforge-1.21.1-1.2.31.jar",
+        "name": "Pipez",
+        "url": "https://www.curseforge.com/projects/443900",
+        "version": "1.21.1-1.2.31"
+    },
+    {
+        "authors": [
+            "Shadows_of_Fire"
+        ],
+        "filename": "Placebo-1.21.1-9.9.2.jar",
+        "name": "Placebo",
+        "url": "https://www.curseforge.com/projects/283644",
+        "version": "9.9.2"
+    },
+    {
+        "authors": [
+            "KosmX"
+        ],
+        "filename": "player-animation-lib-forge-2.0.4+1.21.1.jar",
+        "name": "Player Animator",
+        "url": "https://www.curseforge.com/projects/658587",
+        "version": "2.0.4+1.21.1"
+    },
+    {
+        "authors": [
+            "Illusive Soulworks"
+        ],
+        "filename": "polymorph-neoforge-1.1.0+1.21.1.jar",
+        "name": "Polymorph",
+        "url": "https://www.curseforge.com/projects/388800",
+        "version": "1.1.0+1.21.1"
+    },
+    {
+        "authors": [
+            "Darkhax"
+        ],
+        "filename": "prickle-neoforge-1.21.1-21.1.11.jar",
+        "name": "PrickleMC",
+        "url": "https://www.curseforge.com/projects/1023259",
+        "version": "21.1.11"
+    },
+    {
+        "authors": [
+            "Grend"
+        ],
+        "filename": "Prism-1.21.1-neoforge-1.0.11.jar",
+        "name": "Prism",
+        "url": "https://www.curseforge.com/projects/638111",
+        "version": "1.0.11"
+    },
+    {
+        "authors": [
+            "SinKillerJ, MaPePeR, williewillus, Lilylicious, pupnewfster"
+        ],
+        "filename": "ProjectE-1.21.1-PE1.1.0.jar",
+        "name": "ProjectE",
+        "url": "https://www.curseforge.com/projects/226410",
+        "version": "1.1.0"
+    },
+    {
+        "authors": [
+            "TagnumElite"
+        ],
+        "filename": "ProjectE_Integration-1.21.1-8.3.1.jar",
+        "name": "ProjectE-Integration",
+        "url": "https://www.curseforge.com/projects/313402",
+        "version": "8.3.1"
+    },
+    {
+        "authors": [
+            "Fuzs"
+        ],
+        "filename": "PuzzlesLib-v21.1.52-1.21.1-NeoForge.jar",
+        "name": "Puzzles Lib",
+        "url": "https://www.curseforge.com/projects/495476",
+        "version": "21.1.52"
+    },
+    {
+        "authors": [
+            "rawlxxxviii, (Ported by bubin7766)"
+        ],
+        "filename": "visual_keybinder-1.21.1-0.1.13-neoforge.jar",
+        "name": "Raw's Visual Keybinder",
+        "url": "https://www.curseforge.com/projects/1020759",
+        "version": "1.21.1 - 0.1.13-neoforge"
+    },
+    {
+        "authors": [
+            "To_Craft"
+        ],
+        "filename": "remorphed-4.2.jar",
+        "name": "ReMorphed",
+        "url": "https://www.curseforge.com/projects/950721",
+        "version": "4.2"
+    },
+    {
+        "authors": [
+            "SuperMartijn642"
+        ],
+        "filename": "rechiseled-1.2.5-neoforge-mc1.21.jar",
+        "name": "Rechiseled",
+        "url": "https://www.curseforge.com/projects/558998",
+        "version": "1.2.5"
+    },
+    {
+        "authors": [
+            "FlashyReese"
+        ],
+        "filename": "reeses-sodium-options-neoforge-1.8.3+mc1.21.4.jar",
+        "name": "Reese's Sodium Options",
+        "url": "https://www.curseforge.com/projects/511319",
+        "version": "1.8.3+mc1.21.4"
+    },
+    {
+        "authors": [
+            "Apollo, UHQ_Games"
+        ],
+        "filename": "regions-unexplored-0.6.2-neoforge-21.1.jar",
+        "name": "Regions Unexplored",
+        "url": "https://www.curseforge.com/projects/659110",
+        "version": "0.6.2"
+    },
+    {
+        "authors": [
+            "SSKirillSS"
+        ],
+        "filename": "relics-1.21.1-0.10.7.8.jar",
+        "name": "Relics",
+        "url": "https://www.curseforge.com/projects/445274",
+        "version": "0.10.7.8"
+    },
+    {
+        "authors": [
+            "ThatGravyBoat, Epic_Oreo"
+        ],
+        "filename": "resourcefullib-neoforge-1.21-3.0.12.jar",
+        "name": "Resourceful Lib",
+        "url": "https://www.curseforge.com/projects/570073",
+        "version": "3.0.12"
+    },
+    {
+        "filename": "resourcefulconfig-neoforge-1.21-3.0.11.jar",
+        "name": "Resourcefulconfig",
+        "url": "https://www.curseforge.com/projects/714059",
+        "version": "3.0.11"
+    },
+    {
+        "filename": "sdm-core-neoforge-1.21.1-2.1.2.jar",
+        "name": "SDM Core",
+        "url": "https://www.curseforge.com/projects/964997",
+        "version": "1.21.1-2.1.2"
+    },
+    {
+        "authors": [
+            "Sixik"
+        ],
+        "filename": "sdmeconomy-neoforge-1.21.1-2.4.0.jar",
+        "name": "SDMEconomy",
+        "url": "https://www.curseforge.com/projects/1102542",
+        "version": "1.21.1-2.4.0"
+    },
+    {
+        "filename": "sdmshopa-neoforge-3.3.1.jar",
+        "name": "SDMShop",
+        "url": "https://www.curseforge.com/projects/948942",
+        "version": "3.3.1"
+    },
+    {
+        "filename": "sdmuilibrary-neoforge-1.21-1.9.2.jar",
+        "name": "SDMUILibrary",
+        "url": "https://www.curseforge.com/projects/1095061",
+        "version": "1.21-1.9.2"
+    },
+    {
+        "authors": [
+            "Spottedleaf, ishland"
+        ],
+        "filename": "ScalableLux-0.1.0.1+neoforge.1cb1e91-all.jar",
+        "name": "ScalableLux",
+        "url": "https://www.curseforge.com/projects/1055925",
+        "version": "0.1.0.1+neoforge.1cb1e91"
+    },
+    {
+        "authors": [
+            "Jaredlll08"
+        ],
+        "filename": "Searchables-neoforge-1.21.1-1.0.2.jar",
+        "name": "Searchables",
+        "url": "https://www.curseforge.com/projects/858542",
+        "version": "1.0.2"
+    },
+    {
+        "authors": [
+            "bay4lly (1.21.1 NeoForge Port), Wyn Price (Original)"
+        ],
+        "filename": "SecretRooms-1.21.1-Unofficial-20260702-beta-fixedrecipes.jar",
+        "name": "Secret Rooms: Reborn (1.21.1)",
+        "url": "https://www.curseforge.com/projects/1295446",
+        "version": "1.21-1.0.0"
+    },
+    {
+        "authors": [
+            "Geforce, bl4ckscor3, Redstone_Dubstep, and ChainmailPickaxe"
+        ],
+        "filename": "[1.21.1] SecurityCraft v1.10.2.1.jar",
+        "name": "SecurityCraft",
+        "url": "https://www.curseforge.com/projects/64760",
+        "version": "1.10.2.1"
+    },
+    {
+        "authors": [
+            "Terrunic, Evan"
+        ],
+        "filename": "shadowdrop-neoforge-1.21.1-2.0.3.jar",
+        "name": "Shadow Drop",
+        "url": "https://www.curseforge.com/projects/1490601",
+        "version": "2.0.3"
+    },
+    {
+        "authors": [
+            "Craisin, Laynce"
+        ],
+        "filename": "sizeable_foliage-neoforge-1.21.1-1.2.1.jar",
+        "name": "Sizeable Foliage",
+        "url": "https://www.curseforge.com/projects/1601832",
+        "version": "1.2.1"
+    },
+    {
+        "authors": [
+            "JellySquid (jellysquid3), IMS212"
+        ],
+        "filename": "sodium-neoforge-0.6.13+mc1.21.1.jar",
+        "name": "Sodium",
+        "url": "https://www.curseforge.com/projects/394468",
+        "version": "0.6.13+mc1.21.1"
+    },
+    {
+        "authors": [
+            "FlashyReese"
+        ],
+        "filename": "sodium-extra-neoforge-0.6.0+mc1.21.1.jar",
+        "name": "Sodium Extra",
+        "url": "https://www.curseforge.com/projects/447673",
+        "version": "0.6.0+mc1.21.1"
+    },
+    {
+        "authors": [
+            "P3pp3rF1y, Ridanisaurus"
+        ],
+        "filename": "sophisticatedbackpacks-1.21.1-3.25.69.1979.jar",
+        "name": "Sophisticated Backpacks",
+        "url": "https://www.curseforge.com/projects/422301",
+        "version": "3.25.69"
+    },
+    {
+        "authors": [
+            "P3pp3rF1y"
+        ],
+        "filename": "sophisticatedcore-1.21.1-1.4.70.2131.jar",
+        "name": "Sophisticated Core",
+        "url": "https://www.curseforge.com/projects/618298",
+        "version": "1.4.70"
+    },
+    {
+        "authors": [
+            "Sonic Ether, vlad2305m, Max Henkel"
+        ],
+        "filename": "sound-physics-remastered-neoforge-1.21.1-1.5.1.jar",
+        "name": "Sound Physics Remastered",
+        "url": "https://www.curseforge.com/projects/535489",
+        "version": "1.21.1-1.5.1"
+    },
+    {
+        "authors": [
+            "LuckyOwl"
+        ],
+        "filename": "spelunkers_charm-5.0.6.jar",
+        "name": "Spelunker's Charm",
+        "url": "https://www.curseforge.com/projects/886997",
+        "version": "5.0.6"
+    },
+    {
+        "authors": [
+            "TelepathicGrunt"
+        ],
+        "filename": "structure_layout_optimizer-neoforge-1.0.12.jar",
+        "name": "Structure Layout Optimizer",
+        "url": "https://www.curseforge.com/projects/1087831",
+        "version": "1.0.12"
+    },
+    {
+        "authors": [
+            "Faboslav"
+        ],
+        "filename": "structurify-neoforge-2.0.41+mc1.21.1.jar",
+        "name": "Structurify",
+        "url": "https://www.curseforge.com/projects/1087551",
+        "version": "2.0.41"
+    },
+    {
+        "authors": [
+            "SuperMartijn642"
+        ],
+        "filename": "supermartijn642configlib-1.1.8-neoforge-mc1.21.jar",
+        "name": "SuperMartijn642's Config Library",
+        "url": "https://www.curseforge.com/projects/438332",
+        "version": "1.1.8"
+    },
+    {
+        "authors": [
+            "SuperMartijn642"
+        ],
+        "filename": "supermartijn642corelib-1.1.21-neoforge-mc1.21.jar",
+        "name": "SuperMartijn642's Core Lib",
+        "url": "https://www.curseforge.com/projects/454372",
+        "version": "1.1.21"
+    },
+    {
+        "authors": [
+            "Atsuishio, Roki27, Light_Quanta"
+        ],
+        "filename": "superbwarfare-0.8.9-final-mc1.21.1-9b5284f4.jar",
+        "name": "Superb Warfare",
+        "url": "https://www.curseforge.com/projects/1218165",
+        "version": "0.8.9"
+    },
+    {
+        "authors": [
+            "GameTechBC"
+        ],
+        "filename": "traveloptics-4.4.0.1-1.21.1.jar",
+        "name": "T.O Magic n' Extras",
+        "url": "https://www.curseforge.com/projects/1046916",
+        "version": "4.4.0.1-1.21.1"
+    },
+    {
+        "authors": [
+            "Apollo"
+        ],
+        "filename": "tectonic-3.0.28-neoforge-21.1.jar",
+        "name": "Tectonic",
+        "url": "https://www.curseforge.com/projects/686836",
+        "version": "3.0.28"
+    },
+    {
+        "authors": [
+            "Adubbz"
+        ],
+        "filename": "TerraBlender-neoforge-1.21.1-4.1.0.8.jar",
+        "name": "TerraBlender",
+        "url": "https://www.curseforge.com/projects/940057",
+        "version": "4.1.0.8"
+    },
+    {
+        "authors": [
+            "AlphaMode, baguchi, bconlon, Blodhgarm, Burning Cactus, Drullkus, Hugo Payn, Jaryt, Katie 'Oz' Payn, quek, Raptor, reetam, RENREN, sunsette"
+        ],
+        "filename": "aether-1.21.1-1.5.10-neoforge.jar",
+        "name": "The Aether",
+        "url": "https://www.curseforge.com/projects/255308",
+        "version": "1.5.10"
+    },
+    {
+        "authors": [
+            "Benimatic, AtomicBlom, Drullkus, Killer_Demon, quadraxis, Tamaized, williewillus, Andromander, GizmoTheMoonPig, jodlodi, SleepyHorse"
+        ],
+        "filename": "twilightforest-1.21.1-4.8.3345-universal.jar",
+        "name": "The Twilight Forest",
+        "url": "https://www.curseforge.com/projects/227639",
+        "version": "4.8.3345"
+    },
+    {
+        "authors": [
+            "TheCodedOne, Buuz135"
+        ],
+        "filename": "titanium-1.21-4.0.43.jar",
+        "name": "Titanium",
+        "url": "https://www.curseforge.com/projects/287342",
+        "version": "4.0.43"
+    },
+    {
+        "authors": [
+            "Noobanidus"
+        ],
+        "filename": "toofast-1.21.0-0.4.3.6.jar",
+        "name": "Too Fast",
+        "url": "https://www.curseforge.com/projects/550678",
+        "version": "0.4.3.6"
+    },
+    {
+        "authors": [
+            "Cojomax99, Corosus, tterrag"
+        ],
+        "filename": "Tropicraft-9.8.1.jar",
+        "name": "Tropicraft",
+        "url": "https://www.curseforge.com/projects/254794",
+        "version": "9.8.1"
+    },
+    {
+        "authors": [
+            "Toni"
+        ],
+        "filename": "txnilib-neoforge-1.0.24-1.21.1.jar",
+        "name": "TxniLib",
+        "url": "https://www.curseforge.com/projects/1104882",
+        "version": "1.0.24"
+    },
+    {
+        "authors": [
+            "Tamaized"
+        ],
+        "filename": "Voidscape-1.21.1-1.9.588.jar",
+        "name": "Voidscape",
+        "url": "https://www.curseforge.com/projects/251730",
+        "version": "1.21.1-1.9.588"
+    },
+    {
+        "authors": [
+            "To_Craft"
+        ],
+        "filename": "walkers-5.8.13.jar",
+        "name": "Walkers",
+        "url": "https://www.curseforge.com/projects/868922",
+        "version": "5.8.13"
+    },
+    {
+        "authors": [
+            "Aureljz, DiamondTown & Zephyrusjz"
+        ],
+        "filename": "DungeonsArise-1.21.1-2.1.68-release.jar",
+        "name": "When Dungeons Arise",
+        "url": "https://www.curseforge.com/projects/442508",
+        "version": "2.1.68"
+    },
+    {
+        "authors": [
+            "Zephyrusjz, Aureljz"
+        ],
+        "filename": "DungeonsAriseSevenSeas-1.21.x-1.0.4-neoforge.jar",
+        "name": "When Dungeons Arise: Seven Seas",
+        "url": "https://www.curseforge.com/projects/953637",
+        "version": "1.0.4"
+    },
+    {
+        "authors": [
+            "xaero96"
+        ],
+        "filename": "xaerominimap-neoforge-1.21.1-26.2.1.jar",
+        "name": "Xaero's Minimap",
+        "url": "https://www.curseforge.com/projects/263420",
+        "version": "26.2.1"
+    },
+    {
+        "authors": [
+            "xaero96"
+        ],
+        "filename": "xaeroworldmap-neoforge-1.21.1-1.42.0.jar",
+        "name": "Xaero's World Map",
+        "url": "https://www.curseforge.com/projects/317780",
+        "version": "1.42.0"
+    },
+    {
+        "authors": [
+            "YUNGNICKYOUNG"
+        ],
+        "filename": "YungsApi-1.21.1-NeoForge-5.1.9.jar",
+        "name": "YUNG's API",
+        "url": "https://www.curseforge.com/projects/1015100",
+        "version": "1.21.1-NeoForge-5.1.9"
+    },
+    {
+        "authors": [
+            "YUNGNICKYOUNG, Acarii"
+        ],
+        "filename": "YungsBetterDungeons-1.21.1-NeoForge-5.1.4.jar",
+        "name": "YUNG's Better Dungeons",
+        "url": "https://www.curseforge.com/projects/1015112",
+        "version": "1.21.1-NeoForge-5.1.4"
+    },
+    {
+        "authors": [
+            "isXander"
+        ],
+        "filename": "yet_another_config_lib_v3-3.8.2+1.21.1-neoforge.jar",
+        "name": "YetAnotherConfigLib",
+        "url": "https://www.curseforge.com/projects/667299",
+        "version": "3.8.2+1.21.1-neoforge"
+    },
+    {
+        "authors": [
+            "Someaddon"
+        ],
+        "filename": "fastasyncworldsave-1.21-2.6.jar",
+        "name": "fastasyncworldsave mod",
+        "url": "https://www.curseforge.com/projects/951499",
+        "version": "2.6"
+    },
+    {
+        "authors": [
+            "L_Ender"
+        ],
+        "filename": "lionfishapi-3.1.jar",
+        "name": "lionfishapi",
+        "url": "https://www.curseforge.com/projects/1001614",
+        "version": "3.1"
+    },
+    {
+        "authors": [
+            "glisco, Blodhgarm, BasiqueEvangelist, Noaaan"
+        ],
+        "filename": "owo-lib-neoforge-0.12.15.5-beta.1+1.21.jar",
+        "name": "oωo",
+        "url": "https://www.curseforge.com/projects/532610",
+        "version": "0.12.15.5-beta.1+1.21"
+    }
+]
