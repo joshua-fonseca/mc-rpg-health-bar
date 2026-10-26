@@ -4,20 +4,23 @@ package com.joshuafonseca.rpghealthbar.client;
 public record HudLayout(int x, int top, int iconRowY, int halfBarY, int healthY, int manaY) {
     /** Same width as the hotbar. */
     public static final int WIDTH = 182;
-    /** Health and mana bars: tall enough to fit a line of text. */
-    public static final int MAIN_BAR_HEIGHT = 9;
-    /** Armor and hunger bars: about half the height of the health bar. */
-    public static final int HALF_BAR_HEIGHT = 5;
+    /** Health and mana bars: as tall as the vanilla XP bar. Their text overlaps the edges slightly. */
+    public static final int MAIN_BAR_HEIGHT = 5;
+    /** Armor and hunger bars: thin lines. */
+    public static final int HALF_BAR_HEIGHT = 2;
     /** Gap between the armor and hunger bars. */
     public static final int HALF_BAR_GAP = 2;
     /** Each of the armor and hunger bars takes half the width, minus the gap between them. */
     public static final int HALF_BAR_WIDTH = (WIDTH - HALF_BAR_GAP) / 2;
     /** Vanilla armor and hunger icons are 9px tall. */
     public static final int ICON_ROW_HEIGHT = 9;
-    /** Vertical gap between rows (vanilla also leaves 1px between icon rows). */
-    private static final int ROW_GAP = 1;
-    /** The XP level number is drawn from guiHeight - 36 down; keep the group just above it. */
-    private static final int BOTTOM_MARGIN = 37;
+    /**
+     * Vertical gap above and below the health bar. The bar text is 7px on a 5px bar, so it overflows
+     * 1px each way; 2px keeps the health and mana numbers from running into each other or the row above.
+     */
+    private static final int ROW_GAP = 2;
+    /** The XP bar's top edge is at guiHeight - 29; the bars sit 1px above it. */
+    private static final int BOTTOM_MARGIN = 30;
 
     /**
      * Rows from top to bottom: armor/hunger, health, mana.

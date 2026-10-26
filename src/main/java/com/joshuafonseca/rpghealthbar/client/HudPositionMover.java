@@ -23,6 +23,11 @@ public final class HudPositionMover {
 
     /** Whether the layer currently rendering was translated, so Post only pops what Pre pushed. */
     private static boolean pushed;
+    /**
+     * Vanilla draws the level's digits at guiHeight - 35 to - 29; the XP bar spans guiHeight - 29 to - 24.
+     * Moving the digits down 5px centers them on the bar vertically.
+     */
+    private static final int LEVEL_DROP = 5;
 
     private HudPositionMover() {
     }
@@ -36,6 +41,10 @@ public final class HudPositionMover {
         HudLayer.Frame frame = HudLayer.Frame.compute(graphics.guiWidth(), graphics.guiHeight(), IronsSpellsCompat.isAvailable());
         graphics.pose().pushPose();
         HudPosition.moveTo(graphics.pose(), frame.offset());
+        if (event.getName().equals(VanillaGuiLayers.EXPERIENCE_LEVEL)) {
+            // Vanilla draws the level above the XP bar; center it on the bar instead.
+            graphics.pose().translate(0, LEVEL_DROP, 0);
+        }
         pushed = true;
     }
 

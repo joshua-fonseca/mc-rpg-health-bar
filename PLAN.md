@@ -51,7 +51,7 @@ Everything above the hotbar, including the XP bar, is one **movable set**.
 ### 1.5 Vanilla elements left as-is
 - **Air bubbles** (underwater) and **mount health** (horses, etc.) stay vanilla.
 - The hotbar stays vanilla and doesn't move.
-- The **XP bar, XP level number and horse jump meter** keep their vanilla look but **move with the group** (see 1.7).
+- The **XP bar, XP level number and horse jump meter** keep their vanilla look but **move with the group** (see 1.7). The level number is moved down onto the XP bar, centered on it horizontally and vertically (like the mockup).
 - Air bubbles and mount hearts stack above the bars (vanilla's `Gui.leftHeight`/`rightHeight` are pushed above our group) and move with it. Verified in milestone 7, including multi-row horse health and the horse jump meter.
 - Known limit: if the HUD is placed against the very top of the screen, extra vanilla rows that only appear sometimes (air bubbles, horse hearts) can go off the top edge. The HUD isn't shifted to make room for them, so it doesn't jump around when you mount or dive.
 
@@ -113,7 +113,7 @@ The point of this is to let players move the bars away from **Double Hotbar**, *
   - `VanillaGuiLayers.ARMOR_LEVEL` (armor icons)
   - `VanillaGuiLayers.FOOD_LEVEL` (hunger shanks)
   - Iron's Spells mana layer (by its layer ID, only when the mod is loaded)
-- Draw bars with `GuiGraphics.fill(...)` (flat colors) at first; textured sprites can come later in polish.
+- Draw bars with `GuiGraphics.fill(...)`: the fill is shaded (top row lighter, bottom row darker) to look rounded, like the mockup. No texture files.
 - Draw text with `GuiGraphics.drawString(font, text, x, y, color, shadow)`.
 - Move vanilla layers with the group by shifting them by the group's offset with `pose().pushPose()` + `translate` in `RenderGuiLayerEvent.Pre` and `popPose()` in `Post`, for `EXPERIENCE_BAR`, `EXPERIENCE_LEVEL` and `JUMP_METER`. The Pre listener runs at the lowest priority, so it only pushes if no other mod cancelled the layer, which keeps every push matched by a pop.
 - Don't draw the HUD in spectator mode, in creative, or when the HUD is hidden (F1), the same as vanilla.
@@ -133,9 +133,9 @@ The point of this is to let players move the bars away from **Double Hotbar**, *
 
 ### 2.4 Layout (default, GUI-scaled pixels)
 - Group width: 182 (hotbar width), centered horizontally.
-- Health / mana bars: full width, tall enough for text (~9 px each).
-- Armor / hunger bars: `(182 - gap) / 2` wide each, about half the height of the health bar.
-- Default position: bottom of the group sits just above the XP bar (`screenHeight - 32`), where vanilla hearts would be.
+- Health / mana bars: full width, 5 px tall like the XP bar, with a 1 px semi-transparent dark border. Their text is vertically centered and overflows the bar by 1 px each way, so there's a 2 px gap above and below the health bar.
+- Armor / hunger bars: `(182 - gap) / 2` wide each, 2 px tall, no border.
+- Default position: the bars sit 1 px above the XP bar; the level number sits on the XP bar.
 - Without Iron's Spells, the mana row is removed and the group shrinks.
 
 ### 2.5 Colors (initial)
@@ -158,7 +158,7 @@ The point of this is to let players move the bars away from **Double Hotbar**, *
 5. **Iron's Spells compat**: mana bar, Iron's own bar hidden, no crash or mana bar without Iron's.
 6. **Move HUD editor**: drag the group (including the XP bar, level number and jump meter), Save/Cancel, Reset; position persists.
 7. **Vanilla overlap check**: air bubbles and mount health don't collide with the bars, and get shifted if needed.
-8. **Polish + modpack test**: textures (optional), test in the full Antarchy Craft modpack (Double Hotbar, Armor Status HUD, Configured, Jade, Xaero's).
+8. **Styling + modpack test**: bars as thick as the XP bar with shaded fills, thin armor/hunger lines, level number centered on the XP bar (done); test in the full Antarchy Craft modpack (Double Hotbar, Armor Status HUD, Configured, Jade, Xaero's).
 9. **Release**: build jar, README.
 
 ## 4. Testing checklist

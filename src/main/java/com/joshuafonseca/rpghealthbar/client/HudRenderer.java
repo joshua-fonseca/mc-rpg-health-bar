@@ -35,12 +35,12 @@ public final class HudRenderer {
         int height = HudLayout.HALF_BAR_HEIGHT;
 
         if (showArmor) {
-            BarRenderer.drawFrame(graphics, layout.x(), y, width, height);
-            BarRenderer.drawFill(graphics, layout.x(), y, width, height, values.armor() / MAX_ARMOR, ARMOR_COLOR);
+            BarRenderer.drawTrack(graphics, layout.x(), y, width, height);
+            BarRenderer.drawFill(graphics, layout.x(), y, width, height, 0, values.armor() / MAX_ARMOR, ARMOR_COLOR);
         }
         if (showHunger) {
-            BarRenderer.drawFrame(graphics, layout.hungerX(), y, width, height);
-            BarRenderer.drawFill(graphics, layout.hungerX(), y, width, height, values.food() / MAX_FOOD, HUNGER_COLOR);
+            BarRenderer.drawTrack(graphics, layout.hungerX(), y, width, height);
+            BarRenderer.drawFill(graphics, layout.hungerX(), y, width, height, 0, values.food() / MAX_FOOD, HUNGER_COLOR);
         }
     }
 
@@ -52,9 +52,9 @@ public final class HudRenderer {
         int x = layout.x();
         int y = layout.healthY();
         BarRenderer.drawFrame(graphics, x, y, HudLayout.WIDTH, HudLayout.MAIN_BAR_HEIGHT);
-        BarRenderer.drawFill(graphics, x, y, HudLayout.WIDTH, HudLayout.MAIN_BAR_HEIGHT, health / maxHealth, HEALTH_COLOR);
+        BarRenderer.drawFill(graphics, x, y, HudLayout.WIDTH, HudLayout.MAIN_BAR_HEIGHT, 1, health / maxHealth, HEALTH_COLOR);
         if (absorption > 0) {
-            BarRenderer.drawFill(graphics, x, y, HudLayout.WIDTH, HudLayout.MAIN_BAR_HEIGHT, absorption / maxHealth, ABSORPTION_COLOR);
+            BarRenderer.drawFill(graphics, x, y, HudLayout.WIDTH, HudLayout.MAIN_BAR_HEIGHT, 1, absorption / maxHealth, ABSORPTION_COLOR);
         }
 
         BarRenderer.drawLabel(graphics, font, x, y, HudLayout.MAIN_BAR_HEIGHT, healthText(health, absorption, maxHealth));
@@ -81,7 +81,7 @@ public final class HudRenderer {
         int y = layout.manaY();
         BarRenderer.drawFrame(graphics, x, y, HudLayout.WIDTH, HudLayout.MAIN_BAR_HEIGHT);
         if (maxMana > 0) {
-            BarRenderer.drawFill(graphics, x, y, HudLayout.WIDTH, HudLayout.MAIN_BAR_HEIGHT, mana / maxMana, MANA_COLOR);
+            BarRenderer.drawFill(graphics, x, y, HudLayout.WIDTH, HudLayout.MAIN_BAR_HEIGHT, 1, mana / maxMana, MANA_COLOR);
         }
         BarRenderer.drawLabel(graphics, font, x, y, HudLayout.MAIN_BAR_HEIGHT,
                 NumberText.format(mana) + "/" + NumberText.format(maxMana));
