@@ -34,7 +34,9 @@ public class RpgHealthBar {
         // Mods → RPG Health Bar → Config, also reachable from the pause menu's Mods button.
         modContainer.registerExtensionPoint(IConfigScreenFactory.class, (container, parent) -> new RpgConfigScreen(parent));
         modEventBus.addListener(RpgHealthBar::registerGuiLayers);
-        NeoForge.EVENT_BUS.addListener(RpgHealthBar::hideVanillaLayers);
+        // Highest priority: hide replaced layers before other mods' Pre listeners run, so a mod that
+        // pushes the pose in Pre (and pops in Post) never pushes for a layer that won't render.
+        NeoForge.EVENT_BUS.addListener(EventPriority.HIGHEST, RpgHealthBar::hideVanillaLayers);
         // Lowest priority: only shift a layer if nothing else cancelled it, so every push is popped.
         NeoForge.EVENT_BUS.addListener(EventPriority.LOWEST, HudPositionMover::onPre);
         NeoForge.EVENT_BUS.addListener(HudPositionMover::onPost);

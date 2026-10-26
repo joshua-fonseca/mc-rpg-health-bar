@@ -57,7 +57,7 @@ Everything above the hotbar, including the XP bar, is one **movable set**.
 ### 1.6 Armor / hunger display modes (in-game, no restart)
 - `armorMode` and `hungerMode`, each one of:
   - `BAR` (default): our half-width bar
-  - `VANILLA`: the vanilla icons, drawn just above our bars
+  - `VANILLA`: the vanilla icons, in the same row as the half bars (the row grows to the icons' 9px height and the bar is centered vertically in it)
   - `HIDDEN`: not shown
 - Stored in a NeoForge **client** config (`config/rpghealthbar-client.toml`).
 - The renderer reads config values every frame, so changes apply right away.
@@ -88,6 +88,8 @@ The mod provides its own config screen, opened from Mods menu → RPG Health Bar
 The point of this is to let players move the bars away from **Double Hotbar**, **Armor Status HUD**, or any other mod drawing near the hotbar.
 
 **No mod-specific handling:** the default layout always assumes the single vanilla hotbar. The mod doesn't detect or adjust for other HUD mods; the player moves the whole set if something overlaps it.
+
+**The set is placed only by this mod:** some mods (e.g. Double Hotbar) shift vanilla layers like the XP bar or hunger icons themselves. For layers in the set, the mod replaces any such horizontal/vertical shift with its own position, so those mods can't pull the set apart; the player drags the whole set instead.
 
 ---
 

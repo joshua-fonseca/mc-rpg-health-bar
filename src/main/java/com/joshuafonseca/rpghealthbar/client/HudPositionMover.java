@@ -7,7 +7,10 @@ import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.client.event.RenderGuiLayerEvent;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 
-/** Shifts the vanilla HUD elements that belong to the movable set by the same offset as our bars. */
+/**
+ * Places the vanilla HUD elements that belong to the movable set at the same offset as our bars,
+ * replacing any shift other mods gave them so the set always stays together.
+ */
 public final class HudPositionMover {
     private static final Set<ResourceLocation> MOVED_LAYERS = Set.of(
             VanillaGuiLayers.EXPERIENCE_BAR,
@@ -31,11 +34,8 @@ public final class HudPositionMover {
         }
         GuiGraphics graphics = event.getGuiGraphics();
         HudLayer.Frame frame = HudLayer.Frame.compute(graphics.guiWidth(), graphics.guiHeight(), IronsSpellsCompat.isAvailable());
-        if (frame.offset().x() == 0 && frame.offset().y() == 0) {
-            return;
-        }
         graphics.pose().pushPose();
-        graphics.pose().translate(frame.offset().x(), frame.offset().y(), 0);
+        HudPosition.moveTo(graphics.pose(), frame.offset());
         pushed = true;
     }
 

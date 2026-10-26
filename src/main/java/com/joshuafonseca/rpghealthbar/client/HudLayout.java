@@ -1,7 +1,7 @@
 package com.joshuafonseca.rpghealthbar.client;
 
 /** Positions of the bars in GUI-scaled pixels. Shared by the HUD and (later) the position editor. */
-public record HudLayout(int x, int top, int halfBarY, int healthY, int manaY) {
+public record HudLayout(int x, int top, int iconRowY, int halfBarY, int healthY, int manaY) {
     /** Same width as the hotbar. */
     public static final int WIDTH = 182;
     /** Health and mana bars: tall enough to fit a line of text. */
@@ -12,26 +12,34 @@ public record HudLayout(int x, int top, int halfBarY, int healthY, int manaY) {
     public static final int HALF_BAR_GAP = 2;
     /** Each of the armor and hunger bars takes half the width, minus the gap between them. */
     public static final int HALF_BAR_WIDTH = (WIDTH - HALF_BAR_GAP) / 2;
-    /** Vertical gap between rows. */
+    /** Vanilla armor and hunger icons are 9px tall. */
+    public static final int ICON_ROW_HEIGHT = 9;
+    /** Vertical gap between rows (vanilla also leaves 1px between icon rows). */
     private static final int ROW_GAP = 1;
     /** The XP level number is drawn from guiHeight - 36 down; keep the group just above it. */
     private static final int BOTTOM_MARGIN = 37;
 
     /**
      * Rows from top to bottom: armor/hunger, health, mana.
+     * <p>
+     * The armor/hunger row holds our half bars and/or the vanilla icons, side by side. With any
+     * vanilla icons in it, it's as tall as the icons and the bars are centered vertically in it;
+     * with only bars it's as thin as the bars; with neither it's removed and the group shrinks.
      *
-     * @param showHalfBarRow whether the armor/hunger row is drawn at all; when neither is shown as a
-     *                       bar the row is removed and the group shrinks.
+     * @param hasBars        whether armor or hunger is shown as a bar
+     * @param hasIcons       whether armor or hunger is shown as vanilla icons
      * @param showManaRow    whether the mana bar is drawn (only with Iron's Spells installed)
      */
-    public static HudLayout compute(int screenWidth, int screenHeight, boolean showHalfBarRow, boolean showManaRow) {
+    public static HudLayout compute(int screenWidth, int screenHeight, boolean hasBars, boolean hasIcons, boolean showManaRow) {
         int x = screenWidth / 2 - WIDTH / 2;
         int bottom = screenHeight - BOTTOM_MARGIN;
         int manaY = bottom - MAIN_BAR_HEIGHT;
         int healthY = showManaRow ? manaY - ROW_GAP - MAIN_BAR_HEIGHT : manaY;
-        int halfBarY = healthY - ROW_GAP - HALF_BAR_HEIGHT;
-        int top = showHalfBarRow ? halfBarY : healthY;
-        return new HudLayout(x, top, halfBarY, healthY, manaY);
+        int rowHeight = hasIcons ? ICON_ROW_HEIGHT : hasBars ? HALF_BAR_HEIGHT : 0;
+        int iconRowY = healthY - ROW_GAP - rowHeight;
+        int halfBarY = iconRowY + (rowHeight - HALF_BAR_HEIGHT) / 2;
+        int top = rowHeight > 0 ? iconRowY : healthY;
+        return new HudLayout(x, top, iconRowY, halfBarY, healthY, manaY);
     }
 
     /** Left edge of the hunger bar (the armor bar starts at {@link #x()}). */
