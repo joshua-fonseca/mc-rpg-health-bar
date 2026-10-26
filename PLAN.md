@@ -133,9 +133,10 @@ The point of this is to let players move the bars away from **Double Hotbar**, *
 
 ### 2.4 Layout (default, GUI-scaled pixels)
 - Group width: 182 (hotbar width), centered horizontally.
-- Health / mana bars: full width, 5 px tall like the XP bar, with a 1 px semi-transparent dark border. Their text is vertically centered and overflows the bar by 1 px each way, so there's a 2 px gap above and below the health bar.
-- Armor / hunger bars: `(182 - gap) / 2` wide each, 2 px tall, no border.
-- Default position: the bars sit 1 px above the XP bar; the level number sits on the XP bar.
+- Health / mana bars: full width, 7 px tall (just fits the text, vertically centered), with a 1 px semi-transparent dark border.
+- Armor / hunger bars: `(182 - gap) / 2` wide each, 3 px tall, no border.
+- 3 px between the armor/hunger, health and mana rows.
+- Default position: the bars sit 2 px above the XP bar; the level number sits on the XP bar.
 - Without Iron's Spells, the mana row is removed and the group shrinks.
 
 ### 2.5 Colors (initial)
@@ -158,7 +159,7 @@ The point of this is to let players move the bars away from **Double Hotbar**, *
 5. **Iron's Spells compat**: mana bar, Iron's own bar hidden, no crash or mana bar without Iron's.
 6. **Move HUD editor**: drag the group (including the XP bar, level number and jump meter), Save/Cancel, Reset; position persists.
 7. **Vanilla overlap check**: air bubbles and mount health don't collide with the bars, and get shifted if needed.
-8. **Styling + modpack test**: bars as thick as the XP bar with shaded fills, thin armor/hunger lines, level number centered on the XP bar (done); test in the full Antarchy Craft modpack (Double Hotbar, Armor Status HUD, Configured, Jade, Xaero's).
+8. **Styling + modpack test**: slim bars with shaded fills, thin armor/hunger lines, level number centered on the XP bar (done); test in the full Antarchy Craft modpack (Double Hotbar, Armor Status HUD, Configured, Jade, Xaero's).
 9. **Release**: build jar, README.
 
 ## 4. Testing checklist
