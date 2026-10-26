@@ -60,17 +60,17 @@ public final class HudRenderer {
         BarRenderer.drawLabel(graphics, font, x, y, HudLayout.MAIN_BAR_HEIGHT, healthText(health, absorption, maxHealth));
     }
 
-    /** E.g. "16+4/20", "20/20" with absorption combined, or "8+2/10" in hearts; rounded to 0.5. */
+    /** E.g. "16+4/20", "20/20" with absorption combined, or "8+2/10" in hearts; rounded to 0.25. */
     private static String healthText(float health, float absorption, float maxHealth) {
         HealthUnit unit = ClientConfig.HEALTH_UNIT.get();
-        String max = NumberText.formatHalves(unit.fromHp(maxHealth));
+        String max = NumberText.formatQuarters(unit.fromHp(maxHealth));
         if (absorption <= 0) {
-            return NumberText.formatHalves(unit.fromHp(health)) + "/" + max;
+            return NumberText.formatQuarters(unit.fromHp(health)) + "/" + max;
         }
         if (ClientConfig.ABSORPTION_DISPLAY.get() == AbsorptionDisplay.COMBINED) {
-            return NumberText.formatHalves(unit.fromHp(health + absorption)) + "/" + max;
+            return NumberText.formatQuarters(unit.fromHp(health + absorption)) + "/" + max;
         }
-        return NumberText.formatHalves(unit.fromHp(health)) + "+" + NumberText.formatHalves(unit.fromHp(absorption)) + "/" + max;
+        return NumberText.formatQuarters(unit.fromHp(health)) + "+" + NumberText.formatQuarters(unit.fromHp(absorption)) + "/" + max;
     }
 
     private static void renderMana(GuiGraphics graphics, Font font, HudLayout layout, HudValues values) {

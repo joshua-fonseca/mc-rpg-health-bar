@@ -27,7 +27,7 @@ Everything above the hotbar, including the XP bar, is one **movable set**.
   - No absorption: `current/max` → `20/20`
   - With absorption, **Separate** (default): `current+absorption/max` → `16+4/20`; **Combined**: `sum/max` → `20/20`
   - **Health Units**: HP (default, `20/20`) or Hearts (HP / 2, `10/10`)
-  - Rounded to the nearest 0.5 (after converting units), so always a whole number or x.5: `16.5/20`. Whole numbers have no `.0`.
+  - Rounded to the nearest 0.25 (after converting units): `16.75/20`, `16.5/20`. No trailing zeros, so whole numbers have no `.0`. (0.25 rather than 0.5 so a sliver of health still shows as `0.25` instead of `0`.)
 
 ### 1.2 Mana bar (blue)
 - Directly below the health bar, same width.

@@ -11,15 +11,17 @@ public final class NumberText {
         return formatRounded(Math.round(value * 10.0F) / 10.0F);
     }
 
-    /** Rounded to the nearest 0.5, so always a whole number ("20") or a half ("17.5"). */
-    public static String formatHalves(float value) {
-        return formatRounded(Math.round(value * 2.0F) / 2.0F);
+    /** Rounded to the nearest 0.25: "20", "17.25", "17.5" or "17.75". */
+    public static String formatQuarters(float value) {
+        return formatRounded(Math.round(value * 4.0F) / 4.0F);
     }
 
+    /** No trailing zeros: "20" rather than "20.00", "17.5" rather than "17.50". */
     private static String formatRounded(float rounded) {
         if (rounded == (int) rounded) {
             return Integer.toString((int) rounded);
         }
-        return String.format(Locale.ROOT, "%.1f", rounded);
+        String text = String.format(Locale.ROOT, "%.2f", rounded);
+        return text.endsWith("0") ? text.substring(0, text.length() - 1) : text;
     }
 }
