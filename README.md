@@ -48,6 +48,7 @@ Settings are stored in `config/rpghealthbar-client.toml`.
 - Client-side only: servers don't need it, and it works on servers that don't have it.
 - Iron's Spells 'n Spellbooks is optional (tested with 3.16.2). Iron's own libraries need a newer NeoForge (Iron's Lib requires 21.1.200+).
 - If a future Iron's version changes something this mod reads, the mana bar or the spell cost preview turns off with a warning in the log instead of crashing.
+- Double Hotbar: compatible. Open **Move HUD...** and drag the HUD up above the second hotbar once; the bars, XP bar and level move together.
 - Air bubbles and mount health stay vanilla and stack above the bars.
 
 ## Development
