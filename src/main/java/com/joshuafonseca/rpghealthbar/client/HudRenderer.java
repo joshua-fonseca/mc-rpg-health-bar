@@ -8,14 +8,14 @@ import net.minecraft.client.gui.GuiGraphics;
 
 /** Draws the bar group at a layout. Used by the HUD layer and the position editor's preview. */
 public final class HudRenderer {
-    private static final int HEALTH_COLOR = 0xFFE03030;
-    private static final int ABSORPTION_COLOR = 0xFFF0C030;
-    private static final int MANA_COLOR = 0xFF30A0F0;
-    private static final int ARMOR_COLOR = 0xFFE0E0E0;
-    private static final int HUNGER_COLOR = 0xFFE08020;
+    private static final int HEALTH_COLOR = 0xFFC82828;
+    private static final int ABSORPTION_COLOR = 0xFFD8A820;
+    private static final int MANA_COLOR = 0xFF2C88D0;
+    private static final int ARMOR_COLOR = 0xFFB0B0B0;
+    private static final int HUNGER_COLOR = 0xFFC86A18;
     /** The section just lost, shown briefly before it shrinks away. */
-    private static final int HEALTH_LOST_COLOR = 0xFF801818;
-    private static final int MANA_LOST_COLOR = 0xFF184A78;
+    private static final int HEALTH_LOST_COLOR = 0xFF6A1414;
+    private static final int MANA_LOST_COLOR = 0xFF143C64;
     private static final BarTrail HEALTH_TRAIL = new BarTrail();
     private static final BarTrail MANA_TRAIL = new BarTrail();
     /** Vanilla's HUD shows at most 20 armor points and 20 food points. */
@@ -45,12 +45,12 @@ public final class HudRenderer {
         int height = HudLayout.HALF_BAR_HEIGHT;
 
         if (showArmor) {
-            BarRenderer.drawTrack(graphics, layout.x(), y, width, height);
-            BarRenderer.drawFill(graphics, layout.x(), y, width, height, 0, values.armor() / MAX_ARMOR, ARMOR_COLOR);
+            BarRenderer.drawTrack(graphics, layout.x(), y, width, height, false);
+            BarRenderer.drawFill(graphics, layout.x(), y, width, height, false, values.armor() / MAX_ARMOR, ARMOR_COLOR, false);
         }
         if (showHunger) {
-            BarRenderer.drawTrack(graphics, layout.hungerX(), y, width, height);
-            BarRenderer.drawFill(graphics, layout.hungerX(), y, width, height, 0, values.food() / MAX_FOOD, HUNGER_COLOR);
+            BarRenderer.drawTrack(graphics, layout.hungerX(), y, width, height, false);
+            BarRenderer.drawFill(graphics, layout.hungerX(), y, width, height, false, values.food() / MAX_FOOD, HUNGER_COLOR, false);
         }
     }
 
@@ -61,15 +61,14 @@ public final class HudRenderer {
 
         int x = layout.x();
         int y = layout.healthY();
-        BarRenderer.drawFrame(graphics, x, y, HudLayout.WIDTH, HudLayout.MAIN_BAR_HEIGHT);
+        BarRenderer.drawTrack(graphics, x, y, HudLayout.WIDTH, HudLayout.MAIN_BAR_HEIGHT, true);
         if (live) {
             float trail = HEALTH_TRAIL.update(health);
-            BarRenderer.drawFill(graphics, x, y, HudLayout.WIDTH, HudLayout.MAIN_BAR_HEIGHT, 1, trail / maxHealth, HEALTH_LOST_COLOR);
+            BarRenderer.drawFill(graphics, x, y, HudLayout.WIDTH, HudLayout.MAIN_BAR_HEIGHT, true, trail / maxHealth, HEALTH_LOST_COLOR, false);
         }
-        BarRenderer.drawFill(graphics, x, y, HudLayout.WIDTH, HudLayout.MAIN_BAR_HEIGHT, 1, health / maxHealth, HEALTH_COLOR);
-        BarRenderer.drawGlow(graphics, x, y, HudLayout.WIDTH, HudLayout.MAIN_BAR_HEIGHT, 1, health / maxHealth, HEALTH_COLOR);
+        BarRenderer.drawFill(graphics, x, y, HudLayout.WIDTH, HudLayout.MAIN_BAR_HEIGHT, true, health / maxHealth, HEALTH_COLOR, true);
         if (absorption > 0) {
-            BarRenderer.drawFill(graphics, x, y, HudLayout.WIDTH, HudLayout.MAIN_BAR_HEIGHT, 1, absorption / maxHealth, ABSORPTION_COLOR);
+            BarRenderer.drawFill(graphics, x, y, HudLayout.WIDTH, HudLayout.MAIN_BAR_HEIGHT, true, absorption / maxHealth, ABSORPTION_COLOR, absorption < maxHealth);
         }
 
         if (ClientConfig.SHOW_HEALTH_TEXT.get()) {
@@ -96,14 +95,13 @@ public final class HudRenderer {
 
         int x = layout.x();
         int y = layout.manaY();
-        BarRenderer.drawFrame(graphics, x, y, HudLayout.WIDTH, HudLayout.MAIN_BAR_HEIGHT);
+        BarRenderer.drawTrack(graphics, x, y, HudLayout.WIDTH, HudLayout.MAIN_BAR_HEIGHT, true);
         if (maxMana > 0) {
             if (live) {
                 float trail = MANA_TRAIL.update(mana);
-                BarRenderer.drawFill(graphics, x, y, HudLayout.WIDTH, HudLayout.MAIN_BAR_HEIGHT, 1, trail / maxMana, MANA_LOST_COLOR);
+                BarRenderer.drawFill(graphics, x, y, HudLayout.WIDTH, HudLayout.MAIN_BAR_HEIGHT, true, trail / maxMana, MANA_LOST_COLOR, false);
             }
-            BarRenderer.drawFill(graphics, x, y, HudLayout.WIDTH, HudLayout.MAIN_BAR_HEIGHT, 1, mana / maxMana, MANA_COLOR);
-            BarRenderer.drawGlow(graphics, x, y, HudLayout.WIDTH, HudLayout.MAIN_BAR_HEIGHT, 1, mana / maxMana, MANA_COLOR);
+            BarRenderer.drawFill(graphics, x, y, HudLayout.WIDTH, HudLayout.MAIN_BAR_HEIGHT, true, mana / maxMana, MANA_COLOR, true);
         }
         if (ClientConfig.SHOW_MANA_TEXT.get()) {
             BarRenderer.drawLabel(graphics, font, x, y, HudLayout.MAIN_BAR_HEIGHT,

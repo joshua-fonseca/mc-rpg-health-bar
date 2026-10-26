@@ -8,7 +8,7 @@ import net.minecraft.Util;
  */
 public final class BarTrail {
     /** How long the lost section stays before it starts shrinking. */
-    private static final long HOLD_MILLIS = 500;
+    private static final long HOLD_MILLIS = 750;
     /** Time for the remaining lost section to shrink by about two thirds; it's gone in well under a second. */
     private static final float SHRINK_MILLIS = 120.0F;
 

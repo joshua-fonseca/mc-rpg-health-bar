@@ -115,7 +115,7 @@ The point of this is to let players move the bars away from **Double Hotbar**, *
   - `VanillaGuiLayers.ARMOR_LEVEL` (armor icons)
   - `VanillaGuiLayers.FOOD_LEVEL` (hunger shanks)
   - Iron's Spells mana layer (by its layer ID, only when the mod is loaded)
-- Draw bars with `GuiGraphics.fill(...)`: the fill is shaded (top row lighter, bottom row darker) to look rounded, like the mockup. No texture files.
+- Draw bars with `GuiGraphics.fill(...)` (batched with `drawManaged`), in the style of the vanilla XP bar's sprites but without its cells: the empty part uses the XP background's colors (dark border, lighter top/bottom rows, darker middle); the fill has a very dark tinted border, a bright middle row, a darker bottom row and a fixed per-pixel noise texture. No texture files.
 - Draw text with `GuiGraphics.drawString(font, text, x, y, color, shadow)`.
 - Move vanilla layers with the group by shifting them by the group's offset with `pose().pushPose()` + `translate` in `RenderGuiLayerEvent.Pre` and `popPose()` in `Post`, for `EXPERIENCE_BAR`, `EXPERIENCE_LEVEL` and `JUMP_METER`. The Pre listener runs at the lowest priority, so it only pushes if no other mod cancelled the layer, which keeps every push matched by a pop.
 - Don't draw the HUD in spectator mode, in creative, or when the HUD is hidden (F1), the same as vanilla.
@@ -135,9 +135,9 @@ The point of this is to let players move the bars away from **Double Hotbar**, *
 
 ### 2.4 Layout (default, GUI-scaled pixels)
 - Group width: 182 (hotbar width), centered horizontally.
-- Health / mana bars: full width, 7 px tall (just fits the text, vertically centered), with a 1 px semi-transparent dark border. Corners are rounded like the XP bar (corner pixels left out).
-- Health / mana fills: the right end fades toward white over 10 px, ending in a near-white line.
-- Losing health or mana: the lost section stays as a darker red/blue for 0.5 s, then shrinks smoothly to the new value (gone in well under a second). Gains show at once. Only on the real HUD, not the editor's placeholder preview.
+- Health / mana bars: full width, 7 px tall (just fits the text, vertically centered), with a 1 px border. Corners are rounded like the XP bar (corner pixels left out).
+- Health / mana fills: the last 6 px brighten gradually (up to 18%), blending into the fill.
+- Losing health or mana: the lost section stays as a darker red/blue for 0.75 s, then shrinks smoothly to the new value (gone in well under a second). Gains show at once. Only on the real HUD, not the editor's placeholder preview.
 - Armor / hunger bars: `(182 - gap) / 2` wide each, 3 px tall, no border, rounded corners.
 - 3 px between the armor/hunger, health and mana rows.
 - Default position: the bars sit 2 px above the XP bar; the level number sits on the XP bar.
