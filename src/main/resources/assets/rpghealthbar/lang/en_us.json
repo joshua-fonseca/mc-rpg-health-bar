@@ -23,7 +23,7 @@
   "rpghealthbar.config.armorMode.tooltip": "How armor is shown.",
   "rpghealthbar.config.hungerMode.tooltip": "How hunger is shown.",
   "rpghealthbar.config.healthUnit.tooltip": "Unit for the numbers on the health bar.",
-  "rpghealthbar.config.absorptionDisplay.tooltip": "How absorption (golden hearts) is written on the health bar.",
+  "rpghealthbar.config.absorptionDisplay.tooltip": "How absorption (golden hearts) is shown. Example: 16 HP of health, 4 HP of absorption (2 golden hearts), 20 HP max.",
   "rpghealthbar.config.moveHud.tooltip": "Drag the bars, XP bar and level number to a new spot as one group, then Save. Arrow keys nudge it.",
   "rpghealthbar.config.resetPosition.tooltip": "Move the HUD back to its default spot above the hotbar.",
   "rpghealthbar.config.tooltip.default": "(default)",
@@ -44,7 +44,7 @@
   "rpghealthbar.config.healthUnit.tooltip.hearts.name": "Hearts",
   "rpghealthbar.config.healthUnit.tooltip.hearts": "HP divided by 2, so 10 for a full vanilla health bar.",
   "rpghealthbar.config.absorptionDisplay.tooltip.separate.name": "Separate",
-  "rpghealthbar.config.absorptionDisplay.tooltip.separate": "health + absorption / max, e.g. 16+4/20.",
+  "rpghealthbar.config.absorptionDisplay.tooltip.separate": "listed apart: 16+4/20.",
   "rpghealthbar.config.absorptionDisplay.tooltip.combined.name": "Combined",
-  "rpghealthbar.config.absorptionDisplay.tooltip.combined": "health and absorption added together / max, e.g. 20/20."
+  "rpghealthbar.config.absorptionDisplay.tooltip.combined": "added together: 20/20."
 }
