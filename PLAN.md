@@ -73,7 +73,7 @@ The mod provides its own config screen, opened from Mods menu → RPG Health Bar
 - **Move HUD**: opens the position editor
 - **Reset Position**: puts the HUD back in the default spot above the hotbar
 - **Done**
-- Hovering over a button shows a tooltip listing its possible values and what each does.
+- Hovering over a button shows a tooltip listing its possible values and what each does: each value on its own paragraph, its name in gold, the default marked "(default)" in grey.
 
 **Position editor** (`HudEditScreen`):
 - Shows the whole bar group as a preview (with placeholder values if needed), with no outline.
