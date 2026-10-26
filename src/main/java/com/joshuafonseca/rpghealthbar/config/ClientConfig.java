@@ -26,6 +26,16 @@ public final class ClientConfig {
             .translation("rpghealthbar.config.absorptionDisplay")
             .defineEnum("absorptionDisplay", AbsorptionDisplay.SEPARATE);
 
+    public static final ModConfigSpec.BooleanValue SHOW_HEALTH_TEXT = BUILDER
+            .comment("Show the numbers on the health bar.")
+            .translation("rpghealthbar.config.showHealthText")
+            .define("showHealthText", true);
+
+    public static final ModConfigSpec.BooleanValue SHOW_MANA_TEXT = BUILDER
+            .comment("Show the numbers on the mana bar (Iron's Spells 'n Spellbooks only).")
+            .translation("rpghealthbar.config.showManaText")
+            .define("showManaText", true);
+
     // Position: set by dragging the HUD in Config → Move HUD; not meant to be edited by hand.
     // The HUD's matching point (e.g. its bottom-center for BOTTOM_CENTER) is placed at the anchor's
     // screen point plus the offset. The default sits just above the hotbar.

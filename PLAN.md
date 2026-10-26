@@ -69,7 +69,9 @@ The mod provides its own config screen, opened from Mods menu → RPG Health Bar
 - **Armor: Vanilla / Bar / Hidden**: each click cycles to the next mode
 - **Hunger: Vanilla / Bar / Hidden**: each click cycles to the next mode
 - **Health Units: HP (20) / Hearts (10)**
-- **Absorption: Separate (16+4/20) / Combined (20/20)**
+- **Absorption: Separate / Combined** (16+4/20 vs 20/20)
+- **HP Text: On / Off** and **Mana Text: On / Off** (default On): whether the numbers are written on the bar
+- The buttons are laid out in two columns so the screen fits small windows.
 - **Move HUD**: opens the position editor
 - **Reset Position**: puts the HUD back in the default spot above the hotbar
 - **Done**
@@ -133,8 +135,8 @@ The point of this is to let players move the bars away from **Double Hotbar**, *
 
 ### 2.4 Layout (default, GUI-scaled pixels)
 - Group width: 182 (hotbar width), centered horizontally.
-- Health / mana bars: full width, 7 px tall (just fits the text, vertically centered), with a 1 px semi-transparent dark border.
-- Armor / hunger bars: `(182 - gap) / 2` wide each, 3 px tall, no border.
+- Health / mana bars: full width, 7 px tall (just fits the text, vertically centered), with a 1 px semi-transparent dark border. Corners are rounded like the XP bar (corner pixels left out).
+- Armor / hunger bars: `(182 - gap) / 2` wide each, 3 px tall, no border, rounded corners.
 - 3 px between the armor/hunger, health and mana rows.
 - Default position: the bars sit 2 px above the XP bar; the level number sits on the XP bar.
 - Without Iron's Spells, the mana row is removed and the group shrinks.

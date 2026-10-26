@@ -17,23 +17,29 @@ public final class BarRenderer {
     private BarRenderer() {
     }
 
-    /** 1px dark, semi-transparent border with a darker background inside. Fill with {@code inset} 1. */
+    /**
+     * 1px dark, semi-transparent border with a darker background inside. The corner pixels are left
+     * out, rounding the corners like the XP bar. Fill with {@code inset} 1.
+     */
     public static void drawFrame(GuiGraphics graphics, int x, int y, int width, int height) {
-        graphics.fill(x, y, x + width, y + 1, BORDER_COLOR);
-        graphics.fill(x, y + height - 1, x + width, y + height, BORDER_COLOR);
+        graphics.fill(x + 1, y, x + width - 1, y + 1, BORDER_COLOR);
+        graphics.fill(x + 1, y + height - 1, x + width - 1, y + height, BORDER_COLOR);
         graphics.fill(x, y + 1, x + 1, y + height - 1, BORDER_COLOR);
         graphics.fill(x + width - 1, y + 1, x + width, y + height - 1, BORDER_COLOR);
         graphics.fill(x + 1, y + 1, x + width - 1, y + height - 1, BACKGROUND_COLOR);
     }
 
-    /** Background only, for thin bars without a border. Fill with {@code inset} 0. */
+    /** Background only, for thin bars without a border, with rounded corners. Fill with {@code inset} 0. */
     public static void drawTrack(GuiGraphics graphics, int x, int y, int width, int height) {
-        graphics.fill(x, y, x + width, y + height, BACKGROUND_COLOR);
+        graphics.fill(x + 1, y, x + width - 1, y + 1, BACKGROUND_COLOR);
+        graphics.fill(x, y + 1, x + width, y + height - 1, BACKGROUND_COLOR);
+        graphics.fill(x + 1, y + height - 1, x + width - 1, y + height, BACKGROUND_COLOR);
     }
 
     /**
      * Fills from the left, {@code inset} pixels inside the bar's edges; {@code fraction} is clamped to 0–1.
-     * The top row is lighter and the bottom row darker, so the bar looks rounded.
+     * The top row is lighter and the bottom row darker, so the bar looks rounded. With {@code inset} 0
+     * the fill touches the bar's rounded corners, so its top and bottom rows leave them out too.
      */
     public static void drawFill(GuiGraphics graphics, int x, int y, int width, int height, int inset, float fraction, int color) {
         int fillWidth = Math.round((width - 2 * inset) * Mth.clamp(fraction, 0.0F, 1.0F));
@@ -48,9 +54,11 @@ public final class BarRenderer {
             graphics.fill(left, top, right, bottom, color);
             return;
         }
-        graphics.fill(left, top, right, top + 1, mix(color, 0xFFFFFFFF, HIGHLIGHT));
+        int edgeLeft = inset == 0 ? Math.max(left, x + 1) : left;
+        int edgeRight = inset == 0 ? Math.min(right, x + width - 1) : right;
+        graphics.fill(edgeLeft, top, edgeRight, top + 1, mix(color, 0xFFFFFFFF, HIGHLIGHT));
         graphics.fill(left, top + 1, right, bottom - 1, color);
-        graphics.fill(left, bottom - 1, right, bottom, mix(color, 0xFF000000, SHADE));
+        graphics.fill(edgeLeft, bottom - 1, edgeRight, bottom, mix(color, 0xFF000000, SHADE));
     }
 
     /** Text on the left side of the bar, vertically centered (it overflows bars shorter than the font). */

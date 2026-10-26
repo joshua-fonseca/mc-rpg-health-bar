@@ -16,7 +16,10 @@ import net.minecraft.network.chat.MutableComponent;
 
 /** Opened from Mods → RPG Health Bar → Config. Every change is saved and applied immediately. */
 public class RpgConfigScreen extends Screen {
-    private static final int BUTTON_WIDTH = 200;
+    /** Two columns of buttons, so the screen fits small windows. */
+    private static final int BUTTON_WIDTH = 155;
+    private static final int COLUMN_GAP = 10;
+    private static final int DONE_WIDTH = 200;
     private static final int BUTTON_HEIGHT = 20;
     private static final int ROW_SPACING = 24;
 
@@ -29,7 +32,8 @@ public class RpgConfigScreen extends Screen {
 
     @Override
     protected void init() {
-        int x = this.width / 2 - BUTTON_WIDTH / 2;
+        int left = this.width / 2 - COLUMN_GAP / 2 - BUTTON_WIDTH;
+        int right = this.width / 2 + COLUMN_GAP / 2;
         int y = 36;
 
         // Each click cycles Vanilla → Bar → Hidden.
@@ -37,15 +41,13 @@ public class RpgConfigScreen extends Screen {
                 .withValues(HalfBarMode.values())
                 .withInitialValue(ClientConfig.ARMOR_MODE.get())
                 .withTooltip(value -> tooltip("armorMode", "vanilla", "bar", "hidden"))
-                .create(x, y, BUTTON_WIDTH, BUTTON_HEIGHT, Component.translatable("rpghealthbar.config.armorMode"),
+                .create(left, y, BUTTON_WIDTH, BUTTON_HEIGHT, Component.translatable("rpghealthbar.config.armorMode"),
                         (button, value) -> ClientConfig.set(ClientConfig.ARMOR_MODE, value)));
-        y += ROW_SPACING;
-
         addRenderableWidget(CycleButton.builder(HalfBarMode::displayName)
                 .withValues(HalfBarMode.values())
                 .withInitialValue(ClientConfig.HUNGER_MODE.get())
                 .withTooltip(value -> tooltip("hungerMode", "vanilla", "bar", "hidden"))
-                .create(x, y, BUTTON_WIDTH, BUTTON_HEIGHT, Component.translatable("rpghealthbar.config.hungerMode"),
+                .create(right, y, BUTTON_WIDTH, BUTTON_HEIGHT, Component.translatable("rpghealthbar.config.hungerMode"),
                         (button, value) -> ClientConfig.set(ClientConfig.HUNGER_MODE, value)));
         y += ROW_SPACING;
 
@@ -53,31 +55,37 @@ public class RpgConfigScreen extends Screen {
                 .withValues(HealthUnit.values())
                 .withInitialValue(ClientConfig.HEALTH_UNIT.get())
                 .withTooltip(value -> tooltip("healthUnit", "hp", "hearts"))
-                .create(x, y, BUTTON_WIDTH, BUTTON_HEIGHT, Component.translatable("rpghealthbar.config.healthUnit"),
+                .create(left, y, BUTTON_WIDTH, BUTTON_HEIGHT, Component.translatable("rpghealthbar.config.healthUnit"),
                         (button, value) -> ClientConfig.set(ClientConfig.HEALTH_UNIT, value)));
-        y += ROW_SPACING;
-
         addRenderableWidget(CycleButton.builder(AbsorptionDisplay::displayName)
                 .withValues(AbsorptionDisplay.values())
                 .withInitialValue(ClientConfig.ABSORPTION_DISPLAY.get())
                 .withTooltip(value -> tooltip("absorptionDisplay", "separate", "combined"))
-                .create(x, y, BUTTON_WIDTH, BUTTON_HEIGHT, Component.translatable("rpghealthbar.config.absorptionDisplay"),
+                .create(right, y, BUTTON_WIDTH, BUTTON_HEIGHT, Component.translatable("rpghealthbar.config.absorptionDisplay"),
                         (button, value) -> ClientConfig.set(ClientConfig.ABSORPTION_DISPLAY, value)));
         y += ROW_SPACING;
 
-        addRenderableWidget(Button.builder(Component.translatable("rpghealthbar.config.moveHud"), button -> this.minecraft.setScreen(new HudEditScreen(this)))
-                .bounds(x, y, BUTTON_WIDTH, BUTTON_HEIGHT)
-                .tooltip(tooltip("moveHud"))
-                .build());
+        addRenderableWidget(CycleButton.onOffBuilder(ClientConfig.SHOW_HEALTH_TEXT.get())
+                .withTooltip(value -> tooltip("showHealthText", "on", "off"))
+                .create(left, y, BUTTON_WIDTH, BUTTON_HEIGHT, Component.translatable("rpghealthbar.config.showHealthText"),
+                        (button, value) -> ClientConfig.set(ClientConfig.SHOW_HEALTH_TEXT, value)));
+        addRenderableWidget(CycleButton.onOffBuilder(ClientConfig.SHOW_MANA_TEXT.get())
+                .withTooltip(value -> tooltip("showManaText", "on", "off"))
+                .create(right, y, BUTTON_WIDTH, BUTTON_HEIGHT, Component.translatable("rpghealthbar.config.showManaText"),
+                        (button, value) -> ClientConfig.set(ClientConfig.SHOW_MANA_TEXT, value)));
         y += ROW_SPACING;
 
+        addRenderableWidget(Button.builder(Component.translatable("rpghealthbar.config.moveHud"), button -> this.minecraft.setScreen(new HudEditScreen(this)))
+                .bounds(left, y, BUTTON_WIDTH, BUTTON_HEIGHT)
+                .tooltip(tooltip("moveHud"))
+                .build());
         addRenderableWidget(Button.builder(Component.translatable("rpghealthbar.config.resetPosition"), button -> ClientConfig.resetPosition())
-                .bounds(x, y, BUTTON_WIDTH, BUTTON_HEIGHT)
+                .bounds(right, y, BUTTON_WIDTH, BUTTON_HEIGHT)
                 .tooltip(tooltip("resetPosition"))
                 .build());
 
         addRenderableWidget(Button.builder(CommonComponents.GUI_DONE, button -> onClose())
-                .bounds(x, this.height - 28, BUTTON_WIDTH, BUTTON_HEIGHT)
+                .bounds(this.width / 2 - DONE_WIDTH / 2, this.height - 28, DONE_WIDTH, BUTTON_HEIGHT)
                 .build());
     }
 

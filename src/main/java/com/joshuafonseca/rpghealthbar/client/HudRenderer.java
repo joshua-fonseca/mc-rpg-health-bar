@@ -57,7 +57,9 @@ public final class HudRenderer {
             BarRenderer.drawFill(graphics, x, y, HudLayout.WIDTH, HudLayout.MAIN_BAR_HEIGHT, 1, absorption / maxHealth, ABSORPTION_COLOR);
         }
 
-        BarRenderer.drawLabel(graphics, font, x, y, HudLayout.MAIN_BAR_HEIGHT, healthText(health, absorption, maxHealth));
+        if (ClientConfig.SHOW_HEALTH_TEXT.get()) {
+            BarRenderer.drawLabel(graphics, font, x, y, HudLayout.MAIN_BAR_HEIGHT, healthText(health, absorption, maxHealth));
+        }
     }
 
     /** E.g. "16+4/20", "20/20" with absorption combined, or "8+2/10" in hearts; rounded to 0.25. */
@@ -83,7 +85,9 @@ public final class HudRenderer {
         if (maxMana > 0) {
             BarRenderer.drawFill(graphics, x, y, HudLayout.WIDTH, HudLayout.MAIN_BAR_HEIGHT, 1, mana / maxMana, MANA_COLOR);
         }
-        BarRenderer.drawLabel(graphics, font, x, y, HudLayout.MAIN_BAR_HEIGHT,
-                NumberText.format(mana) + "/" + NumberText.format(maxMana));
+        if (ClientConfig.SHOW_MANA_TEXT.get()) {
+            BarRenderer.drawLabel(graphics, font, x, y, HudLayout.MAIN_BAR_HEIGHT,
+                    NumberText.format(mana) + "/" + NumberText.format(maxMana));
+        }
     }
 }
