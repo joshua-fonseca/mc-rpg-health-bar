@@ -71,7 +71,7 @@ The mod provides its own config screen, opened from Mods menu → RPG Health Bar
 - **Health Units: HP (20) / Hearts (10)**
 - **Absorption: Separate / Combined** (16+4/20 vs 20/20)
 - **HP Text: On / Off** and **Mana Text: On / Off** (default On): whether the numbers are written on the bar
-- The buttons are laid out in two columns so the screen fits small windows.
+- The buttons are laid out in two columns so the screen fits small windows. Each option reads "Name: [value]": the name is plain text and the button shows only the value.
 - **Move HUD**: opens the position editor
 - **Reset Position**: puts the HUD back in the default spot above the hotbar
 - **Done**

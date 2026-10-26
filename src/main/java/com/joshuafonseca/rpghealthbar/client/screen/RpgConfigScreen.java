@@ -13,6 +13,8 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.MutableComponent;
+import java.util.ArrayList;
+import java.util.List;
 
 /** Opened from Mods → RPG Health Bar → Config. Every change is saved and applied immediately. */
 public class RpgConfigScreen extends Screen {
@@ -20,10 +22,18 @@ public class RpgConfigScreen extends Screen {
     private static final int BUTTON_WIDTH = 155;
     private static final int COLUMN_GAP = 10;
     private static final int DONE_WIDTH = 200;
+    /** Options are "Name: [value]": the name as text, then a button showing only the value. */
+    private static final int LABEL_WIDTH = 75;
+    private static final int VALUE_WIDTH = BUTTON_WIDTH - LABEL_WIDTH;
+    private static final int LABEL_COLOR = 0xFFFFFF;
     private static final int BUTTON_HEIGHT = 20;
     private static final int ROW_SPACING = 24;
 
     private final Screen parent;
+    private final List<Label> labels = new ArrayList<>();
+
+    private record Label(Component text, int x, int y) {
+    }
 
     public RpgConfigScreen(Screen parent) {
         super(Component.translatable("rpghealthbar.config.title"));
@@ -32,6 +42,7 @@ public class RpgConfigScreen extends Screen {
 
     @Override
     protected void init() {
+        this.labels.clear();
         int left = this.width / 2 - COLUMN_GAP / 2 - BUTTON_WIDTH;
         int right = this.width / 2 + COLUMN_GAP / 2;
         int y = 36;
@@ -41,13 +52,15 @@ public class RpgConfigScreen extends Screen {
                 .withValues(HalfBarMode.values())
                 .withInitialValue(ClientConfig.ARMOR_MODE.get())
                 .withTooltip(value -> tooltip("armorMode", "vanilla", "bar", "hidden"))
-                .create(left, y, BUTTON_WIDTH, BUTTON_HEIGHT, Component.translatable("rpghealthbar.config.armorMode"),
+                .displayOnlyValue()
+                .create(left + LABEL_WIDTH, y, VALUE_WIDTH, BUTTON_HEIGHT, label(left, y, "rpghealthbar.config.armorMode"),
                         (button, value) -> ClientConfig.set(ClientConfig.ARMOR_MODE, value)));
         addRenderableWidget(CycleButton.builder(HalfBarMode::displayName)
                 .withValues(HalfBarMode.values())
                 .withInitialValue(ClientConfig.HUNGER_MODE.get())
                 .withTooltip(value -> tooltip("hungerMode", "vanilla", "bar", "hidden"))
-                .create(right, y, BUTTON_WIDTH, BUTTON_HEIGHT, Component.translatable("rpghealthbar.config.hungerMode"),
+                .displayOnlyValue()
+                .create(right + LABEL_WIDTH, y, VALUE_WIDTH, BUTTON_HEIGHT, label(right, y, "rpghealthbar.config.hungerMode"),
                         (button, value) -> ClientConfig.set(ClientConfig.HUNGER_MODE, value)));
         y += ROW_SPACING;
 
@@ -55,23 +68,27 @@ public class RpgConfigScreen extends Screen {
                 .withValues(HealthUnit.values())
                 .withInitialValue(ClientConfig.HEALTH_UNIT.get())
                 .withTooltip(value -> tooltip("healthUnit", "hp", "hearts"))
-                .create(left, y, BUTTON_WIDTH, BUTTON_HEIGHT, Component.translatable("rpghealthbar.config.healthUnit"),
+                .displayOnlyValue()
+                .create(left + LABEL_WIDTH, y, VALUE_WIDTH, BUTTON_HEIGHT, label(left, y, "rpghealthbar.config.healthUnit"),
                         (button, value) -> ClientConfig.set(ClientConfig.HEALTH_UNIT, value)));
         addRenderableWidget(CycleButton.builder(AbsorptionDisplay::displayName)
                 .withValues(AbsorptionDisplay.values())
                 .withInitialValue(ClientConfig.ABSORPTION_DISPLAY.get())
                 .withTooltip(value -> tooltip("absorptionDisplay", "separate", "combined"))
-                .create(right, y, BUTTON_WIDTH, BUTTON_HEIGHT, Component.translatable("rpghealthbar.config.absorptionDisplay"),
+                .displayOnlyValue()
+                .create(right + LABEL_WIDTH, y, VALUE_WIDTH, BUTTON_HEIGHT, label(right, y, "rpghealthbar.config.absorptionDisplay"),
                         (button, value) -> ClientConfig.set(ClientConfig.ABSORPTION_DISPLAY, value)));
         y += ROW_SPACING;
 
         addRenderableWidget(CycleButton.onOffBuilder(ClientConfig.SHOW_HEALTH_TEXT.get())
                 .withTooltip(value -> tooltip("showHealthText", "on", "off"))
-                .create(left, y, BUTTON_WIDTH, BUTTON_HEIGHT, Component.translatable("rpghealthbar.config.showHealthText"),
+                .displayOnlyValue()
+                .create(left + LABEL_WIDTH, y, VALUE_WIDTH, BUTTON_HEIGHT, label(left, y, "rpghealthbar.config.showHealthText"),
                         (button, value) -> ClientConfig.set(ClientConfig.SHOW_HEALTH_TEXT, value)));
         addRenderableWidget(CycleButton.onOffBuilder(ClientConfig.SHOW_MANA_TEXT.get())
                 .withTooltip(value -> tooltip("showManaText", "on", "off"))
-                .create(right, y, BUTTON_WIDTH, BUTTON_HEIGHT, Component.translatable("rpghealthbar.config.showManaText"),
+                .displayOnlyValue()
+                .create(right + LABEL_WIDTH, y, VALUE_WIDTH, BUTTON_HEIGHT, label(right, y, "rpghealthbar.config.showManaText"),
                         (button, value) -> ClientConfig.set(ClientConfig.SHOW_MANA_TEXT, value)));
         y += ROW_SPACING;
 
@@ -87,6 +104,13 @@ public class RpgConfigScreen extends Screen {
         addRenderableWidget(Button.builder(CommonComponents.GUI_DONE, button -> onClose())
                 .bounds(this.width / 2 - DONE_WIDTH / 2, this.height - 28, DONE_WIDTH, BUTTON_HEIGHT)
                 .build());
+    }
+
+    /** Adds the option's name as text left of its button, and returns it (for narration). */
+    private Component label(int x, int y, String key) {
+        Component text = Component.translatable(key).append(":");
+        this.labels.add(new Label(text, x, y + (BUTTON_HEIGHT - 8) / 2));
+        return Component.translatable(key);
     }
 
     /**
@@ -111,6 +135,9 @@ public class RpgConfigScreen extends Screen {
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         super.render(graphics, mouseX, mouseY, partialTick);
         graphics.drawCenteredString(this.font, this.title, this.width / 2, 15, 0xFFFFFF);
+        for (Label label : this.labels) {
+            graphics.drawString(this.font, label.text(), label.x(), label.y(), LABEL_COLOR);
+        }
     }
 
     @Override
