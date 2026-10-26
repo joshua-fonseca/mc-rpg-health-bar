@@ -19,8 +19,8 @@ Replaces the vanilla hearts with an RPG-style health bar, drawn in the style of 
 
 ## Compatibility
 
-- **Iron's Spells 'n Spellbooks:** optional. When it's installed you get the mana bar and the spell cost preview, and Iron's own mana bar is hidden. Tested with Iron's 3.16.2.
-- **Double Hotbar:** compatible. Open **Move HUD...** and drag the HUD up above the second hotbar once; the bars, XP bar and level move together and stay there.
+- **[Iron's Spells 'n Spellbooks](https://www.curseforge.com/projects/855414) by Iron431 and Lab3:** optional. When it's installed you get the mana bar and the spell cost preview, and Iron's own mana bar is hidden. Tested with Iron's 3.16.2.
+- **[Double Hotbar](https://www.curseforge.com/projects/1563792) by sidezbros:** compatible. Open **Move HUD...** and drag the HUD up above the second hotbar once; the bars, XP bar and level move together and stay there.
 - Works with other mods that draw near the hotbar the same way: drag the HUD clear of them.
 - Air bubbles and mount health stay vanilla and stack above the bars.
 
