@@ -1,6 +1,7 @@
 package com.joshuafonseca.rpghealthbar.client.screen;
 
 import com.joshuafonseca.rpghealthbar.config.ClientConfig;
+import com.joshuafonseca.rpghealthbar.config.HalfBarMode;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.CycleButton;
@@ -26,14 +27,19 @@ public class RpgConfigScreen extends Screen {
         int x = this.width / 2 - BUTTON_WIDTH / 2;
         int y = this.height / 4;
 
-        addRenderableWidget(CycleButton.onOffBuilder(ClientConfig.SHOW_ARMOR_BAR.get())
-                .create(x, y, BUTTON_WIDTH, BUTTON_HEIGHT, Component.translatable("rpghealthbar.config.showArmorBar"),
-                        (button, value) -> ClientConfig.set(ClientConfig.SHOW_ARMOR_BAR, value)));
+        // Each click cycles Bar → Vanilla → Hidden.
+        addRenderableWidget(CycleButton.builder(HalfBarMode::displayName)
+                .withValues(HalfBarMode.values())
+                .withInitialValue(ClientConfig.ARMOR_MODE.get())
+                .create(x, y, BUTTON_WIDTH, BUTTON_HEIGHT, Component.translatable("rpghealthbar.config.armorMode"),
+                        (button, value) -> ClientConfig.set(ClientConfig.ARMOR_MODE, value)));
         y += ROW_SPACING;
 
-        addRenderableWidget(CycleButton.onOffBuilder(ClientConfig.SHOW_HUNGER_BAR.get())
-                .create(x, y, BUTTON_WIDTH, BUTTON_HEIGHT, Component.translatable("rpghealthbar.config.showHungerBar"),
-                        (button, value) -> ClientConfig.set(ClientConfig.SHOW_HUNGER_BAR, value)));
+        addRenderableWidget(CycleButton.builder(HalfBarMode::displayName)
+                .withValues(HalfBarMode.values())
+                .withInitialValue(ClientConfig.HUNGER_MODE.get())
+                .create(x, y, BUTTON_WIDTH, BUTTON_HEIGHT, Component.translatable("rpghealthbar.config.hungerMode"),
+                        (button, value) -> ClientConfig.set(ClientConfig.HUNGER_MODE, value)));
 
         addRenderableWidget(Button.builder(CommonComponents.GUI_DONE, button -> onClose())
                 .bounds(x, this.height - 28, BUTTON_WIDTH, BUTTON_HEIGHT)

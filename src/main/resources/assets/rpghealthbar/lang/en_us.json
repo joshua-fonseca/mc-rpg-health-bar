@@ -1,5 +1,8 @@
 {
   "rpghealthbar.config.title": "RPG Health Bar",
-  "rpghealthbar.config.showArmorBar": "Armor Bar",
-  "rpghealthbar.config.showHungerBar": "Hunger Bar"
+  "rpghealthbar.config.armorMode": "Armor",
+  "rpghealthbar.config.hungerMode": "Hunger",
+  "rpghealthbar.config.mode.bar": "Bar",
+  "rpghealthbar.config.mode.vanilla": "Vanilla",
+  "rpghealthbar.config.mode.hidden": "Hidden"
 }

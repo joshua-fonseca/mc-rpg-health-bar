@@ -38,29 +38,31 @@ Reference mockup: `Screenshot 2026-10-26 140202.png`
 ### 1.3 Armor bar (white), half width
 - Above the health bar, left half. No text.
 - Fill = `player.getArmorValue() / 20`, using the vanilla HUD max of 20. Values over 20 show as a full bar.
-- Can be toggled off.
+- Display mode: Bar (default), Vanilla icons, or Hidden.
 
 ### 1.4 Hunger bar (orange), half width
 - Above the health bar, right half. No text.
 - Fill = `foodData.getFoodLevel() / 20`. **Shows hunger, not saturation.**
-- Can be toggled off.
+- Display mode: Bar (default), Vanilla icons, or Hidden.
 
 ### 1.5 Vanilla elements left as-is
 - **Air bubbles** (underwater) and **mount health** (horses, etc.) stay vanilla.
 - XP bar and hotbar stay vanilla.
 - ⚠ Vanilla draws air bubbles and mount hearts in the same row as hunger, so they may overlap the new bars. They need to be checked during testing (see milestone 7). If they do overlap, they can be shifted up by the group's height with a pose-stack translate around those vanilla layers, without restyling them.
 
-### 1.6 Toggles (in-game, no restart)
-- `showArmorBar` (default: true)
-- `showHungerBar` (default: true)
+### 1.6 Armor / hunger display modes (in-game, no restart)
+- `armorMode` and `hungerMode`, each one of:
+  - `BAR` (default): our half-width bar
+  - `VANILLA`: the vanilla icons, drawn just above our bars
+  - `HIDDEN`: not shown
 - Stored in a NeoForge **client** config (`config/rpghealthbar-client.toml`).
 - The renderer reads config values every frame, so changes apply right away.
-- When one half bar is turned off, the other stays in its own half (it doesn't stretch). If both are off, the row is removed and the group shrinks.
+- When only one of the two is a bar, it stays in its own half (it doesn't stretch). If neither is a bar, the row is removed and the group shrinks.
 
 ### 1.7 Config screen + "Move HUD" editor
 The mod provides its own config screen, opened from Mods menu → RPG Health Bar → Config, through `IConfigScreenFactory`:
-- **Show Armor Bar**: on/off button
-- **Show Hunger Bar**: on/off button
+- **Armor: Bar / Vanilla / Hidden**: each click cycles to the next mode
+- **Hunger: Bar / Vanilla / Hidden**: each click cycles to the next mode
 - **Move HUD**: opens the position editor
 - **Reset Position**: puts the HUD back in the default spot above the hotbar
 - **Done**
@@ -101,7 +103,7 @@ The point of this is to let players move the bars away from **Double Hotbar**, *
 | Class | Responsibility |
 |---|---|
 | `RpgHealthBarMod` | Entry point, registers config, events, config screen factory |
-| `config/ClientConfig` | `ModConfigSpec`: `showArmorBar`, `showHungerBar`, `offsetX`, `offsetY` |
+| `config/ClientConfig` | `ModConfigSpec`: `armorMode`, `hungerMode`, `offsetX`, `offsetY` |
 | `client/HudLayout` | Computes the group's position/size from config + screen size (used by both the HUD and the editor) |
 | `client/HudRenderer` | Draws the whole group at a given position (used by both the HUD layer and the editor preview) |
 | `client/BarRenderer` | Draws one bar (background, fill, overlay, border, optional label) |
@@ -146,7 +148,7 @@ The point of this is to let players move the bars away from **Double Hotbar**, *
 - [ ] Absorption: overlay shows, text reads `20+4/20`, and the overlay clamps when absorption > max HP
 - [ ] Armor > 20 shows a full bar, no crash
 - [ ] Hunger bar tracks food level (not saturation)
-- [ ] Toggling armor/hunger in-game updates without a restart
+- [ ] Switching armor/hunger between Bar / Vanilla / Hidden in-game updates without a restart
 - [ ] Move HUD: drag, Save keeps the new position, Cancel reverts it, Reset goes back to default
 - [ ] Position survives a relog, a window resize, and a GUI scale change
 - [ ] Without Iron's Spells installed: no crash, no mana bar

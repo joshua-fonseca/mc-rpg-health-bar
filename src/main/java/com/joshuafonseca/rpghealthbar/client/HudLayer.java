@@ -1,6 +1,7 @@
 package com.joshuafonseca.rpghealthbar.client;
 
 import com.joshuafonseca.rpghealthbar.config.ClientConfig;
+import com.joshuafonseca.rpghealthbar.config.HalfBarMode;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
@@ -30,15 +31,15 @@ public class HudLayer implements LayeredDraw.Layer {
             return;
         }
 
-        boolean showArmor = ClientConfig.SHOW_ARMOR_BAR.get();
-        boolean showHunger = ClientConfig.SHOW_HUNGER_BAR.get();
+        boolean showArmor = ClientConfig.ARMOR_MODE.get() == HalfBarMode.BAR;
+        boolean showHunger = ClientConfig.HUNGER_MODE.get() == HalfBarMode.BAR;
         HudLayout layout = HudLayout.compute(graphics.guiWidth(), graphics.guiHeight(), showArmor || showHunger);
         renderHalfBars(graphics, player, layout, showArmor, showHunger);
         renderHealth(graphics, minecraft, player, layout);
         reserveVanillaSpace(minecraft.gui, graphics.guiHeight(), layout);
     }
 
-    /** Each bar keeps its own half when the other one is turned off. */
+    /** Each bar keeps its own half when the other one isn't shown as a bar. */
     private static void renderHalfBars(GuiGraphics graphics, Player player, HudLayout layout, boolean showArmor, boolean showHunger) {
         int y = layout.halfBarY();
         int width = HudLayout.HALF_BAR_WIDTH;

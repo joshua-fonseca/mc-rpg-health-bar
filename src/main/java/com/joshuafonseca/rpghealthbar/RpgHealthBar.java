@@ -3,6 +3,7 @@ package com.joshuafonseca.rpghealthbar;
 import com.joshuafonseca.rpghealthbar.client.HudLayer;
 import com.joshuafonseca.rpghealthbar.client.screen.RpgConfigScreen;
 import com.joshuafonseca.rpghealthbar.config.ClientConfig;
+import com.joshuafonseca.rpghealthbar.config.HalfBarMode;
 import com.mojang.logging.LogUtils;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
@@ -15,7 +16,6 @@ import net.neoforged.neoforge.client.event.RenderGuiLayerEvent;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import net.neoforged.neoforge.common.NeoForge;
-import java.util.Set;
 import org.slf4j.Logger;
 
 // Client-only mod: this entry point is never loaded on a dedicated server.
@@ -25,12 +25,6 @@ public class RpgHealthBar {
     public static final Logger LOGGER = LogUtils.getLogger();
 
     public static final ResourceLocation HUD_LAYER = ResourceLocation.fromNamespaceAndPath(MODID, "hud");
-
-    /** Vanilla HUD elements replaced by our bars. */
-    private static final Set<ResourceLocation> REPLACED_LAYERS = Set.of(
-            VanillaGuiLayers.PLAYER_HEALTH,
-            VanillaGuiLayers.ARMOR_LEVEL,
-            VanillaGuiLayers.FOOD_LEVEL);
 
     public RpgHealthBar(IEventBus modEventBus, ModContainer modContainer) {
         modContainer.registerConfig(ModConfig.Type.CLIENT, ClientConfig.SPEC);
@@ -47,7 +41,10 @@ public class RpgHealthBar {
     }
 
     private static void hideVanillaLayers(RenderGuiLayerEvent.Pre event) {
-        if (REPLACED_LAYERS.contains(event.getName())) {
+        ResourceLocation name = event.getName();
+        if (name.equals(VanillaGuiLayers.PLAYER_HEALTH)
+                || (name.equals(VanillaGuiLayers.ARMOR_LEVEL) && ClientConfig.ARMOR_MODE.get() != HalfBarMode.VANILLA)
+                || (name.equals(VanillaGuiLayers.FOOD_LEVEL) && ClientConfig.HUNGER_MODE.get() != HalfBarMode.VANILLA)) {
             event.setCanceled(true);
         }
     }
