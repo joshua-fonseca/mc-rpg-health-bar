@@ -13,6 +13,10 @@ public final class BarRenderer {
     /** The fill's top row is mixed this much toward white, its bottom row darkened by this much. */
     private static final float HIGHLIGHT = 0.3F;
     private static final float SHADE = 0.3F;
+    /** The fill's right end fades toward white over this many pixels, ending in a near-white line. */
+    private static final int GLOW_WIDTH = 10;
+    private static final float GLOW_MAX = 0.55F;
+    private static final float GLOW_TIP = 0.85F;
 
     private BarRenderer() {
     }
@@ -59,6 +63,25 @@ public final class BarRenderer {
         graphics.fill(edgeLeft, top, edgeRight, top + 1, mix(color, 0xFFFFFFFF, HIGHLIGHT));
         graphics.fill(left, top + 1, right, bottom - 1, color);
         graphics.fill(edgeLeft, bottom - 1, edgeRight, bottom, mix(color, 0xFF000000, SHADE));
+    }
+
+    /**
+     * Lightens the right end of a fill drawn with {@link #drawFill} (same arguments): a fade toward
+     * white over the last few pixels, then a near-white line at the tip.
+     */
+    public static void drawGlow(GuiGraphics graphics, int x, int y, int width, int height, int inset, float fraction, int color) {
+        int fillWidth = Math.round((width - 2 * inset) * Mth.clamp(fraction, 0.0F, 1.0F));
+        if (fillWidth <= 0) {
+            return;
+        }
+        int right = x + inset + fillWidth;
+        int top = y + inset;
+        int bottom = y + height - inset;
+        int glowWidth = Math.min(GLOW_WIDTH, fillWidth);
+        for (int i = 1; i <= glowWidth; i++) {
+            float amount = i == 1 ? GLOW_TIP : GLOW_MAX * (glowWidth - i + 1) / glowWidth;
+            graphics.fill(right - i, top, right - i + 1, bottom, mix(color, 0xFFFFFFFF, amount));
+        }
     }
 
     /** Text on the left side of the bar, vertically centered (it overflows bars shorter than the font). */

@@ -136,6 +136,8 @@ The point of this is to let players move the bars away from **Double Hotbar**, *
 ### 2.4 Layout (default, GUI-scaled pixels)
 - Group width: 182 (hotbar width), centered horizontally.
 - Health / mana bars: full width, 7 px tall (just fits the text, vertically centered), with a 1 px semi-transparent dark border. Corners are rounded like the XP bar (corner pixels left out).
+- Health / mana fills: the right end fades toward white over 10 px, ending in a near-white line.
+- Losing health or mana: the lost section stays as a darker red/blue for 0.5 s, then shrinks smoothly to the new value (gone in well under a second). Gains show at once. Only on the real HUD, not the editor's placeholder preview.
 - Armor / hunger bars: `(182 - gap) / 2` wide each, 3 px tall, no border, rounded corners.
 - 3 px between the armor/hunger, health and mana rows.
 - Default position: the bars sit 2 px above the XP bar; the level number sits on the XP bar.

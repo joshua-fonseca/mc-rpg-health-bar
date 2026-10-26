@@ -119,7 +119,7 @@ public class HudEditScreen extends Screen {
         if (!inWorld || !HudLayer.isVisible(this.minecraft)) {
             graphics.pose().pushPose();
             graphics.pose().translate(offset.x(), offset.y(), 0);
-            HudRenderer.render(graphics, this.font, frame.layout(), HudValues.placeholder(), frame.showArmor(), frame.showHunger());
+            HudRenderer.render(graphics, this.font, frame.layout(), HudValues.placeholder(), frame.showArmor(), frame.showHunger(), false);
             if (!inWorld) {
                 int xpTop = frame.bounds().bottom() - 5;
                 graphics.fill(frame.layout().x(), xpTop, frame.layout().x() + HudLayout.WIDTH, xpTop + 5, XP_BAR_PREVIEW_COLOR);

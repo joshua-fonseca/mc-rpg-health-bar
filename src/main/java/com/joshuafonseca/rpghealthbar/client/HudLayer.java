@@ -26,7 +26,7 @@ public class HudLayer implements LayeredDraw.Layer {
 
         graphics.pose().pushPose();
         HudPosition.moveTo(graphics.pose(), frame.offset());
-        HudRenderer.render(graphics, minecraft.font, frame.layout(), values, frame.showArmor(), frame.showHunger());
+        HudRenderer.render(graphics, minecraft.font, frame.layout(), values, frame.showArmor(), frame.showHunger(), true);
         graphics.pose().popPose();
     }
 
