@@ -1,5 +1,7 @@
 package com.joshuafonseca.rpghealthbar.compat;
 
+import com.joshuafonseca.rpghealthbar.RpgHealthBar;
+import javax.annotation.Nullable;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.fml.ModList;
@@ -13,22 +15,36 @@ public final class IronsSpellsCompat {
     /** Iron's own mana bar, which our mana bar replaces. */
     public static final ResourceLocation MANA_OVERLAY = ResourceLocation.fromNamespaceAndPath(MODID, "mana_overlay");
 
-    private static final boolean LOADED = ModList.get().isLoaded(MODID);
+    /** Cleared if reading mana ever fails, e.g. a future Iron's version renamed something we use. */
+    private static boolean available = ModList.get().isLoaded(MODID);
 
     private IronsSpellsCompat() {
     }
 
-    public static boolean isLoaded() {
-        return LOADED;
+    public record Mana(float current, float max) {
     }
 
-    /** Only call when {@link #isLoaded()} is true. */
-    public static float mana() {
-        return IronsSpellsMana.mana();
+    /** Whether the mana bar should be part of the layout. */
+    public static boolean isAvailable() {
+        return available;
     }
 
-    /** Only call when {@link #isLoaded()} is true. */
-    public static float maxMana(Player player) {
-        return IronsSpellsMana.maxMana(player);
+    /**
+     * The local player's mana, or null if Iron's Spells isn't installed or its API has changed in a
+     * way we can't read. In the latter case a warning is logged once and the mana bar is turned off
+     * for the rest of the session instead of crashing the game.
+     */
+    @Nullable
+    public static Mana read(Player player) {
+        if (!available) {
+            return null;
+        }
+        try {
+            return new Mana(IronsSpellsMana.mana(), IronsSpellsMana.maxMana(player));
+        } catch (LinkageError | RuntimeException e) {
+            available = false;
+            RpgHealthBar.LOGGER.warn("Couldn't read mana from Iron's Spells; this version may not be supported. The mana bar is turned off.", e);
+            return null;
+        }
     }
 }

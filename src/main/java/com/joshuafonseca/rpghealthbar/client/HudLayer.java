@@ -35,12 +35,12 @@ public class HudLayer implements LayeredDraw.Layer {
 
         boolean showArmor = ClientConfig.ARMOR_MODE.get() == HalfBarMode.BAR;
         boolean showHunger = ClientConfig.HUNGER_MODE.get() == HalfBarMode.BAR;
-        boolean showMana = IronsSpellsCompat.isLoaded();
-        HudLayout layout = HudLayout.compute(graphics.guiWidth(), graphics.guiHeight(), showArmor || showHunger, showMana);
+        IronsSpellsCompat.Mana mana = IronsSpellsCompat.read(player);
+        HudLayout layout = HudLayout.compute(graphics.guiWidth(), graphics.guiHeight(), showArmor || showHunger, mana != null);
         renderHalfBars(graphics, player, layout, showArmor, showHunger);
         renderHealth(graphics, minecraft, player, layout);
-        if (showMana) {
-            renderMana(graphics, minecraft, player, layout);
+        if (mana != null) {
+            renderMana(graphics, minecraft, mana, layout);
         }
         reserveVanillaSpace(minecraft.gui, graphics.guiHeight(), layout);
     }
@@ -80,9 +80,9 @@ public class HudLayer implements LayeredDraw.Layer {
         BarRenderer.drawLabel(graphics, minecraft.font, x, y, HudLayout.MAIN_BAR_HEIGHT, text);
     }
 
-    private static void renderMana(GuiGraphics graphics, Minecraft minecraft, Player player, HudLayout layout) {
-        float mana = IronsSpellsCompat.mana();
-        float maxMana = IronsSpellsCompat.maxMana(player);
+    private static void renderMana(GuiGraphics graphics, Minecraft minecraft, IronsSpellsCompat.Mana values, HudLayout layout) {
+        float mana = values.current();
+        float maxMana = values.max();
 
         int x = layout.x();
         int y = layout.manaY();
