@@ -76,7 +76,7 @@ The mod provides its own config screen, opened from Mods menu → RPG Health Bar
 - Hovering over a button shows a tooltip listing its possible values and what each does.
 
 **Position editor** (`HudEditScreen`):
-- Shows the whole bar group as a preview (with placeholder values if needed) and an outline around it.
+- Shows the whole bar group as a preview (with placeholder values if needed), with no outline.
 - Click and drag to move the **whole set together** (the bars can't be moved one at a time).
 - The set includes the **vanilla XP bar, XP level number and horse jump meter**, so they stay under the bars wherever the group goes. Without this, moving the bars up to make room for Double Hotbar would leave the XP bar behind under the second hotbar.
 - The group is kept fully on screen while dragging.
