@@ -14,8 +14,8 @@ public record HudLayout(int x, int top, int iconRowY, int halfBarY, int healthY,
     public static final int HALF_BAR_WIDTH = (WIDTH - HALF_BAR_GAP) / 2;
     /** Vanilla armor and hunger icons are 9px tall. */
     public static final int ICON_ROW_HEIGHT = 9;
-    /** Vertical gap between the armor/hunger, health and mana rows. */
-    private static final int ROW_GAP = 3;
+    /** Vertical gap between the armor/hunger, health and mana rows; same as between the XP bar and hotbar. */
+    private static final int ROW_GAP = 2;
     /** The XP bar's top edge is at guiHeight - 29; the bars sit 2px above it. */
     private static final int BOTTOM_MARGIN = 31;
 

@@ -29,6 +29,8 @@ public final class BarRenderer {
     /** The fill brightens gradually over its last few columns, by up to this much. */
     private static final int END_WIDTH = 6;
     private static final float END_BRIGHTEN = 0.18F;
+    /** The last column is mixed this much toward white, keeping the rows' shading. */
+    private static final float TIP_WHITE = 0.7F;
 
     private BarRenderer() {
     }
@@ -59,7 +61,7 @@ public final class BarRenderer {
      * Fills the bar from the left; {@code fraction} is clamped to 0–1. Draw it over {@link #drawTrack}
      * with the same position, size and {@code framed}.
      *
-     * @param brightEnd whether the last few columns brighten slightly, like the leading edge of a fluid
+     * @param brightEnd whether the last few columns brighten slightly, ending in a near-white tip
      */
     public static void drawFill(GuiGraphics graphics, int x, int y, int width, int height, boolean framed, float fraction, int color, boolean brightEnd) {
         int inset = framed ? 1 : 0;
@@ -79,8 +81,12 @@ public final class BarRenderer {
                         continue;
                     }
                     float shade = (shades != null ? shades[row] : 1.0F) + end + noise(i, row);
+                    int pixel = scale(color, shade);
+                    if (brightEnd && i == fillWidth - 1) {
+                        pixel = scale(mix(color, 0xFFFFFFFF, TIP_WHITE), shades != null ? shades[row] : 1.0F);
+                    }
                     int rowY = y + inset + row;
-                    graphics.fill(column, rowY, column + 1, rowY + 1, scale(color, shade));
+                    graphics.fill(column, rowY, column + 1, rowY + 1, pixel);
                 }
                 if (framed) {
                     // Tint the border along the filled part, as the XP bar's progress sprite does.
@@ -124,6 +130,14 @@ public final class BarRenderer {
         hash *= 0x5BD1E995;
         hash ^= hash >>> 15;
         return ((hash & 0xFF) / 255.0F * 2.0F - 1.0F) * NOISE;
+    }
+
+    /** Blends two opaque colors. */
+    private static int mix(int from, int to, float amount) {
+        int r = Math.round(Mth.lerp(amount, (from >> 16) & 0xFF, (to >> 16) & 0xFF));
+        int g = Math.round(Mth.lerp(amount, (from >> 8) & 0xFF, (to >> 8) & 0xFF));
+        int b = Math.round(Mth.lerp(amount, from & 0xFF, to & 0xFF));
+        return 0xFF000000 | (r << 16) | (g << 8) | b;
     }
 
     /** Multiplies an opaque color's brightness, clamping each channel. */
