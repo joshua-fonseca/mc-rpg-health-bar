@@ -6,7 +6,6 @@ import com.joshuafonseca.rpghealthbar.client.HudPosition;
 import com.joshuafonseca.rpghealthbar.client.HudRenderer;
 import com.joshuafonseca.rpghealthbar.client.HudValues;
 import com.joshuafonseca.rpghealthbar.compat.IronsSpellsCompat;
-import com.joshuafonseca.rpghealthbar.config.ClientConfig;
 import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.client.gui.GuiGraphics;
@@ -34,6 +33,7 @@ public class HudEditScreen extends Screen {
     private final Screen parent;
     private final List<Button> buttons = new ArrayList<>();
     private int controlsTop;
+    /** Shift from the default spot; null until the screen size is known in init(). */
     private HudPosition.Offset offset;
     private boolean dragging;
     private double grabX;
@@ -42,7 +42,6 @@ public class HudEditScreen extends Screen {
     public HudEditScreen(Screen parent) {
         super(Component.translatable("rpghealthbar.edit.title"));
         this.parent = parent;
-        this.offset = new HudPosition.Offset(ClientConfig.OFFSET_X.get(), ClientConfig.OFFSET_Y.get());
     }
 
     @Override
@@ -52,13 +51,14 @@ public class HudEditScreen extends Screen {
         buttons.clear();
         buttons.add(addRenderableWidget(Button.builder(Component.translatable("rpghealthbar.edit.save"), button -> save())
                 .bounds(x, 0, BUTTON_WIDTH, BUTTON_HEIGHT).build()));
-        buttons.add(addRenderableWidget(Button.builder(Component.translatable("rpghealthbar.edit.reset"), button -> setOffset(new HudPosition.Offset(0, 0)))
+        buttons.add(addRenderableWidget(Button.builder(Component.translatable("rpghealthbar.edit.reset"), button -> setOffset(HudPosition.defaultOffset(this.width, this.height, frame().bounds())))
                 .bounds(x + BUTTON_WIDTH + BUTTON_GAP, 0, BUTTON_WIDTH, BUTTON_HEIGHT).build()));
         buttons.add(addRenderableWidget(Button.builder(CommonComponents.GUI_CANCEL, button -> onClose())
                 .bounds(x + (BUTTON_WIDTH + BUTTON_GAP) * 2, 0, BUTTON_WIDTH, BUTTON_HEIGHT).build()));
 
-        // Re-clamp in case the window was resized; also places the controls.
-        setOffset(offset);
+        // Start from the saved position, or re-clamp the dragged one if the window was resized.
+        // This also places the controls.
+        setOffset(offset != null ? offset : HudPosition.saved(this.width, this.height, frame().bounds()));
     }
 
     /** Keeps the controls out of the way: at the bottom when the HUD is in the top half, else at the top. */
@@ -82,9 +82,7 @@ public class HudEditScreen extends Screen {
     }
 
     private void save() {
-        ClientConfig.OFFSET_X.set(offset.x());
-        ClientConfig.OFFSET_Y.set(offset.y());
-        ClientConfig.OFFSET_Y.save();
+        HudPosition.save(offset, this.width, this.height, frame().bounds());
         onClose();
     }
 

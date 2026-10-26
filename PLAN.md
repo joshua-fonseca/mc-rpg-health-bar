@@ -81,7 +81,8 @@ The mod provides its own config screen, opened from Mods menu → RPG Health Bar
 - **Cancel** button / ESC: discards the change.
 - The title, hint and buttons sit in whichever half of the screen the HUD isn't in, so they never cover it.
 - In a world, the real HUD moves live while dragging. From the title screen (or in creative, where the bars aren't drawn), a preview with placeholder values is shown instead.
-- There's no need to type X/Y numbers. Internally the position is saved as an offset from the bottom-center of the screen, so it stays put across window resizes and GUI scale changes. These offset values are stored in the config file but aren't shown as editable fields.
+- There's no need to type X/Y numbers. On Save, the position is stored relative to the **nearest of 9 screen spots** (corners, edge midpoints, center), as `anchor` + `offsetX`/`offsetY` in the config file (not shown as editable fields). Left near the hotbar, it's measured from the bottom-middle, so it keeps its distance from the hotbar; put in a corner, it stays in that corner. Either way it holds up when the window size or GUI scale changes.
+- The bars scale with Minecraft's GUI Scale setting, like the hotbar. There's no separate size setting.
 
 The point of this is to let players move the bars away from **Double Hotbar**, **Armor Status HUD**, or any other mod drawing near the hotbar.
 

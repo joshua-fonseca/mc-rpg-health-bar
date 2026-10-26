@@ -47,10 +47,7 @@ public class RpgConfigScreen extends Screen {
                 .build());
         y += ROW_SPACING;
 
-        addRenderableWidget(Button.builder(Component.translatable("rpghealthbar.config.resetPosition"), button -> {
-                    ClientConfig.OFFSET_X.set(0);
-                    ClientConfig.set(ClientConfig.OFFSET_Y, 0);
-                })
+        addRenderableWidget(Button.builder(Component.translatable("rpghealthbar.config.resetPosition"), button -> ClientConfig.resetPosition())
                 .bounds(x, y, BUTTON_WIDTH, BUTTON_HEIGHT)
                 .build());
 
