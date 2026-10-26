@@ -1,0 +1,29 @@
+modLoader="javafml"
+loaderVersion="${loader_version_range}"
+license="${mod_license}"
+issueTrackerURL="https://github.com/joshua-fonseca/mc-rpg-health-bar/issues"
+
+[[mods]]
+modId="${mod_id}"
+version="${mod_version}"
+displayName="${mod_name}"
+authors="joshua-fonseca"
+description='''
+Replaces the vanilla hearts, armor and hunger HUD with RPG-style bars, with an optional mana bar for Iron's Spells 'n Spellbooks.
+'''
+# Client-only mod: servers don't need it, and clients can join servers without it.
+displayTest="IGNORE_ALL_VERSION"
+
+[[dependencies.${mod_id}]]
+    modId="neoforge"
+    type="required"
+    versionRange="[${neo_version},)"
+    ordering="NONE"
+    side="CLIENT"
+
+[[dependencies.${mod_id}]]
+    modId="minecraft"
+    type="required"
+    versionRange="${minecraft_version_range}"
+    ordering="NONE"
+    side="CLIENT"
