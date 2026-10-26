@@ -23,3 +23,6 @@ jobs:
 
       - name: Build with Gradle
         run: ./gradlew build
+
+      - name: Compile against the oldest supported NeoForge
+        run: ./gradlew compileJava -Pneo_version=21.1.1
