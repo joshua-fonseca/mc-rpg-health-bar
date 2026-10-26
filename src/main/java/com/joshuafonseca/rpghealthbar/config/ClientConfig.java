@@ -7,14 +7,14 @@ public final class ClientConfig {
     private static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
 
     public static final ModConfigSpec.EnumValue<HalfBarMode> ARMOR_MODE = BUILDER
-            .comment("How armor is shown: BAR (white bar above the health bar), VANILLA (vanilla armor icons) or HIDDEN.")
+            .comment("How armor is shown: VANILLA (vanilla armor icons), BAR (white bar above the health bar) or HIDDEN.")
             .translation("rpghealthbar.config.armorMode")
-            .defineEnum("armorMode", HalfBarMode.BAR);
+            .defineEnum("armorMode", HalfBarMode.VANILLA);
 
     public static final ModConfigSpec.EnumValue<HalfBarMode> HUNGER_MODE = BUILDER
-            .comment("How hunger is shown: BAR (orange bar above the health bar), VANILLA (vanilla hunger icons) or HIDDEN.")
+            .comment("How hunger is shown: VANILLA (vanilla hunger icons), BAR (orange bar above the health bar) or HIDDEN.")
             .translation("rpghealthbar.config.hungerMode")
-            .defineEnum("hungerMode", HalfBarMode.BAR);
+            .defineEnum("hungerMode", HalfBarMode.VANILLA);
 
     public static final ModConfigSpec.EnumValue<HealthUnit> HEALTH_UNIT = BUILDER
             .comment("Unit for the numbers on the health bar: HP (20 for a full vanilla bar) or HEARTS (HP / 2, so 10).")

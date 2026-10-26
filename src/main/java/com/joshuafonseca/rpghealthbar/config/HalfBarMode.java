@@ -4,10 +4,10 @@ import net.minecraft.network.chat.Component;
 
 /** How the armor and hunger stats are shown. */
 public enum HalfBarMode {
-    /** Our half-width bar above the health bar. */
-    BAR,
-    /** The vanilla icons, drawn above our bars. */
+    /** The vanilla icons, in the row above the health bar (the default). */
     VANILLA,
+    /** Our half-width bar, in the row above the health bar. */
+    BAR,
     /** Not shown at all. */
     HIDDEN;
 

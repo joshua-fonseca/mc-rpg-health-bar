@@ -19,5 +19,11 @@
   "rpghealthbar.config.healthUnit.hearts": "Hearts (10)",
   "rpghealthbar.config.absorptionDisplay": "Absorption",
   "rpghealthbar.config.absorptionDisplay.separate": "Separate (16+4/20)",
-  "rpghealthbar.config.absorptionDisplay.combined": "Combined (20/20)"
+  "rpghealthbar.config.absorptionDisplay.combined": "Combined (20/20)",
+  "rpghealthbar.config.armorMode.tooltip": "How armor is shown.\n\nVanilla (default): the normal armor icons, in the row above the health bar.\nBar: a white bar, half the width of the health bar.\nHidden: armor isn't shown.",
+  "rpghealthbar.config.hungerMode.tooltip": "How hunger is shown.\n\nVanilla (default): the normal hunger icons, in the row above the health bar.\nBar: an orange bar, half the width of the health bar.\nHidden: hunger isn't shown.",
+  "rpghealthbar.config.healthUnit.tooltip": "Unit for the numbers on the health bar.\n\nHP (default): health points, 20 for a full vanilla health bar.\nHearts: HP divided by 2, so 10 for a full vanilla health bar.",
+  "rpghealthbar.config.absorptionDisplay.tooltip": "How absorption (golden hearts) is written on the health bar.\n\nSeparate (default): health + absorption / max, e.g. 16+4/20.\nCombined: health and absorption added together / max, e.g. 20/20.",
+  "rpghealthbar.config.moveHud.tooltip": "Drag the bars, XP bar and level number to a new spot as one group, then Save. Arrow keys nudge it.",
+  "rpghealthbar.config.resetPosition.tooltip": "Move the HUD back to its default spot above the hotbar."
 }
