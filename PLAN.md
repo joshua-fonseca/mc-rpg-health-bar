@@ -165,7 +165,7 @@ The point of this is to let players move the bars away from **Double Hotbar**, *
 6. **Move HUD editor**: drag the group (including the XP bar, level number and jump meter), Save/Cancel, Reset; position persists.
 7. **Vanilla overlap check**: air bubbles and mount health don't collide with the bars, and get shifted if needed.
 8. **Styling + modpack test**: slim bars with shaded fills, thin armor/hunger lines, level number centered on the XP bar (done); test in the full Antarchy Craft modpack (Double Hotbar, Armor Status HUD, Configured, Jade, Xaero's). Modpack test done: confirmed working in the Antarchy Craft modpack on NeoForge 21.1.235 (2026-10-26).
-9. **Release**: build jar, README.
+9. **Release**: build jar, README. Done: version 1.0.0 with a pixel-art icon (`rpghealthbar.png`), mod description and homepage link, README with screenshots (`docs/images/`), CHANGELOG, tag `v1.0.0`.
 
 ## 4. Testing checklist
 - [ ] Max HP 20, 40, and odd values (e.g. 27) display correctly
