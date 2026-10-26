@@ -1,14 +1,18 @@
 package com.joshuafonseca.rpghealthbar;
 
 import com.joshuafonseca.rpghealthbar.client.HudLayer;
+import com.joshuafonseca.rpghealthbar.client.screen.RpgConfigScreen;
+import com.joshuafonseca.rpghealthbar.config.ClientConfig;
 import com.mojang.logging.LogUtils;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.config.ModConfig;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.client.event.RenderGuiLayerEvent;
+import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import net.neoforged.neoforge.common.NeoForge;
 import java.util.Set;
@@ -29,6 +33,9 @@ public class RpgHealthBar {
             VanillaGuiLayers.FOOD_LEVEL);
 
     public RpgHealthBar(IEventBus modEventBus, ModContainer modContainer) {
+        modContainer.registerConfig(ModConfig.Type.CLIENT, ClientConfig.SPEC);
+        // Mods → RPG Health Bar → Config, also reachable from the pause menu's Mods button.
+        modContainer.registerExtensionPoint(IConfigScreenFactory.class, (container, parent) -> new RpgConfigScreen(parent));
         modEventBus.addListener(RpgHealthBar::registerGuiLayers);
         NeoForge.EVENT_BUS.addListener(RpgHealthBar::hideVanillaLayers);
     }

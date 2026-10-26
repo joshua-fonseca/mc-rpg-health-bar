@@ -1,5 +1,6 @@
 package com.joshuafonseca.rpghealthbar.client;
 
+import com.joshuafonseca.rpghealthbar.config.ClientConfig;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
@@ -29,22 +30,28 @@ public class HudLayer implements LayeredDraw.Layer {
             return;
         }
 
-        HudLayout layout = HudLayout.compute(graphics.guiWidth(), graphics.guiHeight());
-        renderHalfBars(graphics, player, layout);
+        boolean showArmor = ClientConfig.SHOW_ARMOR_BAR.get();
+        boolean showHunger = ClientConfig.SHOW_HUNGER_BAR.get();
+        HudLayout layout = HudLayout.compute(graphics.guiWidth(), graphics.guiHeight(), showArmor || showHunger);
+        renderHalfBars(graphics, player, layout, showArmor, showHunger);
         renderHealth(graphics, minecraft, player, layout);
         reserveVanillaSpace(minecraft.gui, graphics.guiHeight(), layout);
     }
 
-    private static void renderHalfBars(GuiGraphics graphics, Player player, HudLayout layout) {
+    /** Each bar keeps its own half when the other one is turned off. */
+    private static void renderHalfBars(GuiGraphics graphics, Player player, HudLayout layout, boolean showArmor, boolean showHunger) {
         int y = layout.halfBarY();
         int width = HudLayout.HALF_BAR_WIDTH;
         int height = HudLayout.HALF_BAR_HEIGHT;
 
-        BarRenderer.drawFrame(graphics, layout.x(), y, width, height);
-        BarRenderer.drawFill(graphics, layout.x(), y, width, height, player.getArmorValue() / MAX_ARMOR, ARMOR_COLOR);
-
-        BarRenderer.drawFrame(graphics, layout.hungerX(), y, width, height);
-        BarRenderer.drawFill(graphics, layout.hungerX(), y, width, height, player.getFoodData().getFoodLevel() / MAX_FOOD, HUNGER_COLOR);
+        if (showArmor) {
+            BarRenderer.drawFrame(graphics, layout.x(), y, width, height);
+            BarRenderer.drawFill(graphics, layout.x(), y, width, height, player.getArmorValue() / MAX_ARMOR, ARMOR_COLOR);
+        }
+        if (showHunger) {
+            BarRenderer.drawFrame(graphics, layout.hungerX(), y, width, height);
+            BarRenderer.drawFill(graphics, layout.hungerX(), y, width, height, player.getFoodData().getFoodLevel() / MAX_FOOD, HUNGER_COLOR);
+        }
     }
 
     private static void renderHealth(GuiGraphics graphics, Minecraft minecraft, Player player, HudLayout layout) {

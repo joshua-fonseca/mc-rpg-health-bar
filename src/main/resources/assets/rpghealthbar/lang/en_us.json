@@ -1,2 +1,5 @@
 {
+  "rpghealthbar.config.title": "RPG Health Bar",
+  "rpghealthbar.config.showArmorBar": "Armor Bar",
+  "rpghealthbar.config.showHungerBar": "Hunger Bar"
 }

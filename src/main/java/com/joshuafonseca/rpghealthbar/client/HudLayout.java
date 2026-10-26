@@ -17,12 +17,17 @@ public record HudLayout(int x, int top, int halfBarY, int healthY) {
     /** The XP level number is drawn from guiHeight - 36 down; keep the group just above it. */
     private static final int BOTTOM_MARGIN = 37;
 
-    public static HudLayout compute(int screenWidth, int screenHeight) {
+    /**
+     * @param showHalfBarRow whether the armor/hunger row is drawn at all; when both bars are turned
+     *                       off the row is removed and the group shrinks.
+     */
+    public static HudLayout compute(int screenWidth, int screenHeight, boolean showHalfBarRow) {
         int x = screenWidth / 2 - WIDTH / 2;
         int bottom = screenHeight - BOTTOM_MARGIN;
         int healthY = bottom - MAIN_BAR_HEIGHT;
         int halfBarY = healthY - ROW_GAP - HALF_BAR_HEIGHT;
-        return new HudLayout(x, halfBarY, halfBarY, healthY);
+        int top = showHalfBarRow ? halfBarY : healthY;
+        return new HudLayout(x, top, halfBarY, healthY);
     }
 
     /** Left edge of the hunger bar (the armor bar starts at {@link #x()}). */
