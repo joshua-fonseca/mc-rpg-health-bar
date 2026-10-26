@@ -51,7 +51,8 @@ Everything above the hotbar, including the XP bar, is one **movable set**.
 - **Air bubbles** (underwater) and **mount health** (horses, etc.) stay vanilla.
 - The hotbar stays vanilla and doesn't move.
 - The **XP bar, XP level number and horse jump meter** keep their vanilla look but **move with the group** (see 1.7).
-- ⚠ Vanilla draws air bubbles and mount hearts in the same row as hunger, so they may overlap the new bars. They need to be checked during testing (see milestone 7). If they do overlap, they can be shifted up by the group's height with a pose-stack translate around those vanilla layers, without restyling them.
+- Air bubbles and mount hearts stack above the bars (vanilla's `Gui.leftHeight`/`rightHeight` are pushed above our group) and move with it. Verified in milestone 7, including multi-row horse health and the horse jump meter.
+- Known limit: if the HUD is placed against the very top of the screen, extra vanilla rows that only appear sometimes (air bubbles, horse hearts) can go off the top edge. The HUD isn't shifted to make room for them, so it doesn't jump around when you mount or dive.
 
 ### 1.6 Armor / hunger display modes (in-game, no restart)
 - `armorMode` and `hungerMode`, each one of:
@@ -165,10 +166,10 @@ The point of this is to let players move the bars away from **Double Hotbar**, *
 - [ ] Position survives a relog, a window resize, and a GUI scale change
 - [ ] Without Iron's Spells installed: no crash, no mana bar
 - [ ] With Iron's Spells installed: only one mana bar (Iron's own is hidden)
-- [ ] Air bubbles and mount health are still visible and not covered
+- [x] Air bubbles and mount health are still visible and not covered
 - [ ] Creative / spectator / F1 hide the HUD correctly
 - [ ] Can be moved clear of Double Hotbar + Armor Status HUD
-- [ ] XP bar, level number and horse jump meter move with the group
+- [x] XP bar, level number and horse jump meter move with the group
 
 ---
 
