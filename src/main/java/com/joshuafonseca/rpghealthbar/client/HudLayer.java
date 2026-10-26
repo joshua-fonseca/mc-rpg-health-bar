@@ -11,6 +11,11 @@ import net.minecraft.world.entity.player.Player;
 public class HudLayer implements LayeredDraw.Layer {
     private static final int HEALTH_COLOR = 0xFFE03030;
     private static final int ABSORPTION_COLOR = 0xFFF0C030;
+    private static final int ARMOR_COLOR = 0xFFE0E0E0;
+    private static final int HUNGER_COLOR = 0xFFE08020;
+    /** Vanilla's HUD shows at most 20 armor points and 20 food points. */
+    private static final float MAX_ARMOR = 20.0F;
+    private static final float MAX_FOOD = 20.0F;
 
     @Override
     public void render(GuiGraphics graphics, DeltaTracker deltaTracker) {
@@ -25,8 +30,21 @@ public class HudLayer implements LayeredDraw.Layer {
         }
 
         HudLayout layout = HudLayout.compute(graphics.guiWidth(), graphics.guiHeight());
+        renderHalfBars(graphics, player, layout);
         renderHealth(graphics, minecraft, player, layout);
         reserveVanillaSpace(minecraft.gui, graphics.guiHeight(), layout);
+    }
+
+    private static void renderHalfBars(GuiGraphics graphics, Player player, HudLayout layout) {
+        int y = layout.halfBarY();
+        int width = HudLayout.HALF_BAR_WIDTH;
+        int height = HudLayout.HALF_BAR_HEIGHT;
+
+        BarRenderer.drawFrame(graphics, layout.x(), y, width, height);
+        BarRenderer.drawFill(graphics, layout.x(), y, width, height, player.getArmorValue() / MAX_ARMOR, ARMOR_COLOR);
+
+        BarRenderer.drawFrame(graphics, layout.hungerX(), y, width, height);
+        BarRenderer.drawFill(graphics, layout.hungerX(), y, width, height, player.getFoodData().getFoodLevel() / MAX_FOOD, HUNGER_COLOR);
     }
 
     private static void renderHealth(GuiGraphics graphics, Minecraft minecraft, Player player, HudLayout layout) {

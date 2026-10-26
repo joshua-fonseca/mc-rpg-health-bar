@@ -11,6 +11,7 @@ import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.client.event.RenderGuiLayerEvent;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import net.neoforged.neoforge.common.NeoForge;
+import java.util.Set;
 import org.slf4j.Logger;
 
 // Client-only mod: this entry point is never loaded on a dedicated server.
@@ -20,6 +21,12 @@ public class RpgHealthBar {
     public static final Logger LOGGER = LogUtils.getLogger();
 
     public static final ResourceLocation HUD_LAYER = ResourceLocation.fromNamespaceAndPath(MODID, "hud");
+
+    /** Vanilla HUD elements replaced by our bars. */
+    private static final Set<ResourceLocation> REPLACED_LAYERS = Set.of(
+            VanillaGuiLayers.PLAYER_HEALTH,
+            VanillaGuiLayers.ARMOR_LEVEL,
+            VanillaGuiLayers.FOOD_LEVEL);
 
     public RpgHealthBar(IEventBus modEventBus, ModContainer modContainer) {
         modEventBus.addListener(RpgHealthBar::registerGuiLayers);
@@ -33,7 +40,7 @@ public class RpgHealthBar {
     }
 
     private static void hideVanillaLayers(RenderGuiLayerEvent.Pre event) {
-        if (event.getName().equals(VanillaGuiLayers.PLAYER_HEALTH)) {
+        if (REPLACED_LAYERS.contains(event.getName())) {
             event.setCanceled(true);
         }
     }
