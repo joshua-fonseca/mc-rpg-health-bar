@@ -40,7 +40,7 @@ public final class HudRenderer {
      *             shrinking darker section (the editor's placeholder values would otherwise
      *             look like a loss when switching back)
      */
-    public static void render(GuiGraphics graphics, Font font, HudLayout layout, HudValues values, boolean showArmor, boolean showHunger) {
+    public static void render(GuiGraphics graphics, Font font, HudLayout layout, HudValues values, boolean showArmor, boolean showHunger, boolean live) {
         renderHalfBars(graphics, layout, values, showArmor, showHunger);
         renderHealth(graphics, font, layout, values, live);
         if (values.mana() != null) {
