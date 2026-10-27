@@ -38,6 +38,16 @@ public final class ClientConfig {
             .translation("rpghealthbar.config.showManaText")
             .define("showManaText", true);
 
+    public static final ModConfigSpec.EnumValue<BarSize> HEALTH_SIZE = BUILDER
+            .comment("Width of the health bar: FULL (as wide as the hotbar) or HALF (like the armor and hunger bars).")
+            .translation("rpghealthbar.config.healthSize")
+            .defineEnum("healthSize", BarSize.FULL);
+
+    public static final ModConfigSpec.EnumValue<BarSize> MANA_SIZE = BUILDER
+            .comment("Width of the mana bar: FULL or HALF. With both bars HALF, they share a row, health on the left (Iron's Spells 'n Spellbooks only).")
+            .translation("rpghealthbar.config.manaSize")
+            .defineEnum("manaSize", BarSize.FULL);
+
     // Position: set by dragging the HUD in Config → Move HUD; not meant to be edited by hand.
     // Layout 2 (1.2.1 on): each piece has its own anchor and offset (below).
     // Layout 1 (before): the whole HUD's matching point (e.g. its bottom-center for BOTTOM_CENTER)
