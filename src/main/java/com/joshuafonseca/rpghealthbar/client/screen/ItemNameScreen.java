@@ -34,8 +34,8 @@ public class ItemNameScreen extends Screen {
     /** The previewed name is lightened like the piece being dragged in Move HUD. */
     private static final int NAME_HIGHLIGHT = 0x30FFFFFF;
     private static final int HINT_COLOR = 0xC0C0C0;
-    /** Title, slider, buttons and two lines of tips. */
-    private static final int CONTROLS_HEIGHT = 92;
+    /** Title, slider, buttons and three lines of tips. */
+    private static final int CONTROLS_HEIGHT = 104;
     private static final int CONTROLS_MARGIN = 8;
     /** The arrow keys move the name this much, or {@link #SHIFT_STEP} with Shift held, as in Move HUD. */
     private static final int STEP = 1;
@@ -107,6 +107,7 @@ public class ItemNameScreen extends Screen {
         int aboveHotbar = HudTextPlacer.previewAboveHotbarOffset(this.height, frame);
         graphics.drawCenteredString(this.font, Component.translatable("rpghealthbar.itemName.values", String.valueOf(aboveHotbar)),
                 this.width / 2, tipsTop + 12, HINT_COLOR);
+        graphics.drawCenteredString(this.font, Component.translatable("rpghealthbar.itemName.overlap"), this.width / 2, tipsTop + 24, HINT_COLOR);
     }
 
     @Override
