@@ -3,6 +3,7 @@ package com.joshuafonseca.rpghealthbar.client;
 import com.joshuafonseca.rpghealthbar.config.AbsorptionDisplay;
 import com.joshuafonseca.rpghealthbar.config.ClientConfig;
 import com.joshuafonseca.rpghealthbar.config.HealthUnit;
+import com.joshuafonseca.rpghealthbar.config.HudPiece;
 import net.minecraft.Util;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -39,29 +40,40 @@ public final class HudRenderer {
      * @param live whether these are the player's real values; only then are losses shown as a
      *             shrinking darker section (the editor's placeholder values would otherwise
      *             look like a loss when switching back)
+     * @param pieces each piece's shift from its place in the layout
      */
-    public static void render(GuiGraphics graphics, Font font, HudLayout layout, HudValues values, boolean showArmor, boolean showHunger, boolean live) {
-        renderHalfBars(graphics, layout, values, showArmor, showHunger);
-        renderHealth(graphics, font, layout, values, live);
+    public static void render(GuiGraphics graphics, Font font, HudLayout layout, HudValues values, boolean showArmor, boolean showHunger,
+                              HudPosition.Pieces pieces, boolean live) {
+        // Each bar keeps its own half when the other one isn't shown as a bar.
+        if (showArmor) {
+            inPiece(graphics, pieces, HudPiece.ARMOR, () -> renderHalfBar(graphics, layout.x(), layout, values.armor() / MAX_ARMOR, ARMOR_COLOR));
+        }
+        if (showHunger) {
+            inPiece(graphics, pieces, HudPiece.HUNGER, () -> renderHalfBar(graphics, layout.hungerX(), layout, values.food() / MAX_FOOD, values.hungerColor()));
+        }
+        inPiece(graphics, pieces, HudPiece.HEALTH, () -> renderHealth(graphics, font, layout, values, live));
         if (values.mana() != null) {
-            renderMana(graphics, font, layout, values, live);
+            inPiece(graphics, pieces, HudPiece.MANA, () -> renderMana(graphics, font, layout, values, live));
         }
     }
 
-    /** Each bar keeps its own half when the other one isn't shown as a bar. */
-    private static void renderHalfBars(GuiGraphics graphics, HudLayout layout, HudValues values, boolean showArmor, boolean showHunger) {
-        int y = layout.halfBarY();
-        int width = HudLayout.HALF_BAR_WIDTH;
-        int height = HudLayout.HALF_BAR_HEIGHT;
+    /** Draws with the pose shifted by the piece's own offset. */
+    private static void inPiece(GuiGraphics graphics, HudPosition.Pieces pieces, HudPiece piece, Runnable draw) {
+        HudPosition.Offset offset = pieces.get(piece);
+        if (offset.equals(HudPosition.Offset.ZERO)) {
+            draw.run();
+            return;
+        }
+        graphics.pose().pushPose();
+        graphics.pose().translate(offset.x(), offset.y(), 0);
+        draw.run();
+        graphics.pose().popPose();
+    }
 
-        if (showArmor) {
-            BarRenderer.drawTrack(graphics, layout.x(), y, width, height, false);
-            BarRenderer.drawFill(graphics, layout.x(), y, width, height, false, values.armor() / MAX_ARMOR, ARMOR_COLOR, false);
-        }
-        if (showHunger) {
-            BarRenderer.drawTrack(graphics, layout.hungerX(), y, width, height, false);
-            BarRenderer.drawFill(graphics, layout.hungerX(), y, width, height, false, values.food() / MAX_FOOD, values.hungerColor(), false);
-        }
+    private static void renderHalfBar(GuiGraphics graphics, int x, HudLayout layout, float fraction, int color) {
+        int y = layout.halfBarY();
+        BarRenderer.drawTrack(graphics, x, y, HudLayout.HALF_BAR_WIDTH, HudLayout.HALF_BAR_HEIGHT, false);
+        BarRenderer.drawFill(graphics, x, y, HudLayout.HALF_BAR_WIDTH, HudLayout.HALF_BAR_HEIGHT, false, fraction, color, false);
     }
 
     private static void renderHealth(GuiGraphics graphics, Font font, HudLayout layout, HudValues values, boolean live) {
