@@ -50,8 +50,8 @@ public final class HudPositionMover {
         GuiGraphics graphics = event.getGuiGraphics();
         HudLayer.Frame frame = HudLayer.Frame.current(graphics.guiWidth(), graphics.guiHeight());
         if (text) {
-            // Placed vertically from scratch: an upward move another mod gave the text counts as space
-            // that mod uses above the hotbar, and is replaced. Horizontal moves are kept.
+            // Placed vertically from scratch: an upward move another mod gave the text is applied from
+            // vanilla's spot, and replaced. Horizontal moves are kept.
             float foreignY = graphics.pose().last().pose().m31();
             int raise = Math.max(0, Math.round(-foreignY));
             int shift = name.equals(VanillaGuiLayers.SELECTED_ITEM_NAME)
