@@ -8,11 +8,14 @@ Replaces the vanilla hearts with an RPG-style health bar. With **Iron's Spells '
 
 - **Health bar** the width of the hotbar, with your current and max health on it (`15.5/20`). Max health follows your real max, so health boosts are shown.
 - **Absorption** fills the bar in gold, and the text shows it separately (`15.5+4/20`) or added in (`19.5/20`).
+- **Mana bar** for Iron's Spells 'n Spellbooks, an overhaul of Iron's own: in the same style as the health bar, replacing Iron's mana bar.
 - **Status colors:** like the vanilla hearts, the health bar turns green-yellow when poisoned, black when withered and light blue when frozen, and the hunger bar turns green with the Hunger effect. Heart colors added by other mods are followed too.
 - **Armor and hunger** as the vanilla icons (default), thin bars, or hidden.
-- **Half-size bars:** health and mana can each be full or half width. With both half, they sit side by side above the hotbar.
 - **AppleSkin support:** saturation is outlined in yellow on the hunger bar, and held food's value flashes on it, like AppleSkin's preview on the icons.
-- **Highly customizable:** drag the whole HUD, including the XP bar and level, or each piece (armor, hunger, health, mana, XP bar) on its own, and it stays in place when you change the window size or GUI scale. Every option is set in game and applies immediately, no restart.
+- **Highly customizable:**
+  - **Half-size bars:** health and mana can each be full or half width. With both half, they sit side by side above the hotbar.
+  - **Move the HUD** by dragging it: the whole set, including the XP bar and level, or each piece (armor, hunger, health, mana, XP bar) on its own. It stays in place when you change the window size or GUI scale.
+  - **Everything in game:** all options apply immediately, no restart.
 
 ![The HUD with armor and hunger as bars, and absorption](https://raw.githubusercontent.com/joshua-fonseca/mc-rpg-health-bar/main/docs/images/hud-bars.png)
 
