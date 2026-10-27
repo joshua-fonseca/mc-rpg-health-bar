@@ -63,7 +63,7 @@ Settings are stored in `config/rpghealthbar-client.toml`.
 
 - Minecraft 1.21.1, NeoForge 21.1.1 or newer (built and tested against 21.1.235).
 - Client-side only: servers don't need it, and it works on servers that don't have it.
-- [Iron's Spells 'n Spellbooks](https://www.curseforge.com/projects/855414) by Iron431 and Lab3 is optional (tested with 3.16.2). Iron's own libraries need a newer NeoForge (Iron's Lib requires 21.1.200+).
+- [Iron's Spells 'n Spellbooks](https://www.curseforge.com/projects/855414) by Iron431 and Lab3 is optional, and works with every version for 1.21.1: tested with the oldest (1.21.1-3.9.1), 3.16.2 and the newest (1.21.1-3.16.3). Newer Iron's versions need Iron's Lib, which requires NeoForge 21.1.200+.
 - If a future Iron's version changes something this mod reads, the mana bar or the spell cost preview turns off with a warning in the log instead of crashing.
 - [AppleSkin](https://www.curseforge.com/minecraft/mc-mods/appleskin) by squeek502 is optional (3.0.4 or newer; 3.0.2 and 3.0.3 only run on 1.21, not 1.21.1). It adds the saturation outline and food preview on the hunger bar; with the vanilla hunger icons, AppleSkin's own overlays move with them. Its settings for these overlays are followed, and if a future version changes something this mod uses, these turn off with a warning in the log.
 - [Double Hotbar](https://www.curseforge.com/projects/1563792) by sidezbros: compatible. Open **Move HUD...** and drag the HUD up above the second hotbar once; the bars, XP bar and level move together, and the item name stays above them.
@@ -78,6 +78,7 @@ Requires Java 21. See [PLAN.md](PLAN.md) for the full design.
 ./gradlew runClient  # launches a dev Minecraft client with the mod loaded
 ./gradlew runClient -PwithIronsSpells  # same, plus Iron's Spells and its dependencies
 ./gradlew runClient -PwithAppleSkin    # same, plus AppleSkin (the flags can be combined)
+./gradlew runClient -PwithIronsSpells -PironsRuntimeVersion=1.21.1-3.9.1  # run another Iron's version
 ```
 
 ## License

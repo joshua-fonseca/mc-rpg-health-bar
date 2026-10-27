@@ -117,7 +117,7 @@ The point of this is to let players move the bars away from **Double Hotbar**, *
 - Java 21, Gradle with ModDevGradle.
 - Mod ID: `rpghealthbar` (placeholder).
 - Client-only mod, so servers don't need it installed.
-- Iron's Spells added as a **compile-only** dependency (with the matching version 3.16.2 + Iron's Lib for compiling), and declared `type = "optional"` in `neoforge.mods.toml`.
+- Iron's Spells added as a **compile-only** dependency (with the matching version 3.16.2 + Iron's Lib for compiling), and declared `type = "optional"` in `neoforge.mods.toml`. Everything read from Iron's (`ClientMagicData.getPlayerMana`, `AttributeRegistry.MAX_MANA`, the spell wheel's `instance`/`active`/`wheelSelection`, the spell's level and cost, the `mana_overlay` layer) is the same in every 1.21.1 version; the jar built against 3.16.2 was run with the oldest, 3.9.1 (which doesn't need Iron's Lib), and the newest, 3.16.3 (`-PironsRuntimeVersion`).
 
 ### 2.2 Rendering (NeoForge GUI layers)
 - Register one custom layer with `RegisterGuiLayersEvent`, placed above `VanillaGuiLayers.PLAYER_HEALTH`.
