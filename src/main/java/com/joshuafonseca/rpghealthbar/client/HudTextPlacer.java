@@ -6,9 +6,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 
 /**
- * Where the held item's name and the action bar message go: just above whatever is stacked directly
- * above the hotbar, or right above the hotbar when nothing is. Vanilla puts them above the hearts and
- * armor rows instead, and never lower than a fixed height, which doesn't fit once pieces are moved.
+ * Where the held item's name and the action bar message go: just above whatever is stacked over the
+ * hotbar, or where vanilla puts them when nothing is. Vanilla puts them above the hearts and armor
+ * rows instead, which doesn't fit once pieces are moved; its lowest height is kept.
  * <p>
  * Another mod that draws something just above the hotbar (e.g. a second hotbar) may move the item
  * name up to clear it. That move is taken as the space the mod uses above the hotbar: the stack is
@@ -80,7 +80,11 @@ public final class HudTextPlacer {
         // The XP piece's row holds the XP bar, or the jump meter while riding; creative has neither.
         boolean xpRowShown = minecraft.player != null && minecraft.gameMode != null
                 && (minecraft.gameMode.hasExperience() || minecraft.player.jumpableVehicle() != null);
-        int top = screenHeight - HOTBAR_HEIGHT - raise;
+        // Never lower than vanilla puts the name in survival, which leaves room for things other mods
+        // draw right above the hotbar without moving the name themselves (e.g. a second hotbar).
+        // Also in creative, where vanilla draws it lower, as that would overlap them.
+        int lowest = screenHeight - VANILLA_NAME_MIN - raise;
+        int top = Math.min(screenHeight - HOTBAR_HEIGHT - raise, lowest + TEXT_ROOM);
         boolean stacked = false;
         boolean grew = true;
         while (grew) {
