@@ -48,6 +48,11 @@ public final class ClientConfig {
             .translation("rpghealthbar.config.manaSize")
             .defineEnum("manaSize", BarSize.FULL);
 
+    public static final ModConfigSpec.EnumValue<ItemNamePosition> ITEM_NAME_POSITION = BUILDER
+            .comment("Where the held item's name and action bar messages go when nothing is stacked right above the hotbar: VANILLA (no lower than vanilla puts them, leaving room for mods that draw above the hotbar) or ABOVE_HOTBAR (right above the hotbar).")
+            .translation("rpghealthbar.config.itemNamePosition")
+            .defineEnum("itemNamePosition", ItemNamePosition.VANILLA);
+
     // Position: set by dragging the HUD in Config → Move HUD; not meant to be edited by hand.
     // Layout 2 (1.2.1 on): each piece has its own anchor and offset (below).
     // Layout 1 (before): the whole HUD's matching point (e.g. its bottom-center for BOTTOM_CENTER)
