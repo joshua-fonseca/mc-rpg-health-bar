@@ -46,12 +46,15 @@ public final class HudPositionMover {
         GuiGraphics graphics = event.getGuiGraphics();
         HudLayer.Frame frame = HudLayer.Frame.compute(graphics.guiWidth(), graphics.guiHeight(), IronsSpellsCompat.isAvailable());
         if (text) {
-            // Only moved up or down, keeping any shift other mods gave the text.
+            // Placed vertically from scratch: an upward move another mod gave the text counts as space
+            // that mod uses above the hotbar, and is replaced. Horizontal moves are kept.
+            float foreignY = graphics.pose().last().pose().m31();
+            int raise = Math.max(0, Math.round(-foreignY));
             int shift = name.equals(VanillaGuiLayers.SELECTED_ITEM_NAME)
-                    ? HudTextPlacer.itemNameShift(graphics.guiWidth(), graphics.guiHeight(), frame)
-                    : HudTextPlacer.overlayShift(graphics.guiWidth(), graphics.guiHeight(), frame);
+                    ? HudTextPlacer.itemNameShift(graphics.guiWidth(), graphics.guiHeight(), frame, raise)
+                    : HudTextPlacer.overlayShift(graphics.guiWidth(), graphics.guiHeight(), frame, raise);
             graphics.pose().pushPose();
-            graphics.pose().translate(0, shift, 0);
+            graphics.pose().translate(0, shift - foreignY, 0);
             pushed = true;
             return;
         }

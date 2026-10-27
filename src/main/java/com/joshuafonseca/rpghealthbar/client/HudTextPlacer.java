@@ -9,6 +9,10 @@ import net.minecraft.client.gui.Gui;
  * Where the held item's name and the action bar message go: just above whatever is stacked directly
  * above the hotbar, or right above the hotbar when nothing is. Vanilla puts them above the hearts and
  * armor rows instead, and never lower than a fixed height, which doesn't fit once pieces are moved.
+ * <p>
+ * Another mod that draws something just above the hotbar (e.g. a second hotbar) may move the item
+ * name up to clear it. That move is taken as the space the mod uses above the hotbar: the stack is
+ * measured from above it, and the text is placed absolutely, so the two moves don't add up.
  */
 public final class HudTextPlacer {
     private static final int HOTBAR_WIDTH = 182;
@@ -29,20 +33,32 @@ public final class HudTextPlacer {
     private HudTextPlacer() {
     }
 
-    /** How far to move the item name down (positive) or up from where vanilla would draw it. */
-    public static int itemNameShift(int screenWidth, int screenHeight, HudLayer.Frame frame) {
+    /** How much other mods raised the item name this frame; the action bar is kept clear of the same space. */
+    private static int nameRaise;
+
+    /**
+     * How far to move the item name down (positive) or up from where vanilla would draw it.
+     *
+     * @param raise how far other mods already moved it up
+     */
+    public static int itemNameShift(int screenWidth, int screenHeight, HudLayer.Frame frame, int raise) {
+        nameRaise = raise;
         int vanillaTop = screenHeight - Math.max(rowsHeight(), VANILLA_NAME_MIN);
         Minecraft minecraft = Minecraft.getInstance();
         if (minecraft.gameMode != null && !minecraft.gameMode.canHurtPlayer()) {
             vanillaTop += VANILLA_NAME_CREATIVE_DROP;
         }
-        return nameTop(screenWidth, screenHeight, frame) - vanillaTop;
+        return nameTop(screenWidth, screenHeight, frame, raise) - vanillaTop;
     }
 
-    /** How far to move the action bar message from where vanilla would draw it. */
-    public static int overlayShift(int screenWidth, int screenHeight, HudLayer.Frame frame) {
+    /**
+     * How far to move the action bar message from where vanilla would draw it.
+     *
+     * @param raise how far other mods already moved it up
+     */
+    public static int overlayShift(int screenWidth, int screenHeight, HudLayer.Frame frame, int raise) {
         int vanillaTop = screenHeight - Math.max(rowsHeight() + OVERLAY_ABOVE_NAME, VANILLA_OVERLAY_MIN);
-        return nameTop(screenWidth, screenHeight, frame) - OVERLAY_ABOVE_NAME - vanillaTop;
+        return nameTop(screenWidth, screenHeight, frame, Math.max(raise, nameRaise)) - OVERLAY_ABOVE_NAME - vanillaTop;
     }
 
     /** Vanilla's yShift: the taller of the two stacks of rows above the hotbar. */
@@ -51,8 +67,12 @@ public final class HudTextPlacer {
         return Math.max(gui.leftHeight, gui.rightHeight);
     }
 
-    /** The item name's top edge: 1px above the top of the stack over the hotbar. */
-    private static int nameTop(int screenWidth, int screenHeight, HudLayer.Frame frame) {
+    /**
+     * The item name's top edge: 1px above the top of the stack over the hotbar.
+     *
+     * @param raise space other mods use right above the hotbar
+     */
+    private static int nameTop(int screenWidth, int screenHeight, HudLayer.Frame frame, int raise) {
         int hotbarLeft = screenWidth / 2 - HOTBAR_WIDTH / 2;
         int hotbarRight = hotbarLeft + HOTBAR_WIDTH;
         Minecraft minecraft = Minecraft.getInstance();
@@ -60,7 +80,7 @@ public final class HudTextPlacer {
         // The XP piece's row holds the XP bar, or the jump meter while riding; creative has neither.
         boolean xpRowShown = minecraft.player != null && minecraft.gameMode != null
                 && (minecraft.gameMode.hasExperience() || minecraft.player.jumpableVehicle() != null);
-        int top = screenHeight - HOTBAR_HEIGHT;
+        int top = screenHeight - HOTBAR_HEIGHT - raise;
         boolean stacked = false;
         boolean grew = true;
         while (grew) {
