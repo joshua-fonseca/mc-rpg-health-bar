@@ -163,6 +163,31 @@ public final class BarRenderer {
         RenderSystem.disableBlend();
     }
 
+    /**
+     * Outlines a frameless bar from {@code fromFraction} to {@code toFraction} in one color (which
+     * may be translucent): its top and bottom rows, and its left end if {@code closedStart}. The
+     * right end is left open.
+     */
+    public static void drawOutline(GuiGraphics graphics, int x, int y, int width, int height,
+                                   float fromFraction, float toFraction, int color, boolean closedStart) {
+        int start = columns(width, false, fromFraction);
+        int end = columns(width, false, toFraction);
+        if (end <= start) {
+            return;
+        }
+        // The bar's corner pixels are left out to round it, so the lines stop short of them.
+        int left = x + Math.max(start, 1);
+        int right = x + Math.min(end, width - 1);
+        int bottom = y + height;
+        graphics.drawManaged(() -> {
+            graphics.fill(left, y, right, y + 1, color);
+            graphics.fill(left, bottom - 1, right, bottom, color);
+            if (closedStart) {
+                graphics.fill(x + start, y + 1, x + start + 1, bottom - 1, color);
+            }
+        });
+    }
+
     /** How many fill columns a fraction covers. */
     public static int columns(int width, boolean framed, float fraction) {
         int inner = width - (framed ? 2 : 0);

@@ -29,8 +29,10 @@ Everything above the hotbar, including the XP bar, is one **movable set**.
   - **Health Units**: HP (default, `20/20`) or Hearts (HP / 2, `10/10`)
   - Rounded to the nearest 0.25 (after converting units): `16.75/20`, `16.5/20`. No trailing zeros, so whole numbers have no `.0`. (0.25 rather than 0.5 so a sliver of health still shows as `0.25` instead of `0`.)
 
+- **Size** (1.3.0): `healthSize` Full (default) or Half, as wide as the armor and hunger bars.
+
 ### 1.2 Mana bar (blue)
-- Directly below the health bar, same width.
+- Directly below the health bar, same width. `manaSize` Full (default) or Half (1.3.0). With both bars Half, they share one row, health on the left and mana on the right, lined up with the armor and hunger bars; with only one Half, each keeps its own row, left-aligned.
 - Text on the left: `current/max`, formatted the same way as HP.
 - Reads data from Iron's Spells:
   - current mana: `ClientMagicData.getPlayerMana()` (client-synced value)
@@ -45,7 +47,7 @@ Everything above the hotbar, including the XP bar, is one **movable set**.
 
 ### 1.4 Hunger bar (orange), half width
 - Above the health bar, right half. No text.
-- Fill = `foodData.getFoodLevel() / 20`. **Shows hunger, not saturation.**
+- Fill = `foodData.getFoodLevel() / 20`. **Shows hunger; saturation only with AppleSkin** (see 1.8).
 - Display mode: Vanilla icons (default), Bar, or Hidden.
 
 ### 1.5 Vanilla elements left as-is
@@ -101,6 +103,12 @@ The point of this is to let players move the bars away from **Double Hotbar**, *
 **The set is placed only by this mod:** some mods (e.g. Double Hotbar) shift vanilla layers like the XP bar or hunger icons themselves. For layers in the set, the mod replaces any such horizontal/vertical shift with its own position, so those mods can't pull the set apart; the player drags the whole set instead.
 
 ---
+
+### 1.8 AppleSkin (optional, 1.3.0)
+- Built against AppleSkin `mc1.21-3.0.4`, the oldest that runs on 1.21.1 (3.0.2 and 3.0.3 call `ModConfigSpec.setConfig`, removed in NeoForge 21.1, though their metadata accepts any NeoForge 21). Compile-only, declared optional; `AppleSkinApi` is the only class touching AppleSkin's, and is only loaded through `AppleSkinCompat`, which turns the features off with a warning if a call ever fails.
+- **Saturation** is outlined in yellow on the hunger bar (top and bottom rows, left end closed, right end open), from AppleSkin-synced `FoodData.getSaturationLevel()`, if AppleSkin's `showSaturationHudOverlay` is on. Vanilla only sends saturation now and then, so it's not shown without AppleSkin.
+- **Held food:** like AppleSkin, the main hand, then the off hand if its config allows; values from `FoodHelper.query` (so other mods' changes through its API count), only if `FoodHelper.canConsume`. The hunger it would restore flashes after the fill, and the saturation after the outline (vanilla's `FoodData.eat` caps: hunger at 20, saturation at the new hunger). Flash: 1.6s, up to AppleSkin's `maxHudOverlayFlashAlpha`. Queried once per GUI tick, like AppleSkin (its query fires an event).
+- **AppleSkin's own layers:** `saturation_level`, `hunger_restored` and `exhaustion_level` move with the hunger piece (they read `Gui.rightHeight`, which we set, so they line up with the vanilla icons), and are cancelled when hunger isn't Vanilla. `health_restored` (heart previews) is always cancelled.
 
 ## 2. Technical approach
 
@@ -170,14 +178,14 @@ The point of this is to let players move the bars away from **Double Hotbar**, *
 6. **Move HUD editor**: drag the group (including the XP bar, level number and jump meter), Save/Cancel, Reset; position persists.
 7. **Vanilla overlap check**: air bubbles and mount health don't collide with the bars, and get shifted if needed.
 8. **Styling + modpack test**: slim bars with shaded fills, thin armor/hunger lines, level number centered on the XP bar (done); test in the full Antarchy Craft modpack (Double Hotbar, Armor Status HUD, Configured, Jade, Xaero's). Modpack test done: confirmed working in the Antarchy Craft modpack on NeoForge 21.1.235 (2026-10-26).
-9. **Release**: build jar, README. Done: version 1.0.0 with a pixel-art icon (`rpghealthbar.png`), mod description and homepage link, README with screenshots (`docs/images/`), CHANGELOG, tag `v1.0.0`. 1.1.0: status colors, low-health pulse and Regeneration sweep; tag `v1.1.0`. 1.2.0: moving single pieces, hover highlight, item name placement; tag `v1.2.0`. 1.2.1: an anchor per piece group, so spread-out layouts hold on resize; tag `v1.2.1`.
+9. **Release**: build jar, README. Done: version 1.0.0 with a pixel-art icon (`rpghealthbar.png`), mod description and homepage link, README with screenshots (`docs/images/`), CHANGELOG, tag `v1.0.0`. 1.1.0: status colors, low-health pulse and Regeneration sweep; tag `v1.1.0`. 1.2.0: moving single pieces, hover highlight, item name placement; tag `v1.2.0`. 1.2.1: an anchor per piece group, so spread-out layouts hold on resize; tag `v1.2.1`. 1.3.0: half-size health/mana bars, AppleSkin support, batched Regeneration sweep; tag `v1.3.0`.
 
 ## 4. Testing checklist
 - [ ] Max HP 20, 40, and odd values (e.g. 27) display correctly
 - [ ] Fractional HP shows one decimal (`17.5/20`), whole HP shows none (`20/20`)
 - [ ] Absorption: overlay shows, text reads `20+4/20`, and the overlay clamps when absorption > max HP
 - [ ] Armor > 20 shows a full bar, no crash
-- [ ] Hunger bar tracks food level (not saturation)
+- [ ] Hunger bar tracks food level; with AppleSkin, saturation outline and held-food preview
 - [ ] Switching armor/hunger between Bar / Vanilla / Hidden in-game updates without a restart
 - [ ] Move HUD: drag, Save keeps the new position, Cancel reverts it, Reset goes back to default
 - [ ] Position survives a relog, a window resize, and a GUI scale change

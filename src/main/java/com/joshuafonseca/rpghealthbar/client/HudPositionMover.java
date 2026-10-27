@@ -1,5 +1,6 @@
 package com.joshuafonseca.rpghealthbar.client;
 
+import com.joshuafonseca.rpghealthbar.compat.AppleSkinCompat;
 import com.joshuafonseca.rpghealthbar.compat.IronsSpellsCompat;
 import com.joshuafonseca.rpghealthbar.config.HudPiece;
 import java.util.Map;
@@ -13,16 +14,20 @@ import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
  * replacing any shift other mods gave them so the set always stays together.
  */
 public final class HudPositionMover {
-    /** The vanilla layers that move, and the piece each moves with. */
-    private static final Map<ResourceLocation, HudPiece> MOVED_LAYERS = Map.of(
-            VanillaGuiLayers.EXPERIENCE_BAR, HudPiece.XP,
-            VanillaGuiLayers.EXPERIENCE_LEVEL, HudPiece.XP,
-            VanillaGuiLayers.JUMP_METER, HudPiece.XP,
-            VanillaGuiLayers.ARMOR_LEVEL, HudPiece.ARMOR,
+    /** The vanilla (and AppleSkin) layers that move, and the piece each moves with. */
+    private static final Map<ResourceLocation, HudPiece> MOVED_LAYERS = Map.ofEntries(
+            Map.entry(VanillaGuiLayers.EXPERIENCE_BAR, HudPiece.XP),
+            Map.entry(VanillaGuiLayers.EXPERIENCE_LEVEL, HudPiece.XP),
+            Map.entry(VanillaGuiLayers.JUMP_METER, HudPiece.XP),
+            Map.entry(VanillaGuiLayers.ARMOR_LEVEL, HudPiece.ARMOR),
             // Vanilla stacks air and mount health (which replaces food while riding) on the food side.
-            VanillaGuiLayers.FOOD_LEVEL, HudPiece.HUNGER,
-            VanillaGuiLayers.AIR_LEVEL, HudPiece.HUNGER,
-            VanillaGuiLayers.VEHICLE_HEALTH, HudPiece.HUNGER);
+            Map.entry(VanillaGuiLayers.FOOD_LEVEL, HudPiece.HUNGER),
+            Map.entry(VanillaGuiLayers.AIR_LEVEL, HudPiece.HUNGER),
+            Map.entry(VanillaGuiLayers.VEHICLE_HEALTH, HudPiece.HUNGER),
+            // AppleSkin draws over the food icons, at the spot vanilla's Gui.rightHeight gives it.
+            Map.entry(AppleSkinCompat.SATURATION_LAYER, HudPiece.HUNGER),
+            Map.entry(AppleSkinCompat.HUNGER_RESTORED_LAYER, HudPiece.HUNGER),
+            Map.entry(AppleSkinCompat.EXHAUSTION_LAYER, HudPiece.HUNGER));
 
     /** Whether the layer currently rendering was translated, so Post only pops what Pre pushed. */
     private static boolean pushed;

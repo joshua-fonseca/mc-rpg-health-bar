@@ -29,6 +29,8 @@ repositories {
     maven { url = "https://maven.theillusivec4.top/" }
     maven { url = "https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/" }
     maven { url = "https://maven.kosmx.dev/" }
+    // AppleSkin
+    maven { url = "https://maven.ryanliptak.com/" }
 }
 
 base {
@@ -103,6 +105,12 @@ dependencies {
         localRuntime("top.theillusivec4.curios:curios-neoforge:${curios_version}") { transitive = false }
         localRuntime("software.bernie.geckolib:geckolib-neoforge-1.21.1:${geckolib_version}") { transitive = false }
         localRuntime("dev.kosmx.player-anim:player-animation-lib-forge:${player_animator_version}") { transitive = false }
+    }
+
+    // AppleSkin is optional too; `-PwithAppleSkin` adds it to the dev client.
+    compileOnly "squeek.appleskin:appleskin-neoforge:${appleskin_version}"
+    if (project.hasProperty('withAppleSkin')) {
+        localRuntime("squeek.appleskin:appleskin-neoforge:${appleskin_version}") { transitive = false }
     }
 }
 

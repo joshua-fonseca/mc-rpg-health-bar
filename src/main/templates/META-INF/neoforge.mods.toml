@@ -39,3 +39,11 @@ displayTest="IGNORE_ALL_VERSION"
     versionRange="*"
     ordering="NONE"
     side="CLIENT"
+
+# Optional: with AppleSkin, saturation is outlined on the hunger bar, and its hunger overlays move with the hunger icons.
+[[dependencies.${mod_id}]]
+    modId="appleskin"
+    type="optional"
+    versionRange="*"
+    ordering="NONE"
+    side="CLIENT"

@@ -1,5 +1,6 @@
 package com.joshuafonseca.rpghealthbar.client;
 
+import com.joshuafonseca.rpghealthbar.compat.AppleSkinCompat;
 import com.joshuafonseca.rpghealthbar.config.AbsorptionDisplay;
 import com.joshuafonseca.rpghealthbar.config.ClientConfig;
 import com.joshuafonseca.rpghealthbar.config.HealthUnit;
@@ -14,6 +15,10 @@ public final class HudRenderer {
     private static final int ABSORPTION_COLOR = 0xFFD8A820;
     private static final int MANA_COLOR = 0xFF2C88D0;
     private static final int ARMOR_COLOR = 0xFFB0B0B0;
+    /** Saturation is outlined on the hunger bar in this color, like AppleSkin's outlines on the food icons. */
+    private static final int SATURATION_COLOR = 0xFFF0D030;
+    /** With food held, what eating it would add flashes on the hunger bar, as fast as AppleSkin's preview on the icons. */
+    private static final long FOOD_PREVIEW_FLASH_MILLIS = 1600;
     /** The section just lost, shown briefly before it shrinks away. */
     private static final int MANA_LOST_COLOR = 0xFF143C64;
     /** The hovered spell's cost blinks between the mana color and this, once per period. */
@@ -49,7 +54,7 @@ public final class HudRenderer {
             inPiece(graphics, pieces, HudPiece.ARMOR, () -> renderHalfBar(graphics, layout.x(), layout, values.armor() / MAX_ARMOR, ARMOR_COLOR));
         }
         if (showHunger) {
-            inPiece(graphics, pieces, HudPiece.HUNGER, () -> renderHalfBar(graphics, layout.hungerX(), layout, values.food() / MAX_FOOD, values.hungerColor()));
+            inPiece(graphics, pieces, HudPiece.HUNGER, () -> renderHunger(graphics, layout, values));
         }
         inPiece(graphics, pieces, HudPiece.HEALTH, () -> renderHealth(graphics, font, layout, values, live));
         if (values.mana() != null) {
@@ -76,6 +81,27 @@ public final class HudRenderer {
         BarRenderer.drawFill(graphics, x, y, HudLayout.HALF_BAR_WIDTH, HudLayout.HALF_BAR_HEIGHT, false, fraction, color, false);
     }
 
+    /** The hunger bar, with AppleSkin's saturation outline and held-food preview when it's installed. */
+    private static void renderHunger(GuiGraphics graphics, HudLayout layout, HudValues values) {
+        int x = layout.hungerX();
+        int y = layout.halfBarY();
+        int width = HudLayout.HALF_BAR_WIDTH;
+        int height = HudLayout.HALF_BAR_HEIGHT;
+        renderHalfBar(graphics, x, layout, values.food() / MAX_FOOD, values.hungerColor());
+        AppleSkinCompat.HeldFood held = values.heldFood();
+        float flash = held == null ? 0 : held.flashAlpha() * pulse(FOOD_PREVIEW_FLASH_MILLIS);
+        if (held != null && held.food() > values.food()) {
+            BarRenderer.drawSection(graphics, x, y, width, height, false, values.food() / MAX_FOOD, held.food() / MAX_FOOD, values.hungerColor(), false, flash);
+        }
+        if (values.saturation() > 0) {
+            BarRenderer.drawOutline(graphics, x, y, width, height, 0, values.saturation() / MAX_FOOD, SATURATION_COLOR, true);
+        }
+        if (held != null && held.saturation() > values.saturation()) {
+            int color = ((int) (flash * 255) << 24) | (SATURATION_COLOR & 0xFFFFFF);
+            BarRenderer.drawOutline(graphics, x, y, width, height, values.saturation() / MAX_FOOD, held.saturation() / MAX_FOOD, color, values.saturation() <= 0);
+        }
+    }
+
     private static void renderHealth(GuiGraphics graphics, Font font, HudLayout layout, HudValues values, boolean live) {
         float health = values.health();
         float maxHealth = values.maxHealth();
@@ -83,15 +109,16 @@ public final class HudRenderer {
 
         int x = layout.x();
         int y = layout.healthY();
-        BarRenderer.drawTrack(graphics, x, y, HudLayout.WIDTH, HudLayout.MAIN_BAR_HEIGHT, true);
-        BarRenderer.drawFill(graphics, x, y, HudLayout.WIDTH, HudLayout.MAIN_BAR_HEIGHT, true, health / maxHealth, values.healthColor(), true);
+        int width = layout.healthWidth();
+        BarRenderer.drawTrack(graphics, x, y, width, HudLayout.MAIN_BAR_HEIGHT, true);
+        BarRenderer.drawFill(graphics, x, y, width, HudLayout.MAIN_BAR_HEIGHT, true, health / maxHealth, values.healthColor(), true);
         if (live) {
             float trail = HEALTH_TRAIL.update(health);
-            BarRenderer.drawSection(graphics, x, y, HudLayout.WIDTH, HudLayout.MAIN_BAR_HEIGHT, true, health / maxHealth, trail / maxHealth, StatusColors.lost(values.healthColor()), false, 1.0F);
-            renderHealthEffects(graphics, x, y, values);
+            BarRenderer.drawSection(graphics, x, y, width, HudLayout.MAIN_BAR_HEIGHT, true, health / maxHealth, trail / maxHealth, StatusColors.lost(values.healthColor()), false, 1.0F);
+            renderHealthEffects(graphics, x, y, width, values);
         }
         if (absorption > 0) {
-            BarRenderer.drawFill(graphics, x, y, HudLayout.WIDTH, HudLayout.MAIN_BAR_HEIGHT, true, absorption / maxHealth, ABSORPTION_COLOR, absorption < maxHealth);
+            BarRenderer.drawFill(graphics, x, y, width, HudLayout.MAIN_BAR_HEIGHT, true, absorption / maxHealth, ABSORPTION_COLOR, absorption < maxHealth);
         }
 
         if (ClientConfig.SHOW_HEALTH_TEXT.get()) {
@@ -100,20 +127,20 @@ public final class HudRenderer {
     }
 
     /** The low-health pulse and the Regeneration sweep over the health fill, like the vanilla hearts' movement. */
-    private static void renderHealthEffects(GuiGraphics graphics, int x, int y, HudValues values) {
-        int fill = BarRenderer.columns(HudLayout.WIDTH, true, values.health() / values.maxHealth());
+    private static void renderHealthEffects(GuiGraphics graphics, int x, int y, int width, HudValues values) {
+        int fill = BarRenderer.columns(width, true, values.health() / values.maxHealth());
         // Everything but the white tip, which stays as it is.
         int body = Math.max(0, fill - 1);
         if (values.health() + values.absorption() <= LOW_HEALTH) {
-            BarRenderer.drawHighlight(graphics, x, y, HudLayout.WIDTH, HudLayout.MAIN_BAR_HEIGHT, true, 0, body, LOW_HEALTH_PULSE_ALPHA * pulse(LOW_HEALTH_PULSE_MILLIS));
+            BarRenderer.drawHighlight(graphics, x, y, width, HudLayout.MAIN_BAR_HEIGHT, true, 0, body, LOW_HEALTH_PULSE_ALPHA * pulse(LOW_HEALTH_PULSE_MILLIS));
         }
         if (values.regenerating() && body > 0) {
-            renderRegenSweep(graphics, x, y, body);
+            renderRegenSweep(graphics, x, y, width, body);
         }
     }
 
     /** A soft light band moving left to right across the first {@code body} fill columns. */
-    private static void renderRegenSweep(GuiGraphics graphics, int x, int y, int body) {
+    private static void renderRegenSweep(GuiGraphics graphics, int x, int y, int width, int body) {
         float progress = (float) (Util.getMillis() % REGEN_SWEEP_MILLIS) / REGEN_SWEEP_MILLIS;
         // The band starts fully left of the fill and ends fully right of it.
         float center = -REGEN_BAND_WIDTH / 2.0F + progress * (body + REGEN_BAND_WIDTH);
@@ -127,7 +154,7 @@ public final class HudRenderer {
             float distance = Math.abs(from + i + 0.5F - center) / (REGEN_BAND_WIDTH / 2.0F);
             alphas[i] = REGEN_BAND_ALPHA * (0.5F + 0.5F * Mth.cos(Math.min(1.0F, distance) * Mth.PI));
         }
-        BarRenderer.drawHighlightColumns(graphics, x, y, HudLayout.WIDTH, HudLayout.MAIN_BAR_HEIGHT, true, from, alphas);
+        BarRenderer.drawHighlightColumns(graphics, x, y, width, HudLayout.MAIN_BAR_HEIGHT, true, from, alphas);
     }
 
     /** 0 to 1 and back, smoothly, once per period. */
@@ -152,19 +179,20 @@ public final class HudRenderer {
         float mana = values.mana().current();
         float maxMana = values.mana().max();
 
-        int x = layout.x();
+        int x = layout.manaX();
         int y = layout.manaY();
-        BarRenderer.drawTrack(graphics, x, y, HudLayout.WIDTH, HudLayout.MAIN_BAR_HEIGHT, true);
+        int width = layout.manaWidth();
+        BarRenderer.drawTrack(graphics, x, y, width, HudLayout.MAIN_BAR_HEIGHT, true);
         if (maxMana > 0) {
-            BarRenderer.drawFill(graphics, x, y, HudLayout.WIDTH, HudLayout.MAIN_BAR_HEIGHT, true, mana / maxMana, MANA_COLOR, true);
+            BarRenderer.drawFill(graphics, x, y, width, HudLayout.MAIN_BAR_HEIGHT, true, mana / maxMana, MANA_COLOR, true);
             if (live) {
                 float trail = MANA_TRAIL.update(mana);
-                BarRenderer.drawSection(graphics, x, y, HudLayout.WIDTH, HudLayout.MAIN_BAR_HEIGHT, true, mana / maxMana, trail / maxMana, MANA_LOST_COLOR, false, 1.0F);
+                BarRenderer.drawSection(graphics, x, y, width, HudLayout.MAIN_BAR_HEIGHT, true, mana / maxMana, trail / maxMana, MANA_LOST_COLOR, false, 1.0F);
             }
             float cost = values.mana().hoveredCost();
             if (cost > 0) {
                 // The mana the hovered spell would use, pulsing between normal and dark blue.
-                BarRenderer.drawSection(graphics, x, y, HudLayout.WIDTH, HudLayout.MAIN_BAR_HEIGHT, true, (mana - cost) / maxMana, mana / maxMana, MANA_COST_COLOR, true, pulse(COST_PULSE_MILLIS));
+                BarRenderer.drawSection(graphics, x, y, width, HudLayout.MAIN_BAR_HEIGHT, true, (mana - cost) / maxMana, mana / maxMana, MANA_COST_COLOR, true, pulse(COST_PULSE_MILLIS));
             }
         }
         if (ClientConfig.SHOW_MANA_TEXT.get()) {

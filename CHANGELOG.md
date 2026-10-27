@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.3.0 (2026-10-27)
+
+- New **Health Bar** and **Mana Bar** options: **Full** or **Half** width. Half bars are as wide as the armor and hunger bars. With both set to Half, health and mana sit side by side above the hotbar; with only one, it keeps its own row, e.g. a big health bar with a small mana bar underneath.
+- **AppleSkin** support (optional, 3.0.4 or newer):
+  - Saturation is outlined in yellow on the hunger bar.
+  - While holding food, the hunger and saturation it would restore flash on the hunger bar, like AppleSkin's preview on the icons.
+  - With the vanilla hunger icons, AppleSkin's outlines, food preview and exhaustion move with the hunger icons. They're hidden when hunger is a bar or hidden, and AppleSkin's heart preview is hidden since the hearts are replaced.
+  - Follows AppleSkin's own settings for these overlays.
+- The Regeneration sweep is drawn in one go instead of column by column, making it cheaper.
+
 ## 1.2.1 (2026-10-27)
 
 - Each piece now keeps its own place when the window size or GUI scale changes: a piece in a corner stays in that corner, and pieces left above the hotbar stay above the hotbar. Pieces that touch stay together. Before, a layout with pieces spread across the screen drifted as a whole.

@@ -1,6 +1,7 @@
 package com.joshuafonseca.rpghealthbar.client.screen;
 
 import com.joshuafonseca.rpghealthbar.config.AbsorptionDisplay;
+import com.joshuafonseca.rpghealthbar.config.BarSize;
 import com.joshuafonseca.rpghealthbar.config.ClientConfig;
 import com.joshuafonseca.rpghealthbar.config.HalfBarMode;
 import com.joshuafonseca.rpghealthbar.config.HealthUnit;
@@ -90,6 +91,22 @@ public class RpgConfigScreen extends Screen {
                 .displayOnlyValue()
                 .create(right + LABEL_WIDTH, y, VALUE_WIDTH, BUTTON_HEIGHT, label(right, y, "rpghealthbar.config.showManaText"),
                         (button, value) -> ClientConfig.set(ClientConfig.SHOW_MANA_TEXT, value)));
+        y += ROW_SPACING;
+
+        addRenderableWidget(CycleButton.builder(BarSize::displayName)
+                .withValues(BarSize.values())
+                .withInitialValue(ClientConfig.HEALTH_SIZE.get())
+                .withTooltip(value -> tooltip("healthSize", "full", "half"))
+                .displayOnlyValue()
+                .create(left + LABEL_WIDTH, y, VALUE_WIDTH, BUTTON_HEIGHT, label(left, y, "rpghealthbar.config.healthSize"),
+                        (button, value) -> ClientConfig.set(ClientConfig.HEALTH_SIZE, value)));
+        addRenderableWidget(CycleButton.builder(BarSize::displayName)
+                .withValues(BarSize.values())
+                .withInitialValue(ClientConfig.MANA_SIZE.get())
+                .withTooltip(value -> tooltip("manaSize", "full", "half"))
+                .displayOnlyValue()
+                .create(right + LABEL_WIDTH, y, VALUE_WIDTH, BUTTON_HEIGHT, label(right, y, "rpghealthbar.config.manaSize"),
+                        (button, value) -> ClientConfig.set(ClientConfig.MANA_SIZE, value)));
         y += ROW_SPACING;
 
         addRenderableWidget(Button.builder(Component.translatable("rpghealthbar.config.moveHud"), button -> this.minecraft.setScreen(new HudEditScreen(this)))
