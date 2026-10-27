@@ -23,6 +23,9 @@ public final class HudRenderer {
     /** When hit, the health bar flashes white, fading out over this long (vanilla's hearts blink white). */
     private static final float DAMAGE_FLASH_MILLIS = 350.0F;
     private static final float DAMAGE_FLASH_ALPHA = 0.6F;
+    /** Health just gained glows white, fading out over this long (vanilla's hearts blink when healing). */
+    private static final float HEAL_GLOW_MILLIS = 600.0F;
+    private static final float HEAL_GLOW_ALPHA = 0.55F;
     private static final BarTrail MANA_TRAIL = new BarTrail();
     /** Vanilla's HUD shows at most 20 armor points and 20 food points. */
     private static final float MAX_ARMOR = 20.0F;
@@ -71,11 +74,11 @@ public final class HudRenderer {
         BarRenderer.drawFill(graphics, x, y, HudLayout.WIDTH, HudLayout.MAIN_BAR_HEIGHT, true, health / maxHealth, values.healthColor(), true);
         if (live) {
             float trail = HEALTH_TRAIL.update(health);
-            HEALTH_CHANGES.update(health);
+            HEALTH_CHANGES.update(health, (long) HEAL_GLOW_MILLIS);
             BarRenderer.drawSection(graphics, x, y, HudLayout.WIDTH, HudLayout.MAIN_BAR_HEIGHT, true, health / maxHealth, trail / maxHealth, StatusColors.lost(values.healthColor()), false, 1.0F);
         }
         if (live) {
-            renderHealthEffects(graphics, x, y, health / maxHealth);
+            renderHealthEffects(graphics, x, y, health / maxHealth, maxHealth);
         }
         if (absorption > 0) {
             BarRenderer.drawFill(graphics, x, y, HudLayout.WIDTH, HudLayout.MAIN_BAR_HEIGHT, true, absorption / maxHealth, ABSORPTION_COLOR, absorption < maxHealth);
@@ -87,7 +90,7 @@ public final class HudRenderer {
     }
 
     /** Flashes and highlights over the health fill, like the vanilla hearts' blinking. */
-    private static void renderHealthEffects(GuiGraphics graphics, int x, int y, float fraction) {
+    private static void renderHealthEffects(GuiGraphics graphics, int x, int y, float fraction, float maxHealth) {
         int fill = BarRenderer.columns(HudLayout.WIDTH, true, fraction);
         // Everything but the white tip, which stays as it is.
         int body = Math.max(0, fill - 1);
@@ -95,6 +98,12 @@ public final class HudRenderer {
         if (sinceHit < DAMAGE_FLASH_MILLIS) {
             float alpha = DAMAGE_FLASH_ALPHA * (1.0F - sinceHit / DAMAGE_FLASH_MILLIS);
             BarRenderer.drawHighlight(graphics, x, y, HudLayout.WIDTH, HudLayout.MAIN_BAR_HEIGHT, true, 0, body, alpha);
+        }
+        float sinceHeal = HEALTH_CHANGES.sinceGain();
+        if (sinceHeal < HEAL_GLOW_MILLIS) {
+            float alpha = HEAL_GLOW_ALPHA * (1.0F - sinceHeal / HEAL_GLOW_MILLIS);
+            int from = BarRenderer.columns(HudLayout.WIDTH, true, HEALTH_CHANGES.gainFrom() / maxHealth);
+            BarRenderer.drawHighlight(graphics, x, y, HudLayout.WIDTH, HudLayout.MAIN_BAR_HEIGHT, true, from, body, alpha);
         }
     }
 
