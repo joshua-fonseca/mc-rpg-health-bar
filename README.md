@@ -6,13 +6,15 @@
 
 A client-side NeoForge mod for Minecraft 1.21.1 that replaces the vanilla hearts with an RPG-style health bar. With [Iron's Spells 'n Spellbooks](https://modrinth.com/mod/irons-spells-n-spellbooks) installed, a mana bar sits right below it.
 
+#### Default: vanilla armor and hunger icons
+
 ![The HUD with vanilla armor and hunger icons](docs/images/hud-vanilla-icons.png)
 
 ## Features
 
 - **Health bar** the width of the hotbar, with your current and max health on it (`15.5/20`). It goes beyond the vanilla max of 20 for mods that add hearts to the player (`32/40`), following your real max health.
 - **Absorption** fills the bar in gold, and the text shows it separately (`15.5+4/20`) or added in (`19.5/20`).
-- **Mana bar** for Iron's Spells 'n Spellbooks, an overhaul of Iron's own: in the same style as the health bar, replacing Iron's mana bar.
+- **Mana bar support:** an overhaul of the mana bar from Iron's Spells 'n Spellbooks, in the same style as the health bar, replacing Iron's own.
 - **Status colors:** like the vanilla hearts, the health bar turns green-yellow when poisoned, black when withered and light blue when frozen, and the hunger bar turns green with the Hunger effect. Heart colors added by other mods are followed too.
 - **Armor and hunger** as the vanilla icons (default), thin bars, or hidden.
 - **AppleSkin support:** saturation is outlined in yellow on the hunger bar, and held food's value flashes on it, like AppleSkin's preview on the icons.
@@ -21,13 +23,23 @@ A client-side NeoForge mod for Minecraft 1.21.1 that replaces the vanilla hearts
   - **Move the HUD** by dragging it: the whole set, including the XP bar and level, or each piece (armor, hunger, health, mana, XP bar) on its own. It stays in place when you change the window size or GUI scale.
   - **Everything in game:** all options apply immediately, no restart.
 
+#### Armor and hunger as bars, with absorption
+
 ![The HUD with armor and hunger as bars, and absorption](docs/images/hud-bars.png)
+
+#### Status colors: poison and the Hunger effect
 
 ![Poisoned health bar and green hunger bar from the Hunger effect](docs/images/status-colors.png)
 
+#### Half-size health and mana bars
+
 ![Half-size health and mana bars side by side above the hotbar](docs/images/half-bars.png)
 
+#### AppleSkin: saturation and food preview
+
 ![With AppleSkin: saturation outlined in yellow on the hunger bar, and the hunger and saturation the held bread would restore flashing after it, then filling when it's eaten](docs/images/appleskin.gif)
+
+#### Iron's Spells: choosing and casting a spell
 
 ![Choosing a spell in Iron's spell wheel shows the mana it costs on the mana bar, then casting it uses that mana](docs/images/spell-cast.gif)
 
@@ -48,11 +60,19 @@ Open them from **Mods → RPG Health Bar → Config** (the Mods button is also i
 
 Defaults are in bold. **Move HUD...** opens the position editor. With **Moving: All** you drag the whole HUD; with **Moving: One** you drag a single piece. What you'd grab is highlighted. The arrow keys nudge it (Shift moves 10 pixels). Then Save. **Reset** in the editor, or **Reset Position** in the config, puts everything back above the hotbar.
 
+#### The config screen
+
 ![The config screen](docs/images/config.png)
+
+#### Moving the whole HUD
 
 ![Moving the whole HUD](docs/images/move-hud.png)
 
+#### Moving a single piece
+
 ![Moving one piece: the health bar](docs/images/move-pieces.png)
+
+#### Example layout: health and mana in the top-left
 
 ![Another layout: health and mana in the top-left corner, armor and hunger just above the XP bar](docs/images/layout-top-left.png)
 
