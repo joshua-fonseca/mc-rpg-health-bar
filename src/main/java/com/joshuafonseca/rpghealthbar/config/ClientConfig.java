@@ -157,10 +157,9 @@ public final class ClientConfig {
         queue(LAYOUT_VERSION, 2);
     }
 
-    /** Updates a value and writes the config file. */
+    /** Updates a value; Forge writes the config file on every change. */
     public static <T> void set(ForgeConfigSpec.ConfigValue<T> value, T newValue) {
         value.set(newValue);
-        value.save();
     }
 
     /** Writes one waiting position value; called every client tick. */

@@ -10,6 +10,7 @@ import com.joshuafonseca.rpghealthbar.config.HalfBarMode;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.client.ConfigScreenHandler;
 import net.minecraftforge.client.event.RegisterGuiOverlaysEvent;
+import net.minecraftforge.client.event.RenderGuiEvent;
 import net.minecraftforge.client.event.RenderGuiOverlayEvent;
 import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay;
 import net.minecraftforge.common.MinecraftForge;
@@ -31,6 +32,9 @@ final class ClientSetup {
         ModLoadingContext.get().registerExtensionPoint(ConfigScreenHandler.ConfigScreenFactory.class,
                 () -> new ConfigScreenHandler.ConfigScreenFactory((minecraft, parent) -> new RpgConfigScreen(parent)));
         FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientSetup::registerOverlays);
+        // The HUD's layout and position are worked out once per frame, then shared by our overlays and
+        // the vanilla ones that move with them.
+        MinecraftForge.EVENT_BUS.addListener(EventPriority.HIGHEST, true, (RenderGuiEvent.Pre event) -> HudLayer.Frame.clearCurrent());
         // Highest priority: hide replaced overlays before other mods' Pre listeners run, so a mod that
         // pushes the pose in Pre (and pops in Post) never pushes for an overlay that won't render.
         // Forge doesn't send Post for a cancelled overlay, and AppleSkin draws its hunger and health

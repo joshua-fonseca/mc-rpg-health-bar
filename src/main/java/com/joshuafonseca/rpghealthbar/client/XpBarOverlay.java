@@ -1,6 +1,5 @@
 package com.joshuafonseca.rpghealthbar.client;
 
-import com.joshuafonseca.rpghealthbar.compat.IronsSpellsCompat;
 import com.joshuafonseca.rpghealthbar.config.HudPiece;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
@@ -38,7 +37,7 @@ public class XpBarOverlay implements IGuiOverlay {
             return;
         }
         gui.setupOverlayRenderState(true, false);
-        HudLayer.Frame frame = HudLayer.Frame.compute(screenWidth, screenHeight, IronsSpellsCompat.isAvailable());
+        HudLayer.Frame frame = HudLayer.Frame.current(screenWidth, screenHeight);
         int x = screenWidth / 2 - WIDTH / 2;
         int y = screenHeight - 29;
 
