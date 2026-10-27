@@ -79,16 +79,17 @@ The mod provides its own config screen, opened from Mods menu → RPG Health Bar
 
 **Position editor** (`HudEditScreen`):
 - Shows the whole bar group as a preview (with placeholder values if needed), with no outline. What a click would grab is lightened faintly on hover, and more while dragging, exactly over each piece's pixels.
-- A **Moving: All / One** button (1.2.0). **All** (default) drags the whole set. **One** drags a single piece: armor, hunger, health, mana, or XP (which carries the level and jump meter; air bubbles and mount health go with hunger, as vanilla stacks them on that side). Each piece's shift is saved on top of the set's position (`<piece>OffsetX/Y` in the config), so moving the whole set keeps the arrangement. The set's bounds, used for clamping and the anchor, are the union of the moved pieces. Thin pieces can be grabbed up to 2px outside their edges.
+- A **Moving: All / One** button (1.2.0). **All** (default) drags the whole set. **One** drags a single piece: armor, hunger, health, mana, or XP (which carries the level and jump meter; air bubbles and mount health go with hunger, as vanilla stacks them on that side). Each piece has its own shift from its default spot; All moves every shift by the same amount (as far as keeps all pieces on screen), so the arrangement is kept. Thin pieces can be grabbed up to 2px outside their edges.
 - The set includes the **vanilla XP bar, XP level number and horse jump meter**, so they stay under the bars wherever the group goes. Without this, moving the bars up to make room for Double Hotbar would leave the XP bar behind under the second hotbar.
 - The group is kept fully on screen while dragging.
 - Arrow keys nudge the set (or, in One mode, the last grabbed piece) by 1 pixel (10 with Shift).
 - **Save** button: saves the position and goes back to the config screen.
 - **Reset** button: moves the set back to the default spot and every piece back into place (still needs Save).
 - **Cancel** button / ESC: discards the change.
-- The title, hint and buttons sit in whichever half of the screen the HUD isn't in, so they never cover it.
+- The title, hint and buttons sit in the half of the screen the HUD isn't in; if they'd cover a piece there, at the other edge or in the middle of the screen, whichever covers least (1.2.1).
 - In a world, the real HUD moves live while dragging. From the title screen (or in creative, where the bars aren't drawn), a preview with placeholder values is shown instead.
-- There's no need to type X/Y numbers. On Save, the position is stored relative to the **nearest of 9 screen spots** (corners, edge midpoints, center), as `anchor` + `offsetX`/`offsetY` in the config file (not shown as editable fields). Left near the hotbar, it's measured from the bottom-middle, so it keeps its distance from the hotbar; put in a corner, it stays in that corner. Either way it holds up when the window size or GUI scale changes.
+- There's no need to type X/Y numbers. On Save, each piece's position is stored relative to the **nearest of 9 screen spots** (corners, edge midpoints, center), as `<piece>Anchor` + `<piece>OffsetX/Y` in the config file (not shown as editable fields). Pieces that touch (closer than 4px) are grouped and share the anchor nearest the group's center, so a group stays together. A piece left near the hotbar is measured from the bottom-middle, so it keeps its distance from the hotbar; one put in a corner stays in that corner. Either way it holds up when the window size or GUI scale changes. The offset is the shift from the piece's default spot on a screen where the anchor is at the bottom-middle, so the defaults are all zero.
+- `layoutVersion` in the config: 1 is the format before 1.2.1 (one `anchor` + `offsetX/Y` for the whole set, measured to the box around all pieces, plus each piece's shift on top); it's still read, and saving in Move HUD writes version 2. One anchor for spread-out pieces made the whole layout drift on resize, which is why 1.2.1 anchors each piece.
 - The bars scale with Minecraft's GUI Scale setting, like the hotbar. There's no separate size setting.
 
 The point of this is to let players move the bars away from **Double Hotbar**, **Armor Status HUD**, or any other mod drawing near the hotbar.
@@ -169,7 +170,7 @@ The point of this is to let players move the bars away from **Double Hotbar**, *
 6. **Move HUD editor**: drag the group (including the XP bar, level number and jump meter), Save/Cancel, Reset; position persists.
 7. **Vanilla overlap check**: air bubbles and mount health don't collide with the bars, and get shifted if needed.
 8. **Styling + modpack test**: slim bars with shaded fills, thin armor/hunger lines, level number centered on the XP bar (done); test in the full Antarchy Craft modpack (Double Hotbar, Armor Status HUD, Configured, Jade, Xaero's). Modpack test done: confirmed working in the Antarchy Craft modpack on NeoForge 21.1.235 (2026-10-26).
-9. **Release**: build jar, README. Done: version 1.0.0 with a pixel-art icon (`rpghealthbar.png`), mod description and homepage link, README with screenshots (`docs/images/`), CHANGELOG, tag `v1.0.0`. 1.1.0: status colors, low-health pulse and Regeneration sweep; tag `v1.1.0`. 1.2.0: moving single pieces, hover highlight, item name placement; tag `v1.2.0`.
+9. **Release**: build jar, README. Done: version 1.0.0 with a pixel-art icon (`rpghealthbar.png`), mod description and homepage link, README with screenshots (`docs/images/`), CHANGELOG, tag `v1.0.0`. 1.1.0: status colors, low-health pulse and Regeneration sweep; tag `v1.1.0`. 1.2.0: moving single pieces, hover highlight, item name placement; tag `v1.2.0`. 1.2.1: an anchor per piece group, so spread-out layouts hold on resize; tag `v1.2.1`.
 
 ## 4. Testing checklist
 - [ ] Max HP 20, 40, and odd values (e.g. 27) display correctly

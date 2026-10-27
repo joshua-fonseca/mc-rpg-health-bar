@@ -28,7 +28,8 @@ public class HudLayer implements LayeredDraw.Layer {
         placeVanillaRows(minecraft.gui, graphics.guiHeight(), frame);
 
         graphics.pose().pushPose();
-        HudPosition.moveTo(graphics.pose(), frame.offset());
+        // Each piece is shifted on its own by HudRenderer; this only undoes other mods' shifts.
+        HudPosition.moveTo(graphics.pose(), HudPosition.Offset.ZERO);
         HudRenderer.render(graphics, minecraft.font, frame.layout(), values, frame.showArmor(), frame.showHunger(), frame.pieces(), true);
         graphics.pose().popPose();
     }
@@ -45,11 +46,11 @@ public class HudLayer implements LayeredDraw.Layer {
     /**
      * Layout, display settings and position for the current frame.
      *
-     * @param bounds      the whole set at its default position, with each piece shifted by its own offset
-     * @param offset      the whole set's shift from its default position
+     * @param bounds      the box around every shown piece, where it's drawn
+     * @param pieces      each piece's shift from its default position
      * @param pieceBounds each shown piece at its default position, without any shift
      */
-    public record Frame(HudLayout layout, HudPosition.Bounds bounds, HudPosition.Offset offset, HudPosition.Pieces pieces,
+    public record Frame(HudLayout layout, HudPosition.Bounds bounds, HudPosition.Pieces pieces,
                         Map<HudPiece, HudPosition.Bounds> pieceBounds,
                         boolean showArmor, boolean showHunger, boolean vanillaArmor, boolean vanillaHunger) {
         public static Frame compute(int screenWidth, int screenHeight, boolean showMana) {
@@ -62,19 +63,18 @@ public class HudLayer implements LayeredDraw.Layer {
 
             HudLayout layout = HudLayout.compute(screenWidth, screenHeight, showArmor || showHunger, vanillaArmor || vanillaHunger, showMana);
             Map<HudPiece, HudPosition.Bounds> pieceBounds = pieceBounds(screenHeight, layout, armorMode, hungerMode, showMana);
-            HudPosition.Pieces pieces = HudPosition.pieces();
+            HudPosition.Pieces pieces = HudPosition.pieces(screenWidth, screenHeight, pieceBounds);
             HudPosition.Bounds bounds = null;
             for (Map.Entry<HudPiece, HudPosition.Bounds> entry : pieceBounds.entrySet()) {
                 HudPosition.Bounds moved = entry.getValue().offset(pieces.get(entry.getKey()));
                 bounds = bounds == null ? moved : bounds.union(moved);
             }
-            HudPosition.Offset offset = HudPosition.current(screenWidth, screenHeight, bounds);
-            return new Frame(layout, bounds, offset, pieces, pieceBounds, showArmor, showHunger, vanillaArmor, vanillaHunger);
+            return new Frame(layout, bounds, pieces, pieceBounds, showArmor, showHunger, vanillaArmor, vanillaHunger);
         }
 
-        /** Where a piece is drawn: the set's shift plus the piece's own. */
+        /** Where a piece is drawn, as a shift from its default position. */
         public HudPosition.Offset pieceOffset(HudPiece piece) {
-            return offset.plus(pieces.get(piece));
+            return pieces.get(piece);
         }
 
         /** Each shown piece at its default position. Health and XP are always shown. */
