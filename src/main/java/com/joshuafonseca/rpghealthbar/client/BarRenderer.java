@@ -42,7 +42,7 @@ public final class BarRenderer {
     private static final float END_BRIGHTEN = 0.18F;
     /** The last column is mixed this much toward white, keeping the rows' shading. */
     private static final float TIP_WHITE = 0.7F;
-    /** Flashes and highlights blend toward white, keeping the rows' shading. */
+    /** Pulses and sweeps blend toward white, keeping the rows' shading. */
     private static final int HIGHLIGHT_COLOR = 0xFFFFFFFF;
 
     /** A full bar of one color and size, painted once and reused every frame. */

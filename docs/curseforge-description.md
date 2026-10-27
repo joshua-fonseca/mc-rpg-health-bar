@@ -12,6 +12,7 @@ Replaces the vanilla hearts with an RPG-style health bar, drawn in the style of 
 - **Spell cost preview:** while Iron's spell wheel is open, the mana the hovered spell would use blinks at the end of the mana bar.
 - **Damage trail:** health or mana you just lost stays as a darker section for a moment, then shrinks away.
 - **Status colors:** like the vanilla hearts, the health bar turns green-yellow when poisoned, black when withered and light blue when frozen, and the hunger bar turns green with the Hunger effect. Heart colors added by other mods are followed too.
+- **Low health and Regeneration:** at 4 HP or less the health bar pulses as a warning, and with Regeneration a light band sweeps along it, like the vanilla hearts' shaking and wave.
 - **Armor and hunger** as the vanilla icons (default), thin bars, or hidden.
 - **Move the whole HUD**, including the XP bar and level, by dragging it. The position holds up when you change the window size or GUI scale.
 - **Everything in game:** all options apply immediately, no restart.

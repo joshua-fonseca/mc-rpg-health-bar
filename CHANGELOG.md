@@ -4,6 +4,8 @@
 
 - The health bar changes color with the heart type, like the vanilla hearts: green-yellow when poisoned, black when withered, light blue when frozen. Heart types added or changed by other mods are followed, using their heart texture's color.
 - The hunger bar turns green with the Hunger effect, like the vanilla hunger icons.
+- At 4 HP or less (health plus absorption), the health bar pulses as a warning, like the vanilla hearts shaking.
+- With Regeneration, a light band sweeps along the health bar, like the vanilla hearts' wave.
 
 ## 1.0.0 (2026-10-26)
 

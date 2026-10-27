@@ -27,9 +27,6 @@ public final class HudRenderer {
     private static final long REGEN_SWEEP_MILLIS = 1500;
     private static final int REGEN_BAND_WIDTH = 24;
     private static final float REGEN_BAND_ALPHA = 0.4F;
-    /** When starving (no food left), the empty hunger bar pulses in the hunger color as a warning. */
-    private static final long HUNGER_PULSE_MILLIS = 1200;
-    private static final float HUNGER_PULSE_ALPHA = 0.6F;
     private static final BarTrail MANA_TRAIL = new BarTrail();
     /** Vanilla's HUD shows at most 20 armor points and 20 food points. */
     private static final float MAX_ARMOR = 20.0F;
@@ -43,8 +40,8 @@ public final class HudRenderer {
      *             shrinking darker section (the editor's placeholder values would otherwise
      *             look like a loss when switching back)
      */
-    public static void render(GuiGraphics graphics, Font font, HudLayout layout, HudValues values, boolean showArmor, boolean showHunger, boolean live) {
-        renderHalfBars(graphics, layout, values, showArmor, showHunger, live);
+    public static void render(GuiGraphics graphics, Font font, HudLayout layout, HudValues values, boolean showArmor, boolean showHunger) {
+        renderHalfBars(graphics, layout, values, showArmor, showHunger);
         renderHealth(graphics, font, layout, values, live);
         if (values.mana() != null) {
             renderMana(graphics, font, layout, values, live);
@@ -52,7 +49,7 @@ public final class HudRenderer {
     }
 
     /** Each bar keeps its own half when the other one isn't shown as a bar. */
-    private static void renderHalfBars(GuiGraphics graphics, HudLayout layout, HudValues values, boolean showArmor, boolean showHunger, boolean live) {
+    private static void renderHalfBars(GuiGraphics graphics, HudLayout layout, HudValues values, boolean showArmor, boolean showHunger) {
         int y = layout.halfBarY();
         int width = HudLayout.HALF_BAR_WIDTH;
         int height = HudLayout.HALF_BAR_HEIGHT;
@@ -64,10 +61,6 @@ public final class HudRenderer {
         if (showHunger) {
             BarRenderer.drawTrack(graphics, layout.hungerX(), y, width, height, false);
             BarRenderer.drawFill(graphics, layout.hungerX(), y, width, height, false, values.food() / MAX_FOOD, values.hungerColor(), false);
-            if (live && values.food() <= 0) {
-                BarRenderer.drawSection(graphics, layout.hungerX(), y, width, height, false, 0.0F, 1.0F, values.hungerColor(), false,
-                        HUNGER_PULSE_ALPHA * pulse(HUNGER_PULSE_MILLIS));
-            }
         }
     }
 
