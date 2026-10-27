@@ -24,6 +24,13 @@ displayTest="IGNORE_ALL_VERSION"
     versionRange="${neo_version_range}"
     ordering="NONE"
     side="CLIENT"
+# Optional: with AppleSkin, saturation is outlined on the hunger bar, and its hunger overlays move with the hunger icons.
+[[dependencies.${mod_id}]]
+    modId="appleskin"
+    type="optional"
+    versionRange="*"
+    ordering="NONE"
+    side="CLIENT"
 
 [[dependencies.${mod_id}]]
     modId="minecraft"
@@ -31,10 +38,24 @@ displayTest="IGNORE_ALL_VERSION"
     versionRange="${minecraft_version_range}"
     ordering="NONE"
     side="CLIENT"
+# Optional: with AppleSkin, saturation is outlined on the hunger bar, and its hunger overlays move with the hunger icons.
+[[dependencies.${mod_id}]]
+    modId="appleskin"
+    type="optional"
+    versionRange="*"
+    ordering="NONE"
+    side="CLIENT"
 
 # Optional: when Iron's Spells 'n Spellbooks is installed, a mana bar replaces its own.
 [[dependencies.${mod_id}]]
     modId="irons_spellbooks"
+    type="optional"
+    versionRange="*"
+    ordering="NONE"
+    side="CLIENT"
+# Optional: with AppleSkin, saturation is outlined on the hunger bar, and its hunger overlays move with the hunger icons.
+[[dependencies.${mod_id}]]
+    modId="appleskin"
     type="optional"
     versionRange="*"
     ordering="NONE"

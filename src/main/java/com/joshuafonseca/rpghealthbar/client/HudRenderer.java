@@ -14,6 +14,8 @@ public final class HudRenderer {
     private static final int ABSORPTION_COLOR = 0xFFD8A820;
     private static final int MANA_COLOR = 0xFF2C88D0;
     private static final int ARMOR_COLOR = 0xFFB0B0B0;
+    /** Saturation is outlined on the hunger bar in this color, like AppleSkin's outlines on the food icons. */
+    private static final int SATURATION_COLOR = 0xFFF0D030;
     /** The section just lost, shown briefly before it shrinks away. */
     private static final int MANA_LOST_COLOR = 0xFF143C64;
     /** The hovered spell's cost blinks between the mana color and this, once per period. */
@@ -49,7 +51,13 @@ public final class HudRenderer {
             inPiece(graphics, pieces, HudPiece.ARMOR, () -> renderHalfBar(graphics, layout.x(), layout, values.armor() / MAX_ARMOR, ARMOR_COLOR));
         }
         if (showHunger) {
-            inPiece(graphics, pieces, HudPiece.HUNGER, () -> renderHalfBar(graphics, layout.hungerX(), layout, values.food() / MAX_FOOD, values.hungerColor()));
+            inPiece(graphics, pieces, HudPiece.HUNGER, () -> {
+                renderHalfBar(graphics, layout.hungerX(), layout, values.food() / MAX_FOOD, values.hungerColor());
+                if (values.saturation() > 0) {
+                    BarRenderer.drawOutline(graphics, layout.hungerX(), layout.halfBarY(), HudLayout.HALF_BAR_WIDTH, HudLayout.HALF_BAR_HEIGHT,
+                            values.saturation() / MAX_FOOD, SATURATION_COLOR);
+                }
+            });
         }
         inPiece(graphics, pieces, HudPiece.HEALTH, () -> renderHealth(graphics, font, layout, values, live));
         if (values.mana() != null) {

@@ -3,6 +3,7 @@ package com.joshuafonseca.rpghealthbar;
 import com.joshuafonseca.rpghealthbar.client.HudLayer;
 import com.joshuafonseca.rpghealthbar.client.HudPositionMover;
 import com.joshuafonseca.rpghealthbar.client.screen.RpgConfigScreen;
+import com.joshuafonseca.rpghealthbar.compat.AppleSkinCompat;
 import com.joshuafonseca.rpghealthbar.compat.IronsSpellsCompat;
 import com.joshuafonseca.rpghealthbar.config.ClientConfig;
 import com.joshuafonseca.rpghealthbar.config.HalfBarMode;
@@ -52,6 +53,10 @@ public class RpgHealthBar {
         ResourceLocation name = event.getName();
         if (name.equals(VanillaGuiLayers.PLAYER_HEALTH)
                 || name.equals(IronsSpellsCompat.MANA_OVERLAY)
+                // Its heart previews would draw over our bars.
+                || name.equals(AppleSkinCompat.HEALTH_RESTORED_LAYER)
+                // Its hunger overlays only fit the vanilla icons.
+                || (AppleSkinCompat.isHungerOverlay(name) && ClientConfig.HUNGER_MODE.get() != HalfBarMode.VANILLA)
                 || (name.equals(VanillaGuiLayers.ARMOR_LEVEL) && ClientConfig.ARMOR_MODE.get() != HalfBarMode.VANILLA)
                 || (name.equals(VanillaGuiLayers.FOOD_LEVEL) && ClientConfig.HUNGER_MODE.get() != HalfBarMode.VANILLA)) {
             event.setCanceled(true);

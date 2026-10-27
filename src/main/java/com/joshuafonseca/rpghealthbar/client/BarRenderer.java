@@ -163,6 +163,26 @@ public final class BarRenderer {
         RenderSystem.disableBlend();
     }
 
+    /**
+     * Outlines the part of a frameless bar a fraction covers, from the left, in one color: its top
+     * and bottom rows and its two end columns, leaving the rounded corners out.
+     */
+    public static void drawOutline(GuiGraphics graphics, int x, int y, int width, int height, float fraction, int color) {
+        int length = columns(width, false, fraction);
+        if (length <= 0) {
+            return;
+        }
+        int right = x + length;
+        int bottom = y + height;
+        graphics.drawManaged(() -> {
+            // The bar's corner pixels are left out to round it, so the lines stop short of them.
+            graphics.fill(x + 1, y, right - (length == width ? 1 : 0), y + 1, color);
+            graphics.fill(x + 1, bottom - 1, right - (length == width ? 1 : 0), bottom, color);
+            graphics.fill(x, y + 1, x + 1, bottom - 1, color);
+            graphics.fill(right - 1, y + 1, right, bottom - 1, color);
+        });
+    }
+
     /** How many fill columns a fraction covers. */
     public static int columns(int width, boolean framed, float fraction) {
         int inner = width - (framed ? 2 : 0);
