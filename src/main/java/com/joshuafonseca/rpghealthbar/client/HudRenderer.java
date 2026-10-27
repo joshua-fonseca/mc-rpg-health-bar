@@ -19,13 +19,6 @@ public final class HudRenderer {
     private static final int MANA_COST_COLOR = 0xFF143C64;
     private static final long COST_PULSE_MILLIS = 800;
     private static final BarTrail HEALTH_TRAIL = new BarTrail();
-    private static final BarChanges HEALTH_CHANGES = new BarChanges();
-    /** When hit, the health bar flashes white, fading out over this long (vanilla's hearts blink white). */
-    private static final float DAMAGE_FLASH_MILLIS = 350.0F;
-    private static final float DAMAGE_FLASH_ALPHA = 0.6F;
-    /** Health just gained glows white, fading out over this long (vanilla's hearts blink when healing). */
-    private static final float HEAL_GLOW_MILLIS = 600.0F;
-    private static final float HEAL_GLOW_ALPHA = 0.55F;
     /** At or below this much health (plus absorption), the bar pulses as a warning, like vanilla's shaking hearts. */
     private static final float LOW_HEALTH = 4.0F;
     private static final long LOW_HEALTH_PULSE_MILLIS = 900;
@@ -89,10 +82,7 @@ public final class HudRenderer {
         BarRenderer.drawFill(graphics, x, y, HudLayout.WIDTH, HudLayout.MAIN_BAR_HEIGHT, true, health / maxHealth, values.healthColor(), true);
         if (live) {
             float trail = HEALTH_TRAIL.update(health);
-            HEALTH_CHANGES.update(health, (long) HEAL_GLOW_MILLIS);
             BarRenderer.drawSection(graphics, x, y, HudLayout.WIDTH, HudLayout.MAIN_BAR_HEIGHT, true, health / maxHealth, trail / maxHealth, StatusColors.lost(values.healthColor()), false, 1.0F);
-        }
-        if (live) {
             renderHealthEffects(graphics, x, y, values);
         }
         if (absorption > 0) {
@@ -104,23 +94,11 @@ public final class HudRenderer {
         }
     }
 
-    /** Flashes and highlights over the health fill, like the vanilla hearts' blinking. */
+    /** The low-health pulse and the Regeneration sweep over the health fill, like the vanilla hearts' movement. */
     private static void renderHealthEffects(GuiGraphics graphics, int x, int y, HudValues values) {
-        float maxHealth = values.maxHealth();
-        int fill = BarRenderer.columns(HudLayout.WIDTH, true, values.health() / maxHealth);
+        int fill = BarRenderer.columns(HudLayout.WIDTH, true, values.health() / values.maxHealth());
         // Everything but the white tip, which stays as it is.
         int body = Math.max(0, fill - 1);
-        float sinceHit = HEALTH_CHANGES.sinceDrop();
-        if (sinceHit < DAMAGE_FLASH_MILLIS) {
-            float alpha = DAMAGE_FLASH_ALPHA * (1.0F - sinceHit / DAMAGE_FLASH_MILLIS);
-            BarRenderer.drawHighlight(graphics, x, y, HudLayout.WIDTH, HudLayout.MAIN_BAR_HEIGHT, true, 0, body, alpha);
-        }
-        float sinceHeal = HEALTH_CHANGES.sinceGain();
-        if (sinceHeal < HEAL_GLOW_MILLIS) {
-            float alpha = HEAL_GLOW_ALPHA * (1.0F - sinceHeal / HEAL_GLOW_MILLIS);
-            int from = BarRenderer.columns(HudLayout.WIDTH, true, HEALTH_CHANGES.gainFrom() / maxHealth);
-            BarRenderer.drawHighlight(graphics, x, y, HudLayout.WIDTH, HudLayout.MAIN_BAR_HEIGHT, true, from, body, alpha);
-        }
         if (values.health() + values.absorption() <= LOW_HEALTH) {
             BarRenderer.drawHighlight(graphics, x, y, HudLayout.WIDTH, HudLayout.MAIN_BAR_HEIGHT, true, 0, body, LOW_HEALTH_PULSE_ALPHA * pulse(LOW_HEALTH_PULSE_MILLIS));
         }

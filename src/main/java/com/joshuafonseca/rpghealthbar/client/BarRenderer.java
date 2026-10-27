@@ -111,7 +111,7 @@ public final class BarRenderer {
 
     /**
      * Lightens fill columns {@code start} to {@code end} (exclusive) toward white by {@code alpha},
-     * leaving the border alone. Used for flashes and highlights over a fill drawn with {@link #drawFill}.
+     * leaving the border alone. Used for the pulses and sweeps over a fill drawn with {@link #drawFill}.
      */
     public static void drawHighlight(GuiGraphics graphics, int x, int y, int width, int height, boolean framed, int start, int end, float alpha) {
         if (end <= start || alpha <= 0) {
