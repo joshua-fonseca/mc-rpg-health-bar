@@ -13,6 +13,7 @@ A client-side NeoForge mod for Minecraft 1.21.1 that replaces the vanilla hearts
 - **Mana bar** for Iron's Spells 'n Spellbooks, replacing Iron's own. Without Iron's, it's simply not shown.
 - **Spell cost preview:** while Iron's spell wheel is open, the mana the hovered spell would use blinks at the end of the mana bar.
 - **Damage trail:** health or mana you just lost stays as a darker section for a moment, then shrinks away.
+- **Status colors:** like the vanilla hearts, the health bar turns green-yellow when poisoned, black when withered and light blue when frozen, and the hunger bar turns green with the Hunger effect. Heart colors added by other mods are followed too.
 - **Armor and hunger** as the vanilla icons (default), thin bars, or hidden.
 - **Move the whole HUD**, including the XP bar and level, by dragging it. Useful if another mod (like a second hotbar) draws over it. The position holds up when you change the window size or GUI scale.
 - **Everything in game:** all options apply immediately, no restart.

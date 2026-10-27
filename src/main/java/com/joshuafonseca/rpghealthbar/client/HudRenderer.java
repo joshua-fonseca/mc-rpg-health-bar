@@ -10,13 +10,10 @@ import net.minecraft.util.Mth;
 
 /** Draws the bar group at a layout. Used by the HUD layer and the position editor's preview. */
 public final class HudRenderer {
-    private static final int HEALTH_COLOR = 0xFFC82828;
     private static final int ABSORPTION_COLOR = 0xFFD8A820;
     private static final int MANA_COLOR = 0xFF2C88D0;
     private static final int ARMOR_COLOR = 0xFFB0B0B0;
-    private static final int HUNGER_COLOR = 0xFFC86A18;
     /** The section just lost, shown briefly before it shrinks away. */
-    private static final int HEALTH_LOST_COLOR = 0xFF6A1414;
     private static final int MANA_LOST_COLOR = 0xFF143C64;
     /** The hovered spell's cost blinks between the mana color and this, once per period. */
     private static final int MANA_COST_COLOR = 0xFF143C64;
@@ -55,7 +52,7 @@ public final class HudRenderer {
         }
         if (showHunger) {
             BarRenderer.drawTrack(graphics, layout.hungerX(), y, width, height, false);
-            BarRenderer.drawFill(graphics, layout.hungerX(), y, width, height, false, values.food() / MAX_FOOD, HUNGER_COLOR, false);
+            BarRenderer.drawFill(graphics, layout.hungerX(), y, width, height, false, values.food() / MAX_FOOD, values.hungerColor(), false);
         }
     }
 
@@ -67,10 +64,10 @@ public final class HudRenderer {
         int x = layout.x();
         int y = layout.healthY();
         BarRenderer.drawTrack(graphics, x, y, HudLayout.WIDTH, HudLayout.MAIN_BAR_HEIGHT, true);
-        BarRenderer.drawFill(graphics, x, y, HudLayout.WIDTH, HudLayout.MAIN_BAR_HEIGHT, true, health / maxHealth, HEALTH_COLOR, true);
+        BarRenderer.drawFill(graphics, x, y, HudLayout.WIDTH, HudLayout.MAIN_BAR_HEIGHT, true, health / maxHealth, values.healthColor(), true);
         if (live) {
             float trail = HEALTH_TRAIL.update(health);
-            BarRenderer.drawSection(graphics, x, y, HudLayout.WIDTH, HudLayout.MAIN_BAR_HEIGHT, true, health / maxHealth, trail / maxHealth, HEALTH_LOST_COLOR, false, 1.0F);
+            BarRenderer.drawSection(graphics, x, y, HudLayout.WIDTH, HudLayout.MAIN_BAR_HEIGHT, true, health / maxHealth, trail / maxHealth, StatusColors.lost(values.healthColor()), false, 1.0F);
         }
         if (absorption > 0) {
             BarRenderer.drawFill(graphics, x, y, HudLayout.WIDTH, HudLayout.MAIN_BAR_HEIGHT, true, absorption / maxHealth, ABSORPTION_COLOR, absorption < maxHealth);
