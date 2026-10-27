@@ -6,7 +6,7 @@ Replaces the vanilla hearts with an RPG-style health bar. With **Iron's Spells '
 
 ## Features
 
-- **Health bar** the width of the hotbar, with your current and max health on it (`15.5/20`). Max health follows your real max, so health boosts are shown.
+- **Health bar** the width of the hotbar, with your current and max health on it (`15.5/20`). It goes beyond the vanilla max of 20 for mods that add hearts to the player (`32/40`), following your real max health.
 - **Absorption** fills the bar in gold, and the text shows it separately (`15.5+4/20`) or added in (`19.5/20`).
 - **Mana bar** for Iron's Spells 'n Spellbooks, an overhaul of Iron's own: in the same style as the health bar, replacing Iron's mana bar.
 - **Status colors:** like the vanilla hearts, the health bar turns green-yellow when poisoned, black when withered and light blue when frozen, and the hunger bar turns green with the Hunger effect. Heart colors added by other mods are followed too.
