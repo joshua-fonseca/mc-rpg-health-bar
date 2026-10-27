@@ -119,11 +119,15 @@ public final class HudRenderer {
         float center = -REGEN_BAND_WIDTH / 2.0F + progress * (body + REGEN_BAND_WIDTH);
         int from = Math.max(0, Mth.floor(center - REGEN_BAND_WIDTH / 2.0F));
         int to = Math.min(body, Mth.ceil(center + REGEN_BAND_WIDTH / 2.0F));
-        for (int column = from; column < to; column++) {
-            float distance = Math.abs(column + 0.5F - center) / (REGEN_BAND_WIDTH / 2.0F);
-            float alpha = REGEN_BAND_ALPHA * (0.5F + 0.5F * Mth.cos(Math.min(1.0F, distance) * Mth.PI));
-            BarRenderer.drawHighlight(graphics, x, y, HudLayout.WIDTH, HudLayout.MAIN_BAR_HEIGHT, true, column, column + 1, alpha);
+        if (to <= from) {
+            return;
         }
+        float[] alphas = new float[to - from];
+        for (int i = 0; i < alphas.length; i++) {
+            float distance = Math.abs(from + i + 0.5F - center) / (REGEN_BAND_WIDTH / 2.0F);
+            alphas[i] = REGEN_BAND_ALPHA * (0.5F + 0.5F * Mth.cos(Math.min(1.0F, distance) * Mth.PI));
+        }
+        BarRenderer.drawHighlightColumns(graphics, x, y, HudLayout.WIDTH, HudLayout.MAIN_BAR_HEIGHT, true, from, alphas);
     }
 
     /** 0 to 1 and back, smoothly, once per period. */

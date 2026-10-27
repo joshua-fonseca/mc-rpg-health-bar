@@ -3,14 +3,21 @@ package com.joshuafonseca.rpghealthbar.client;
 import com.joshuafonseca.rpghealthbar.RpgHealthBar;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.BufferUploader;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.Tesselator;
+import com.mojang.blaze3d.vertex.VertexFormat;
 import java.util.HashMap;
 import java.util.Map;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import org.joml.Matrix4f;
 
 /**
  * Draws bars in the style of the vanilla XP bar: opaque, with a dark tinted border, a bright middle
@@ -123,6 +130,36 @@ public final class BarRenderer {
         graphics.setColor(1.0F, 1.0F, 1.0F, Math.min(1.0F, alpha));
         graphics.blit(texture, x + inset + start, y + inset, inset + start, inset, end - start, height - 2 * inset, width, height);
         graphics.setColor(1.0F, 1.0F, 1.0F, 1.0F);
+        RenderSystem.disableBlend();
+    }
+
+    /**
+     * Like {@link #drawHighlight}, but each column from {@code start} on gets its own opacity from
+     * {@code alphas}, all in one draw.
+     */
+    public static void drawHighlightColumns(GuiGraphics graphics, int x, int y, int width, int height, boolean framed, int start, float[] alphas) {
+        int inset = framed ? 1 : 0;
+        float top = y + inset;
+        float bottom = y + height - inset;
+        float v0 = (float) inset / height;
+        float v1 = (float) (height - inset) / height;
+        Matrix4f matrix = graphics.pose().last().pose();
+        RenderSystem.setShaderTexture(0, texture(new Style(HIGHLIGHT_COLOR, width, height, framed)));
+        RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
+        RenderSystem.enableBlend();
+        BufferBuilder buffer = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
+        for (int i = 0; i < alphas.length; i++) {
+            float alpha = Math.min(1.0F, alphas[i]);
+            int u = inset + start + i;
+            float left = x + u;
+            float u0 = (float) u / width;
+            float u1 = (float) (u + 1) / width;
+            buffer.addVertex(matrix, left, top, 0).setUv(u0, v0).setColor(1.0F, 1.0F, 1.0F, alpha);
+            buffer.addVertex(matrix, left, bottom, 0).setUv(u0, v1).setColor(1.0F, 1.0F, 1.0F, alpha);
+            buffer.addVertex(matrix, left + 1, bottom, 0).setUv(u1, v1).setColor(1.0F, 1.0F, 1.0F, alpha);
+            buffer.addVertex(matrix, left + 1, top, 0).setUv(u1, v0).setColor(1.0F, 1.0F, 1.0F, alpha);
+        }
+        BufferUploader.drawWithShader(buffer.buildOrThrow());
         RenderSystem.disableBlend();
     }
 
