@@ -2,7 +2,7 @@
 
 <img src="docs/images/icon.png" alt="RPG Health Bar icon" width="96" align="right">
 
-A client-side NeoForge mod for Minecraft 1.21.1 that replaces the vanilla hearts with an RPG-style health bar, drawn in the style of the XP bar. With [Iron's Spells 'n Spellbooks](https://modrinth.com/mod/irons-spells-n-spellbooks) installed, a mana bar sits right below it.
+A client-side NeoForge mod for Minecraft 1.21.1 that replaces the vanilla hearts with an RPG-style health bar. With [Iron's Spells 'n Spellbooks](https://modrinth.com/mod/irons-spells-n-spellbooks) installed, a mana bar sits right below it.
 
 ![The HUD with vanilla armor and hunger icons](docs/images/hud-vanilla-icons.png)
 

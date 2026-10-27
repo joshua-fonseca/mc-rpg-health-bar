@@ -1,6 +1,6 @@
 # RPG Health Bar
 
-Replaces the vanilla hearts with an RPG-style health bar, drawn in the style of the XP bar. With **Iron's Spells 'n Spellbooks** installed, a mana bar sits right below it.
+Replaces the vanilla hearts with an RPG-style health bar. With **Iron's Spells 'n Spellbooks** installed, a mana bar sits right below it.
 
 ![The HUD with vanilla armor and hunger icons](https://raw.githubusercontent.com/joshua-fonseca/mc-rpg-health-bar/main/docs/images/hud-vanilla-icons.png)
 

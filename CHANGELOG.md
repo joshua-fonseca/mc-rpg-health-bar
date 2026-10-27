@@ -11,7 +11,7 @@
 
 First release, for Minecraft 1.21.1 on NeoForge.
 
-- Health bar in the style of the XP bar, replacing the vanilla hearts, with current/max health on it.
+- Health bar replacing the vanilla hearts, with current/max health on it.
 - Absorption shown in gold on the health bar, written separately or added in.
 - Mana bar for Iron's Spells 'n Spellbooks (optional), replacing Iron's own.
 - Spell cost preview on the mana bar while Iron's spell wheel is open.

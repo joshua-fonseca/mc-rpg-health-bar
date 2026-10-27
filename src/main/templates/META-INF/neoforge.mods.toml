@@ -13,7 +13,7 @@ displayURL="https://github.com/joshua-fonseca/mc-rpg-health-bar"
 logoFile="rpghealthbar.png"
 logoBlur=false
 description='''
-Replaces the vanilla hearts with an RPG-style health bar in the style of the XP bar, with an optional mana bar for Iron's Spells 'n Spellbooks.
+Replaces the vanilla hearts with an RPG-style health bar, with an optional mana bar for Iron's Spells 'n Spellbooks.
 
 Armor and hunger can be shown as vanilla icons, thin bars, or hidden. The whole HUD, including the XP bar, can be dragged anywhere on screen. Everything is set in game from the Config button; no restart needed.
 '''
