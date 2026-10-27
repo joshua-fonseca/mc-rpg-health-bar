@@ -88,6 +88,7 @@ Settings are stored in `config/rpghealthbar-client.toml`.
 - [Double Hotbar](https://www.curseforge.com/projects/1563792) by sidezbros: compatible. Open **Move HUD...** and drag the HUD up above the second hotbar once; the bars, XP bar and level move together and stay there, and the item name stays above them.
 - Works with other mods that draw near the hotbar the same way: drag the HUD, or just the pieces in the way, clear of them.
 - Air bubbles and mount health stay vanilla and stack above the bars.
+- **Texture packs:** armor and hunger on Vanilla use your pack's icons, and the hotbar, XP bar, air bubbles and mount health stay vanilla, so packs restyle them. The health and mana bars, and armor and hunger as bars, are drawn by the mod and don't change with a pack.
 
 ## Development
 
