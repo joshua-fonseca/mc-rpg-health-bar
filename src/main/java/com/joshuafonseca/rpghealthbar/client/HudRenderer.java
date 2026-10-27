@@ -1,5 +1,6 @@
 package com.joshuafonseca.rpghealthbar.client;
 
+import com.joshuafonseca.rpghealthbar.compat.AppleSkinCompat;
 import com.joshuafonseca.rpghealthbar.config.AbsorptionDisplay;
 import com.joshuafonseca.rpghealthbar.config.ClientConfig;
 import com.joshuafonseca.rpghealthbar.config.HealthUnit;
@@ -16,6 +17,8 @@ public final class HudRenderer {
     private static final int ARMOR_COLOR = 0xFFB0B0B0;
     /** Saturation is outlined on the hunger bar in this color, like AppleSkin's outlines on the food icons. */
     private static final int SATURATION_COLOR = 0xFFF0D030;
+    /** With food held, what eating it would add flashes on the hunger bar, as fast as AppleSkin's preview on the icons. */
+    private static final long FOOD_PREVIEW_FLASH_MILLIS = 1600;
     /** The section just lost, shown briefly before it shrinks away. */
     private static final int MANA_LOST_COLOR = 0xFF143C64;
     /** The hovered spell's cost blinks between the mana color and this, once per period. */
@@ -51,13 +54,7 @@ public final class HudRenderer {
             inPiece(graphics, pieces, HudPiece.ARMOR, () -> renderHalfBar(graphics, layout.x(), layout, values.armor() / MAX_ARMOR, ARMOR_COLOR));
         }
         if (showHunger) {
-            inPiece(graphics, pieces, HudPiece.HUNGER, () -> {
-                renderHalfBar(graphics, layout.hungerX(), layout, values.food() / MAX_FOOD, values.hungerColor());
-                if (values.saturation() > 0) {
-                    BarRenderer.drawOutline(graphics, layout.hungerX(), layout.halfBarY(), HudLayout.HALF_BAR_WIDTH, HudLayout.HALF_BAR_HEIGHT,
-                            values.saturation() / MAX_FOOD, SATURATION_COLOR);
-                }
-            });
+            inPiece(graphics, pieces, HudPiece.HUNGER, () -> renderHunger(graphics, layout, values));
         }
         inPiece(graphics, pieces, HudPiece.HEALTH, () -> renderHealth(graphics, font, layout, values, live));
         if (values.mana() != null) {
@@ -82,6 +79,27 @@ public final class HudRenderer {
         int y = layout.halfBarY();
         BarRenderer.drawTrack(graphics, x, y, HudLayout.HALF_BAR_WIDTH, HudLayout.HALF_BAR_HEIGHT, false);
         BarRenderer.drawFill(graphics, x, y, HudLayout.HALF_BAR_WIDTH, HudLayout.HALF_BAR_HEIGHT, false, fraction, color, false);
+    }
+
+    /** The hunger bar, with AppleSkin's saturation outline and held-food preview when it's installed. */
+    private static void renderHunger(GuiGraphics graphics, HudLayout layout, HudValues values) {
+        int x = layout.hungerX();
+        int y = layout.halfBarY();
+        int width = HudLayout.HALF_BAR_WIDTH;
+        int height = HudLayout.HALF_BAR_HEIGHT;
+        renderHalfBar(graphics, x, layout, values.food() / MAX_FOOD, values.hungerColor());
+        AppleSkinCompat.HeldFood held = values.heldFood();
+        float flash = held == null ? 0 : held.flashAlpha() * pulse(FOOD_PREVIEW_FLASH_MILLIS);
+        if (held != null && held.food() > values.food()) {
+            BarRenderer.drawSection(graphics, x, y, width, height, false, values.food() / MAX_FOOD, held.food() / MAX_FOOD, values.hungerColor(), false, flash);
+        }
+        if (values.saturation() > 0) {
+            BarRenderer.drawOutline(graphics, x, y, width, height, 0, values.saturation() / MAX_FOOD, SATURATION_COLOR, true);
+        }
+        if (held != null && held.saturation() > values.saturation()) {
+            int color = ((int) (flash * 255) << 24) | (SATURATION_COLOR & 0xFFFFFF);
+            BarRenderer.drawOutline(graphics, x, y, width, height, values.saturation() / MAX_FOOD, held.saturation() / MAX_FOOD, color, values.saturation() <= 0);
+        }
     }
 
     private static void renderHealth(GuiGraphics graphics, Font font, HudLayout layout, HudValues values, boolean live) {

@@ -9,13 +9,15 @@ import net.minecraft.world.entity.player.Player;
 /**
  * The numbers shown on the bars, and the health and hunger bar colors, which change with status
  * effects (see {@link StatusColors}). {@code regenerating} drives the sweep that stands in for the
- * vanilla hearts' wave. {@code saturation} is outlined on the hunger bar, only with AppleSkin.
+ * vanilla hearts' wave. {@code saturation} is outlined on the hunger bar and {@code heldFood}
+ * previewed on it, only with AppleSkin.
  */
-public record HudValues(float health, float maxHealth, float absorption, float armor, float food, float saturation, @Nullable IronsSpellsCompat.Mana mana,
+public record HudValues(float health, float maxHealth, float absorption, float armor, float food, float saturation,
+                        @Nullable AppleSkinCompat.HeldFood heldFood, @Nullable IronsSpellsCompat.Mana mana,
                         int healthColor, int hungerColor, boolean regenerating) {
     public static HudValues of(Player player) {
         return new HudValues(player.getHealth(), player.getMaxHealth(), player.getAbsorptionAmount(),
-                player.getArmorValue(), player.getFoodData().getFoodLevel(), AppleSkinCompat.saturation(player), IronsSpellsCompat.read(player),
+                player.getArmorValue(), player.getFoodData().getFoodLevel(), AppleSkinCompat.saturation(player), AppleSkinCompat.heldFood(player), IronsSpellsCompat.read(player),
                 StatusColors.health(player), StatusColors.hunger(player),
                 player.hasEffect(MobEffects.REGENERATION));
     }
@@ -23,6 +25,6 @@ public record HudValues(float health, float maxHealth, float absorption, float a
     /** Shown in the position editor when there's no player to read from (e.g. opened from the title screen). */
     public static HudValues placeholder() {
         IronsSpellsCompat.Mana mana = IronsSpellsCompat.isAvailable() ? new IronsSpellsCompat.Mana(100, 100, 0) : null;
-        return new HudValues(20, 20, 0, 10, 20, 0, mana, StatusColors.HEALTH, StatusColors.HUNGER, false);
+        return new HudValues(20, 20, 0, 10, 20, 0, null, mana, StatusColors.HEALTH, StatusColors.HUNGER, false);
     }
 }
