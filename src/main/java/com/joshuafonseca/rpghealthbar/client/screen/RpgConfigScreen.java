@@ -117,7 +117,8 @@ public class RpgConfigScreen extends Screen {
      * Hover text: a description, then each possible value on its own paragraph with its name highlighted.
      * The first value is the default.
      */
-    private static Tooltip tooltip(String option, String... values) {
+    /** Also used by the position editor. */
+    static Tooltip tooltip(String option, String... values) {
         String key = "rpghealthbar.config." + option + ".tooltip";
         MutableComponent text = Component.translatable(key);
         for (int i = 0; i < values.length; i++) {

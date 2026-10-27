@@ -2,6 +2,9 @@ package com.joshuafonseca.rpghealthbar.client;
 
 import com.joshuafonseca.rpghealthbar.config.ClientConfig;
 import com.joshuafonseca.rpghealthbar.config.HalfBarMode;
+import com.joshuafonseca.rpghealthbar.config.HudPiece;
+import java.util.EnumMap;
+import java.util.Map;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
@@ -26,7 +29,7 @@ public class HudLayer implements LayeredDraw.Layer {
 
         graphics.pose().pushPose();
         HudPosition.moveTo(graphics.pose(), frame.offset());
-        HudRenderer.render(graphics, minecraft.font, frame.layout(), values, frame.showArmor(), frame.showHunger(), true);
+        HudRenderer.render(graphics, minecraft.font, frame.layout(), values, frame.showArmor(), frame.showHunger(), frame.pieces(), true);
         graphics.pose().popPose();
     }
 
@@ -39,8 +42,15 @@ public class HudLayer implements LayeredDraw.Layer {
                 && minecraft.getCameraEntity() instanceof Player;
     }
 
-    /** Layout, display settings and position for the current frame. */
-    public record Frame(HudLayout layout, HudPosition.Bounds bounds, HudPosition.Offset offset,
+    /**
+     * Layout, display settings and position for the current frame.
+     *
+     * @param bounds      the whole set at its default position, with each piece shifted by its own offset
+     * @param offset      the whole set's shift from its default position
+     * @param pieceBounds each shown piece at its default position, without any shift
+     */
+    public record Frame(HudLayout layout, HudPosition.Bounds bounds, HudPosition.Offset offset, HudPosition.Pieces pieces,
+                        Map<HudPiece, HudPosition.Bounds> pieceBounds,
                         boolean showArmor, boolean showHunger, boolean vanillaArmor, boolean vanillaHunger) {
         public static Frame compute(int screenWidth, int screenHeight, boolean showMana) {
             HalfBarMode armorMode = ClientConfig.ARMOR_MODE.get();
@@ -51,9 +61,45 @@ public class HudLayer implements LayeredDraw.Layer {
             boolean vanillaHunger = hungerMode == HalfBarMode.VANILLA;
 
             HudLayout layout = HudLayout.compute(screenWidth, screenHeight, showArmor || showHunger, vanillaArmor || vanillaHunger, showMana);
-            HudPosition.Bounds bounds = HudPosition.bounds(screenHeight, layout);
+            Map<HudPiece, HudPosition.Bounds> pieceBounds = pieceBounds(screenHeight, layout, armorMode, hungerMode, showMana);
+            HudPosition.Pieces pieces = HudPosition.pieces();
+            HudPosition.Bounds bounds = null;
+            for (Map.Entry<HudPiece, HudPosition.Bounds> entry : pieceBounds.entrySet()) {
+                HudPosition.Bounds moved = entry.getValue().offset(pieces.get(entry.getKey()));
+                bounds = bounds == null ? moved : bounds.union(moved);
+            }
             HudPosition.Offset offset = HudPosition.current(screenWidth, screenHeight, bounds);
-            return new Frame(layout, bounds, offset, showArmor, showHunger, vanillaArmor, vanillaHunger);
+            return new Frame(layout, bounds, offset, pieces, pieceBounds, showArmor, showHunger, vanillaArmor, vanillaHunger);
+        }
+
+        /** Where a piece is drawn: the set's shift plus the piece's own. */
+        public HudPosition.Offset pieceOffset(HudPiece piece) {
+            return offset.plus(pieces.get(piece));
+        }
+
+        /** Each shown piece at its default position. Health and XP are always shown. */
+        private static Map<HudPiece, HudPosition.Bounds> pieceBounds(int screenHeight, HudLayout layout, HalfBarMode armorMode, HalfBarMode hungerMode, boolean showMana) {
+            Map<HudPiece, HudPosition.Bounds> bounds = new EnumMap<>(HudPiece.class);
+            int left = layout.x();
+            int right = left + HudLayout.WIDTH;
+            int iconBottom = layout.iconRowY() + HudLayout.ICON_ROW_HEIGHT;
+            int barBottom = layout.halfBarY() + HudLayout.HALF_BAR_HEIGHT;
+            if (armorMode == HalfBarMode.VANILLA) {
+                bounds.put(HudPiece.ARMOR, new HudPosition.Bounds(left, layout.iconRowY(), left + HudLayout.ICON_ROW_WIDTH, iconBottom));
+            } else if (armorMode == HalfBarMode.BAR) {
+                bounds.put(HudPiece.ARMOR, new HudPosition.Bounds(left, layout.halfBarY(), left + HudLayout.HALF_BAR_WIDTH, barBottom));
+            }
+            if (hungerMode == HalfBarMode.VANILLA) {
+                bounds.put(HudPiece.HUNGER, new HudPosition.Bounds(right - HudLayout.ICON_ROW_WIDTH, layout.iconRowY(), right, iconBottom));
+            } else if (hungerMode == HalfBarMode.BAR) {
+                bounds.put(HudPiece.HUNGER, new HudPosition.Bounds(layout.hungerX(), layout.halfBarY(), right, barBottom));
+            }
+            bounds.put(HudPiece.HEALTH, new HudPosition.Bounds(left, layout.healthY(), right, layout.healthY() + HudLayout.MAIN_BAR_HEIGHT));
+            if (showMana) {
+                bounds.put(HudPiece.MANA, new HudPosition.Bounds(left, layout.manaY(), right, layout.manaY() + HudLayout.MAIN_BAR_HEIGHT));
+            }
+            bounds.put(HudPiece.XP, HudPosition.xpBar(screenHeight, layout));
+            return bounds;
         }
     }
 
@@ -67,9 +113,24 @@ public class HudLayer implements LayeredDraw.Layer {
      * These positions are at the default spot; HudPositionMover shifts the vanilla rows with the set.
      */
     private static void placeVanillaRows(Gui gui, int screenHeight, Frame frame) {
-        int inRow = screenHeight - frame.layout().iconRowY();
-        int aboveBars = screenHeight - frame.layout().top() + 10;
-        gui.leftHeight = frame.vanillaArmor() ? inRow : aboveBars;
-        gui.rightHeight = frame.vanillaHunger() ? inRow : aboveBars;
+        gui.leftHeight = frame.vanillaArmor() ? inRow(screenHeight, frame) : aboveBars(screenHeight, frame);
+        gui.rightHeight = frame.vanillaHunger() ? inRow(screenHeight, frame) : aboveBars(screenHeight, frame);
+    }
+
+    /**
+     * Where rows stacked above the bars start, once the vanilla icons in our row are drawn (vanilla
+     * adds 10 per row drawn). Anything Gui.leftHeight or Gui.rightHeight has grown past this is rows
+     * above the bars: air, mount health, other mods' rows.
+     */
+    public static int vanillaRowsStart(int screenHeight, Frame frame) {
+        return aboveBars(screenHeight, frame);
+    }
+
+    private static int inRow(int screenHeight, Frame frame) {
+        return screenHeight - frame.layout().iconRowY();
+    }
+
+    private static int aboveBars(int screenHeight, Frame frame) {
+        return screenHeight - frame.layout().top() + 10;
     }
 }

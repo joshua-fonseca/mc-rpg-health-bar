@@ -1,7 +1,8 @@
 package com.joshuafonseca.rpghealthbar.client;
 
 import com.joshuafonseca.rpghealthbar.compat.IronsSpellsCompat;
-import java.util.Set;
+import com.joshuafonseca.rpghealthbar.config.HudPiece;
+import java.util.Map;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.client.event.RenderGuiLayerEvent;
@@ -12,14 +13,16 @@ import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
  * replacing any shift other mods gave them so the set always stays together.
  */
 public final class HudPositionMover {
-    private static final Set<ResourceLocation> MOVED_LAYERS = Set.of(
-            VanillaGuiLayers.EXPERIENCE_BAR,
-            VanillaGuiLayers.EXPERIENCE_LEVEL,
-            VanillaGuiLayers.JUMP_METER,
-            VanillaGuiLayers.ARMOR_LEVEL,
-            VanillaGuiLayers.FOOD_LEVEL,
-            VanillaGuiLayers.AIR_LEVEL,
-            VanillaGuiLayers.VEHICLE_HEALTH);
+    /** The vanilla layers that move, and the piece each moves with. */
+    private static final Map<ResourceLocation, HudPiece> MOVED_LAYERS = Map.of(
+            VanillaGuiLayers.EXPERIENCE_BAR, HudPiece.XP,
+            VanillaGuiLayers.EXPERIENCE_LEVEL, HudPiece.XP,
+            VanillaGuiLayers.JUMP_METER, HudPiece.XP,
+            VanillaGuiLayers.ARMOR_LEVEL, HudPiece.ARMOR,
+            // Vanilla stacks air and mount health (which replaces food while riding) on the food side.
+            VanillaGuiLayers.FOOD_LEVEL, HudPiece.HUNGER,
+            VanillaGuiLayers.AIR_LEVEL, HudPiece.HUNGER,
+            VanillaGuiLayers.VEHICLE_HEALTH, HudPiece.HUNGER);
 
     /** Whether the layer currently rendering was translated, so Post only pops what Pre pushed. */
     private static boolean pushed;
@@ -34,13 +37,29 @@ public final class HudPositionMover {
 
     /** Registered at the lowest priority, so it only runs if no other mod cancelled the layer. */
     public static void onPre(RenderGuiLayerEvent.Pre event) {
-        if (!MOVED_LAYERS.contains(event.getName())) {
+        ResourceLocation name = event.getName();
+        boolean text = name.equals(VanillaGuiLayers.SELECTED_ITEM_NAME) || name.equals(VanillaGuiLayers.OVERLAY_MESSAGE);
+        HudPiece piece = MOVED_LAYERS.get(name);
+        if (piece == null && !text) {
             return;
         }
         GuiGraphics graphics = event.getGuiGraphics();
         HudLayer.Frame frame = HudLayer.Frame.compute(graphics.guiWidth(), graphics.guiHeight(), IronsSpellsCompat.isAvailable());
+        if (text) {
+            // Placed vertically from scratch: an upward move another mod gave the text counts as space
+            // that mod uses above the hotbar, and is replaced. Horizontal moves are kept.
+            float foreignY = graphics.pose().last().pose().m31();
+            int raise = Math.max(0, Math.round(-foreignY));
+            int shift = name.equals(VanillaGuiLayers.SELECTED_ITEM_NAME)
+                    ? HudTextPlacer.itemNameShift(graphics.guiWidth(), graphics.guiHeight(), frame, raise)
+                    : HudTextPlacer.overlayShift(graphics.guiWidth(), graphics.guiHeight(), frame, raise);
+            graphics.pose().pushPose();
+            graphics.pose().translate(0, shift - foreignY, 0);
+            pushed = true;
+            return;
+        }
         graphics.pose().pushPose();
-        HudPosition.moveTo(graphics.pose(), frame.offset());
+        HudPosition.moveTo(graphics.pose(), frame.pieceOffset(piece));
         if (event.getName().equals(VanillaGuiLayers.EXPERIENCE_LEVEL)) {
             // Vanilla draws the level above the XP bar; center it on the bar instead.
             graphics.pose().translate(0, LEVEL_DROP, 0);

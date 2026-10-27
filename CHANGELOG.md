@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.2.0 (2026-10-27)
+
+- Move HUD has a new **Moving: All / One** button. With One, you drag a single piece on its own: armor, hunger, health, mana, or the XP bar (with the level and jump meter). Air bubbles and mount health move with hunger. With All, the whole HUD moves and the pieces keep their arrangement.
+- In Move HUD, what you'd grab is faintly highlighted when you hover over it, and a bit more while you drag it.
+- The held item's name and the action bar message now sit just above whatever is over the hotbar, or right above the hotbar when nothing is. Mods that raise the item name to make room (like Double Hotbar) are taken into account.
+- Reset in Move HUD, and Reset Position in the config, also put every piece back.
+- The mod's description is shorter, and its author is shown as itskkura.
+
 ## 1.1.0 (2026-10-26)
 
 - The health bar changes color with the heart type, like the vanilla hearts: green-yellow when poisoned, black when withered, light blue when frozen. Heart types added or changed by other mods are followed, using their heart texture's color.

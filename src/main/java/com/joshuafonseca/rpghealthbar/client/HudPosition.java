@@ -2,7 +2,10 @@ package com.joshuafonseca.rpghealthbar.client;
 
 import com.joshuafonseca.rpghealthbar.config.ClientConfig;
 import com.joshuafonseca.rpghealthbar.config.HudAnchor;
+import com.joshuafonseca.rpghealthbar.config.HudPiece;
 import com.mojang.blaze3d.vertex.PoseStack;
+import java.util.EnumMap;
+import java.util.Map;
 import javax.annotation.Nullable;
 import net.minecraft.util.Mth;
 import org.joml.Matrix4f;
@@ -12,21 +15,47 @@ import org.joml.Matrix4f;
  * them (XP bar, level, jump meter, and vanilla icons stacked above the bars).
  * <p>
  * Everything is laid out at the default spot above the hotbar and then shifted by an {@link Offset}.
+ * Each {@link HudPiece} can also be shifted on its own, on top of that ({@link Pieces}).
  * The saved position is stored differently, relative to the nearest {@link HudAnchor}, so it holds
  * up when the window size or GUI scale changes.
  */
 public final class HudPosition {
     /** The XP bar's bottom edge is this far above the bottom of the screen. */
     private static final int XP_BAR_BOTTOM_MARGIN = 24;
+    private static final int XP_BAR_HEIGHT = 5;
 
     /** Offset while the position editor is open, so the real HUD follows the drag; null otherwise. */
     @Nullable
     private static Offset preview;
+    /** Piece shifts while the position editor is open; null otherwise. */
+    @Nullable
+    private static Pieces previewPieces;
 
     private HudPosition() {
     }
 
     public record Offset(int x, int y) {
+        public static final Offset ZERO = new Offset(0, 0);
+
+        public Offset plus(Offset other) {
+            return new Offset(x + other.x, y + other.y);
+        }
+    }
+
+    /** Each piece's shift from its place in the set. */
+    public record Pieces(Map<HudPiece, Offset> offsets) {
+        public static final Pieces NONE = new Pieces(Map.of());
+
+        public Offset get(HudPiece piece) {
+            return offsets.getOrDefault(piece, Offset.ZERO);
+        }
+
+        public Pieces with(HudPiece piece, Offset offset) {
+            Map<HudPiece, Offset> copy = new EnumMap<>(HudPiece.class);
+            copy.putAll(offsets);
+            copy.put(piece, offset);
+            return new Pieces(copy);
+        }
     }
 
     /** The bounding box of the movable set at its default position. */
@@ -43,13 +72,27 @@ public final class HudPosition {
             return bottom - top;
         }
 
+        public Bounds offset(Offset offset, Offset more) {
+            return offset(offset.plus(more));
+        }
+
+        public Bounds grow(int amount) {
+            return new Bounds(left - amount, top - amount, right + amount, bottom + amount);
+        }
+
+        public Bounds union(Bounds other) {
+            return new Bounds(Math.min(left, other.left), Math.min(top, other.top), Math.max(right, other.right), Math.max(bottom, other.bottom));
+        }
+
         public boolean contains(double x, double y) {
             return x >= left && x < right && y >= top && y < bottom;
         }
     }
 
-    public static Bounds bounds(int screenHeight, HudLayout layout) {
-        return new Bounds(layout.x(), layout.top(), layout.x() + HudLayout.WIDTH, screenHeight - XP_BAR_BOTTOM_MARGIN);
+    /** The XP bar (with the level number centered on it) at its default position. */
+    public static Bounds xpBar(int screenHeight, HudLayout layout) {
+        int bottom = screenHeight - XP_BAR_BOTTOM_MARGIN;
+        return new Bounds(layout.x(), bottom - XP_BAR_HEIGHT, layout.x() + HudLayout.WIDTH, bottom);
     }
 
     /**
@@ -105,5 +148,30 @@ public final class HudPosition {
 
     public static void setPreview(@Nullable Offset offset) {
         preview = offset;
+    }
+
+    public static void setPreviewPieces(@Nullable Pieces pieces) {
+        previewPieces = pieces;
+    }
+
+    /** The saved piece shifts (or the editor's preview). */
+    public static Pieces pieces() {
+        return previewPieces != null ? previewPieces : savedPieces();
+    }
+
+    public static Pieces savedPieces() {
+        Map<HudPiece, Offset> offsets = new EnumMap<>(HudPiece.class);
+        for (HudPiece piece : HudPiece.values()) {
+            offsets.put(piece, new Offset(ClientConfig.pieceOffsetX(piece), ClientConfig.pieceOffsetY(piece)));
+        }
+        return new Pieces(offsets);
+    }
+
+    /** Stores the piece shifts; written to the file along with the position by {@link #save}. */
+    public static void savePieces(Pieces pieces) {
+        for (HudPiece piece : HudPiece.values()) {
+            Offset offset = pieces.get(piece);
+            ClientConfig.setPieceOffset(piece, offset.x(), offset.y());
+        }
     }
 }

@@ -1,5 +1,7 @@
 package com.joshuafonseca.rpghealthbar.config;
 
+import java.util.EnumMap;
+import java.util.Map;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
 /** Stored in config/rpghealthbar-client.toml. Values are read every frame, so changes apply immediately. */
@@ -57,6 +59,26 @@ public final class ClientConfig {
             .translation("rpghealthbar.config.offsetY")
             .defineInRange("offsetY", DEFAULT_OFFSET_Y, -10000, 10000);
 
+    /**
+     * Each piece's shift from its place in the HUD, in GUI pixels, on top of the HUD's position.
+     * Set with Config → Move HUD → Moving: One.
+     */
+    private static final Map<HudPiece, ModConfigSpec.IntValue> PIECE_OFFSETS_X = new EnumMap<>(HudPiece.class);
+    private static final Map<HudPiece, ModConfigSpec.IntValue> PIECE_OFFSETS_Y = new EnumMap<>(HudPiece.class);
+
+    static {
+        for (HudPiece piece : HudPiece.values()) {
+            PIECE_OFFSETS_X.put(piece, BUILDER
+                    .comment("Horizontal shift of the " + piece.key() + " piece from its place in the HUD, in GUI pixels. Set with Config → Move HUD.")
+                    .translation("rpghealthbar.config." + piece.key() + "OffsetX")
+                    .defineInRange(piece.key() + "OffsetX", 0, -10000, 10000));
+            PIECE_OFFSETS_Y.put(piece, BUILDER
+                    .comment("Vertical shift of the " + piece.key() + " piece from its place in the HUD, in GUI pixels. Set with Config → Move HUD.")
+                    .translation("rpghealthbar.config." + piece.key() + "OffsetY")
+                    .defineInRange(piece.key() + "OffsetY", 0, -10000, 10000));
+        }
+    }
+
     public static final ModConfigSpec SPEC = BUILDER.build();
 
     private ClientConfig() {
@@ -70,8 +92,26 @@ public final class ClientConfig {
         SPEC.save();
     }
 
+    /** Moves the HUD back above the hotbar and every piece back into place. */
     public static void resetPosition() {
+        for (HudPiece piece : HudPiece.values()) {
+            setPieceOffset(piece, 0, 0);
+        }
         setPosition(HudAnchor.BOTTOM_CENTER, DEFAULT_OFFSET_X, DEFAULT_OFFSET_Y);
+    }
+
+    public static int pieceOffsetX(HudPiece piece) {
+        return PIECE_OFFSETS_X.get(piece).get();
+    }
+
+    public static int pieceOffsetY(HudPiece piece) {
+        return PIECE_OFFSETS_Y.get(piece).get();
+    }
+
+    /** Updates a piece's shift; written to the file by the next {@link #setPosition}. */
+    public static void setPieceOffset(HudPiece piece, int x, int y) {
+        PIECE_OFFSETS_X.get(piece).set(x);
+        PIECE_OFFSETS_Y.get(piece).set(y);
     }
 
     /** Updates a value and writes the config file. */

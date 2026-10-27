@@ -1,23 +1,28 @@
 package com.joshuafonseca.rpghealthbar.client.screen;
 
 import com.joshuafonseca.rpghealthbar.client.HudLayer;
-import com.joshuafonseca.rpghealthbar.client.HudLayout;
 import com.joshuafonseca.rpghealthbar.client.HudPosition;
 import com.joshuafonseca.rpghealthbar.client.HudRenderer;
 import com.joshuafonseca.rpghealthbar.client.HudValues;
 import com.joshuafonseca.rpghealthbar.compat.IronsSpellsCompat;
+import com.joshuafonseca.rpghealthbar.config.HudPiece;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import javax.annotation.Nullable;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.AbstractButton;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.CycleButton;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import org.lwjgl.glfw.GLFW;
 
 /**
- * Drag the whole HUD set to a new position, then Save or Cancel. In a world the real HUD follows
- * the drag; from the title screen a preview is drawn instead.
+ * Drag the whole HUD set, or one piece of it, to a new position, then Save or Cancel. In a world
+ * the real HUD follows the drag; from the title screen a preview is drawn instead.
  */
 public class HudEditScreen extends Screen {
     private static final int BUTTON_WIDTH = 70;
@@ -28,13 +33,34 @@ public class HudEditScreen extends Screen {
     /** Title, hint and buttons; moved to whichever half of the screen the HUD isn't in. */
     private static final int CONTROLS_HEIGHT = 44;
     private static final int CONTROLS_MARGIN = 8;
+    /** Pieces can be grabbed this far outside their edges, so the thin bars are easy to pick up. */
+    private static final int GRAB_MARGIN = 2;
+    /** While dragging, what's being moved is lightened by this translucent white. */
+    private static final int GRABBED_HIGHLIGHT = 0x30FFFFFF;
+    /** What the cursor would grab is lightened more faintly. */
+    private static final int HOVER_HIGHLIGHT = 0x18FFFFFF;
+
+    /** What dragging moves: the whole set, or one piece of it. */
+    private enum Mode {
+        ALL,
+        ONE;
+
+        Component displayName() {
+            return Component.translatable("rpghealthbar.edit.mode." + name().toLowerCase(Locale.ROOT));
+        }
+    }
 
     private final Screen parent;
-    private final List<Button> buttons = new ArrayList<>();
+    private final List<AbstractButton> buttons = new ArrayList<>();
     private int controlsTop;
     /** Shift from the default spot; null until the screen size is known in init(). */
     private HudPosition.Offset offset;
+    private HudPosition.Pieces pieces = HudPosition.savedPieces();
+    private Mode mode = Mode.ALL;
     private boolean dragging;
+    /** In {@link Mode#ONE}, the piece last grabbed; the arrow keys move it. */
+    @Nullable
+    private HudPiece selected;
     private double grabX;
     private double grabY;
 
@@ -45,18 +71,28 @@ public class HudEditScreen extends Screen {
 
     @Override
     protected void init() {
-        int totalWidth = BUTTON_WIDTH * 3 + BUTTON_GAP * 2;
+        int totalWidth = BUTTON_WIDTH * 4 + BUTTON_GAP * 3;
         int x = this.width / 2 - totalWidth / 2;
+        int step = BUTTON_WIDTH + BUTTON_GAP;
         buttons.clear();
+        buttons.add(addRenderableWidget(CycleButton.builder(Mode::displayName)
+                .withValues(Mode.values())
+                .withInitialValue(mode)
+                .withTooltip(value -> RpgConfigScreen.tooltip("moveMode", "all", "one"))
+                .create(x, 0, BUTTON_WIDTH, BUTTON_HEIGHT, Component.translatable("rpghealthbar.edit.mode"), (button, value) -> {
+                    mode = value;
+                    selected = null;
+                })));
         buttons.add(addRenderableWidget(Button.builder(Component.translatable("rpghealthbar.edit.save"), button -> save())
-                .bounds(x, 0, BUTTON_WIDTH, BUTTON_HEIGHT).build()));
-        buttons.add(addRenderableWidget(Button.builder(Component.translatable("rpghealthbar.edit.reset"), button -> setOffset(HudPosition.defaultOffset(this.width, this.height, frame().bounds())))
-                .bounds(x + BUTTON_WIDTH + BUTTON_GAP, 0, BUTTON_WIDTH, BUTTON_HEIGHT).build()));
+                .bounds(x + step, 0, BUTTON_WIDTH, BUTTON_HEIGHT).build()));
+        buttons.add(addRenderableWidget(Button.builder(Component.translatable("rpghealthbar.edit.reset"), button -> reset())
+                .bounds(x + step * 2, 0, BUTTON_WIDTH, BUTTON_HEIGHT).build()));
         buttons.add(addRenderableWidget(Button.builder(CommonComponents.GUI_CANCEL, button -> onClose())
-                .bounds(x + (BUTTON_WIDTH + BUTTON_GAP) * 2, 0, BUTTON_WIDTH, BUTTON_HEIGHT).build()));
+                .bounds(x + step * 3, 0, BUTTON_WIDTH, BUTTON_HEIGHT).build()));
 
         // Start from the saved position, or re-clamp the dragged one if the window was resized.
         // This also places the controls.
+        HudPosition.setPreviewPieces(pieces);
         setOffset(offset != null ? offset : HudPosition.saved(this.width, this.height, frame().bounds()));
     }
 
@@ -65,7 +101,7 @@ public class HudEditScreen extends Screen {
         HudPosition.Bounds box = frame().bounds().offset(offset);
         boolean hudInTopHalf = (box.top() + box.bottom()) / 2 < this.height / 2;
         controlsTop = hudInTopHalf ? this.height - CONTROLS_MARGIN - CONTROLS_HEIGHT : CONTROLS_MARGIN;
-        for (Button button : buttons) {
+        for (AbstractButton button : buttons) {
             button.setY(controlsTop + CONTROLS_HEIGHT - BUTTON_HEIGHT);
         }
     }
@@ -80,7 +116,23 @@ public class HudEditScreen extends Screen {
         placeControls();
     }
 
+    /** Moves a piece on its own, keeping it on screen. */
+    private void setPieceOffset(HudPiece piece, HudPosition.Offset requested) {
+        HudPosition.Bounds atSetPosition = frame().pieceBounds().get(piece).offset(offset);
+        pieces = pieces.with(piece, HudPosition.clamp(requested, this.width, this.height, atSetPosition));
+        HudPosition.setPreviewPieces(pieces);
+        setOffset(offset);
+    }
+
+    /** Puts the set back above the hotbar and every piece back into place. */
+    private void reset() {
+        pieces = HudPosition.Pieces.NONE;
+        HudPosition.setPreviewPieces(pieces);
+        setOffset(HudPosition.defaultOffset(this.width, this.height, frame().bounds()));
+    }
+
     private void save() {
+        HudPosition.savePieces(pieces);
         HudPosition.save(offset, this.width, this.height, frame().bounds());
         onClose();
     }
@@ -93,6 +145,7 @@ public class HudEditScreen extends Screen {
     @Override
     public void removed() {
         HudPosition.setPreview(null);
+        HudPosition.setPreviewPieces(null);
     }
 
     @Override
@@ -119,16 +172,43 @@ public class HudEditScreen extends Screen {
         if (!inWorld || !HudLayer.isVisible(this.minecraft)) {
             graphics.pose().pushPose();
             graphics.pose().translate(offset.x(), offset.y(), 0);
-            HudRenderer.render(graphics, this.font, frame.layout(), HudValues.placeholder(), frame.showArmor(), frame.showHunger(), false);
+            HudRenderer.render(graphics, this.font, frame.layout(), HudValues.placeholder(), frame.showArmor(), frame.showHunger(), pieces, false);
             if (!inWorld) {
-                int xpTop = frame.bounds().bottom() - 5;
-                graphics.fill(frame.layout().x(), xpTop, frame.layout().x() + HudLayout.WIDTH, xpTop + 5, XP_BAR_PREVIEW_COLOR);
+                HudPosition.Bounds xp = frame.pieceBounds().get(HudPiece.XP).offset(pieces.get(HudPiece.XP));
+                graphics.fill(xp.left(), xp.top(), xp.right(), xp.bottom(), XP_BAR_PREVIEW_COLOR);
             }
             graphics.pose().popPose();
         }
 
         graphics.drawCenteredString(this.font, this.title, this.width / 2, controlsTop, 0xFFFFFF);
-        graphics.drawCenteredString(this.font, Component.translatable("rpghealthbar.edit.hint"), this.width / 2, controlsTop + 10, 0xC0C0C0);
+        if (dragging) {
+            highlight(graphics, frame, mode == Mode.ALL ? null : selected, GRABBED_HIGHLIGHT);
+        } else if (mode == Mode.ALL) {
+            if (frame.bounds().offset(offset).contains(mouseX, mouseY)) {
+                highlight(graphics, frame, null, HOVER_HIGHLIGHT);
+            }
+        } else {
+            HudPiece hovered = pieceAt(mouseX, mouseY);
+            if (hovered != null) {
+                highlight(graphics, frame, hovered, HOVER_HIGHLIGHT);
+            }
+        }
+
+        String hint = mode == Mode.ALL ? "rpghealthbar.edit.hint" : "rpghealthbar.edit.hint.one";
+        graphics.drawCenteredString(this.font, Component.translatable(hint), this.width / 2, controlsTop + 10, 0xC0C0C0);
+    }
+
+    /**
+     * Lightens one piece, or every piece if {@code only} is null, exactly over its own pixels so
+     * it doesn't get in the way of lining things up.
+     */
+    private static void highlight(GuiGraphics graphics, HudLayer.Frame frame, @Nullable HudPiece only, int color) {
+        for (Map.Entry<HudPiece, HudPosition.Bounds> entry : frame.pieceBounds().entrySet()) {
+            if (only == null || entry.getKey() == only) {
+                HudPosition.Bounds box = entry.getValue().offset(frame.pieceOffset(entry.getKey()));
+                graphics.fill(box.left(), box.top(), box.right(), box.bottom(), color);
+            }
+        }
     }
 
     @Override
@@ -136,19 +216,55 @@ public class HudEditScreen extends Screen {
         if (super.mouseClicked(mouseX, mouseY, button)) {
             return true;
         }
-        if (button == GLFW.GLFW_MOUSE_BUTTON_LEFT && frame().bounds().offset(offset).contains(mouseX, mouseY)) {
+        if (button != GLFW.GLFW_MOUSE_BUTTON_LEFT) {
+            return false;
+        }
+        if (mode == Mode.ALL) {
+            if (frame().bounds().offset(offset).contains(mouseX, mouseY)) {
+                dragging = true;
+                grabX = mouseX - offset.x();
+                grabY = mouseY - offset.y();
+                return true;
+            }
+            return false;
+        }
+        HudPiece piece = pieceAt(mouseX, mouseY);
+        if (piece != null) {
+            selected = piece;
             dragging = true;
-            grabX = mouseX - offset.x();
-            grabY = mouseY - offset.y();
+            grabX = mouseX - pieces.get(piece).x();
+            grabY = mouseY - pieces.get(piece).y();
             return true;
         }
         return false;
     }
 
+    /** The piece under the cursor; one it's right on wins over one it's just next to. */
+    @Nullable
+    private HudPiece pieceAt(double mouseX, double mouseY) {
+        HudLayer.Frame frame = frame();
+        HudPiece near = null;
+        for (Map.Entry<HudPiece, HudPosition.Bounds> entry : frame.pieceBounds().entrySet()) {
+            HudPosition.Bounds bounds = entry.getValue().offset(frame.pieceOffset(entry.getKey()));
+            if (bounds.contains(mouseX, mouseY)) {
+                return entry.getKey();
+            }
+            if (near == null && bounds.grow(GRAB_MARGIN).contains(mouseX, mouseY)) {
+                near = entry.getKey();
+            }
+        }
+        return near;
+    }
+
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
         if (dragging) {
-            setOffset(new HudPosition.Offset((int) Math.round(mouseX - grabX), (int) Math.round(mouseY - grabY)));
+            HudPosition.Offset moved = new HudPosition.Offset((int) Math.round(mouseX - grabX), (int) Math.round(mouseY - grabY));
+            if (mode == Mode.ALL) {
+                setOffset(moved);
+            } else if (selected != null) {
+                setPieceOffset(selected, moved);
+            }
             return true;
         }
         return super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
@@ -160,7 +276,7 @@ public class HudEditScreen extends Screen {
         return super.mouseReleased(mouseX, mouseY, button);
     }
 
-    /** Arrow keys nudge by 1 pixel, or 10 while holding Shift. */
+    /** Arrow keys nudge the set (or the last grabbed piece) by 1 pixel, or 10 while holding Shift. */
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         int step = (modifiers & GLFW.GLFW_MOD_SHIFT) != 0 ? 10 : 1;
@@ -175,7 +291,12 @@ public class HudEditScreen extends Screen {
             default -> 0;
         };
         if (dx != 0 || dy != 0) {
-            setOffset(new HudPosition.Offset(offset.x() + dx, offset.y() + dy));
+            HudPosition.Offset nudge = new HudPosition.Offset(dx, dy);
+            if (mode == Mode.ALL) {
+                setOffset(offset.plus(nudge));
+            } else if (selected != null) {
+                setPieceOffset(selected, pieces.get(selected).plus(nudge));
+            }
             return true;
         }
         return super.keyPressed(keyCode, scanCode, modifiers);

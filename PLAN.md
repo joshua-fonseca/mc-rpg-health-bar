@@ -78,13 +78,13 @@ The mod provides its own config screen, opened from Mods menu → RPG Health Bar
 - Hovering over a button shows a tooltip listing its possible values and what each does: each value on its own paragraph, its name in gold, the default marked "(default)" in grey.
 
 **Position editor** (`HudEditScreen`):
-- Shows the whole bar group as a preview (with placeholder values if needed), with no outline.
-- Click and drag to move the **whole set together** (the bars can't be moved one at a time).
+- Shows the whole bar group as a preview (with placeholder values if needed), with no outline. What a click would grab is lightened faintly on hover, and more while dragging, exactly over each piece's pixels.
+- A **Moving: All / One** button (1.2.0). **All** (default) drags the whole set. **One** drags a single piece: armor, hunger, health, mana, or XP (which carries the level and jump meter; air bubbles and mount health go with hunger, as vanilla stacks them on that side). Each piece's shift is saved on top of the set's position (`<piece>OffsetX/Y` in the config), so moving the whole set keeps the arrangement. The set's bounds, used for clamping and the anchor, are the union of the moved pieces. Thin pieces can be grabbed up to 2px outside their edges.
 - The set includes the **vanilla XP bar, XP level number and horse jump meter**, so they stay under the bars wherever the group goes. Without this, moving the bars up to make room for Double Hotbar would leave the XP bar behind under the second hotbar.
 - The group is kept fully on screen while dragging.
-- Arrow keys nudge the set by 1 pixel (10 with Shift).
+- Arrow keys nudge the set (or, in One mode, the last grabbed piece) by 1 pixel (10 with Shift).
 - **Save** button: saves the position and goes back to the config screen.
-- **Reset** button: moves the set back to the default spot (still needs Save).
+- **Reset** button: moves the set back to the default spot and every piece back into place (still needs Save).
 - **Cancel** button / ESC: discards the change.
 - The title, hint and buttons sit in whichever half of the screen the HUD isn't in, so they never cover it.
 - In a world, the real HUD moves live while dragging. From the title screen (or in creative, where the bars aren't drawn), a preview with placeholder values is shown instead.
@@ -94,6 +94,8 @@ The mod provides its own config screen, opened from Mods menu → RPG Health Bar
 The point of this is to let players move the bars away from **Double Hotbar**, **Armor Status HUD**, or any other mod drawing near the hotbar.
 
 **No mod-specific handling:** the default layout always assumes the single vanilla hotbar. The mod doesn't detect or adjust for other HUD mods; the player moves the whole set if something overlaps it.
+
+**Item name and action bar** (1.2.0, `HudTextPlacer`): placed just above whatever pieces are stacked directly over the hotbar (a gap too small for the text counts as stacked), plus any rows above them (air, mount health), or right above the hotbar when nothing is. In creative only the jump meter counts. If another mod moves the item name up (e.g. Double Hotbar makes room for its second row), that move is taken as space the mod uses above the hotbar: the stack is measured from above it and the text is placed vertically from scratch, so the moves don't add up.
 
 **The set is placed only by this mod:** some mods (e.g. Double Hotbar) shift vanilla layers like the XP bar or hunger icons themselves. For layers in the set, the mod replaces any such horizontal/vertical shift with its own position, so those mods can't pull the set apart; the player drags the whole set instead.
 
@@ -167,7 +169,7 @@ The point of this is to let players move the bars away from **Double Hotbar**, *
 6. **Move HUD editor**: drag the group (including the XP bar, level number and jump meter), Save/Cancel, Reset; position persists.
 7. **Vanilla overlap check**: air bubbles and mount health don't collide with the bars, and get shifted if needed.
 8. **Styling + modpack test**: slim bars with shaded fills, thin armor/hunger lines, level number centered on the XP bar (done); test in the full Antarchy Craft modpack (Double Hotbar, Armor Status HUD, Configured, Jade, Xaero's). Modpack test done: confirmed working in the Antarchy Craft modpack on NeoForge 21.1.235 (2026-10-26).
-9. **Release**: build jar, README. Done: version 1.0.0 with a pixel-art icon (`rpghealthbar.png`), mod description and homepage link, README with screenshots (`docs/images/`), CHANGELOG, tag `v1.0.0`. 1.1.0: status colors, low-health pulse and Regeneration sweep; tag `v1.1.0`.
+9. **Release**: build jar, README. Done: version 1.0.0 with a pixel-art icon (`rpghealthbar.png`), mod description and homepage link, README with screenshots (`docs/images/`), CHANGELOG, tag `v1.0.0`. 1.1.0: status colors, low-health pulse and Regeneration sweep; tag `v1.1.0`. 1.2.0: moving single pieces, hover highlight, item name placement; tag `v1.2.0`.
 
 ## 4. Testing checklist
 - [ ] Max HP 20, 40, and odd values (e.g. 27) display correctly
