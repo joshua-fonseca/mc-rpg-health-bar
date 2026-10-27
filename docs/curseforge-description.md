@@ -27,7 +27,7 @@ Replaces the vanilla hearts with an RPG-style health bar. With **Iron's Spells '
 
 ## Compatibility
 
-- **[Iron's Spells 'n Spellbooks](https://www.curseforge.com/projects/855414) by Iron431 and Lab3:** optional. When it's installed you get the mana bar and the spell cost preview, and Iron's own mana bar is hidden. Tested with Iron's 3.16.2.
+- **[Iron's Spells 'n Spellbooks](https://www.curseforge.com/projects/855414) by Iron431 and Lab3:** optional, tested with version 1.21.1-3.16.2. When it's installed you get the mana bar and the spell cost preview, and Iron's own mana bar is hidden. If another version changes something this mod reads, the mana bar or spell cost preview turns off with a warning in the log instead of crashing.
 - **[AppleSkin](https://www.curseforge.com/minecraft/mc-mods/appleskin) by squeek502:** optional. When it's installed, saturation is outlined in yellow on the hunger bar and held food's value flashes on it; with the vanilla hunger icons, AppleSkin's own overlays move with them. Needs AppleSkin 3.0.4 or newer (3.0.2 and 3.0.3 don't run on 1.21.1).
 - **[Double Hotbar](https://www.curseforge.com/projects/1563792) by sidezbros:** compatible. Open **Move HUD...** and drag the HUD up above the second hotbar once; the bars, XP bar and level move together and stay there, and the item name stays above them.
 - Works with other mods that draw near the hotbar the same way: drag the HUD, or just the pieces in the way, clear of them.
