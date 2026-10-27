@@ -59,7 +59,6 @@ Open them from **Mods → RPG Health Bar → Config** (the Mods button is also i
 | Mana Text | **On**, Off |
 | Health Bar | **Full**, Half width |
 | Mana Bar | **Full**, Half width |
-| Item Name | **Vanilla Height** (leaves room for hotbar mods), Above Hotbar (no gap) |
 
 Defaults are in bold. **Move HUD...** opens the position editor. With **Moving: All** you drag the whole HUD; with **Moving: One** you drag a single piece. What you'd grab is highlighted. The arrow keys nudge it (Shift moves 10 pixels). Then Save. **Reset** in the editor, or **Reset Position** in the config, puts everything back above the hotbar.
 
