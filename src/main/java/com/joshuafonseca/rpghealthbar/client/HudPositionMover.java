@@ -1,7 +1,6 @@
 package com.joshuafonseca.rpghealthbar.client;
 
 import com.joshuafonseca.rpghealthbar.compat.AppleSkinCompat;
-import com.joshuafonseca.rpghealthbar.compat.IronsSpellsCompat;
 import com.joshuafonseca.rpghealthbar.config.HudPiece;
 import java.util.Map;
 import net.minecraft.client.gui.GuiGraphics;
@@ -49,7 +48,7 @@ public final class HudPositionMover {
             return;
         }
         GuiGraphics graphics = event.getGuiGraphics();
-        HudLayer.Frame frame = HudLayer.Frame.compute(graphics.guiWidth(), graphics.guiHeight(), IronsSpellsCompat.isAvailable());
+        HudLayer.Frame frame = HudLayer.Frame.current(graphics.guiWidth(), graphics.guiHeight());
         if (text) {
             // Placed vertically from scratch: an upward move another mod gave the text counts as space
             // that mod uses above the hotbar, and is replaced. Horizontal moves are kept.

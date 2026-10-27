@@ -1,11 +1,13 @@
 package com.joshuafonseca.rpghealthbar.client;
 
+import com.joshuafonseca.rpghealthbar.compat.IronsSpellsCompat;
 import com.joshuafonseca.rpghealthbar.config.BarSize;
 import com.joshuafonseca.rpghealthbar.config.ClientConfig;
 import com.joshuafonseca.rpghealthbar.config.HalfBarMode;
 import com.joshuafonseca.rpghealthbar.config.HudPiece;
 import java.util.EnumMap;
 import java.util.Map;
+import javax.annotation.Nullable;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
@@ -23,7 +25,8 @@ public class HudLayer implements LayeredDraw.Layer {
         }
 
         HudValues values = HudValues.of(player);
-        Frame frame = Frame.compute(graphics.guiWidth(), graphics.guiHeight(), values.mana() != null);
+        // After HudValues.of, which turns the mana bar off if mana can't be read.
+        Frame frame = Frame.current(graphics.guiWidth(), graphics.guiHeight());
         // Reserved at the default position: the vanilla rows stacked above are shifted along with
         // everything else by HudPositionMover.
         placeVanillaRows(minecraft.gui, graphics.guiHeight(), frame);
@@ -54,6 +57,23 @@ public class HudLayer implements LayeredDraw.Layer {
     public record Frame(HudLayout layout, HudPosition.Bounds bounds, HudPosition.Pieces pieces,
                         Map<HudPiece, HudPosition.Bounds> pieceBounds,
                         boolean showArmor, boolean showHunger, boolean vanillaArmor, boolean vanillaHunger) {
+        /** The HUD's frame, shared by every layer that needs it; cleared when the GUI starts drawing. */
+        @Nullable
+        private static Frame current;
+
+        /** The frame for the HUD being drawn, worked out once per frame. */
+        public static Frame current(int screenWidth, int screenHeight) {
+            if (current == null) {
+                current = compute(screenWidth, screenHeight, IronsSpellsCompat.isAvailable());
+            }
+            return current;
+        }
+
+        /** Called as the GUI starts drawing, so settings and positions changed since are picked up. */
+        public static void clearCurrent() {
+            current = null;
+        }
+
         public static Frame compute(int screenWidth, int screenHeight, boolean showMana) {
             HalfBarMode armorMode = ClientConfig.ARMOR_MODE.get();
             HalfBarMode hungerMode = ClientConfig.HUNGER_MODE.get();

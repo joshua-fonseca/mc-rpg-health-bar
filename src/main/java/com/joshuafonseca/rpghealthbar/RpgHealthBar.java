@@ -16,6 +16,7 @@ import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
+import net.neoforged.neoforge.client.event.RenderGuiEvent;
 import net.neoforged.neoforge.client.event.RenderGuiLayerEvent;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
@@ -35,6 +36,9 @@ public class RpgHealthBar {
         // Mods → RPG Health Bar → Config, also reachable from the pause menu's Mods button.
         modContainer.registerExtensionPoint(IConfigScreenFactory.class, (container, parent) -> new RpgConfigScreen(parent));
         modEventBus.addListener(RpgHealthBar::registerGuiLayers);
+        // The HUD's layout and position are worked out once per frame, then shared by our layer and
+        // the vanilla ones that move with it.
+        NeoForge.EVENT_BUS.addListener(EventPriority.HIGHEST, true, (RenderGuiEvent.Pre event) -> HudLayer.Frame.clearCurrent());
         // Highest priority: hide replaced layers before other mods' Pre listeners run, so a mod that
         // pushes the pose in Pre (and pops in Post) never pushes for a layer that won't render.
         NeoForge.EVENT_BUS.addListener(EventPriority.HIGHEST, RpgHealthBar::hideVanillaLayers);
