@@ -27,7 +27,7 @@ public final class HudRenderer {
     private static final BarTrail HEALTH_TRAIL = new BarTrail();
     /** Absorption grows in from the left when gained, rather than appearing at once. */
     private static final BarGrow ABSORPTION_GROW = new BarGrow();
-    private static final BarTrail ABSORPTION_TRAIL = new BarTrail();
+    private static final BarTrail ABSORPTION_TRAIL = new BarTrail(500);
     /** At or below this much health (plus absorption), the bar pulses as a warning, like vanilla's shaking hearts. */
     private static final float LOW_HEALTH = 4.0F;
     private static final long LOW_HEALTH_PULSE_MILLIS = 900;

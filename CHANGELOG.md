@@ -2,7 +2,7 @@
 
 ## Unreleased
 
-- Absorption no longer appears at once: when you gain it, the gold fill grows in from the left over 0.5 seconds. When you lose it, the lost part turns darker and fades away, the same as health when you take damage.
+- Absorption no longer appears at once: when you gain it, the gold fill grows in from the left over 0.5 seconds. When you lose it, the lost part turns darker and fades away like health does when you take damage, but quicker (it stays 0.5 seconds instead of 0.75).
 
 ## 1.3.0 (2026-10-27)
 
