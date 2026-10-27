@@ -93,9 +93,19 @@ public final class HudTextPlacer {
      * is now in survival, or else as for a survival player with only our rows reserved.
      */
     public static int previewNameTop(int screenWidth, int screenHeight, HudLayer.Frame frame, int offset) {
-        View view = HudLayer.isVisible(Minecraft.getInstance()) ? View.current()
+        return nameTop(screenWidth, screenHeight, frame, 0, offset, previewView(screenHeight, frame));
+    }
+
+    /** The Item Name Height that puts the name right above the hotbar, for the preview's tips. */
+    public static int previewAboveHotbarOffset(int screenHeight, HudLayer.Frame frame) {
+        View view = previewView(screenHeight, frame);
+        int offset = HOTBAR_HEIGHT + TEXT_ROOM - Math.max(view.rowsHeight(), VANILLA_NAME_MIN);
+        return view.creative() ? offset + VANILLA_NAME_CREATIVE_DROP : offset;
+    }
+
+    private static View previewView(int screenHeight, HudLayer.Frame frame) {
+        return HudLayer.isVisible(Minecraft.getInstance()) ? View.current()
                 : new View(true, true, false, HudLayer.vanillaRowsStart(screenHeight, frame));
-        return nameTop(screenWidth, screenHeight, frame, 0, offset, view);
     }
 
     private static int nameTop(int screenWidth, int screenHeight, HudLayer.Frame frame, int raise) {

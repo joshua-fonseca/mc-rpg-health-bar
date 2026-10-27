@@ -15,10 +15,12 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
+import org.lwjgl.glfw.GLFW;
 
 /**
  * Sets the Item Name Height, with a preview: the held item's name is drawn where it would go and
- * follows the slider. In a world the real HUD is shown behind it; from the title screen a stand-in.
+ * follows the slider and the arrow keys. In a world the real HUD is shown behind it; from the title
+ * screen a stand-in.
  */
 public class ItemNameScreen extends Screen {
     private static final int SLIDER_WIDTH = 200;
@@ -31,9 +33,17 @@ public class ItemNameScreen extends Screen {
     private static final int XP_BAR_PREVIEW_COLOR = 0xFF80FF20;
     /** The previewed name is lightened like the piece being dragged in Move HUD. */
     private static final int NAME_HIGHLIGHT = 0x30FFFFFF;
+    private static final int HINT_COLOR = 0xC0C0C0;
+    /** Title, slider, buttons and two lines of tips. */
+    private static final int CONTROLS_HEIGHT = 92;
+    private static final int CONTROLS_MARGIN = 8;
+    /** The arrow keys move the name this much, or {@link #SHIFT_STEP} with Shift held, as in Move HUD. */
+    private static final int STEP = 1;
+    private static final int SHIFT_STEP = 10;
 
     private final Screen parent;
     private HeightSlider slider;
+    private int controlsTop;
 
     public ItemNameScreen(Screen parent) {
         super(Component.translatable("rpghealthbar.itemName.title"));
@@ -42,7 +52,10 @@ public class ItemNameScreen extends Screen {
 
     @Override
     protected void init() {
-        int y = 22;
+        // At the top, unless the HUD has been moved there; then in the middle.
+        HudLayer.Frame frame = HudLayer.Frame.compute(this.width, this.height, IronsSpellsCompat.isAvailable());
+        this.controlsTop = frame.bounds().top() < CONTROLS_MARGIN + CONTROLS_HEIGHT ? (this.height - CONTROLS_HEIGHT) / 2 : CONTROLS_MARGIN;
+        int y = this.controlsTop + 14;
         this.slider = new HeightSlider(this.width / 2 - SLIDER_WIDTH / 2, y, SLIDER_WIDTH, BUTTON_HEIGHT,
                 this.slider != null ? this.slider.offset() : ClientConfig.ITEM_NAME_OFFSET.get());
         this.slider.setTooltip(RpgConfigScreen.tooltip("itemNameOffset", "vanilla", "lower"));
@@ -92,7 +105,27 @@ public class ItemNameScreen extends Screen {
         graphics.fill(x - 2, top - 2, x + this.font.width(name) + 2, top + 10, NAME_HIGHLIGHT);
         graphics.drawString(this.font, name, x, top, 0xFFFFFF);
 
-        graphics.drawCenteredString(this.font, this.title, this.width / 2, 8, 0xFFFFFF);
+        graphics.drawCenteredString(this.font, this.title, this.width / 2, this.controlsTop, 0xFFFFFF);
+        int tipsTop = this.controlsTop + 14 + (BUTTON_HEIGHT + BUTTON_GAP) * 2 + 2;
+        graphics.drawCenteredString(this.font, Component.translatable("rpghealthbar.itemName.keys"), this.width / 2, tipsTop, HINT_COLOR);
+        int aboveHotbar = HudTextPlacer.previewAboveHotbarOffset(this.height, frame);
+        graphics.drawCenteredString(this.font, Component.translatable("rpghealthbar.itemName.values", String.valueOf(aboveHotbar)),
+                this.width / 2, tipsTop + 12, HINT_COLOR);
+    }
+
+    @Override
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        int direction = switch (keyCode) {
+            case GLFW.GLFW_KEY_UP, GLFW.GLFW_KEY_RIGHT -> 1;
+            case GLFW.GLFW_KEY_DOWN, GLFW.GLFW_KEY_LEFT -> -1;
+            default -> 0;
+        };
+        if (direction != 0) {
+            int step = hasShiftDown() ? SHIFT_STEP : STEP;
+            this.slider.set(Math.max(ClientConfig.ITEM_NAME_OFFSET_MIN, Math.min(ClientConfig.ITEM_NAME_OFFSET_MAX, this.slider.offset() + direction * step)));
+            return true;
+        }
+        return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
     @Override
