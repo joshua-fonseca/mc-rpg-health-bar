@@ -71,7 +71,7 @@ Open them from **Mods → RPG Health Bar → Config** (the Mods button is also i
 | Mana Bar | **Full**, Half width |
 | Item Name... | Height of the held item's name: **Vanilla** (0), or pixels up (+) or down (-), down to right above the hotbar |
 
-Defaults are in bold. **Move HUD...** opens the position editor. With **Moving: All** you drag the whole HUD; with **Moving: One** you drag a single piece. What you'd grab is highlighted. The arrow keys nudge it (Shift moves 10 pixels). Then Save. **Item Name...** sets the held item's name height with a slider or the arrow keys (Shift moves 10 pixels), and shows where the name will go as you change it, along with the values for vanilla's height and right above the hotbar. **Reset** in the editor, or **Reset Position** in the config, puts everything back above the hotbar.
+Defaults are in bold. **Move HUD...** opens the position editor. With **Moving: All** you drag the whole HUD; with **Moving: One** you drag a single piece. What you'd grab is highlighted. The arrow keys nudge it (Shift moves 10 pixels). Then Save. **Item Name...** sets the held item's name height with a slider or the arrow keys (Shift moves 10 pixels), and shows where the name will go as you change it, along with the values for vanilla's height and right above the hotbar. The name never goes onto the HUD or the hotbar. **Reset** in the editor, or **Reset Position** in the config, puts everything back above the hotbar.
 
 #### The config screen
 
