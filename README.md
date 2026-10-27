@@ -4,7 +4,7 @@
 
 <img src="docs/images/icon.png" alt="RPG Health Bar icon" width="96" align="right">
 
-A client-side Forge mod for Minecraft 1.20.1 that replaces the vanilla hearts with an RPG-style health bar. With [Iron's Spells 'n Spellbooks](https://modrinth.com/mod/irons-spells-n-spellbooks) installed, a mana bar sits right below it.
+A client-side Minecraft mod that replaces the vanilla hearts with an RPG-style health bar. With [Iron's Spells 'n Spellbooks](https://modrinth.com/mod/irons-spells-n-spellbooks) installed, a mana bar sits right below it.
 
 This is the **1.20.1 (Forge)** branch. The 1.21.1 (NeoForge) version is on [`main`](https://github.com/joshua-fonseca/mc-rpg-health-bar/tree/main).
 
@@ -17,7 +17,7 @@ This is the **1.20.1 (Forge)** branch. The 1.21.1 (NeoForge) version is on [`mai
 - **Health bar** the width of the hotbar, with your current and max health on it (`15.5/20`). It goes beyond the vanilla max of 20 for mods that add hearts to the player (`32/40`), following your real max health.
 - **Absorption** fills the bar in gold, and the text shows it separately (`15.5+4/20`) or added in (`19.5/20`).
 - **Mana bar support:** an overhaul of the mana bar from Iron's Spells 'n Spellbooks, in the same style as the health bar, replacing Iron's own.
-- **Status colors:** like the vanilla hearts, the health bar turns green-yellow when poisoned, black when withered and light blue when frozen, and the hunger bar turns green with the Hunger effect.
+- **Status colors:** like the vanilla hearts, the health bar turns green-yellow when poisoned, black when withered and light blue when frozen, and the hunger bar turns green with the Hunger effect. On 1.21.1, heart colors added by other mods are followed too.
 - **Armor and hunger** as the vanilla icons (default), thin bars, or hidden.
 - **AppleSkin support:** saturation is outlined in yellow on the hunger bar, and held food's value flashes on it, like AppleSkin's preview on the icons.
 - **Highly customizable:**
@@ -82,11 +82,20 @@ Settings are stored in `config/rpghealthbar-client.toml`.
 
 ## Compatibility
 
-- Minecraft 1.20.1, Forge 47.0.0 or newer (tested on 47.0.0, 47.0.14 and 47.4.0).
+| | 1.21.1 (NeoForge) | 1.20.1 (Forge) |
+|---|---|---|
+| **Mod loader** | NeoForge 21.1.1 | Forge 47.0.0 |
+| **Iron's Spells 'n Spellbooks** | 3.9.1 | 1.1.5 (spell cost preview: 3.2.0) |
+| **AppleSkin** | 3.0.4 | 2.5.0 |
+| **Double Hotbar** | Any | Not tested |
+
+Minimum versions; every newer version works too.
+
 - Client-side only: servers don't need it, and it works on servers that don't have it.
-- [Iron's Spells 'n Spellbooks](https://www.curseforge.com/projects/855414) by Iron431 and Lab3: optional. When it's installed you get the mana bar and the spell cost preview, and Iron's own mana bar is hidden. The mana bar works with every Iron's version for 1.20.1 (1.1.5 or newer); the spell cost preview needs Iron's 3.2.0 or newer.
-- [AppleSkin](https://www.curseforge.com/minecraft/mc-mods/appleskin) by squeek502: optional. When it's installed, saturation is outlined in yellow on the hunger bar and held food's value flashes on it; with the vanilla hunger icons, AppleSkin's own overlays move with them. Works with AppleSkin 2.5.0 or newer (every version for 1.20.1), which itself needs Forge 47.0.12 or newer.
-- Works with mods that draw near the hotbar: drag the HUD, or just the pieces in the way, clear of them.
+- [Iron's Spells 'n Spellbooks](https://www.curseforge.com/projects/855414) by Iron431 and Lab3: optional. When it's installed you get the mana bar and the spell cost preview, and Iron's own mana bar is hidden.
+- [AppleSkin](https://www.curseforge.com/minecraft/mc-mods/appleskin) by squeek502: optional. When it's installed, saturation is outlined in yellow on the hunger bar and held food's value flashes on it; with the vanilla hunger icons, AppleSkin's own overlays move with them.
+- [Double Hotbar](https://www.curseforge.com/projects/1563792) by sidezbros: compatible. Open **Move HUD...** and drag the HUD up above the second hotbar once; the bars, XP bar and level move together and stay there, and the item name stays above them.
+- Works with other mods that draw near the hotbar the same way: drag the HUD, or just the pieces in the way, clear of them.
 - Air bubbles and mount health stay vanilla and stack above the bars.
 - **Texture packs:** armor and hunger on Vanilla use your pack's icons, and the hotbar, XP bar, air bubbles and mount health stay vanilla, so packs restyle them. The health and mana bars, and armor and hunger as bars, are drawn by the mod and don't change with a pack.
 
