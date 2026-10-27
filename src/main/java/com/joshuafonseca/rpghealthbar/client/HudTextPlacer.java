@@ -1,14 +1,16 @@
 package com.joshuafonseca.rpghealthbar.client;
 
+import com.joshuafonseca.rpghealthbar.config.ClientConfig;
 import com.joshuafonseca.rpghealthbar.config.HudPiece;
+import com.joshuafonseca.rpghealthbar.config.ItemNamePosition;
 import java.util.Map;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.client.gui.overlay.ForgeGui;
 
 /**
  * Where the held item's name and the action bar message go: just above whatever is stacked over the
- * hotbar, or where vanilla puts them when nothing is. Vanilla puts them above the hearts and armor
- * rows instead, which doesn't fit once pieces are moved; its lowest height is kept.
+ * hotbar, or, when nothing is, where vanilla puts them or right above the hotbar (a setting). Vanilla
+ * puts them above the hearts and armor rows instead, which doesn't fit once pieces are moved.
  * <p>
  * Another mod that draws something just above the hotbar (e.g. a second hotbar) may move the item
  * name up to clear it. That move is taken as the space the mod uses above the hotbar: the stack is
@@ -82,11 +84,13 @@ public final class HudTextPlacer {
         // The XP piece's row holds the XP bar, or the jump meter while riding; creative has neither.
         boolean xpRowShown = minecraft.player != null && minecraft.gameMode != null
                 && (minecraft.gameMode.hasExperience() || minecraft.player.jumpableVehicle() != null);
-        // Never lower than vanilla puts the name in survival, which leaves room for things other mods
-        // draw right above the hotbar without moving the name themselves (e.g. a second hotbar).
-        // Also in creative, where vanilla draws it lower, as that would overlap them.
-        int lowest = screenHeight - VANILLA_NAME_MIN - raise;
-        int top = Math.min(screenHeight - HOTBAR_HEIGHT - raise, lowest + TEXT_ROOM);
+        int top = screenHeight - HOTBAR_HEIGHT - raise;
+        if (ClientConfig.ITEM_NAME_POSITION.get() == ItemNamePosition.VANILLA) {
+            // Never lower than vanilla puts the name in survival, which leaves room for things other mods
+            // draw right above the hotbar without moving the name themselves (e.g. a second hotbar).
+            // Also in creative, where vanilla draws it lower, as that would overlap them.
+            top = Math.min(top, screenHeight - VANILLA_NAME_MIN - raise + TEXT_ROOM);
+        }
         boolean stacked = false;
         boolean grew = true;
         while (grew) {

@@ -5,6 +5,7 @@ import com.joshuafonseca.rpghealthbar.config.BarSize;
 import com.joshuafonseca.rpghealthbar.config.ClientConfig;
 import com.joshuafonseca.rpghealthbar.config.HalfBarMode;
 import com.joshuafonseca.rpghealthbar.config.HealthUnit;
+import com.joshuafonseca.rpghealthbar.config.ItemNamePosition;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
@@ -107,6 +108,15 @@ public class RpgConfigScreen extends Screen {
                 .displayOnlyValue()
                 .create(right + LABEL_WIDTH, y, VALUE_WIDTH, BUTTON_HEIGHT, label(right, y, "rpghealthbar.config.manaSize"),
                         (button, value) -> ClientConfig.set(ClientConfig.MANA_SIZE, value)));
+        y += ROW_SPACING;
+
+        addRenderableWidget(CycleButton.builder(ItemNamePosition::displayName)
+                .withValues(ItemNamePosition.values())
+                .withInitialValue(ClientConfig.ITEM_NAME_POSITION.get())
+                .withTooltip(value -> tooltip("itemNamePosition", "vanilla", "above_hotbar"))
+                .displayOnlyValue()
+                .create(left + LABEL_WIDTH, y, VALUE_WIDTH, BUTTON_HEIGHT, label(left, y, "rpghealthbar.config.itemNamePosition"),
+                        (button, value) -> ClientConfig.set(ClientConfig.ITEM_NAME_POSITION, value)));
         y += ROW_SPACING;
 
         addRenderableWidget(Button.builder(Component.translatable("rpghealthbar.config.moveHud"), button -> this.minecraft.setScreen(new HudEditScreen(this)))
