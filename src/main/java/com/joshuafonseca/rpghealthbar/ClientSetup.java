@@ -43,6 +43,9 @@ final class ClientSetup {
         // Right after: shift the overlays that move with the set, before other mods (like AppleSkin)
         // draw on them in Pre, and undo it in Post once they've drawn.
         MinecraftForge.EVENT_BUS.addListener(EventPriority.HIGH, HudPositionMover::onPre);
+        // The item name and action bar are placed last, once other mods have moved them or reserved
+        // rows above the hotbar for them.
+        MinecraftForge.EVENT_BUS.addListener(EventPriority.LOWEST, HudPositionMover::onTextPre);
         MinecraftForge.EVENT_BUS.addListener(EventPriority.LOWEST, true, HudPositionMover::onCancelled);
         MinecraftForge.EVENT_BUS.addListener(EventPriority.LOWEST, HudPositionMover::onPost);
         // Saved positions are written one value per tick; see ClientConfig.

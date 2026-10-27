@@ -7,6 +7,7 @@ import com.joshuafonseca.rpghealthbar.config.HalfBarMode;
 import com.joshuafonseca.rpghealthbar.config.HealthUnit;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.AbstractSliderButton;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.CycleButton;
 import net.minecraft.client.gui.components.Tooltip;
@@ -109,6 +110,12 @@ public class RpgConfigScreen extends Screen {
                         (button, value) -> ClientConfig.set(ClientConfig.MANA_SIZE, value)));
         y += ROW_SPACING;
 
+        label(left, y, "rpghealthbar.config.itemNameOffset");
+        OffsetSlider itemNameOffset = new OffsetSlider(left + LABEL_WIDTH, y, VALUE_WIDTH, BUTTON_HEIGHT);
+        itemNameOffset.setTooltip(tooltip("itemNameOffset", "vanilla", "lower"));
+        addRenderableWidget(itemNameOffset);
+        y += ROW_SPACING;
+
         addRenderableWidget(Button.builder(Component.translatable("rpghealthbar.config.moveHud"), button -> this.minecraft.setScreen(new HudEditScreen(this)))
                 .bounds(left, y, BUTTON_WIDTH, BUTTON_HEIGHT)
                 .tooltip(tooltip("moveHud"))
@@ -156,6 +163,65 @@ public class RpgConfigScreen extends Screen {
         graphics.drawCenteredString(this.font, this.title, this.width / 2, 15, 0xFFFFFF);
         for (Label label : this.labels) {
             graphics.drawString(this.font, label.text(), label.x(), label.y(), LABEL_COLOR);
+        }
+    }
+
+    /**
+     * The Item Name Height setting, in whole pixels. Saved when let go (or changed with the keys)
+     * rather than on every step of a drag, so the config file isn't written over and over.
+     */
+    private static class OffsetSlider extends AbstractSliderButton {
+        private static final int MIN = ClientConfig.ITEM_NAME_OFFSET_MIN;
+        private static final int MAX = ClientConfig.ITEM_NAME_OFFSET_MAX;
+
+        private boolean dragging;
+
+        OffsetSlider(int x, int y, int width, int height) {
+            super(x, y, width, height, Component.empty(), toSlider(ClientConfig.ITEM_NAME_OFFSET.get()));
+            updateMessage();
+        }
+
+        private static double toSlider(int offset) {
+            return (double) (offset - MIN) / (MAX - MIN);
+        }
+
+        private int offset() {
+            return MIN + (int) Math.round(this.value * (MAX - MIN));
+        }
+
+        @Override
+        protected void updateMessage() {
+            int offset = offset();
+            setMessage(offset == 0 ? Component.translatable("rpghealthbar.config.itemNameOffset.vanilla")
+                    : Component.literal(offset > 0 ? "+" + offset : String.valueOf(offset)));
+        }
+
+        @Override
+        protected void applyValue() {
+            // Snap to whole pixels, so the knob sits where the number says.
+            this.value = toSlider(offset());
+            if (!this.dragging) {
+                save();
+            }
+        }
+
+        @Override
+        public void onClick(double mouseX, double mouseY) {
+            this.dragging = true;
+            super.onClick(mouseX, mouseY);
+        }
+
+        @Override
+        public void onRelease(double mouseX, double mouseY) {
+            super.onRelease(mouseX, mouseY);
+            this.dragging = false;
+            save();
+        }
+
+        private void save() {
+            if (offset() != ClientConfig.ITEM_NAME_OFFSET.get()) {
+                ClientConfig.set(ClientConfig.ITEM_NAME_OFFSET, offset());
+            }
         }
     }
 
