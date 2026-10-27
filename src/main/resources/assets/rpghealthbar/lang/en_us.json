@@ -77,5 +77,11 @@
   "rpghealthbar.config.manaOffsetX": "Mana Horizontal Shift",
   "rpghealthbar.config.manaOffsetY": "Mana Vertical Shift",
   "rpghealthbar.config.xpOffsetX": "XP Bar Horizontal Shift",
-  "rpghealthbar.config.xpOffsetY": "XP Bar Vertical Shift"
+  "rpghealthbar.config.xpOffsetY": "XP Bar Vertical Shift",
+  "rpghealthbar.config.layoutVersion": "Layout Version",
+  "rpghealthbar.config.armorAnchor": "Armor Anchor",
+  "rpghealthbar.config.hungerAnchor": "Hunger Anchor",
+  "rpghealthbar.config.healthAnchor": "Health Anchor",
+  "rpghealthbar.config.manaAnchor": "Mana Anchor",
+  "rpghealthbar.config.xpAnchor": "XP Bar Anchor"
 }

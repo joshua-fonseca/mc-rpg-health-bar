@@ -39,41 +39,55 @@ public final class ClientConfig {
             .define("showManaText", true);
 
     // Position: set by dragging the HUD in Config → Move HUD; not meant to be edited by hand.
-    // The HUD's matching point (e.g. its bottom-center for BOTTOM_CENTER) is placed at the anchor's
-    // screen point plus the offset. The default sits just above the hotbar.
+    // Layout 2 (1.2.1 on): each piece has its own anchor and offset (below).
+    // Layout 1 (before): the whole HUD's matching point (e.g. its bottom-center for BOTTOM_CENTER)
+    // is placed at the anchor's screen point plus the offset, and each piece is shifted from there.
+    // Layout 1 is still read, and saving in Move HUD switches to layout 2.
     public static final int DEFAULT_OFFSET_X = 0;
     public static final int DEFAULT_OFFSET_Y = -24;
 
+    public static final ModConfigSpec.IntValue LAYOUT_VERSION = BUILDER
+            .comment("How the HUD position is stored: 1 = one anchor for the whole HUD (anchor, offsetX, offsetY), 2 = an anchor per piece. Set automatically.")
+            .translation("rpghealthbar.config.layoutVersion")
+            .defineInRange("layoutVersion", 1, 1, 2);
+
     public static final ModConfigSpec.EnumValue<HudAnchor> ANCHOR = BUILDER
-            .comment("Screen spot the HUD position is measured from; picked automatically when saving in Config → Move HUD.")
+            .comment("Layout 1 only: screen spot the HUD position is measured from.")
             .translation("rpghealthbar.config.anchor")
             .defineEnum("anchor", HudAnchor.BOTTOM_CENTER);
 
     public static final ModConfigSpec.IntValue OFFSET_X = BUILDER
-            .comment("Horizontal offset of the HUD from its anchor, in GUI pixels. Set with Config → Move HUD.")
+            .comment("Layout 1 only: horizontal offset of the HUD from its anchor, in GUI pixels.")
             .translation("rpghealthbar.config.offsetX")
             .defineInRange("offsetX", DEFAULT_OFFSET_X, -10000, 10000);
 
     public static final ModConfigSpec.IntValue OFFSET_Y = BUILDER
-            .comment("Vertical offset of the HUD from its anchor, in GUI pixels. Set with Config → Move HUD.")
+            .comment("Layout 1 only: vertical offset of the HUD from its anchor, in GUI pixels.")
             .translation("rpghealthbar.config.offsetY")
             .defineInRange("offsetY", DEFAULT_OFFSET_Y, -10000, 10000);
 
     /**
-     * Each piece's shift from its place in the HUD, in GUI pixels, on top of the HUD's position.
-     * Set with Config → Move HUD → Moving: One.
+     * Layout 2: each piece's anchor, and its shift from its default spot above the hotbar, in GUI
+     * pixels, for a screen where the anchor is at the bottom-center; when the screen size changes,
+     * the piece keeps its distance from its anchor. Layout 1: only the shifts are used, on top of
+     * the whole HUD's position. Set with Config → Move HUD.
      */
+    private static final Map<HudPiece, ModConfigSpec.EnumValue<HudAnchor>> PIECE_ANCHORS = new EnumMap<>(HudPiece.class);
     private static final Map<HudPiece, ModConfigSpec.IntValue> PIECE_OFFSETS_X = new EnumMap<>(HudPiece.class);
     private static final Map<HudPiece, ModConfigSpec.IntValue> PIECE_OFFSETS_Y = new EnumMap<>(HudPiece.class);
 
     static {
         for (HudPiece piece : HudPiece.values()) {
+            PIECE_ANCHORS.put(piece, BUILDER
+                    .comment("Layout 2: screen spot the " + piece.key() + " piece's position is measured from.")
+                    .translation("rpghealthbar.config." + piece.key() + "Anchor")
+                    .defineEnum(piece.key() + "Anchor", HudAnchor.BOTTOM_CENTER));
             PIECE_OFFSETS_X.put(piece, BUILDER
-                    .comment("Horizontal shift of the " + piece.key() + " piece from its place in the HUD, in GUI pixels. Set with Config → Move HUD.")
+                    .comment("Horizontal shift of the " + piece.key() + " piece from its default spot, in GUI pixels.")
                     .translation("rpghealthbar.config." + piece.key() + "OffsetX")
                     .defineInRange(piece.key() + "OffsetX", 0, -10000, 10000));
             PIECE_OFFSETS_Y.put(piece, BUILDER
-                    .comment("Vertical shift of the " + piece.key() + " piece from its place in the HUD, in GUI pixels. Set with Config → Move HUD.")
+                    .comment("Vertical shift of the " + piece.key() + " piece from its default spot, in GUI pixels.")
                     .translation("rpghealthbar.config." + piece.key() + "OffsetY")
                     .defineInRange(piece.key() + "OffsetY", 0, -10000, 10000));
         }
@@ -84,20 +98,19 @@ public final class ClientConfig {
     private ClientConfig() {
     }
 
-    /** Saves the HUD position and writes the config file. */
-    public static void setPosition(HudAnchor anchor, int offsetX, int offsetY) {
-        ANCHOR.set(anchor);
-        OFFSET_X.set(offsetX);
-        OFFSET_Y.set(offsetY);
-        SPEC.save();
-    }
-
-    /** Moves the HUD back above the hotbar and every piece back into place. */
+    /** Moves every piece back to its default spot above the hotbar, and writes the config file. */
     public static void resetPosition() {
         for (HudPiece piece : HudPiece.values()) {
-            setPieceOffset(piece, 0, 0);
+            setPiecePosition(piece, HudAnchor.BOTTOM_CENTER, 0, 0);
         }
-        setPosition(HudAnchor.BOTTOM_CENTER, DEFAULT_OFFSET_X, DEFAULT_OFFSET_Y);
+        ANCHOR.set(HudAnchor.BOTTOM_CENTER);
+        OFFSET_X.set(DEFAULT_OFFSET_X);
+        OFFSET_Y.set(DEFAULT_OFFSET_Y);
+        savePositions();
+    }
+
+    public static HudAnchor pieceAnchor(HudPiece piece) {
+        return PIECE_ANCHORS.get(piece).get();
     }
 
     public static int pieceOffsetX(HudPiece piece) {
@@ -108,10 +121,17 @@ public final class ClientConfig {
         return PIECE_OFFSETS_Y.get(piece).get();
     }
 
-    /** Updates a piece's shift; written to the file by the next {@link #setPosition}. */
-    public static void setPieceOffset(HudPiece piece, int x, int y) {
+    /** Updates a piece's position; written to the file by {@link #savePositions}. */
+    public static void setPiecePosition(HudPiece piece, HudAnchor anchor, int x, int y) {
+        PIECE_ANCHORS.get(piece).set(anchor);
         PIECE_OFFSETS_X.get(piece).set(x);
         PIECE_OFFSETS_Y.get(piece).set(y);
+    }
+
+    /** Marks the positions as layout 2 and writes the config file. */
+    public static void savePositions() {
+        LAYOUT_VERSION.set(2);
+        SPEC.save();
     }
 
     /** Updates a value and writes the config file. */
