@@ -47,6 +47,8 @@ Defaults are in bold. **Move HUD...** opens the position editor. With **Moving: 
 
 ![Moving one piece: the health bar](docs/images/move-pieces.png)
 
+![Another layout: health and mana in the top-left corner, armor and hunger just above the XP bar](docs/images/layout-top-left.png)
+
 Settings are stored in `config/rpghealthbar-client.toml`.
 
 ## Compatibility

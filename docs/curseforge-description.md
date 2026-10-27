@@ -52,6 +52,8 @@ Defaults are in bold. **Move HUD...** opens the position editor. With **Moving: 
 
 ![Moving one piece: the health bar](https://raw.githubusercontent.com/joshua-fonseca/mc-rpg-health-bar/main/docs/images/move-pieces.png)
 
+![Another layout: health and mana in the top-left corner, armor and hunger just above the XP bar](https://raw.githubusercontent.com/joshua-fonseca/mc-rpg-health-bar/main/docs/images/layout-top-left.png)
+
 ## Requirements
 
 - Minecraft 1.21.1 with NeoForge 21.1.1 or newer.
