@@ -72,21 +72,52 @@ public final class HudTextPlacer {
     }
 
     /**
+     * What the item name's position depends on, besides the HUD's layout.
+     *
+     * @param barsShown  whether the bars are drawn
+     * @param xpRowShown whether the XP piece's row is drawn: the XP bar, or the jump meter while riding
+     * @param creative   whether vanilla would draw the name lower, as in creative
+     * @param rowsHeight vanilla's yShift: the taller of the two stacks of rows above the hotbar
+     */
+    private record View(boolean barsShown, boolean xpRowShown, boolean creative, int rowsHeight) {
+        static View current() {
+            Minecraft minecraft = Minecraft.getInstance();
+            // Creative has neither the bars nor the XP bar.
+            boolean xpRowShown = minecraft.player != null && minecraft.gameMode != null
+                    && (minecraft.gameMode.hasExperience() || minecraft.player.jumpableVehicle() != null);
+            boolean creative = minecraft.gameMode != null && !minecraft.gameMode.canHurtPlayer();
+            return new View(HudLayer.isVisible(minecraft), xpRowShown, creative, HudTextPlacer.rowsHeight());
+        }
+    }
+
+    /**
+     * Where the item name would go with the given Item Name Height, for the setting's preview: as it
+     * is now in survival, or else as for a survival player with only our rows reserved.
+     */
+    public static int previewNameTop(int screenWidth, int screenHeight, HudLayer.Frame frame, int offset) {
+        View view = HudLayer.isVisible(Minecraft.getInstance()) ? View.current()
+                : new View(true, true, false, HudLayer.vanillaRowsStart(screenHeight, frame));
+        return nameTop(screenWidth, screenHeight, frame, 0, offset, view);
+    }
+
+    private static int nameTop(int screenWidth, int screenHeight, HudLayer.Frame frame, int raise) {
+        return nameTop(screenWidth, screenHeight, frame, raise, ClientConfig.ITEM_NAME_OFFSET.get(), View.current());
+    }
+
+    /**
      * The item name's top edge: vanilla's spot moved by other mods and the Item Name Height setting,
      * or 1px above the HUD pieces stacked over the hotbar if they reach higher.
      *
-     * @param raise how far other mods moved the name up
+     * @param raise  how far other mods moved the name up
+     * @param offset the Item Name Height setting
      */
-    private static int nameTop(int screenWidth, int screenHeight, HudLayer.Frame frame, int raise) {
+    private static int nameTop(int screenWidth, int screenHeight, HudLayer.Frame frame, int raise, int offset, View view) {
         int hotbarLeft = screenWidth / 2 - HOTBAR_WIDTH / 2;
         int hotbarRight = hotbarLeft + HOTBAR_WIDTH;
-        Minecraft minecraft = Minecraft.getInstance();
-        boolean barsShown = HudLayer.isVisible(minecraft);
-        // The XP piece's row holds the XP bar, or the jump meter while riding; creative has neither.
-        boolean xpRowShown = minecraft.player != null && minecraft.gameMode != null
-                && (minecraft.gameMode.hasExperience() || minecraft.player.jumpableVehicle() != null);
-        int vanillaTop = screenHeight - Math.max(rowsHeight(), VANILLA_NAME_MIN) - raise - ClientConfig.ITEM_NAME_OFFSET.get();
-        if (minecraft.gameMode != null && !minecraft.gameMode.canHurtPlayer()) {
+        boolean barsShown = view.barsShown();
+        boolean xpRowShown = view.xpRowShown();
+        int vanillaTop = screenHeight - Math.max(view.rowsHeight(), VANILLA_NAME_MIN) - raise - offset;
+        if (view.creative()) {
             vanillaTop += VANILLA_NAME_CREATIVE_DROP;
         }
         // Measured as the bottom of the space the name needs; never inside the hotbar.
@@ -111,7 +142,7 @@ public final class HudTextPlacer {
         }
         if (stacked && barsShown) {
             // Rows vanilla and other mods stacked above the bars (air bubbles, mount health, ...).
-            top -= Math.max(0, rowsHeight() - HudLayer.vanillaRowsStart(screenHeight, frame));
+            top -= Math.max(0, view.rowsHeight() - HudLayer.vanillaRowsStart(screenHeight, frame));
         }
         return top - TEXT_ROOM;
     }
