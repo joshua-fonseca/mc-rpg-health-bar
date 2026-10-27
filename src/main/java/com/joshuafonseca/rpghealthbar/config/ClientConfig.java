@@ -48,6 +48,14 @@ public final class ClientConfig {
             .translation("rpghealthbar.config.manaSize")
             .defineEnum("manaSize", BarSize.FULL);
 
+    public static final int ITEM_NAME_OFFSET_MIN = -50;
+    public static final int ITEM_NAME_OFFSET_MAX = 100;
+
+    public static final ModConfigSpec.IntValue ITEM_NAME_OFFSET = BUILDER
+            .comment("How far up (positive) or down (negative) the held item's name and action bar messages sit from where vanilla puts them, in GUI pixels, when the HUD isn't stacked right above the hotbar. 0 is vanilla's height, which leaves room for mods that draw above the hotbar; lower values bring it down to right above the hotbar.")
+            .translation("rpghealthbar.config.itemNameOffset")
+            .defineInRange("itemNameOffset", 0, ITEM_NAME_OFFSET_MIN, ITEM_NAME_OFFSET_MAX);
+
     // Position: set by dragging the HUD in Config → Move HUD; not meant to be edited by hand.
     // Layout 2 (1.2.1 on): each piece has its own anchor and offset (below).
     // Layout 1 (before): the whole HUD's matching point (e.g. its bottom-center for BOTTOM_CENTER)

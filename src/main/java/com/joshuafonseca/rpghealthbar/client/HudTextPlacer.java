@@ -1,18 +1,20 @@
 package com.joshuafonseca.rpghealthbar.client;
 
+import com.joshuafonseca.rpghealthbar.config.ClientConfig;
 import com.joshuafonseca.rpghealthbar.config.HudPiece;
 import java.util.Map;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 
 /**
- * Where the held item's name and the action bar message go: just above whatever is stacked directly
- * above the hotbar, or right above the hotbar when nothing is. Vanilla puts them above the hearts and
- * armor rows instead, and never lower than a fixed height, which doesn't fit once pieces are moved.
+ * Where the held item's name and the action bar message go: just above whatever of the HUD is stacked
+ * over the hotbar, and otherwise where vanilla puts them, moved by the Item Name Height setting.
  * <p>
- * Another mod that draws something just above the hotbar (e.g. a second hotbar) may move the item
- * name up to clear it. That move is taken as the space the mod uses above the hotbar: the stack is
- * measured from above it, and the text is placed absolutely, so the two moves don't add up.
+ * Vanilla's spot is above the rows stacked over the hotbar (Gui.leftHeight and Gui.rightHeight), and
+ * never lower than a fixed height. Mods that draw above the hotbar keep the name clear of their
+ * drawing that way: by reserving rows (e.g. extra hotbars), by relying on the fixed height (e.g. a
+ * second hotbar), or by moving the name up themselves. Such a move is applied from vanilla's spot,
+ * and the text is placed absolutely, so the two moves don't add up.
  */
 public final class HudTextPlacer {
     private static final int HOTBAR_WIDTH = 182;
@@ -68,9 +70,10 @@ public final class HudTextPlacer {
     }
 
     /**
-     * The item name's top edge: 1px above the top of the stack over the hotbar.
+     * The item name's top edge: vanilla's spot moved by other mods and the Item Name Height setting,
+     * or 1px above the HUD pieces stacked over the hotbar if they reach higher.
      *
-     * @param raise space other mods use right above the hotbar
+     * @param raise how far other mods moved the name up
      */
     private static int nameTop(int screenWidth, int screenHeight, HudLayer.Frame frame, int raise) {
         int hotbarLeft = screenWidth / 2 - HOTBAR_WIDTH / 2;
@@ -80,7 +83,12 @@ public final class HudTextPlacer {
         // The XP piece's row holds the XP bar, or the jump meter while riding; creative has neither.
         boolean xpRowShown = minecraft.player != null && minecraft.gameMode != null
                 && (minecraft.gameMode.hasExperience() || minecraft.player.jumpableVehicle() != null);
-        int top = screenHeight - HOTBAR_HEIGHT - raise;
+        int vanillaTop = screenHeight - Math.max(rowsHeight(), VANILLA_NAME_MIN) - raise - ClientConfig.ITEM_NAME_OFFSET.get();
+        if (minecraft.gameMode != null && !minecraft.gameMode.canHurtPlayer()) {
+            vanillaTop += VANILLA_NAME_CREATIVE_DROP;
+        }
+        // Measured as the bottom of the space the name needs; never inside the hotbar.
+        int top = Math.min(vanillaTop + TEXT_ROOM, screenHeight - HOTBAR_HEIGHT);
         boolean stacked = false;
         boolean grew = true;
         while (grew) {
