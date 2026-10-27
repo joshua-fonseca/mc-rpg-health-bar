@@ -22,12 +22,6 @@ public final class HudTextPlacer {
      * name (9px plus a 1px gap) below it, so it counts as stacked.
      */
     private static final int TEXT_ROOM = 10;
-    /**
-     * A gap under the pieces shorter than this (a hotbar plus room for the text) is taken as space
-     * something else uses right above the hotbar, e.g. a second hotbar from another mod that doesn't
-     * move the item name itself, so the text goes above the pieces rather than into the gap.
-     */
-    private static final int HOTBAR_GAP = HOTBAR_HEIGHT + TEXT_ROOM;
     /** The action bar sits this much higher than the item name, as in vanilla. */
     private static final int OVERLAY_ABOVE_NAME = 9;
     /** Vanilla's lowest positions, measured from the bottom of the screen. */
@@ -88,8 +82,7 @@ public final class HudTextPlacer {
         // The XP piece's row holds the XP bar, or the jump meter while riding; creative has neither.
         boolean xpRowShown = minecraft.player != null && minecraft.gameMode != null
                 && (minecraft.gameMode.hasExperience() || minecraft.player.jumpableVehicle() != null);
-        int hotbarTop = screenHeight - HOTBAR_HEIGHT - raise;
-        int top = hotbarTop;
+        int top = screenHeight - HOTBAR_HEIGHT - raise;
         boolean stacked = false;
         boolean grew = true;
         while (grew) {
@@ -101,8 +94,7 @@ public final class HudTextPlacer {
                 }
                 HudPosition.Bounds box = entry.getValue().offset(frame.pieceOffset(entry.getKey()));
                 boolean overHotbar = box.right() > hotbarLeft && box.left() < hotbarRight;
-                int room = top == hotbarTop ? HOTBAR_GAP : TEXT_ROOM;
-                if (overHotbar && box.top() < top && box.bottom() > top - room) {
+                if (overHotbar && box.top() < top && box.bottom() > top - TEXT_ROOM) {
                     top = box.top();
                     stacked = true;
                     grew = true;
