@@ -1,5 +1,7 @@
 # RPG Health Bar
 
+> **Disclaimer:** this mod is fully vibe-coded, built with the Claude Code CLI to get more hands-on experience with it.
+
 <img src="docs/images/icon.png" alt="RPG Health Bar icon" width="96" align="right">
 
 A client-side NeoForge mod for Minecraft 1.21.1 that replaces the vanilla hearts with an RPG-style health bar. With [Iron's Spells 'n Spellbooks](https://modrinth.com/mod/irons-spells-n-spellbooks) installed, a mana bar sits right below it.
