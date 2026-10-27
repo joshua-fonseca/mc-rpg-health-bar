@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Absorption no longer appears at once: when you gain it, the gold fill grows in from the left over 0.75 seconds. Losing it still shows at once.
+
 ## 1.3.0 (2026-10-27)
 
 - New **Health Bar** and **Mana Bar** options: **Full** or **Half** width. Half bars are as wide as the armor and hunger bars. With both set to Half, health and mana sit side by side above the hotbar; with only one, it keeps its own row, e.g. a big health bar with a small mana bar underneath.

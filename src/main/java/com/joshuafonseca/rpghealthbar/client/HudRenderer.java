@@ -25,6 +25,8 @@ public final class HudRenderer {
     private static final int MANA_COST_COLOR = 0xFF143C64;
     private static final long COST_PULSE_MILLIS = 800;
     private static final BarTrail HEALTH_TRAIL = new BarTrail();
+    /** Absorption grows in from the left when gained, rather than appearing at once. */
+    private static final BarGrow ABSORPTION_GROW = new BarGrow();
     /** At or below this much health (plus absorption), the bar pulses as a warning, like vanilla's shaking hearts. */
     private static final float LOW_HEALTH = 4.0F;
     private static final long LOW_HEALTH_PULSE_MILLIS = 900;
@@ -117,8 +119,9 @@ public final class HudRenderer {
             BarRenderer.drawSection(graphics, x, y, width, HudLayout.MAIN_BAR_HEIGHT, true, health / maxHealth, trail / maxHealth, StatusColors.lost(values.healthColor()), false, 1.0F);
             renderHealthEffects(graphics, x, y, width, values);
         }
-        if (absorption > 0) {
-            BarRenderer.drawFill(graphics, x, y, width, HudLayout.MAIN_BAR_HEIGHT, true, absorption / maxHealth, ABSORPTION_COLOR, absorption < maxHealth);
+        float shownAbsorption = live ? ABSORPTION_GROW.update(absorption) : absorption;
+        if (shownAbsorption > 0) {
+            BarRenderer.drawFill(graphics, x, y, width, HudLayout.MAIN_BAR_HEIGHT, true, shownAbsorption / maxHealth, ABSORPTION_COLOR, shownAbsorption < maxHealth);
         }
 
         if (ClientConfig.SHOW_HEALTH_TEXT.get()) {
