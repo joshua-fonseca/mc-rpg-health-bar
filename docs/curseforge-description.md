@@ -23,7 +23,7 @@ Replaces the vanilla hearts with an RPG-style health bar. With **Iron's Spells '
 
 ![Half-size health and mana bars side by side above the hotbar](https://raw.githubusercontent.com/joshua-fonseca/mc-rpg-health-bar/main/docs/images/half-bars.png)
 
-![With AppleSkin: saturation outlined in yellow on the hunger bar, and the hunger and saturation held bread would restore flashing after them](https://raw.githubusercontent.com/joshua-fonseca/mc-rpg-health-bar/main/docs/images/appleskin.png)
+![With AppleSkin: saturation outlined in yellow on the hunger bar, and the hunger and saturation the held bread would restore flashing after it, then filling when it's eaten](https://raw.githubusercontent.com/joshua-fonseca/mc-rpg-health-bar/main/docs/images/appleskin.gif)
 
 ## Compatibility
 
@@ -33,7 +33,7 @@ Replaces the vanilla hearts with an RPG-style health bar. With **Iron's Spells '
 - Works with other mods that draw near the hotbar the same way: drag the HUD, or just the pieces in the way, clear of them.
 - Air bubbles and mount health stay vanilla and stack above the bars.
 
-![The mana a hovered spell would use, shown on the mana bar](https://raw.githubusercontent.com/joshua-fonseca/mc-rpg-health-bar/main/docs/images/spell-cost.png)
+![Choosing a spell in Iron's spell wheel shows the mana it costs on the mana bar, then casting it uses that mana](https://raw.githubusercontent.com/joshua-fonseca/mc-rpg-health-bar/main/docs/images/spell-cast.gif)
 
 ## Settings
 

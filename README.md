@@ -25,9 +25,9 @@ A client-side NeoForge mod for Minecraft 1.21.1 that replaces the vanilla hearts
 
 ![Half-size health and mana bars side by side above the hotbar](docs/images/half-bars.png)
 
-![With AppleSkin: saturation outlined in yellow on the hunger bar, and the hunger and saturation held bread would restore flashing after them](docs/images/appleskin.png)
+![With AppleSkin: saturation outlined in yellow on the hunger bar, and the hunger and saturation the held bread would restore flashing after it, then filling when it's eaten](docs/images/appleskin.gif)
 
-![The mana a hovered spell would use, shown on the mana bar](docs/images/spell-cost.png)
+![Choosing a spell in Iron's spell wheel shows the mana it costs on the mana bar, then casting it uses that mana](docs/images/spell-cast.gif)
 
 ## Settings
 
