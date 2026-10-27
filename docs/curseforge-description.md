@@ -8,15 +8,15 @@ Replaces the vanilla hearts with an RPG-style health bar. With **Iron's Spells '
 
 ## Features
 
-- **Health bar** the width of the hotbar, with your current and max health on it (`15.5/20`). It goes beyond the vanilla max of 20 for mods that add hearts to the player (`32/40`), following your real max health.
+- **Health bar** the width of the hotbar. It goes beyond the vanilla max of 20 for mods that add hearts to the player (`32/40`).
 - **Absorption** fills the bar in gold, and the text shows it separately (`15.5+4/20`) or added in (`19.5/20`).
 - **Mana bar support:** an overhaul of the mana bar from Iron's Spells 'n Spellbooks, in the same style as the health bar, replacing Iron's own.
-- **Status colors:** like the vanilla hearts, the health bar turns green-yellow when poisoned, black when withered and light blue when frozen, and the hunger bar turns green with the Hunger effect. Heart colors added by other mods are followed too.
+- **Status colors:** like the vanilla hearts, the health bar changes when poisoned, withered or frozen. The hunger bar turns green with the Hunger effect. Heart colors added by other mods are followed too.
 - **Armor and hunger** as the vanilla icons (default), thin bars, or hidden.
 - **AppleSkin support:** saturation is outlined in yellow on the hunger bar, and held food's value flashes on it, like AppleSkin's preview on the icons.
 - **Highly customizable:**
-  - **Half-size bars:** health and mana can each be full or half width. With both half, they sit side by side above the hotbar.
-  - **Move the HUD** by dragging it: the whole set, including the XP bar and level, or each piece (armor, hunger, health, mana, XP bar) on its own. It stays in place when you change the window size or GUI scale.
+  - **Half-size bars:** health and mana can each be full or half width. With both set at half, they will sit side by side (But can be moved individually)
+  - **Move the HUD** by dragging it: can either move the whole set, including the XP bar and level, or each piece (armor, hunger, health, mana, XP bar) on its own. It stays in place when you change the window size or GUI scale.
   - **Everything in game:** all options apply immediately, no restart.
 
 #### Armor and hunger as bars, with absorption
