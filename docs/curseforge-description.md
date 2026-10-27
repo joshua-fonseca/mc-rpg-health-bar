@@ -42,7 +42,7 @@ Replaces the vanilla hearts with an RPG-style health bar. With **Iron's Spells '
 | **Mod loader** | NeoForge 21.1.1+ | Forge 47.0.0+ |
 | **Iron's Spells 'n Spellbooks** | 3.9.1+ | 1.1.5+ (spell cost preview: 3.2.0+) |
 | **AppleSkin** | 3.0.4+ | 2.5.0+ |
-| **Double Hotbar** | Any | Not tested |
+| **Double Hotbar** | Any | 1.3.2.1+ |
 
 - **[Iron's Spells 'n Spellbooks](https://www.curseforge.com/projects/855414) by Iron431 and Lab3:** optional. When it's installed you get the mana bar and the spell cost preview, and Iron's own mana bar is hidden.
 - **[AppleSkin](https://www.curseforge.com/minecraft/mc-mods/appleskin) by squeek502:** optional. When it's installed, saturation is outlined in yellow on the hunger bar and held food's value flashes on it; with the vanilla hunger icons, AppleSkin's own overlays move with them.
