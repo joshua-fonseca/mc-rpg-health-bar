@@ -85,7 +85,7 @@ Settings are stored in `config/rpghealthbar-client.toml`.
 | **Mod loader** | NeoForge 21.1.1+ | Forge 47.0.0+ |
 | **Iron's Spells 'n Spellbooks** | 3.9.1+ | 1.1.5+ (spell cost preview: 3.2.0+) |
 | **AppleSkin** | 3.0.4+ | 2.5.0+ |
-| **Double Hotbar** | Any | Not tested |
+| **Double Hotbar** | Any | 1.3.2.1+ |
 
 - Client-side only: servers don't need it, and it works on servers that don't have it.
 - [Iron's Spells 'n Spellbooks](https://www.curseforge.com/projects/855414) by Iron431 and Lab3: optional. When it's installed you get the mana bar and the spell cost preview, and Iron's own mana bar is hidden.
