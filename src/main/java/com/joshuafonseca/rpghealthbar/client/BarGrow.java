@@ -7,7 +7,7 @@ import net.minecraft.Util;
  * out. When the value drops, it follows at once.
  */
 public final class BarGrow {
-    private static final float GROW_MILLIS = 750.0F;
+    private static final float GROW_MILLIS = 500.0F;
 
     private float shown;
     private float from;
