@@ -19,6 +19,14 @@ public final class HudRenderer {
     private static final int MANA_COST_COLOR = 0xFF143C64;
     private static final long COST_PULSE_MILLIS = 800;
     private static final BarTrail HEALTH_TRAIL = new BarTrail();
+    /** At or below this much health (plus absorption), the bar pulses as a warning, like vanilla's shaking hearts. */
+    private static final float LOW_HEALTH = 4.0F;
+    private static final long LOW_HEALTH_PULSE_MILLIS = 900;
+    private static final float LOW_HEALTH_PULSE_ALPHA = 0.35F;
+    /** With Regeneration, a light band sweeps along the health fill once per period, like vanilla's heart wave. */
+    private static final long REGEN_SWEEP_MILLIS = 1500;
+    private static final int REGEN_BAND_WIDTH = 24;
+    private static final float REGEN_BAND_ALPHA = 0.4F;
     private static final BarTrail MANA_TRAIL = new BarTrail();
     /** Vanilla's HUD shows at most 20 armor points and 20 food points. */
     private static final float MAX_ARMOR = 20.0F;
@@ -32,7 +40,7 @@ public final class HudRenderer {
      *             shrinking darker section (the editor's placeholder values would otherwise
      *             look like a loss when switching back)
      */
-    public static void render(GuiGraphics graphics, Font font, HudLayout layout, HudValues values, boolean showArmor, boolean showHunger, boolean live) {
+    public static void render(GuiGraphics graphics, Font font, HudLayout layout, HudValues values, boolean showArmor, boolean showHunger) {
         renderHalfBars(graphics, layout, values, showArmor, showHunger);
         renderHealth(graphics, font, layout, values, live);
         if (values.mana() != null) {
@@ -68,6 +76,7 @@ public final class HudRenderer {
         if (live) {
             float trail = HEALTH_TRAIL.update(health);
             BarRenderer.drawSection(graphics, x, y, HudLayout.WIDTH, HudLayout.MAIN_BAR_HEIGHT, true, health / maxHealth, trail / maxHealth, StatusColors.lost(values.healthColor()), false, 1.0F);
+            renderHealthEffects(graphics, x, y, values);
         }
         if (absorption > 0) {
             BarRenderer.drawFill(graphics, x, y, HudLayout.WIDTH, HudLayout.MAIN_BAR_HEIGHT, true, absorption / maxHealth, ABSORPTION_COLOR, absorption < maxHealth);
@@ -76,6 +85,38 @@ public final class HudRenderer {
         if (ClientConfig.SHOW_HEALTH_TEXT.get()) {
             BarRenderer.drawLabel(graphics, font, x, y, HudLayout.MAIN_BAR_HEIGHT, healthText(health, absorption, maxHealth));
         }
+    }
+
+    /** The low-health pulse and the Regeneration sweep over the health fill, like the vanilla hearts' movement. */
+    private static void renderHealthEffects(GuiGraphics graphics, int x, int y, HudValues values) {
+        int fill = BarRenderer.columns(HudLayout.WIDTH, true, values.health() / values.maxHealth());
+        // Everything but the white tip, which stays as it is.
+        int body = Math.max(0, fill - 1);
+        if (values.health() + values.absorption() <= LOW_HEALTH) {
+            BarRenderer.drawHighlight(graphics, x, y, HudLayout.WIDTH, HudLayout.MAIN_BAR_HEIGHT, true, 0, body, LOW_HEALTH_PULSE_ALPHA * pulse(LOW_HEALTH_PULSE_MILLIS));
+        }
+        if (values.regenerating() && body > 0) {
+            renderRegenSweep(graphics, x, y, body);
+        }
+    }
+
+    /** A soft light band moving left to right across the first {@code body} fill columns. */
+    private static void renderRegenSweep(GuiGraphics graphics, int x, int y, int body) {
+        float progress = (float) (Util.getMillis() % REGEN_SWEEP_MILLIS) / REGEN_SWEEP_MILLIS;
+        // The band starts fully left of the fill and ends fully right of it.
+        float center = -REGEN_BAND_WIDTH / 2.0F + progress * (body + REGEN_BAND_WIDTH);
+        int from = Math.max(0, Mth.floor(center - REGEN_BAND_WIDTH / 2.0F));
+        int to = Math.min(body, Mth.ceil(center + REGEN_BAND_WIDTH / 2.0F));
+        for (int column = from; column < to; column++) {
+            float distance = Math.abs(column + 0.5F - center) / (REGEN_BAND_WIDTH / 2.0F);
+            float alpha = REGEN_BAND_ALPHA * (0.5F + 0.5F * Mth.cos(Math.min(1.0F, distance) * Mth.PI));
+            BarRenderer.drawHighlight(graphics, x, y, HudLayout.WIDTH, HudLayout.MAIN_BAR_HEIGHT, true, column, column + 1, alpha);
+        }
+    }
+
+    /** 0 to 1 and back, smoothly, once per period. */
+    private static float pulse(long periodMillis) {
+        return 0.5F - 0.5F * Mth.cos((float) (Util.getMillis() % periodMillis) / periodMillis * Mth.TWO_PI);
     }
 
     /** E.g. "16+4/20", "20/20" with absorption combined, or "8+2/10" in hearts; rounded to 0.25. */
@@ -107,8 +148,7 @@ public final class HudRenderer {
             float cost = values.mana().hoveredCost();
             if (cost > 0) {
                 // The mana the hovered spell would use, pulsing between normal and dark blue.
-                float pulse = 0.5F - 0.5F * Mth.cos((float) (Util.getMillis() % COST_PULSE_MILLIS) / COST_PULSE_MILLIS * Mth.TWO_PI);
-                BarRenderer.drawSection(graphics, x, y, HudLayout.WIDTH, HudLayout.MAIN_BAR_HEIGHT, true, (mana - cost) / maxMana, mana / maxMana, MANA_COST_COLOR, true, pulse);
+                BarRenderer.drawSection(graphics, x, y, HudLayout.WIDTH, HudLayout.MAIN_BAR_HEIGHT, true, (mana - cost) / maxMana, mana / maxMana, MANA_COST_COLOR, true, pulse(COST_PULSE_MILLIS));
             }
         }
         if (ClientConfig.SHOW_MANA_TEXT.get()) {

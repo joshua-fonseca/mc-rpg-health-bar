@@ -42,6 +42,8 @@ public final class BarRenderer {
     private static final float END_BRIGHTEN = 0.18F;
     /** The last column is mixed this much toward white, keeping the rows' shading. */
     private static final float TIP_WHITE = 0.7F;
+    /** Pulses and sweeps blend toward white, keeping the rows' shading. */
+    private static final int HIGHLIGHT_COLOR = 0xFFFFFFFF;
 
     /** A full bar of one color and size, painted once and reused every frame. */
     private record Style(int color, int width, int height, boolean framed) {
@@ -107,17 +109,34 @@ public final class BarRenderer {
         }
     }
 
+    /**
+     * Lightens fill columns {@code start} to {@code end} (exclusive) toward white by {@code alpha},
+     * leaving the border alone. Used for the pulses and sweeps over a fill drawn with {@link #drawFill}.
+     */
+    public static void drawHighlight(GuiGraphics graphics, int x, int y, int width, int height, boolean framed, int start, int end, float alpha) {
+        if (end <= start || alpha <= 0) {
+            return;
+        }
+        int inset = framed ? 1 : 0;
+        ResourceLocation texture = texture(new Style(HIGHLIGHT_COLOR, width, height, framed));
+        RenderSystem.enableBlend();
+        graphics.setColor(1.0F, 1.0F, 1.0F, Math.min(1.0F, alpha));
+        graphics.blit(texture, x + inset + start, y + inset, inset + start, inset, end - start, height - 2 * inset, width, height);
+        graphics.setColor(1.0F, 1.0F, 1.0F, 1.0F);
+        RenderSystem.disableBlend();
+    }
+
+    /** How many fill columns a fraction covers. */
+    public static int columns(int width, boolean framed, float fraction) {
+        int inner = width - (framed ? 2 : 0);
+        return Math.round(inner * Mth.clamp(fraction, 0.0F, 1.0F));
+    }
+
     /** Text on the left side of the bar, vertically centered. */
     public static void drawLabel(GuiGraphics graphics, Font font, int x, int y, int height, String text) {
         // Digits are 7px tall; the shadow adds 1px below and doesn't count toward centering.
         int textY = y + Math.floorDiv(height - 7, 2);
         graphics.drawString(font, text, x + TEXT_PADDING, textY, TEXT_COLOR, true);
-    }
-
-    /** How many fill columns a fraction covers. */
-    private static int columns(int width, boolean framed, float fraction) {
-        int inner = width - (framed ? 2 : 0);
-        return Math.round(inner * Mth.clamp(fraction, 0.0F, 1.0F));
     }
 
     /**
