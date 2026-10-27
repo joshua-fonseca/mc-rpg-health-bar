@@ -37,12 +37,24 @@ public final class HudPositionMover {
 
     /** Registered at the lowest priority, so it only runs if no other mod cancelled the layer. */
     public static void onPre(RenderGuiLayerEvent.Pre event) {
-        HudPiece piece = MOVED_LAYERS.get(event.getName());
-        if (piece == null) {
+        ResourceLocation name = event.getName();
+        boolean text = name.equals(VanillaGuiLayers.SELECTED_ITEM_NAME) || name.equals(VanillaGuiLayers.OVERLAY_MESSAGE);
+        HudPiece piece = MOVED_LAYERS.get(name);
+        if (piece == null && !text) {
             return;
         }
         GuiGraphics graphics = event.getGuiGraphics();
         HudLayer.Frame frame = HudLayer.Frame.compute(graphics.guiWidth(), graphics.guiHeight(), IronsSpellsCompat.isAvailable());
+        if (text) {
+            // Only moved up or down, keeping any shift other mods gave the text.
+            int shift = name.equals(VanillaGuiLayers.SELECTED_ITEM_NAME)
+                    ? HudTextPlacer.itemNameShift(graphics.guiWidth(), graphics.guiHeight(), frame)
+                    : HudTextPlacer.overlayShift(graphics.guiWidth(), graphics.guiHeight(), frame);
+            graphics.pose().pushPose();
+            graphics.pose().translate(0, shift, 0);
+            pushed = true;
+            return;
+        }
         graphics.pose().pushPose();
         HudPosition.moveTo(graphics.pose(), frame.pieceOffset(piece));
         if (event.getName().equals(VanillaGuiLayers.EXPERIENCE_LEVEL)) {

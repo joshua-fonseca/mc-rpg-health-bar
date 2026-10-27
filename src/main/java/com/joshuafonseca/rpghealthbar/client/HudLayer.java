@@ -113,9 +113,24 @@ public class HudLayer implements LayeredDraw.Layer {
      * These positions are at the default spot; HudPositionMover shifts the vanilla rows with the set.
      */
     private static void placeVanillaRows(Gui gui, int screenHeight, Frame frame) {
-        int inRow = screenHeight - frame.layout().iconRowY();
-        int aboveBars = screenHeight - frame.layout().top() + 10;
-        gui.leftHeight = frame.vanillaArmor() ? inRow : aboveBars;
-        gui.rightHeight = frame.vanillaHunger() ? inRow : aboveBars;
+        gui.leftHeight = frame.vanillaArmor() ? inRow(screenHeight, frame) : aboveBars(screenHeight, frame);
+        gui.rightHeight = frame.vanillaHunger() ? inRow(screenHeight, frame) : aboveBars(screenHeight, frame);
+    }
+
+    /**
+     * Where rows stacked above the bars start, once the vanilla icons in our row are drawn (vanilla
+     * adds 10 per row drawn). Anything Gui.leftHeight or Gui.rightHeight has grown past this is rows
+     * above the bars: air, mount health, other mods' rows.
+     */
+    public static int vanillaRowsStart(int screenHeight, Frame frame) {
+        return aboveBars(screenHeight, frame);
+    }
+
+    private static int inRow(int screenHeight, Frame frame) {
+        return screenHeight - frame.layout().iconRowY();
+    }
+
+    private static int aboveBars(int screenHeight, Frame frame) {
+        return screenHeight - frame.layout().top() + 10;
     }
 }
