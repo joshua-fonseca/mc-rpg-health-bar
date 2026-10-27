@@ -4,16 +4,16 @@ import com.joshuafonseca.rpghealthbar.RpgHealthBar;
 import javax.annotation.Nullable;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.fml.ModList;
+import net.minecraftforge.fml.ModList;
 
 /**
  * Safe to call whether or not Iron's Spells 'n Spellbooks is installed. Only touches
- * {@link IronsSpellsMana} (which references Iron's classes) when the mod is loaded.
+ * {@link IronsSpellsMana} and {@link IronsSpellsWheel} (which reference Iron's classes) when the mod is loaded.
  */
 public final class IronsSpellsCompat {
     public static final String MODID = "irons_spellbooks";
     /** Iron's own mana bar, which our mana bar replaces. */
-    public static final ResourceLocation MANA_OVERLAY = ResourceLocation.fromNamespaceAndPath(MODID, "mana_overlay");
+    public static final ResourceLocation MANA_OVERLAY = new ResourceLocation(MODID, "mana_overlay");
 
     /** Cleared if reading mana ever fails, e.g. a future Iron's version renamed something we use. */
     private static boolean available = ModList.get().isLoaded(MODID);
@@ -64,7 +64,7 @@ public final class IronsSpellsCompat {
             return 0;
         }
         try {
-            return IronsSpellsMana.hoveredSpellCost(player);
+            return IronsSpellsWheel.hoveredSpellCost(player);
         } catch (LinkageError | ReflectiveOperationException | RuntimeException e) {
             wheelAvailable = false;
             RpgHealthBar.LOGGER.warn("Couldn't read Iron's Spells' spell wheel; this version may not be supported. Spell costs won't be previewed on the mana bar.", e);

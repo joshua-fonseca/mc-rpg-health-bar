@@ -19,15 +19,15 @@ Replaces the vanilla hearts with an RPG-style health bar, with an optional mana 
 displayTest="IGNORE_ALL_VERSION"
 
 [[dependencies.${mod_id}]]
-    modId="neoforge"
-    type="required"
-    versionRange="${neo_version_range}"
+    modId="forge"
+    mandatory=true
+    versionRange="${forge_version_range}"
     ordering="NONE"
     side="CLIENT"
 
 [[dependencies.${mod_id}]]
     modId="minecraft"
-    type="required"
+    mandatory=true
     versionRange="${minecraft_version_range}"
     ordering="NONE"
     side="CLIENT"
@@ -35,7 +35,7 @@ displayTest="IGNORE_ALL_VERSION"
 # Optional: when Iron's Spells 'n Spellbooks is installed, a mana bar replaces its own.
 [[dependencies.${mod_id}]]
     modId="irons_spellbooks"
-    type="optional"
+    mandatory=false
     versionRange="*"
     ordering="NONE"
     side="CLIENT"
@@ -43,7 +43,7 @@ displayTest="IGNORE_ALL_VERSION"
 # Optional: with AppleSkin, saturation is outlined on the hunger bar, and its hunger overlays move with the hunger icons.
 [[dependencies.${mod_id}]]
     modId="appleskin"
-    type="optional"
+    mandatory=false
     versionRange="*"
     ordering="NONE"
     side="CLIENT"

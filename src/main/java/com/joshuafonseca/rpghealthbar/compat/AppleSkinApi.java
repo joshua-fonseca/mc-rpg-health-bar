@@ -2,9 +2,9 @@ package com.joshuafonseca.rpghealthbar.compat;
 
 import javax.annotation.Nullable;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.ItemStack;
 import squeek.appleskin.ModConfig;
+import squeek.appleskin.api.food.FoodValues;
 import squeek.appleskin.helpers.FoodHelper;
 
 /** References AppleSkin's classes directly; only loaded through {@link AppleSkinCompat}. */
@@ -33,23 +33,19 @@ final class AppleSkinApi {
      * first, then the off hand if its config allows.
      */
     @Nullable
-    static FoodProperties heldFood(Player player) {
-        FoodProperties food = edible(player, player.getMainHandItem());
+    static AppleSkinCompat.FoodValue heldFood(Player player) {
+        FoodValues food = edible(player, player.getMainHandItem());
         if (food == null && ModConfig.SHOW_FOOD_VALUES_OVERLAY_WHEN_OFFHAND.get()) {
             food = edible(player, player.getOffhandItem());
         }
-        return food;
+        return food == null ? null : new AppleSkinCompat.FoodValue(food.hunger, food.getSaturationIncrement());
     }
 
     @Nullable
-    private static FoodProperties edible(Player player, ItemStack stack) {
-        if (stack.isEmpty()) {
+    private static FoodValues edible(Player player, ItemStack stack) {
+        if (stack.isEmpty() || !FoodHelper.isFood(stack, player) || !FoodHelper.canConsume(stack, player)) {
             return null;
         }
-        FoodHelper.QueriedFoodResult result = FoodHelper.query(stack, player);
-        if (result == null || !FoodHelper.canConsume(player, result.modifiedFoodProperties)) {
-            return null;
-        }
-        return result.modifiedFoodProperties;
+        return FoodHelper.getModifiedFoodValues(stack, player);
     }
 }

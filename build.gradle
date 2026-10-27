@@ -1,7 +1,7 @@
 plugins {
     id 'java-library'
     id 'maven-publish'
-    id 'net.neoforged.moddev' version '2.0.148'
+    id 'net.neoforged.moddev.legacyforge' version '2.0.148'
     id 'idea'
 }
 
@@ -14,7 +14,8 @@ tasks.named('wrapper', Wrapper).configure {
     distributionType = Wrapper.DistributionType.BIN
 }
 
-version = mod_version
+// The Minecraft version is part of the jar name, e.g. rpghealthbar-1.3.1+1.20.1.jar.
+version = "${mod_version}+${minecraft_version}"
 group = mod_group_id
 
 sourceSets.main.resources {
@@ -37,12 +38,12 @@ base {
     archivesName = mod_id
 }
 
-// Mojang ships Java 21 to end users in 1.21.1, so mods should target Java 21.
-java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+// Mojang ships Java 17 to end users in 1.20.1, so mods should target Java 17.
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
-neoForge {
-    // Specify the version of NeoForge to use.
-    version = project.neo_version
+legacyForge {
+    // Specify the version of Forge to use.
+    version = "${minecraft_version}-${forge_version}"
 
     parchment {
         mappingsVersion = project.parchment_mappings_version
@@ -92,26 +93,33 @@ neoForge {
 configurations {
     runtimeClasspath.extendsFrom localRuntime
 }
+// Mods are published with obfuscated (SRG) names; these configurations remap them for the dev environment.
+obfuscation {
+    createRemappingConfiguration(configurations.localRuntime)
+}
 
 dependencies {
     // Iron's Spells is optional: compiled against, but never required at runtime.
-    compileOnly "io.redspace:irons_spellbooks:${irons_spellbooks_version}"
+    modCompileOnly "io.redspace.ironsspellbooks:irons_spellbooks:${irons_spellbooks_version}"
 
     // `./gradlew runClient -PwithIronsSpells` launches the dev client with Iron's Spells and its
     // dependencies; without the flag the dev client runs without it, to test the mod on its own.
-    // Add `-PironsRuntimeVersion=1.21.1-3.9.1` to run another Iron's version than the one compiled against.
+    // Add `-PironsRuntimeVersion=...` to run another Iron's version than the one compiled against.
     if (project.hasProperty('withIronsSpells')) {
-        localRuntime("io.redspace:irons_spellbooks:${project.findProperty('ironsRuntimeVersion') ?: irons_spellbooks_version}") { transitive = false }
-        localRuntime("io.redspace:irons_lib:${irons_lib_version}") { transitive = false }
-        localRuntime("top.theillusivec4.curios:curios-neoforge:${curios_version}") { transitive = false }
-        localRuntime("software.bernie.geckolib:geckolib-neoforge-1.21.1:${geckolib_version}") { transitive = false }
-        localRuntime("dev.kosmx.player-anim:player-animation-lib-forge:${player_animator_version}") { transitive = false }
+        modLocalRuntime(project.findProperty('ironsRuntime') ?: "io.redspace.ironsspellbooks:irons_spellbooks:${project.findProperty('ironsRuntimeVersion') ?: irons_spellbooks_version}") { transitive = false }
+        modLocalRuntime("top.theillusivec4.curios:curios-forge:${curios_version}") { transitive = false }
+        modLocalRuntime("top.theillusivec4.caelus:caelus-forge:${caelus_version}") { transitive = false }
+        modLocalRuntime("software.bernie.geckolib:geckolib-forge-1.20.1:${geckolib_version}") { transitive = false }
+        modLocalRuntime("dev.kosmx.player-anim:player-animation-lib-forge:${player_animator_version}") { transitive = false }
+        if (project.hasProperty('withIronsLib')) {
+            modLocalRuntime("io.redspace:irons_lib:${irons_lib_version}") { transitive = false }
+        }
     }
 
     // AppleSkin is optional too; `-PwithAppleSkin` adds it to the dev client.
-    compileOnly "squeek.appleskin:appleskin-neoforge:${appleskin_version}"
+    modCompileOnly "squeek.appleskin:appleskin-forge:${appleskin_version}"
     if (project.hasProperty('withAppleSkin')) {
-        localRuntime("squeek.appleskin:appleskin-neoforge:${appleskin_version}") { transitive = false }
+        modLocalRuntime("squeek.appleskin:appleskin-forge:${appleskin_version}") { transitive = false }
     }
 }
 
@@ -121,8 +129,8 @@ var generateModMetadata = tasks.register("generateModMetadata", ProcessResources
     var replaceProperties = [
             minecraft_version      : minecraft_version,
             minecraft_version_range: minecraft_version_range,
-            neo_version            : neo_version,
-            neo_version_range      : neo_version_range,
+            forge_version          : forge_version,
+            forge_version_range    : forge_version_range,
             loader_version_range   : loader_version_range,
             mod_id                 : mod_id,
             mod_name               : mod_name,
@@ -138,7 +146,7 @@ var generateModMetadata = tasks.register("generateModMetadata", ProcessResources
 // this works with both building through Gradle and the IDE.
 sourceSets.main.resources.srcDir generateModMetadata
 // To avoid having to run "generateModMetadata" manually, make it run on every project reload
-neoForge.ideSyncTask generateModMetadata
+legacyForge.ideSyncTask generateModMetadata
 
 // Example configuration to allow publishing using the maven-publish plugin
 publishing {

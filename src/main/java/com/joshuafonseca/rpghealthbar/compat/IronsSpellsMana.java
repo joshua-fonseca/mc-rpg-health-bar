@@ -1,18 +1,21 @@
 package com.joshuafonseca.rpghealthbar.compat;
 
-import io.redspace.ironsspellbooks.api.registry.AttributeRegistry;
-import io.redspace.ironsspellbooks.api.spells.SpellData;
-import io.redspace.ironsspellbooks.gui.overlays.SpellWheelOverlay;
 import io.redspace.ironsspellbooks.player.ClientMagicData;
-import java.lang.reflect.Field;
 import javax.annotation.Nullable;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.player.Player;
+import net.minecraftforge.registries.ForgeRegistries;
 
-/** References Iron's Spells classes directly; only loaded through {@link IronsSpellsCompat}. */
+/**
+ * Reads mana through the part of Iron's Spells that's the same in every 1.20.1 version (1.1.5 on);
+ * only loaded through {@link IronsSpellsCompat}.
+ */
 final class IronsSpellsMana {
-    /** Iron's keeps the hovered wheel slot private; it's updated each time the wheel is drawn. */
+    /** Looked up by name: Iron's moved the class holding it between versions. */
+    private static final ResourceLocation MAX_MANA_ID = new ResourceLocation(IronsSpellsCompat.MODID, "max_mana");
     @Nullable
-    private static Field wheelSelection;
+    private static Attribute maxMana;
 
     private IronsSpellsMana() {
     }
@@ -23,26 +26,12 @@ final class IronsSpellsMana {
     }
 
     static float maxMana(Player player) {
-        return (float) player.getAttributeValue(AttributeRegistry.MAX_MANA);
-    }
-
-    /** Mana cost of the spell hovered in the spell wheel, the same number the wheel shows; 0 if none. */
-    static float hoveredSpellCost(Player player) throws ReflectiveOperationException {
-        SpellWheelOverlay wheel = SpellWheelOverlay.instance;
-        if (!wheel.active) {
-            return 0;
+        if (maxMana == null) {
+            maxMana = ForgeRegistries.ATTRIBUTES.getValue(MAX_MANA_ID);
+            if (maxMana == null) {
+                throw new IllegalStateException("Iron's Spells' max mana attribute " + MAX_MANA_ID + " isn't registered");
+            }
         }
-        if (wheelSelection == null) {
-            Field field = SpellWheelOverlay.class.getDeclaredField("wheelSelection");
-            field.setAccessible(true);
-            wheelSelection = field;
-        }
-        int index = wheelSelection.getInt(wheel);
-        if (index < 0) {
-            return 0;
-        }
-        SpellData data = ClientMagicData.getSpellSelectionManager().getSpellData(index);
-        int level = data.getSpell().getLevelFor(data.getLevel(), player);
-        return data.getSpell().getManaCost(level);
+        return (float) player.getAttributeValue(maxMana);
     }
 }

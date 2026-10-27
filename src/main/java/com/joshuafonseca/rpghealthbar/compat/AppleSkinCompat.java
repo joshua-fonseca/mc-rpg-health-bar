@@ -3,10 +3,8 @@ package com.joshuafonseca.rpghealthbar.compat;
 import com.joshuafonseca.rpghealthbar.RpgHealthBar;
 import javax.annotation.Nullable;
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.food.FoodProperties;
-import net.neoforged.fml.ModList;
+import net.minecraftforge.fml.ModList;
 
 /**
  * Safe to call whether or not AppleSkin is installed. Only touches {@link AppleSkinApi} (which
@@ -14,13 +12,6 @@ import net.neoforged.fml.ModList;
  */
 public final class AppleSkinCompat {
     public static final String MODID = "appleskin";
-    /** AppleSkin's overlays on the vanilla hunger icons: saturation, held food's value, exhaustion. */
-    public static final ResourceLocation SATURATION_LAYER = layer("saturation_level");
-    public static final ResourceLocation HUNGER_RESTORED_LAYER = layer("hunger_restored");
-    public static final ResourceLocation EXHAUSTION_LAYER = layer("exhaustion_level");
-    /** AppleSkin's preview of the health held food would restore, drawn as vanilla hearts. */
-    public static final ResourceLocation HEALTH_RESTORED_LAYER = layer("health_restored");
-
     /** Cleared if using AppleSkin ever fails, e.g. a future version renamed something we use. */
     private static boolean available = ModList.get().isLoaded(MODID);
 
@@ -42,9 +33,8 @@ public final class AppleSkinCompat {
     public record HeldFood(float food, float saturation, float flashAlpha) {
     }
 
-    /** Whether a layer is one of AppleSkin's overlays on the vanilla hunger icons. */
-    public static boolean isHungerOverlay(ResourceLocation layer) {
-        return layer.equals(SATURATION_LAYER) || layer.equals(HUNGER_RESTORED_LAYER) || layer.equals(EXHAUSTION_LAYER);
+    /** What the held food restores: hunger points, and saturation (AppleSkin's saturation increment). */
+    record FoodValue(int hunger, float saturation) {
     }
 
     /**
@@ -94,13 +84,13 @@ public final class AppleSkinCompat {
         if (!AppleSkinApi.showFoodValues()) {
             return null;
         }
-        FoodProperties food = AppleSkinApi.heldFood(player);
+        FoodValue food = AppleSkinApi.heldFood(player);
         if (food == null) {
             return null;
         }
         // Vanilla's FoodData.eat: hunger is capped at 20, and saturation at the new hunger.
         float foodLevel = player.getFoodData().getFoodLevel();
-        float newFood = Math.min(foodLevel + food.nutrition(), 20);
+        float newFood = Math.min(foodLevel + food.hunger(), 20);
         float newSaturation = AppleSkinApi.showSaturation()
                 ? Math.min(player.getFoodData().getSaturationLevel() + food.saturation(), newFood)
                 : 0;
@@ -110,9 +100,5 @@ public final class AppleSkinCompat {
     private static void disable(Throwable e) {
         available = false;
         RpgHealthBar.LOGGER.warn("Couldn't use AppleSkin; this version may not be supported. Saturation and food previews on the hunger bar are turned off.", e);
-    }
-
-    private static ResourceLocation layer(String path) {
-        return ResourceLocation.fromNamespaceAndPath(MODID, path);
     }
 }

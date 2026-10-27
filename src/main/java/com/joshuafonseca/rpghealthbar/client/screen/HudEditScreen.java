@@ -189,15 +189,11 @@ public class HudEditScreen extends Screen {
     }
 
     @Override
-    public void renderBackground(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        // In a world, keep the HUD visible and unblurred so the real bars can be seen moving.
-        if (this.minecraft.level == null) {
-            super.renderBackground(graphics, mouseX, mouseY, partialTick);
-        }
-    }
-
-    @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        // In a world, no background, so the real bars can be seen moving.
+        if (this.minecraft.level == null) {
+            renderBackground(graphics);
+        }
         super.render(graphics, mouseX, mouseY, partialTick);
         HudLayer.Frame frame = frame();
 

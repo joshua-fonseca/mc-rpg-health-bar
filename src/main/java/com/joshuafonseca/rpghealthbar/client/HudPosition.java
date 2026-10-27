@@ -133,7 +133,7 @@ public final class HudPosition {
     /** The saved positions for this screen size, with each shown piece kept on screen. */
     public static Pieces saved(int screenWidth, int screenHeight, Map<HudPiece, Bounds> shown) {
         Map<HudPiece, Offset> shifts = new EnumMap<>(HudPiece.class);
-        if (ClientConfig.LAYOUT_VERSION.get() < 2) {
+        if (ClientConfig.layoutVersion() < 2) {
             Offset set = legacySetOffset(screenWidth, screenHeight, shown);
             for (HudPiece piece : HudPiece.values()) {
                 shifts.put(piece, set.plus(storedOffset(piece)));

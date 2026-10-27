@@ -3,7 +3,7 @@ package com.joshuafonseca.rpghealthbar.client;
 import com.joshuafonseca.rpghealthbar.config.HudPiece;
 import java.util.Map;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Gui;
+import net.minecraftforge.client.gui.overlay.ForgeGui;
 
 /**
  * Where the held item's name and the action bar message go: just above whatever is stacked directly
@@ -63,7 +63,9 @@ public final class HudTextPlacer {
 
     /** Vanilla's yShift: the taller of the two stacks of rows above the hotbar. */
     private static int rowsHeight() {
-        Gui gui = Minecraft.getInstance().gui;
+        if (!(Minecraft.getInstance().gui instanceof ForgeGui gui)) {
+            return 0;
+        }
         return Math.max(gui.leftHeight, gui.rightHeight);
     }
 

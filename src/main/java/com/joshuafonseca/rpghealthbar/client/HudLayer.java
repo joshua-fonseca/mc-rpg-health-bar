@@ -6,18 +6,17 @@ import com.joshuafonseca.rpghealthbar.config.HalfBarMode;
 import com.joshuafonseca.rpghealthbar.config.HudPiece;
 import java.util.EnumMap;
 import java.util.Map;
-import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.LayeredDraw;
 import net.minecraft.world.entity.player.Player;
+import net.minecraftforge.client.gui.overlay.ForgeGui;
+import net.minecraftforge.client.gui.overlay.IGuiOverlay;
 
 /** Draws the whole bar group. */
-public class HudLayer implements LayeredDraw.Layer {
+public class HudLayer implements IGuiOverlay {
     @Override
-    public void render(GuiGraphics graphics, DeltaTracker deltaTracker) {
-        Minecraft minecraft = Minecraft.getInstance();
+    public void render(ForgeGui gui, GuiGraphics graphics, float partialTick, int screenWidth, int screenHeight) {
+        Minecraft minecraft = gui.getMinecraft();
         if (!isVisible(minecraft) || !(minecraft.getCameraEntity() instanceof Player player)) {
             return;
         }
@@ -26,8 +25,9 @@ public class HudLayer implements LayeredDraw.Layer {
         Frame frame = Frame.compute(graphics.guiWidth(), graphics.guiHeight(), values.mana() != null);
         // Reserved at the default position: the vanilla rows stacked above are shifted along with
         // everything else by HudPositionMover.
-        placeVanillaRows(minecraft.gui, graphics.guiHeight(), frame);
+        placeVanillaRows(gui, graphics.guiHeight(), frame);
 
+        gui.setupOverlayRenderState(true, false);
         graphics.pose().pushPose();
         // Each piece is shifted on its own by HudRenderer; this only undoes other mods' shifts.
         HudPosition.moveTo(graphics.pose(), HudPosition.Offset.ZERO);
@@ -36,8 +36,8 @@ public class HudLayer implements LayeredDraw.Layer {
     }
 
     /**
-     * Modded layers don't inherit the conditions of the vanilla group they're inserted into, so
-     * repeat vanilla's checks: hidden with F1, and only in survival/adventure.
+     * Modded overlays don't inherit the conditions of the vanilla ones around them, so repeat
+     * vanilla's checks: hidden with F1, and only in survival/adventure.
      */
     public static boolean isVisible(Minecraft minecraft) {
         return !minecraft.options.hideGui && minecraft.gameMode != null && minecraft.gameMode.canHurtPlayer()
@@ -107,21 +107,21 @@ public class HudLayer implements LayeredDraw.Layer {
 
     /**
      * Vanilla stacks the armor (left), food, air and mount health (right) rows upwards using
-     * Gui.leftHeight and Gui.rightHeight: the next row's top edge is drawn at
+     * ForgeGui.leftHeight and ForgeGui.rightHeight: the next row's top edge is drawn at
      * {@code screenHeight - height}, and each row adds 10 (9px icons plus a 1px gap).
      * <p>
      * Vanilla armor/hunger icons go into our armor/hunger row, next to a half bar if there is one.
      * Everything else (air, mount health, other mods' rows) starts above our bars.
      * These positions are at the default spot; HudPositionMover shifts the vanilla rows with the set.
      */
-    private static void placeVanillaRows(Gui gui, int screenHeight, Frame frame) {
+    private static void placeVanillaRows(ForgeGui gui, int screenHeight, Frame frame) {
         gui.leftHeight = frame.vanillaArmor() ? inRow(screenHeight, frame) : aboveBars(screenHeight, frame);
         gui.rightHeight = frame.vanillaHunger() ? inRow(screenHeight, frame) : aboveBars(screenHeight, frame);
     }
 
     /**
      * Where rows stacked above the bars start, once the vanilla icons in our row are drawn (vanilla
-     * adds 10 per row drawn). Anything Gui.leftHeight or Gui.rightHeight has grown past this is rows
+     * adds 10 per row drawn). Anything ForgeGui.leftHeight or ForgeGui.rightHeight has grown past this is rows
      * above the bars: air, mount health, other mods' rows.
      */
     public static int vanillaRowsStart(int screenHeight, Frame frame) {

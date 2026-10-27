@@ -1,49 +1,59 @@
 package com.joshuafonseca.rpghealthbar.config;
 
 import java.util.EnumMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
-import net.neoforged.neoforge.common.ModConfigSpec;
+import net.minecraftforge.common.ForgeConfigSpec;
 
 /** Stored in config/rpghealthbar-client.toml. Values are read every frame, so changes apply immediately. */
 public final class ClientConfig {
-    private static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
+    /**
+     * Position values waiting to be written, applied in memory straight away. On Forge 1.20.1 every
+     * {@code set} writes the file and Forge then reloads it on another thread, so a reload landing
+     * between two quick sets undoes the earlier one. Writing one value per tick ({@link #writePending})
+     * lets each reload finish first.
+     */
+    private static final Map<ForgeConfigSpec.ConfigValue<?>, Object> PENDING = new LinkedHashMap<>();
 
-    public static final ModConfigSpec.EnumValue<HalfBarMode> ARMOR_MODE = BUILDER
+    private static final ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
+
+    public static final ForgeConfigSpec.EnumValue<HalfBarMode> ARMOR_MODE = BUILDER
             .comment("How armor is shown: VANILLA (vanilla armor icons), BAR (white bar above the health bar) or HIDDEN.")
             .translation("rpghealthbar.config.armorMode")
             .defineEnum("armorMode", HalfBarMode.VANILLA);
 
-    public static final ModConfigSpec.EnumValue<HalfBarMode> HUNGER_MODE = BUILDER
+    public static final ForgeConfigSpec.EnumValue<HalfBarMode> HUNGER_MODE = BUILDER
             .comment("How hunger is shown: VANILLA (vanilla hunger icons), BAR (orange bar above the health bar) or HIDDEN.")
             .translation("rpghealthbar.config.hungerMode")
             .defineEnum("hungerMode", HalfBarMode.VANILLA);
 
-    public static final ModConfigSpec.EnumValue<HealthUnit> HEALTH_UNIT = BUILDER
+    public static final ForgeConfigSpec.EnumValue<HealthUnit> HEALTH_UNIT = BUILDER
             .comment("Unit for the numbers on the health bar: HP (20 for a full vanilla bar) or HEARTS (HP / 2, so 10).")
             .translation("rpghealthbar.config.healthUnit")
             .defineEnum("healthUnit", HealthUnit.HP);
 
-    public static final ModConfigSpec.EnumValue<AbsorptionDisplay> ABSORPTION_DISPLAY = BUILDER
+    public static final ForgeConfigSpec.EnumValue<AbsorptionDisplay> ABSORPTION_DISPLAY = BUILDER
             .comment("How absorption is written on the health bar: SEPARATE (16+4/20) or COMBINED (20/20).")
             .translation("rpghealthbar.config.absorptionDisplay")
             .defineEnum("absorptionDisplay", AbsorptionDisplay.SEPARATE);
 
-    public static final ModConfigSpec.BooleanValue SHOW_HEALTH_TEXT = BUILDER
+    public static final ForgeConfigSpec.BooleanValue SHOW_HEALTH_TEXT = BUILDER
             .comment("Show the numbers on the health bar.")
             .translation("rpghealthbar.config.showHealthText")
             .define("showHealthText", true);
 
-    public static final ModConfigSpec.BooleanValue SHOW_MANA_TEXT = BUILDER
+    public static final ForgeConfigSpec.BooleanValue SHOW_MANA_TEXT = BUILDER
             .comment("Show the numbers on the mana bar (Iron's Spells 'n Spellbooks only).")
             .translation("rpghealthbar.config.showManaText")
             .define("showManaText", true);
 
-    public static final ModConfigSpec.EnumValue<BarSize> HEALTH_SIZE = BUILDER
+    public static final ForgeConfigSpec.EnumValue<BarSize> HEALTH_SIZE = BUILDER
             .comment("Width of the health bar: FULL (as wide as the hotbar) or HALF (like the armor and hunger bars).")
             .translation("rpghealthbar.config.healthSize")
             .defineEnum("healthSize", BarSize.FULL);
 
-    public static final ModConfigSpec.EnumValue<BarSize> MANA_SIZE = BUILDER
+    public static final ForgeConfigSpec.EnumValue<BarSize> MANA_SIZE = BUILDER
             .comment("Width of the mana bar: FULL or HALF. With both bars HALF, they share a row, health on the left (Iron's Spells 'n Spellbooks only).")
             .translation("rpghealthbar.config.manaSize")
             .defineEnum("manaSize", BarSize.FULL);
@@ -56,22 +66,22 @@ public final class ClientConfig {
     public static final int DEFAULT_OFFSET_X = 0;
     public static final int DEFAULT_OFFSET_Y = -24;
 
-    public static final ModConfigSpec.IntValue LAYOUT_VERSION = BUILDER
+    public static final ForgeConfigSpec.IntValue LAYOUT_VERSION = BUILDER
             .comment("How the HUD position is stored: 1 = one anchor for the whole HUD (anchor, offsetX, offsetY), 2 = an anchor per piece. Set automatically.")
             .translation("rpghealthbar.config.layoutVersion")
             .defineInRange("layoutVersion", 1, 1, 2);
 
-    public static final ModConfigSpec.EnumValue<HudAnchor> ANCHOR = BUILDER
+    public static final ForgeConfigSpec.EnumValue<HudAnchor> ANCHOR = BUILDER
             .comment("Layout 1 only: screen spot the HUD position is measured from.")
             .translation("rpghealthbar.config.anchor")
             .defineEnum("anchor", HudAnchor.BOTTOM_CENTER);
 
-    public static final ModConfigSpec.IntValue OFFSET_X = BUILDER
+    public static final ForgeConfigSpec.IntValue OFFSET_X = BUILDER
             .comment("Layout 1 only: horizontal offset of the HUD from its anchor, in GUI pixels.")
             .translation("rpghealthbar.config.offsetX")
             .defineInRange("offsetX", DEFAULT_OFFSET_X, -10000, 10000);
 
-    public static final ModConfigSpec.IntValue OFFSET_Y = BUILDER
+    public static final ForgeConfigSpec.IntValue OFFSET_Y = BUILDER
             .comment("Layout 1 only: vertical offset of the HUD from its anchor, in GUI pixels.")
             .translation("rpghealthbar.config.offsetY")
             .defineInRange("offsetY", DEFAULT_OFFSET_Y, -10000, 10000);
@@ -82,9 +92,9 @@ public final class ClientConfig {
      * the piece keeps its distance from its anchor. Layout 1: only the shifts are used, on top of
      * the whole HUD's position. Set with Config → Move HUD.
      */
-    private static final Map<HudPiece, ModConfigSpec.EnumValue<HudAnchor>> PIECE_ANCHORS = new EnumMap<>(HudPiece.class);
-    private static final Map<HudPiece, ModConfigSpec.IntValue> PIECE_OFFSETS_X = new EnumMap<>(HudPiece.class);
-    private static final Map<HudPiece, ModConfigSpec.IntValue> PIECE_OFFSETS_Y = new EnumMap<>(HudPiece.class);
+    private static final Map<HudPiece, ForgeConfigSpec.EnumValue<HudAnchor>> PIECE_ANCHORS = new EnumMap<>(HudPiece.class);
+    private static final Map<HudPiece, ForgeConfigSpec.IntValue> PIECE_OFFSETS_X = new EnumMap<>(HudPiece.class);
+    private static final Map<HudPiece, ForgeConfigSpec.IntValue> PIECE_OFFSETS_Y = new EnumMap<>(HudPiece.class);
 
     static {
         for (HudPiece piece : HudPiece.values()) {
@@ -103,7 +113,7 @@ public final class ClientConfig {
         }
     }
 
-    public static final ModConfigSpec SPEC = BUILDER.build();
+    public static final ForgeConfigSpec SPEC = BUILDER.build();
 
     private ClientConfig() {
     }
@@ -113,40 +123,77 @@ public final class ClientConfig {
         for (HudPiece piece : HudPiece.values()) {
             setPiecePosition(piece, HudAnchor.BOTTOM_CENTER, 0, 0);
         }
-        ANCHOR.set(HudAnchor.BOTTOM_CENTER);
-        OFFSET_X.set(DEFAULT_OFFSET_X);
-        OFFSET_Y.set(DEFAULT_OFFSET_Y);
+        queue(ANCHOR, HudAnchor.BOTTOM_CENTER);
+        queue(OFFSET_X, DEFAULT_OFFSET_X);
+        queue(OFFSET_Y, DEFAULT_OFFSET_Y);
         savePositions();
     }
 
+    public static int layoutVersion() {
+        return read(LAYOUT_VERSION);
+    }
+
     public static HudAnchor pieceAnchor(HudPiece piece) {
-        return PIECE_ANCHORS.get(piece).get();
+        return read(PIECE_ANCHORS.get(piece));
     }
 
     public static int pieceOffsetX(HudPiece piece) {
-        return PIECE_OFFSETS_X.get(piece).get();
+        return read(PIECE_OFFSETS_X.get(piece));
     }
 
     public static int pieceOffsetY(HudPiece piece) {
-        return PIECE_OFFSETS_Y.get(piece).get();
+        return read(PIECE_OFFSETS_Y.get(piece));
     }
 
     /** Updates a piece's position; written to the file by {@link #savePositions}. */
     public static void setPiecePosition(HudPiece piece, HudAnchor anchor, int x, int y) {
-        PIECE_ANCHORS.get(piece).set(anchor);
-        PIECE_OFFSETS_X.get(piece).set(x);
-        PIECE_OFFSETS_Y.get(piece).set(y);
+        queue(PIECE_ANCHORS.get(piece), anchor);
+        queue(PIECE_OFFSETS_X.get(piece), x);
+        queue(PIECE_OFFSETS_Y.get(piece), y);
     }
 
-    /** Marks the positions as layout 2 and writes the config file. */
+    /** Marks the positions as layout 2; they're written to the file over the next few ticks. */
     public static void savePositions() {
-        LAYOUT_VERSION.set(2);
-        SPEC.save();
+        queue(LAYOUT_VERSION, 2);
     }
 
     /** Updates a value and writes the config file. */
-    public static <T> void set(ModConfigSpec.ConfigValue<T> value, T newValue) {
+    public static <T> void set(ForgeConfigSpec.ConfigValue<T> value, T newValue) {
         value.set(newValue);
         value.save();
+    }
+
+    /** Writes one waiting position value; called every client tick. */
+    public static void writePending() {
+        Iterator<Map.Entry<ForgeConfigSpec.ConfigValue<?>, Object>> it = PENDING.entrySet().iterator();
+        if (it.hasNext()) {
+            Map.Entry<ForgeConfigSpec.ConfigValue<?>, Object> entry = it.next();
+            it.remove();
+            write(entry.getKey(), entry.getValue());
+        }
+    }
+
+    /** Writes every waiting value at once, when the game closes. */
+    public static void writeAllPending() {
+        while (!PENDING.isEmpty()) {
+            writePending();
+        }
+    }
+
+    private static <T> void queue(ForgeConfigSpec.ConfigValue<T> value, T newValue) {
+        // Re-inserted, so a value queued again is written after the others queued with it.
+        PENDING.remove(value);
+        PENDING.put(value, newValue);
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <T> T read(ForgeConfigSpec.ConfigValue<T> value) {
+        Object pending = PENDING.get(value);
+        return pending != null ? (T) pending : value.get();
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <T> void write(ForgeConfigSpec.ConfigValue<T> value, Object newValue) {
+        value.set((T) newValue);
     }
 }

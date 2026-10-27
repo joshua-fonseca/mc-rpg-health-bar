@@ -147,19 +147,20 @@ public final class BarRenderer {
         RenderSystem.setShaderTexture(0, texture(new Style(HIGHLIGHT_COLOR, width, height, framed)));
         RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
         RenderSystem.enableBlend();
-        BufferBuilder buffer = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
+        BufferBuilder buffer = Tesselator.getInstance().getBuilder();
+        buffer.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
         for (int i = 0; i < alphas.length; i++) {
             float alpha = Math.min(1.0F, alphas[i]);
             int u = inset + start + i;
             float left = x + u;
             float u0 = (float) u / width;
             float u1 = (float) (u + 1) / width;
-            buffer.addVertex(matrix, left, top, 0).setUv(u0, v0).setColor(1.0F, 1.0F, 1.0F, alpha);
-            buffer.addVertex(matrix, left, bottom, 0).setUv(u0, v1).setColor(1.0F, 1.0F, 1.0F, alpha);
-            buffer.addVertex(matrix, left + 1, bottom, 0).setUv(u1, v1).setColor(1.0F, 1.0F, 1.0F, alpha);
-            buffer.addVertex(matrix, left + 1, top, 0).setUv(u1, v0).setColor(1.0F, 1.0F, 1.0F, alpha);
+            buffer.vertex(matrix, left, top, 0).uv(u0, v0).color(1.0F, 1.0F, 1.0F, alpha).endVertex();
+            buffer.vertex(matrix, left, bottom, 0).uv(u0, v1).color(1.0F, 1.0F, 1.0F, alpha).endVertex();
+            buffer.vertex(matrix, left + 1, bottom, 0).uv(u1, v1).color(1.0F, 1.0F, 1.0F, alpha).endVertex();
+            buffer.vertex(matrix, left + 1, top, 0).uv(u1, v0).color(1.0F, 1.0F, 1.0F, alpha).endVertex();
         }
-        BufferUploader.drawWithShader(buffer.buildOrThrow());
+        BufferUploader.drawWithShader(buffer.end());
         RenderSystem.disableBlend();
     }
 
@@ -251,7 +252,7 @@ public final class BarRenderer {
     private static ResourceLocation texture(Style style) {
         ResourceLocation location = TEXTURES.get(style);
         if (location == null) {
-            location = ResourceLocation.fromNamespaceAndPath(RpgHealthBar.MODID, String.format("bar/%08x_%dx%d%s",
+            location = new ResourceLocation(RpgHealthBar.MODID, String.format("bar/%08x_%dx%d%s",
                     style.color(), style.width(), style.height(), style.framed() ? "_framed" : ""));
             Minecraft.getInstance().getTextureManager().register(location, new DynamicTexture(paint(style)));
             TEXTURES.put(style, location);
