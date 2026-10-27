@@ -35,6 +35,8 @@ public class HudEditScreen extends Screen {
     private static final int CONTROLS_MARGIN = 8;
     /** Pieces can be grabbed this far outside their edges, so the thin bars are easy to pick up. */
     private static final int GRAB_MARGIN = 2;
+    /** While dragging, what's being moved is lightened by this translucent white. */
+    private static final int GRABBED_HIGHLIGHT = 0x30FFFFFF;
 
     /** What dragging moves: the whole set, or one piece of it. */
     private enum Mode {
@@ -177,8 +179,22 @@ public class HudEditScreen extends Screen {
         }
 
         graphics.drawCenteredString(this.font, this.title, this.width / 2, controlsTop, 0xFFFFFF);
+        if (dragging) {
+            highlightGrabbed(graphics, frame);
+        }
+
         String hint = mode == Mode.ALL ? "rpghealthbar.edit.hint" : "rpghealthbar.edit.hint.one";
         graphics.drawCenteredString(this.font, Component.translatable(hint), this.width / 2, controlsTop + 10, 0xC0C0C0);
+    }
+
+    /** Faintly lightens each piece being dragged: all of them, or the one grabbed. */
+    private void highlightGrabbed(GuiGraphics graphics, HudLayer.Frame frame) {
+        for (Map.Entry<HudPiece, HudPosition.Bounds> entry : frame.pieceBounds().entrySet()) {
+            if (mode == Mode.ALL || entry.getKey() == selected) {
+                HudPosition.Bounds box = entry.getValue().offset(frame.pieceOffset(entry.getKey())).grow(1);
+                graphics.fill(box.left(), box.top(), box.right(), box.bottom(), GRABBED_HIGHLIGHT);
+            }
+        }
     }
 
     @Override
