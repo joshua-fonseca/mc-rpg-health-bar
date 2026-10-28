@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.3.2 (2026-10-27)
+
+- New **Item Name...** page in the config: sets how high the held item's name sits, from 50 pixels lower to 100 higher than vanilla. A preview shows the name where it will go and moves as you change it. Drag the slider, or use the arrow keys (Shift: 10px). Tips give the values for vanilla's height and for right above the hotbar.
+- The default stays at vanilla's height, which leaves room for mods that add hotbars. The name never goes onto the HUD or the hotbar.
+- The held item's name and the action bar now stay above rows that other mods reserve above the hotbar, like extra hotbars.
+- The HUD's layout is worked out once per frame instead of once per piece, and the item name's position reads the game state once.
+- Changing a setting writes the config file once instead of twice.
+
 ## 1.3.1 (2026-10-27)
 
 - Absorption no longer appears at once: when you gain it, the gold fill grows in from the left over 0.5 seconds. When you lose it, the lost part turns darker and fades away like health does when you take damage, but quicker (it stays 0.5 seconds instead of 0.75).
