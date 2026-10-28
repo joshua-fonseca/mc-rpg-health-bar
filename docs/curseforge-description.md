@@ -17,6 +17,7 @@ Replaces the vanilla hearts with an RPG-style health bar. With **Iron's Spells '
 - **Highly customizable:**
   - **Half-size bars:** health and mana can each be full or half width. With both set at half, they will sit side by side (But can be moved individually)
   - **Move the HUD** by dragging it: can either move the whole set, including the XP bar and level, or each piece (armor, hunger, health, mana, XP bar) on its own. It stays in place when you change the window size or GUI scale.
+  - **Item name height:** set how high the held item's name sits, with a preview that moves as you change it. It starts at vanilla's height, which leaves room for mods that add hotbars.
   - **Everything in game:** all options apply immediately, no restart.
 
 #### Armor and hunger as bars, with absorption
@@ -84,6 +85,10 @@ Defaults are in bold. **Move HUD...** opens the position editor. With **Moving: 
 #### Moving a single piece
 
 ![Moving one piece: the health bar](https://raw.githubusercontent.com/joshua-fonseca/mc-rpg-health-bar/main/docs/images/move-pieces.png)
+
+#### Setting the item name height
+
+![The Item Name page: a slider sets the height, and the held item's name is shown where it will go, here right above the hotbar](https://raw.githubusercontent.com/joshua-fonseca/mc-rpg-health-bar/main/docs/images/item-name.png)
 
 #### Example layout: health and mana in the top-left
 
