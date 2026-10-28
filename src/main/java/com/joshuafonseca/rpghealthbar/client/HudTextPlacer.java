@@ -45,12 +45,8 @@ public final class HudTextPlacer {
      */
     public static int itemNameShift(int screenWidth, int screenHeight, HudLayer.Frame frame, int raise) {
         nameRaise = raise;
-        int vanillaTop = screenHeight - Math.max(rowsHeight(), VANILLA_NAME_MIN);
-        Minecraft minecraft = Minecraft.getInstance();
-        if (minecraft.gameMode != null && !minecraft.gameMode.canHurtPlayer()) {
-            vanillaTop += VANILLA_NAME_CREATIVE_DROP;
-        }
-        return nameTop(screenWidth, screenHeight, frame, raise) - vanillaTop;
+        View view = View.current();
+        return nameTop(screenWidth, screenHeight, frame, raise, ClientConfig.ITEM_NAME_OFFSET.get(), view) - view.vanillaNameTop(screenHeight);
     }
 
     /**
@@ -59,8 +55,10 @@ public final class HudTextPlacer {
      * @param raise how far other mods already moved it up
      */
     public static int overlayShift(int screenWidth, int screenHeight, HudLayer.Frame frame, int raise) {
-        int vanillaTop = screenHeight - Math.max(rowsHeight() + OVERLAY_ABOVE_NAME, VANILLA_OVERLAY_MIN);
-        return nameTop(screenWidth, screenHeight, frame, Math.max(raise, nameRaise)) - OVERLAY_ABOVE_NAME - vanillaTop;
+        View view = View.current();
+        int vanillaTop = screenHeight - Math.max(view.rowsHeight() + OVERLAY_ABOVE_NAME, VANILLA_OVERLAY_MIN);
+        return nameTop(screenWidth, screenHeight, frame, Math.max(raise, nameRaise), ClientConfig.ITEM_NAME_OFFSET.get(), view)
+                - OVERLAY_ABOVE_NAME - vanillaTop;
     }
 
     /** Vanilla's yShift: the taller of the two stacks of rows above the hotbar. */
@@ -88,6 +86,12 @@ public final class HudTextPlacer {
             boolean creative = minecraft.gameMode != null && !minecraft.gameMode.canHurtPlayer();
             return new View(HudLayer.isVisible(minecraft), xpRowShown, creative, HudTextPlacer.rowsHeight());
         }
+
+        /** Where vanilla draws the item name's top edge. */
+        int vanillaNameTop(int screenHeight) {
+            int top = screenHeight - Math.max(this.rowsHeight, VANILLA_NAME_MIN);
+            return this.creative ? top + VANILLA_NAME_CREATIVE_DROP : top;
+        }
     }
 
     /**
@@ -100,18 +104,12 @@ public final class HudTextPlacer {
 
     /** The Item Name Height that puts the name right above the hotbar, for the preview's tips. */
     public static int previewAboveHotbarOffset(int screenHeight, HudLayer.Frame frame) {
-        View view = previewView(screenHeight, frame);
-        int offset = HOTBAR_HEIGHT + TEXT_ROOM - Math.max(view.rowsHeight(), VANILLA_NAME_MIN);
-        return view.creative() ? offset + VANILLA_NAME_CREATIVE_DROP : offset;
+        return previewView(screenHeight, frame).vanillaNameTop(screenHeight) + TEXT_ROOM - (screenHeight - HOTBAR_HEIGHT);
     }
 
     private static View previewView(int screenHeight, HudLayer.Frame frame) {
         return HudLayer.isVisible(Minecraft.getInstance()) ? View.current()
                 : new View(true, true, false, HudLayer.vanillaRowsStart(screenHeight, frame));
-    }
-
-    private static int nameTop(int screenWidth, int screenHeight, HudLayer.Frame frame, int raise) {
-        return nameTop(screenWidth, screenHeight, frame, raise, ClientConfig.ITEM_NAME_OFFSET.get(), View.current());
     }
 
     /**
@@ -126,10 +124,7 @@ public final class HudTextPlacer {
         int hotbarRight = hotbarLeft + HOTBAR_WIDTH;
         boolean barsShown = view.barsShown();
         boolean xpRowShown = view.xpRowShown();
-        int vanillaTop = screenHeight - Math.max(view.rowsHeight(), VANILLA_NAME_MIN) - raise - offset;
-        if (view.creative()) {
-            vanillaTop += VANILLA_NAME_CREATIVE_DROP;
-        }
+        int vanillaTop = view.vanillaNameTop(screenHeight) - raise - offset;
         // Measured as the bottom of the space the name needs; never inside the hotbar.
         int top = Math.min(vanillaTop + TEXT_ROOM, screenHeight - HOTBAR_HEIGHT);
         boolean stacked = false;

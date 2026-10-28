@@ -97,8 +97,9 @@ public class ItemNameScreen extends Screen {
             }
         }
         int top = HudTextPlacer.previewNameTop(this.width, this.height, frame, this.slider.offset());
-        int x = (this.width - this.font.width(name)) / 2;
-        graphics.fill(x - 2, top - 2, x + this.font.width(name) + 2, top + 10, NAME_HIGHLIGHT);
+        int nameWidth = this.font.width(name);
+        int x = (this.width - nameWidth) / 2;
+        graphics.fill(x - 2, top - 2, x + nameWidth + 2, top + 10, NAME_HIGHLIGHT);
         graphics.drawString(this.font, name, x, top, 0xFFFFFF);
 
         graphics.drawCenteredString(this.font, this.title, this.width / 2, this.controlsTop, 0xFFFFFF);
