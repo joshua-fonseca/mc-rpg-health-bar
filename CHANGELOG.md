@@ -1,5 +1,19 @@
 # Changelog
 
+## 1.4.0 (2026-11-03)
+
+- The config screen is redesigned. Options are grouped into sections (Armor + Hunger, Health, Mana, Positioning), and the list scrolls when the window is small.
+  - Notes beside the headers say whether AppleSkin and Iron's Spells are installed. Without Iron's, the mana options are greyed out.
+  - Changes still show right away. **Save Settings** keeps them, and **Back** (or Esc) undoes them.
+- **Live preview:** the eye button beside the title shows the HUD on the left, drawn as your settings would at its default spot, so you can see each change without leaving the screen. It's off by default, the choice is remembered, and it's left out when the window is too narrow.
+- New **Mod State** switch: Disabled gives a fully vanilla HUD, including Iron's own mana bar, and keeps your settings and positions.
+- New **Air Bubbles/Mount HP** option: **Above** hunger, like vanilla, or **Below** it, for layouts with health or mana above hunger.
+- **HP Text** and **Mana Text** can now be **Left** (default), **Right**, **Center** or **Off**. Text you had turned off stays off.
+- The Health Bar and Mana Bar options are now called **Health Bar Width** and **Mana Bar Width**.
+- Esc in **Move HUD** now saves, like on the Item Name page. Cancel still leaves the old position.
+- The tips on the Item Name page are white, for easier reading.
+- The Reset Position button left the config screen. **Reset** in Move HUD does the same.
+
 ## 1.3.2 (2026-10-27)
 
 - New **Item Name...** page in the config: sets how high the held item's name sits, from 50 pixels lower to 100 higher than vanilla. A preview shows the name where it will go and moves as you change it. Drag the slider, or use the arrow keys (Shift: 10px). Tips give the values for vanilla's height and for right above the hotbar.
