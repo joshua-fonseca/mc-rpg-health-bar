@@ -16,6 +16,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import javax.annotation.Nullable;
 import net.minecraft.ChatFormatting;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -32,6 +33,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
 /**
@@ -41,6 +43,15 @@ import net.neoforged.neoforge.common.ModConfigSpec;
  */
 public class RpgConfigScreen extends Screen {
     private static final int ROW_WIDTH = 310;
+    /** Narrower, to the right, when there's room for the preview on the left. */
+    private static final int PREVIEW_ROW_WIDTH = 260;
+    /** Either side of the rows, inside the list: room for the scrollbar. */
+    private static final int LIST_SIDE = 18;
+    private static final int PREVIEW_MARGIN = 8;
+    /** Smaller than this and the preview is too small to read, so it's left out. */
+    private static final float MIN_PREVIEW_SCALE = 0.7F;
+    private static final ResourceLocation MENU_LIST_BACKGROUND = ResourceLocation.withDefaultNamespace("textures/gui/menu_list_background.png");
+    private static final ResourceLocation INWORLD_MENU_LIST_BACKGROUND = ResourceLocation.withDefaultNamespace("textures/gui/inworld_menu_list_background.png");
     private static final int ROW_HEIGHT = 24;
     private static final int BUTTON_HEIGHT = 20;
     /** Options are "Name: ... [value]": the name as text on the left, a button with the value on the right. */
@@ -69,6 +80,10 @@ public class RpgConfigScreen extends Screen {
     private final HeaderAndFooterLayout layout = new HeaderAndFooterLayout(this);
     @Nullable
     private OptionList list;
+    /** The preview's scale, or 0 when there's no room for it; and where it's centered. */
+    private float previewScale;
+    private int previewX;
+    private int previewY;
 
     public RpgConfigScreen(Screen parent) {
         super(Component.translatable("rpghealthbar.config.title"));
@@ -197,8 +212,33 @@ public class RpgConfigScreen extends Screen {
     @Override
     protected void repositionElements() {
         this.layout.arrangeElements();
-        if (this.list != null) {
+        if (this.list == null) {
+            return;
+        }
+        // The preview goes left of the list, scaled down to fit the room there.
+        int listWidth = PREVIEW_ROW_WIDTH + LIST_SIDE * 2;
+        int room = this.width - listWidth - PREVIEW_MARGIN * 2;
+        float scale = Math.min(1.0F, Math.min((float) room / ConfigPreview.WIDTH, (float) this.layout.getContentHeight() / ConfigPreview.height()));
+        this.list.screenWidth = this.width;
+        if (scale >= MIN_PREVIEW_SCALE) {
+            this.previewScale = scale;
+            this.previewX = PREVIEW_MARGIN + room / 2;
+            this.previewY = this.layout.getHeaderHeight() + this.layout.getContentHeight() / 2;
+            this.list.rowWidth = PREVIEW_ROW_WIDTH;
+            this.list.updateSizeAndPosition(listWidth, this.layout.getContentHeight(), this.layout.getHeaderHeight());
+            this.list.setX(this.width - listWidth - PREVIEW_MARGIN);
+        } else {
+            this.previewScale = 0;
+            this.list.rowWidth = ROW_WIDTH;
             this.list.updateSize(this.width, this.layout);
+        }
+    }
+
+    @Override
+    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        super.render(graphics, mouseX, mouseY, partialTick);
+        if (this.previewScale > 0) {
+            ConfigPreview.draw(graphics, this.font, this.previewX, this.previewY, this.previewScale);
         }
     }
 
@@ -224,10 +264,36 @@ public class RpgConfigScreen extends Screen {
         }
     }
 
+    /**
+     * The options. With the preview shown it covers only the right of the screen, but its
+     * background and the lines above and below it still span the whole width, around the preview too.
+     */
     private static class OptionList extends ContainerObjectSelectionList<Row> {
+        private int rowWidth = ROW_WIDTH;
+        private int screenWidth;
+
         OptionList(Minecraft minecraft, int width, HeaderAndFooterLayout layout) {
             super(minecraft, width, layout.getContentHeight(), layout.getHeaderHeight(), ROW_HEIGHT);
             this.centerListVertically = false;
+            this.screenWidth = width;
+        }
+
+        @Override
+        protected void renderListBackground(GuiGraphics graphics) {
+            RenderSystem.enableBlend();
+            ResourceLocation texture = this.minecraft.level == null ? MENU_LIST_BACKGROUND : INWORLD_MENU_LIST_BACKGROUND;
+            graphics.blit(texture, 0, getY(), this.screenWidth, getBottom() + (int) getScrollAmount(), this.screenWidth, getHeight(), 32, 32);
+            RenderSystem.disableBlend();
+        }
+
+        @Override
+        protected void renderListSeparators(GuiGraphics graphics) {
+            RenderSystem.enableBlend();
+            ResourceLocation header = this.minecraft.level == null ? Screen.HEADER_SEPARATOR : Screen.INWORLD_HEADER_SEPARATOR;
+            ResourceLocation footer = this.minecraft.level == null ? Screen.FOOTER_SEPARATOR : Screen.INWORLD_FOOTER_SEPARATOR;
+            graphics.blit(header, 0, getY() - 2, 0, 0, this.screenWidth, 2, 32, 2);
+            graphics.blit(footer, 0, getBottom(), 0, 0, this.screenWidth, 2, 32, 2);
+            RenderSystem.disableBlend();
         }
 
         @Override
@@ -237,7 +303,7 @@ public class RpgConfigScreen extends Screen {
 
         @Override
         public int getRowWidth() {
-            return ROW_WIDTH;
+            return this.rowWidth;
         }
     }
 
