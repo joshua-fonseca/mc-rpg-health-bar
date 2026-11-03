@@ -60,8 +60,8 @@ Open them from **Mods → RPG Health Bar → Config** (the Mods button is also i
 |---|---|
 | Mod State | **Enabled**, Disabled (a fully vanilla HUD; your settings are kept) |
 | **Armor + Hunger** | |
-| Armor | **Vanilla** icons, Bar, Hidden |
-| Hunger | **Vanilla** icons, Bar, Hidden |
+| Armor | **Vanilla**, Bar, Hidden |
+| Hunger | **Vanilla**, Bar, Hidden |
 | Air Bubbles/Mount HP | **Above** hunger, Below it |
 | **Health** | |
 | Health Units | **HP** (20 for a full vanilla bar), Hearts (10) |
