@@ -17,6 +17,7 @@ import java.util.function.Function;
 import javax.annotation.Nullable;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
@@ -39,6 +40,14 @@ import net.minecraftforge.common.ForgeConfigSpec;
  */
 public class RpgConfigScreen extends Screen {
     private static final int ROW_WIDTH = 310;
+    /** Narrower, to the right, when there's room for the preview on the left. */
+    private static final int PREVIEW_ROW_WIDTH = 260;
+    /** Either side of the rows, inside the list: room for the scrollbar. */
+    private static final int LIST_SIDE = 18;
+    private static final int PREVIEW_MARGIN = 8;
+    /** Smaller than this and the preview is too small to read, so it's left out. */
+    private static final float MIN_PREVIEW_SCALE = 0.7F;
+    private static final int EDGE_SHADOW = 4;
     private static final int ROW_HEIGHT = 24;
     private static final int BUTTON_HEIGHT = 20;
     /** Options are "Name: ... [value]": the name as text on the left, a button with the value on the right. */
@@ -70,6 +79,10 @@ public class RpgConfigScreen extends Screen {
     private final Map<ForgeConfigSpec.ConfigValue<?>, Object> opened = new HashMap<>();
     @Nullable
     private OptionList list;
+    /** The preview's scale, or 0 when there's no room for it; and where it's centered. */
+    private float previewScale;
+    private int previewX;
+    private int previewY;
 
     public RpgConfigScreen(Screen parent) {
         super(Component.translatable("rpghealthbar.config.title"));
@@ -83,7 +96,21 @@ public class RpgConfigScreen extends Screen {
     protected void init() {
         // Rebuilt on resize and when coming back from Item Name or Move HUD; keep the scroll position.
         double scroll = this.list != null ? this.list.getScrollAmount() : 0;
-        this.list = new OptionList(this.minecraft, this.width, this.height, HEADER_HEIGHT, this.height - FOOTER_HEIGHT);
+        // The preview goes left of the list, scaled down to fit the room there.
+        int contentHeight = this.height - HEADER_HEIGHT - FOOTER_HEIGHT;
+        int listWidth = PREVIEW_ROW_WIDTH + LIST_SIDE * 2;
+        int room = this.width - listWidth - PREVIEW_MARGIN * 2;
+        float scale = Math.min(1.0F, Math.min((float) room / ConfigPreview.WIDTH, (float) contentHeight / ConfigPreview.height()));
+        if (scale >= MIN_PREVIEW_SCALE) {
+            this.previewScale = scale;
+            this.previewX = PREVIEW_MARGIN + room / 2;
+            this.previewY = HEADER_HEIGHT + contentHeight / 2;
+            this.list = new OptionList(this.minecraft, listWidth, this.height, HEADER_HEIGHT, this.height - FOOTER_HEIGHT, PREVIEW_ROW_WIDTH);
+            this.list.setLeftPos(this.width - listWidth - PREVIEW_MARGIN);
+        } else {
+            this.previewScale = 0;
+            this.list = new OptionList(this.minecraft, this.width, this.height, HEADER_HEIGHT, this.height - FOOTER_HEIGHT, ROW_WIDTH);
+        }
         addOptions(this.list);
         addWidget(this.list);
         int footerY = this.height - FOOTER_HEIGHT + (FOOTER_HEIGHT - BUTTON_HEIGHT) / 2;
@@ -199,7 +226,23 @@ public class RpgConfigScreen extends Screen {
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         renderBackground(graphics);
+        // The list draws only its rows; its background and the header and footer span the whole
+        // width, around the preview too.
+        int top = HEADER_HEIGHT;
+        int bottom = this.height - FOOTER_HEIGHT;
+        graphics.setColor(0.125F, 0.125F, 0.125F, 1.0F);
+        graphics.blit(BACKGROUND_LOCATION, 0, top, this.width, bottom + (int) this.list.getScrollAmount(), this.width, bottom - top, 32, 32);
+        graphics.setColor(1.0F, 1.0F, 1.0F, 1.0F);
         this.list.render(graphics, mouseX, mouseY, partialTick);
+        graphics.setColor(0.25F, 0.25F, 0.25F, 1.0F);
+        graphics.blit(BACKGROUND_LOCATION, 0, 0, 0, 0, this.width, top, 32, 32);
+        graphics.blit(BACKGROUND_LOCATION, 0, bottom, 0, bottom, this.width, this.height - bottom, 32, 32);
+        graphics.setColor(1.0F, 1.0F, 1.0F, 1.0F);
+        graphics.fillGradient(RenderType.guiOverlay(), 0, top, this.width, top + EDGE_SHADOW, 0xFF000000, 0, 0);
+        graphics.fillGradient(RenderType.guiOverlay(), 0, bottom - EDGE_SHADOW, this.width, bottom, 0, 0xFF000000, 0);
+        if (this.previewScale > 0) {
+            ConfigPreview.draw(graphics, this.font, this.previewX, this.previewY, this.previewScale);
+        }
         graphics.drawCenteredString(this.font, this.title, this.width / 2, (HEADER_HEIGHT - 8) / 2, 0xFFFFFF);
         super.render(graphics, mouseX, mouseY, partialTick);
     }
@@ -227,9 +270,15 @@ public class RpgConfigScreen extends Screen {
     }
 
     private static class OptionList extends ContainerObjectSelectionList<Row> {
-        OptionList(Minecraft minecraft, int width, int height, int top, int bottom) {
+        private final int rowWidth;
+
+        OptionList(Minecraft minecraft, int width, int height, int top, int bottom, int rowWidth) {
             super(minecraft, width, height, top, bottom, ROW_HEIGHT);
             this.centerListVertically = false;
+            this.rowWidth = rowWidth;
+            // Drawn by the screen, across the whole width.
+            setRenderBackground(false);
+            setRenderTopAndBottom(false);
         }
 
         @Override
@@ -239,12 +288,12 @@ public class RpgConfigScreen extends Screen {
 
         @Override
         public int getRowWidth() {
-            return ROW_WIDTH;
+            return this.rowWidth;
         }
 
         @Override
         protected int getScrollbarPosition() {
-            return this.width / 2 + ROW_WIDTH / 2 + 10;
+            return this.x0 + this.width / 2 + this.rowWidth / 2 + 10;
         }
     }
 
