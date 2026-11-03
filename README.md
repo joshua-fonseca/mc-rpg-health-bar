@@ -4,7 +4,7 @@
 
 <img src="docs/images/icon.png" alt="RPG Health Bar icon" width="96" align="right">
 
-A client-side Minecraft mod that replaces the vanilla hearts with an RPG-style health bar. With [Iron's Spells 'n Spellbooks](https://modrinth.com/mod/irons-spells-n-spellbooks) installed, a mana bar sits right below it.
+A highly customizable, client-side GUI mod. Replaces the vanilla hearts with an RPG-style health bar, and adds a similar mana bar when [Iron's Spells 'n Spellbooks](https://modrinth.com/mod/irons-spells-n-spellbooks) is installed.
 
 #### Default: vanilla armor and hunger icons
 
@@ -20,7 +20,7 @@ A client-side Minecraft mod that replaces the vanilla hearts with an RPG-style h
 - **AppleSkin support:** saturation is outlined in yellow on the hunger bar, and held food's value flashes on it, like AppleSkin's preview on the icons.
 
 <details>
-<summary><b>Highly customizable</b> (click to expand)</summary>
+<summary><b>Customization</b> (click to expand)</summary>
 
 - **Half-size bars:** health and mana can each be full or half width. With both half, they sit side by side above the hotbar.
 - **Move the HUD** by dragging it: the whole set, including the XP bar and level, or each piece (armor, hunger, health, mana, XP bar) on its own. It stays in place when you change the window size or GUI scale.
@@ -49,13 +49,15 @@ A client-side Minecraft mod that replaces the vanilla hearts with an RPG-style h
 
 ![With AppleSkin: saturation outlined in yellow on the hunger bar, and the hunger and saturation the held bread would restore flashing after it, then filling when it's eaten](docs/images/appleskin.gif)
 
-#### Iron's Spells: choosing and casting a spell
+#### Iron's Spells: what spell cost preview looks like
 
 ![Choosing a spell in Iron's spell wheel shows the mana it costs on the mana bar, then casting it uses that mana](docs/images/spell-cast.gif)
 
 ## Settings
 
-Open them from **Mods → RPG Health Bar → Config** (the Mods button is also in the pause menu). The options are grouped into sections, and the list scrolls if the window is small. Hover over any option to see what each value does. Changes show on the HUD right away: **Save Settings** keeps them. **Back to Mods** (or Esc) asks whether to save them if you changed anything: Yes keeps them, No undoes them. Defaults are in bold.
+Open them from **Mods → RPG Health Bar → Config** (the Mods button is also in the pause menu). Hover over any option to see what each value does. Changes show on the HUD right away: **Save Settings** keeps them. **Back to Mods** (or Esc) asks whether to save them if you changed anything.
+
+Defaults are in bold:
 
 <table>
 <tr><th>Category</th><th>Option</th><th>Values</th></tr>
