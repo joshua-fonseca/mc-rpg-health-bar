@@ -62,10 +62,10 @@ Open them from **Mods → RPG Health Bar → Config** (the Mods button is also i
 | **Health** | |
 | Health Units | **HP** (20 for a full vanilla bar), Hearts (10) |
 | Absorption | **Separate** (`16+4/20`), Combined (`20/20`) |
-| HP Text | **On**, Off |
+| HP Text | **Left**, Right, Center, Off |
 | Health Bar | **Full**, Half width |
-| **Mana** | |
-| Mana Text | **On**, Off |
+| **Mana** | (only with Iron's Spells installed) |
+| Mana Text | **Left**, Right, Center, Off |
 | Mana Bar | **Full**, Half width |
 | **Positioning** | |
 | Item Name... | Height of the held item's name: **Vanilla** (0), or pixels up (+) or down (-), down to right above the hotbar |

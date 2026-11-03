@@ -1,9 +1,11 @@
 package com.joshuafonseca.rpghealthbar.client.screen;
 
 import com.joshuafonseca.rpghealthbar.compat.AppleSkinCompat;
+import com.joshuafonseca.rpghealthbar.compat.IronsSpellsCompat;
 import com.joshuafonseca.rpghealthbar.config.AbsorptionDisplay;
 import com.joshuafonseca.rpghealthbar.config.AirPosition;
 import com.joshuafonseca.rpghealthbar.config.BarSize;
+import com.joshuafonseca.rpghealthbar.config.BarText;
 import com.joshuafonseca.rpghealthbar.config.ClientConfig;
 import com.joshuafonseca.rpghealthbar.config.HalfBarMode;
 import com.joshuafonseca.rpghealthbar.config.HealthUnit;
@@ -13,6 +15,7 @@ import java.util.Map;
 import javax.annotation.Nullable;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
@@ -46,14 +49,20 @@ public class RpgConfigScreen extends Screen {
     private static final int FOOTER_HEIGHT = 32;
     private static final int LABEL_COLOR = 0xFFFFFF;
     private static final int HEADER_COLOR = 0xFFFFFF;
-    /** Dark yellow, for notes beside a section's name. */
+    /** Dark yellow, for a note that a supported mod is installed. */
     private static final int NOTE_COLOR = 0xC8A43C;
+    /** Darker, for the note on whether Iron's Spells is installed. */
+    private static final int IRONS_NOTE_COLOR = 0x8C8C8C;
+    /** Room either side of the Mod State button's text. */
+    private static final int TOGGLE_PADDING = 24;
     private static final int DIVIDER_COLOR = 0x80FFFFFF;
+    private static final int NOTE_GAP = 6;
 
     /** The settings this screen changes, put back by Back. Item Name and Move HUD save on their own pages. */
     private static final List<ForgeConfigSpec.ConfigValue<?>> EDITED = List.of(ClientConfig.ENABLED, ClientConfig.ARMOR_MODE,
             ClientConfig.HUNGER_MODE, ClientConfig.AIR_POSITION, ClientConfig.HEALTH_UNIT, ClientConfig.ABSORPTION_DISPLAY,
-            ClientConfig.SHOW_HEALTH_TEXT, ClientConfig.HEALTH_SIZE, ClientConfig.SHOW_MANA_TEXT, ClientConfig.MANA_SIZE);
+            ClientConfig.HEALTH_TEXT, ClientConfig.SHOW_HEALTH_TEXT, ClientConfig.HEALTH_SIZE, ClientConfig.MANA_TEXT, ClientConfig.SHOW_MANA_TEXT,
+            ClientConfig.MANA_SIZE);
 
     private final Screen parent;
     private final Map<ForgeConfigSpec.ConfigValue<?>, Object> opened = new HashMap<>();
@@ -85,15 +94,19 @@ public class RpgConfigScreen extends Screen {
     }
 
     private void addOptions(OptionList list) {
-        list.addEntry(new WidgetRow(null, CycleButton.booleanBuilder(Component.translatable("rpghealthbar.config.enabled.on"),
-                        Component.translatable("rpghealthbar.config.enabled.off"))
+        Component enabled = Component.translatable("rpghealthbar.config.enabled.on");
+        Component disabled = Component.translatable("rpghealthbar.config.enabled.off");
+        Component modState = Component.translatable("rpghealthbar.config.enabled");
+        // As wide as its text with either value, so it doesn't change size when clicked.
+        int toggleWidth = TOGGLE_PADDING * 2 + Math.max(
+                this.font.width(CommonComponents.optionNameValue(modState, enabled)), this.font.width(CommonComponents.optionNameValue(modState, disabled)));
+        list.addEntry(new WidgetRow(null, CycleButton.booleanBuilder(enabled, disabled)
                 .withInitialValue(ClientConfig.ENABLED.get())
                 .withTooltip(value -> tooltip("enabled", "on", "off"))
-                .create(0, 0, ROW_WIDTH, BUTTON_HEIGHT, Component.translatable("rpghealthbar.config.enabled"),
-                        (button, value) -> ClientConfig.set(ClientConfig.ENABLED, value))));
+                .create(0, 0, toggleWidth, BUTTON_HEIGHT, modState, (button, value) -> ClientConfig.set(ClientConfig.ENABLED, value))));
 
         list.addEntry(new Header(Component.translatable("rpghealthbar.config.section.armorHunger"),
-                AppleSkinCompat.isInstalled() ? Component.translatable("rpghealthbar.config.appleSkinDetected") : null));
+                AppleSkinCompat.isInstalled() ? Component.translatable("rpghealthbar.config.appleSkinDetected") : null, NOTE_COLOR));
         // Each click cycles Vanilla → Bar → Hidden.
         list.addEntry(option("armorMode", CycleButton.builder(HalfBarMode::displayName)
                 .withValues(HalfBarMode.values())
@@ -108,7 +121,7 @@ public class RpgConfigScreen extends Screen {
                 .withInitialValue(ClientConfig.AIR_POSITION.get())
                 .withTooltip(value -> tooltip("airPosition", "above", "below")), ClientConfig.AIR_POSITION));
 
-        list.addEntry(new Header(Component.translatable("rpghealthbar.config.section.health"), null));
+        list.addEntry(new Header(Component.translatable("rpghealthbar.config.section.health"), null, NOTE_COLOR));
         list.addEntry(option("healthUnit", CycleButton.builder(HealthUnit::displayName)
                 .withValues(HealthUnit.values())
                 .withInitialValue(ClientConfig.HEALTH_UNIT.get())
@@ -117,22 +130,27 @@ public class RpgConfigScreen extends Screen {
                 .withValues(AbsorptionDisplay.values())
                 .withInitialValue(ClientConfig.ABSORPTION_DISPLAY.get())
                 .withTooltip(value -> tooltip("absorptionDisplay", "separate", "combined")), ClientConfig.ABSORPTION_DISPLAY));
-        list.addEntry(option("showHealthText", CycleButton.onOffBuilder(ClientConfig.SHOW_HEALTH_TEXT.get())
-                .withTooltip(value -> tooltip("showHealthText", "on", "off")), ClientConfig.SHOW_HEALTH_TEXT));
+        list.addEntry(textOption("healthText", ClientConfig.healthText(), ClientConfig.HEALTH_TEXT, ClientConfig.SHOW_HEALTH_TEXT));
         list.addEntry(option("healthSize", CycleButton.builder(BarSize::displayName)
                 .withValues(BarSize.values())
                 .withInitialValue(ClientConfig.HEALTH_SIZE.get())
                 .withTooltip(value -> tooltip("healthSize", "full", "half")), ClientConfig.HEALTH_SIZE));
 
-        list.addEntry(new Header(Component.translatable("rpghealthbar.config.section.mana"), null));
-        list.addEntry(option("showManaText", CycleButton.onOffBuilder(ClientConfig.SHOW_MANA_TEXT.get())
-                .withTooltip(value -> tooltip("showManaText", "on", "off")), ClientConfig.SHOW_MANA_TEXT));
-        list.addEntry(option("manaSize", CycleButton.builder(BarSize::displayName)
+        // The mana options only do something with Iron's Spells, so without it they can't be changed.
+        boolean irons = IronsSpellsCompat.isAvailable();
+        list.addEntry(new Header(Component.translatable("rpghealthbar.config.section.mana"),
+                Component.translatable(irons ? "rpghealthbar.config.ironsDetected" : "rpghealthbar.config.ironsNotDetected"), IRONS_NOTE_COLOR));
+        WidgetRow manaText = textOption("manaText", ClientConfig.manaText(), ClientConfig.MANA_TEXT, ClientConfig.SHOW_MANA_TEXT);
+        WidgetRow manaSize = option("manaSize", CycleButton.builder(BarSize::displayName)
                 .withValues(BarSize.values())
                 .withInitialValue(ClientConfig.MANA_SIZE.get())
-                .withTooltip(value -> tooltip("manaSize", "full", "half")), ClientConfig.MANA_SIZE));
+                .withTooltip(value -> tooltip("manaSize", "full", "half")), ClientConfig.MANA_SIZE);
+        manaText.setActive(irons);
+        manaSize.setActive(irons);
+        list.addEntry(manaText);
+        list.addEntry(manaSize);
 
-        list.addEntry(new Header(Component.translatable("rpghealthbar.config.section.positioning"), null));
+        list.addEntry(new Header(Component.translatable("rpghealthbar.config.section.positioning"), null, NOTE_COLOR));
         list.addEntry(new WidgetRow(null,
                 Button.builder(Component.translatable("rpghealthbar.config.itemName"), button -> this.minecraft.setScreen(new ItemNameScreen(this)))
                         .size(0, BUTTON_HEIGHT)
@@ -149,6 +167,25 @@ public class RpgConfigScreen extends Screen {
         Component name = Component.translatable("rpghealthbar.config." + key);
         return new WidgetRow(name.copy().append(":"), builder.displayOnlyValue()
                 .create(0, 0, VALUE_WIDTH, BUTTON_HEIGHT, name, (button, newValue) -> ClientConfig.set(value, newValue)));
+    }
+
+    /**
+     * Where a bar's numbers go. Setting it also clears the Off saved before this option existed
+     * ({@code legacyShown}), so the choice takes effect.
+     */
+    private static WidgetRow textOption(String key, BarText current, ForgeConfigSpec.EnumValue<BarText> value, ForgeConfigSpec.BooleanValue legacyShown) {
+        Component name = Component.translatable("rpghealthbar.config." + key);
+        return new WidgetRow(name.copy().append(":"), CycleButton.builder(BarText::displayName)
+                .withValues(BarText.values())
+                .withInitialValue(current)
+                .withTooltip(text -> tooltip(key, "left", "right", "center", "off"))
+                .displayOnlyValue()
+                .create(0, 0, VALUE_WIDTH, BUTTON_HEIGHT, name, (button, text) -> {
+                    ClientConfig.set(value, text);
+                    if (!legacyShown.get()) {
+                        ClientConfig.set(legacyShown, true);
+                    }
+                }));
     }
 
     /**
@@ -225,24 +262,29 @@ public class RpgConfigScreen extends Screen {
     private abstract static class Row extends ContainerObjectSelectionList.Entry<Row> {
     }
 
-    /** A section's name, an optional note beside it, and a divider under them. */
+    /** A section's name and an optional note beside it, centered, with a divider under them. */
     private class Header extends Row {
         private final Component name;
         @Nullable
         private final Component note;
+        private final int noteColor;
 
-        Header(Component name, @Nullable Component note) {
+        Header(Component name, @Nullable Component note, int noteColor) {
             this.name = name;
             this.note = note == null ? null : note.copy().withStyle(ChatFormatting.ITALIC);
+            this.noteColor = noteColor;
         }
 
         @Override
         public void render(GuiGraphics graphics, int index, int top, int left, int width, int height, int mouseX, int mouseY,
                            boolean hovering, float partialTick) {
             int textTop = top + 6;
-            graphics.drawString(RpgConfigScreen.this.font, this.name, left, textTop, HEADER_COLOR);
+            Font font = RpgConfigScreen.this.font;
+            int textWidth = font.width(this.name) + (this.note != null ? NOTE_GAP + font.width(this.note) : 0);
+            int x = left + (width - textWidth) / 2;
+            graphics.drawString(font, this.name, x, textTop, HEADER_COLOR);
             if (this.note != null) {
-                graphics.drawString(RpgConfigScreen.this.font, this.note, left + RpgConfigScreen.this.font.width(this.name) + 6, textTop, NOTE_COLOR);
+                graphics.drawString(font, this.note, x + font.width(this.name) + NOTE_GAP, textTop, this.noteColor);
             }
             graphics.fill(left, textTop + 11, left + width, textTop + 12, DIVIDER_COLOR);
         }
@@ -259,8 +301,8 @@ public class RpgConfigScreen extends Screen {
     }
 
     /**
-     * With a name: the name on the left and one button on the right. Without: the buttons share the
-     * row's width.
+     * With a name: the name on the left and one button on the right. Without: one button is centered
+     * at its own width, and more share the row's width.
      */
     private static class WidgetRow extends Row {
         @Nullable
@@ -279,6 +321,9 @@ public class RpgConfigScreen extends Screen {
                 graphics.drawString(Minecraft.getInstance().font, this.label, left, top + (BUTTON_HEIGHT - 8) / 2, LABEL_COLOR);
                 AbstractWidget button = this.widgets.get(0);
                 button.setPosition(left + width - button.getWidth(), top);
+            } else if (this.widgets.size() == 1) {
+                AbstractWidget button = this.widgets.get(0);
+                button.setPosition(left + (width - button.getWidth()) / 2, top);
             } else {
                 int each = (width - BUTTON_GAP * (this.widgets.size() - 1)) / this.widgets.size();
                 for (int i = 0; i < this.widgets.size(); i++) {
@@ -289,6 +334,13 @@ public class RpgConfigScreen extends Screen {
             }
             for (AbstractWidget widget : this.widgets) {
                 widget.render(graphics, mouseX, mouseY, partialTick);
+            }
+        }
+
+        /** Inactive buttons are greyed out and can't be clicked. */
+        void setActive(boolean active) {
+            for (AbstractWidget widget : this.widgets) {
+                widget.active = active;
             }
         }
 
