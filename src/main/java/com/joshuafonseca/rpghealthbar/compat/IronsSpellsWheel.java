@@ -8,7 +8,7 @@ import javax.annotation.Nullable;
 import net.minecraft.world.entity.player.Player;
 
 /**
- * Reads the spell wheel through Iron's spell selection API, which Iron's 3.2.0 introduced; older
+ * Reads the spell wheel through Iron's spell selection API, complete from Iron's 3.1.4; older
  * versions fail here and only lose the spell cost preview. Only loaded through {@link IronsSpellsCompat}.
  */
 final class IronsSpellsWheel {
