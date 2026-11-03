@@ -19,7 +19,7 @@ public class HudLayer implements IGuiOverlay {
     @Override
     public void render(ForgeGui gui, GuiGraphics graphics, float partialTick, int screenWidth, int screenHeight) {
         Minecraft minecraft = gui.getMinecraft();
-        if (!isVisible(minecraft) || !(minecraft.getCameraEntity() instanceof Player player)) {
+        if (!ClientConfig.ENABLED.get() || !isVisible(minecraft) || !(minecraft.getCameraEntity() instanceof Player player)) {
             return;
         }
 

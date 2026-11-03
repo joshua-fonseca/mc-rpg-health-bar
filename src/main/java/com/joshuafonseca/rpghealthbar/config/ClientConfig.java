@@ -18,6 +18,11 @@ public final class ClientConfig {
 
     private static final ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
 
+    public static final ForgeConfigSpec.BooleanValue ENABLED = BUILDER
+            .comment("Turns the mod on or off. Off, the HUD is fully vanilla (including Iron's Spells' own mana bar); the other settings are kept.")
+            .translation("rpghealthbar.config.enabled")
+            .define("enabled", true);
+
     public static final ForgeConfigSpec.EnumValue<HalfBarMode> ARMOR_MODE = BUILDER
             .comment("How armor is shown: VANILLA (vanilla armor icons), BAR (white bar above the health bar) or HIDDEN.")
             .translation("rpghealthbar.config.armorMode")
@@ -27,6 +32,11 @@ public final class ClientConfig {
             .comment("How hunger is shown: VANILLA (vanilla hunger icons), BAR (orange bar above the health bar) or HIDDEN.")
             .translation("rpghealthbar.config.hungerMode")
             .defineEnum("hungerMode", HalfBarMode.VANILLA);
+
+    public static final ForgeConfigSpec.EnumValue<AirPosition> AIR_POSITION = BUILDER
+            .comment("Where the air bubbles and mount health rows go: ABOVE hunger (stacked upward, like vanilla) or BELOW it (stacked downward).")
+            .translation("rpghealthbar.config.airPosition")
+            .defineEnum("airPosition", AirPosition.ABOVE);
 
     public static final ForgeConfigSpec.EnumValue<HealthUnit> HEALTH_UNIT = BUILDER
             .comment("Unit for the numbers on the health bar: HP (20 for a full vanilla bar) or HEARTS (HP / 2, so 10).")
@@ -71,8 +81,8 @@ public final class ClientConfig {
     // Layout 1 (before): the whole HUD's matching point (e.g. its bottom-center for BOTTOM_CENTER)
     // is placed at the anchor's screen point plus the offset, and each piece is shifted from there.
     // Layout 1 is still read, and saving in Move HUD switches to layout 2.
-    public static final int DEFAULT_OFFSET_X = 0;
-    public static final int DEFAULT_OFFSET_Y = -24;
+    private static final int DEFAULT_OFFSET_X = 0;
+    private static final int DEFAULT_OFFSET_Y = -24;
 
     public static final ForgeConfigSpec.IntValue LAYOUT_VERSION = BUILDER
             .comment("How the HUD position is stored: 1 = one anchor for the whole HUD (anchor, offsetX, offsetY), 2 = an anchor per piece. Set automatically.")
@@ -124,17 +134,6 @@ public final class ClientConfig {
     public static final ForgeConfigSpec SPEC = BUILDER.build();
 
     private ClientConfig() {
-    }
-
-    /** Moves every piece back to its default spot above the hotbar, and writes the config file. */
-    public static void resetPosition() {
-        for (HudPiece piece : HudPiece.values()) {
-            setPiecePosition(piece, HudAnchor.BOTTOM_CENTER, 0, 0);
-        }
-        queue(ANCHOR, HudAnchor.BOTTOM_CENTER);
-        queue(OFFSET_X, DEFAULT_OFFSET_X);
-        queue(OFFSET_Y, DEFAULT_OFFSET_Y);
-        savePositions();
     }
 
     public static int layoutVersion() {

@@ -23,6 +23,11 @@ public final class AppleSkinCompat {
     private AppleSkinCompat() {
     }
 
+    /** Whether AppleSkin is installed, for the config screen's note. */
+    public static boolean isInstalled() {
+        return ModList.get().isLoaded(MODID);
+    }
+
     /**
      * What eating the held food would bring hunger and saturation up to, previewed on the hunger
      * bar like AppleSkin previews it on the icons.

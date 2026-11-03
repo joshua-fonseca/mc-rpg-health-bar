@@ -1,5 +1,6 @@
 package com.joshuafonseca.rpghealthbar.client;
 
+import com.joshuafonseca.rpghealthbar.config.ClientConfig;
 import com.joshuafonseca.rpghealthbar.config.HudPiece;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
@@ -32,7 +33,8 @@ public class XpBarOverlay implements IGuiOverlay {
         LocalPlayer player = minecraft.player;
         // Vanilla's conditions: not while riding something you can make jump (the jump meter takes
         // its place), hidden with F1, and only in modes with experience.
-        if (player == null || player.jumpableVehicle() != null || minecraft.options.hideGui
+        // Off, vanilla's own XP bar is drawn instead.
+        if (!ClientConfig.ENABLED.get() || player == null || player.jumpableVehicle() != null || minecraft.options.hideGui
                 || minecraft.gameMode == null || !minecraft.gameMode.hasExperience()) {
             return;
         }

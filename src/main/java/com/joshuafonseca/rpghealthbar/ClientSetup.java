@@ -34,7 +34,10 @@ final class ClientSetup {
         FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientSetup::registerOverlays);
         // The HUD's layout and position are worked out once per frame, then shared by our overlays and
         // the vanilla ones that move with them.
-        MinecraftForge.EVENT_BUS.addListener(EventPriority.HIGHEST, true, (RenderGuiEvent.Pre event) -> HudLayer.Frame.clearCurrent());
+        MinecraftForge.EVENT_BUS.addListener(EventPriority.HIGHEST, true, (RenderGuiEvent.Pre event) -> {
+            HudLayer.Frame.clearCurrent();
+            HudPositionMover.newFrame();
+        });
         // Highest priority: hide replaced overlays before other mods' Pre listeners run, so a mod that
         // pushes the pose in Pre (and pops in Post) never pushes for an overlay that won't render.
         // Forge doesn't send Post for a cancelled overlay, and AppleSkin draws its hunger and health
@@ -66,6 +69,9 @@ final class ClientSetup {
     }
 
     private static void hideVanillaOverlays(RenderGuiOverlayEvent.Pre event) {
+        if (!ClientConfig.ENABLED.get()) {
+            return;
+        }
         ResourceLocation id = event.getOverlay().id();
         if (id.equals(VanillaGuiOverlay.PLAYER_HEALTH.id())
                 || id.equals(VanillaGuiOverlay.EXPERIENCE_BAR.id())
