@@ -67,21 +67,20 @@ Open them from **Mods → RPG Health Bar → Config** (the Mods button is also i
 
 Defaults are in bold:
 
-<table>
-<tr><th>Category</th><th>Option</th><th>Values</th></tr>
-<tr><td valign="top" style="vertical-align: top"></td><td>Mod State</td><td><b>Enabled</b>, Disabled (a fully vanilla HUD; your settings are kept)</td></tr>
-<tr><td rowspan="3" valign="top" style="vertical-align: top"><b>Armor + Hunger</b></td><td>Armor</td><td><b>Vanilla</b>, Bar, Hidden</td></tr>
-<tr><td>Hunger</td><td><b>Vanilla</b>, Bar, Hidden</td></tr>
-<tr><td>Air Bubbles/Mount HP</td><td><b>Above</b> hunger, Below it</td></tr>
-<tr><td rowspan="4" valign="top" style="vertical-align: top"><b>Health</b></td><td>Health Units</td><td><b>HP</b> (20 for a full vanilla bar), Hearts (10)</td></tr>
-<tr><td>Absorption</td><td><b>Separate</b> (<code>16+4/20</code>), Combined (<code>20/20</code>)</td></tr>
-<tr><td>HP Text</td><td><b>Left</b>, Right, Center, Off</td></tr>
-<tr><td>Health Bar Width</td><td><b>Full</b>, Half</td></tr>
-<tr><td rowspan="2" valign="top" style="vertical-align: top"><b>Mana</b> (only with Iron's Spells installed)</td><td>Mana Text</td><td><b>Left</b>, Right, Center, Off</td></tr>
-<tr><td>Mana Bar Width</td><td><b>Full</b>, Half</td></tr>
-<tr><td rowspan="2" valign="top" style="vertical-align: top"><b>Positioning</b></td><td>Item Name...</td><td>Height of the held item's name: <b>Vanilla</b> (0), or pixels up (+) or down (-), down to right above the hotbar</td></tr>
-<tr><td>Move HUD...</td><td>Drag the whole HUD (<b>Moving: All</b>) or a single piece (<b>Moving: One</b>); the arrow keys nudge it. <b>Above the hotbar</b>, Reset puts it back</td></tr>
-</table>
+| Category | Option | Values |
+|---|---|---|
+|  | Mod State | **Enabled**, Disabled (a fully vanilla HUD; your settings are kept) |
+| **Armor + Hunger** | Armor | **Vanilla**, Bar, Hidden |
+|  | Hunger | **Vanilla**, Bar, Hidden |
+|  | Air Bubbles/Mount HP | **Above** hunger, Below it |
+| **Health** | Health Units | **HP** (20 for a full vanilla bar), Hearts (10) |
+|  | Absorption | **Separate** (`16+4/20`), Combined (`20/20`) |
+|  | HP Text | **Left**, Right, Center, Off |
+|  | Health Bar Width | **Full**, Half |
+| **Mana** (only with Iron's Spells installed) | Mana Text | **Left**, Right, Center, Off |
+|  | Mana Bar Width | **Full**, Half |
+| **Positioning** | Item Name... | Height of the held item's name: **Vanilla** (0), or pixels up (+) or down (-), down to right above the hotbar |
+|  | Move HUD... | Drag the whole HUD (**Moving: All**) or a single piece (**Moving: One**); the arrow keys nudge it. **Above the hotbar**, Reset puts it back |
 
 #### The config screen
 
