@@ -135,6 +135,10 @@ public final class HudTextPlacer {
                     continue;
                 }
                 HudPosition.Bounds box = entry.getValue().offset(frame.pieceOffset(entry.getKey()));
+                if (entry.getKey() == HudPiece.HUNGER) {
+                    // With air and mount health below hunger, they're part of it here.
+                    box = new HudPosition.Bounds(box.left(), box.top(), box.right(), box.bottom() + HudPositionMover.belowHeight());
+                }
                 boolean overHotbar = box.right() > hotbarLeft && box.left() < hotbarRight;
                 if (overHotbar && box.top() < top && box.bottom() > top - TEXT_ROOM) {
                     top = box.top();

@@ -38,7 +38,10 @@ public class RpgHealthBar {
         modEventBus.addListener(RpgHealthBar::registerGuiLayers);
         // The HUD's layout and position are worked out once per frame, then shared by our layer and
         // the vanilla ones that move with it.
-        NeoForge.EVENT_BUS.addListener(EventPriority.HIGHEST, true, (RenderGuiEvent.Pre event) -> HudLayer.Frame.clearCurrent());
+        NeoForge.EVENT_BUS.addListener(EventPriority.HIGHEST, true, (RenderGuiEvent.Pre event) -> {
+            HudLayer.Frame.clearCurrent();
+            HudPositionMover.newFrame();
+        });
         // Highest priority: hide replaced layers before other mods' Pre listeners run, so a mod that
         // pushes the pose in Pre (and pops in Post) never pushes for a layer that won't render.
         NeoForge.EVENT_BUS.addListener(EventPriority.HIGHEST, RpgHealthBar::hideVanillaLayers);
@@ -54,6 +57,9 @@ public class RpgHealthBar {
     }
 
     private static void hideVanillaLayers(RenderGuiLayerEvent.Pre event) {
+        if (!ClientConfig.ENABLED.get()) {
+            return;
+        }
         ResourceLocation name = event.getName();
         if (name.equals(VanillaGuiLayers.PLAYER_HEALTH)
                 || name.equals(IronsSpellsCompat.MANA_OVERLAY)

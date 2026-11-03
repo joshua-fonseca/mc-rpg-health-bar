@@ -20,7 +20,7 @@ public class HudLayer implements LayeredDraw.Layer {
     @Override
     public void render(GuiGraphics graphics, DeltaTracker deltaTracker) {
         Minecraft minecraft = Minecraft.getInstance();
-        if (!isVisible(minecraft) || !(minecraft.getCameraEntity() instanceof Player player)) {
+        if (!ClientConfig.ENABLED.get() || !isVisible(minecraft) || !(minecraft.getCameraEntity() instanceof Player player)) {
             return;
         }
 
