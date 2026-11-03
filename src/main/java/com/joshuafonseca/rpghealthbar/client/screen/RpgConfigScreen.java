@@ -12,6 +12,8 @@ import com.joshuafonseca.rpghealthbar.config.HealthUnit;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
+import java.util.function.Function;
 import javax.annotation.Nullable;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -106,43 +108,22 @@ public class RpgConfigScreen extends Screen {
         list.addEntry(new Header(Component.translatable("rpghealthbar.config.section.armorHunger"),
                 AppleSkinCompat.isInstalled() ? Component.translatable("rpghealthbar.config.appleSkinDetected") : null, NOTE_COLOR));
         // Each click cycles Vanilla → Bar → Hidden.
-        list.addEntry(option("armorMode", CycleButton.builder(HalfBarMode::displayName)
-                .withValues(HalfBarMode.values())
-                .withInitialValue(ClientConfig.ARMOR_MODE.get())
-                .withTooltip(value -> tooltip("armorMode", "vanilla", "bar", "hidden")), ClientConfig.ARMOR_MODE));
-        list.addEntry(option("hungerMode", CycleButton.builder(HalfBarMode::displayName)
-                .withValues(HalfBarMode.values())
-                .withInitialValue(ClientConfig.HUNGER_MODE.get())
-                .withTooltip(value -> tooltip("hungerMode", "vanilla", "bar", "hidden")), ClientConfig.HUNGER_MODE));
-        list.addEntry(option("airPosition", CycleButton.builder(AirPosition::displayName)
-                .withValues(AirPosition.values())
-                .withInitialValue(ClientConfig.AIR_POSITION.get())
-                .withTooltip(value -> tooltip("airPosition", "above", "below")), ClientConfig.AIR_POSITION));
+        list.addEntry(option("armorMode", HalfBarMode.values(), ClientConfig.ARMOR_MODE, HalfBarMode::displayName, "vanilla", "bar", "hidden"));
+        list.addEntry(option("hungerMode", HalfBarMode.values(), ClientConfig.HUNGER_MODE, HalfBarMode::displayName, "vanilla", "bar", "hidden"));
+        list.addEntry(option("airPosition", AirPosition.values(), ClientConfig.AIR_POSITION, AirPosition::displayName, "above", "below"));
 
         list.addEntry(new Header(Component.translatable("rpghealthbar.config.section.health"), null, NOTE_COLOR));
-        list.addEntry(option("healthUnit", CycleButton.builder(HealthUnit::displayName)
-                .withValues(HealthUnit.values())
-                .withInitialValue(ClientConfig.HEALTH_UNIT.get())
-                .withTooltip(value -> tooltip("healthUnit", "hp", "hearts")), ClientConfig.HEALTH_UNIT));
-        list.addEntry(option("absorptionDisplay", CycleButton.builder(AbsorptionDisplay::displayName)
-                .withValues(AbsorptionDisplay.values())
-                .withInitialValue(ClientConfig.ABSORPTION_DISPLAY.get())
-                .withTooltip(value -> tooltip("absorptionDisplay", "separate", "combined")), ClientConfig.ABSORPTION_DISPLAY));
+        list.addEntry(option("healthUnit", HealthUnit.values(), ClientConfig.HEALTH_UNIT, HealthUnit::displayName, "hp", "hearts"));
+        list.addEntry(option("absorptionDisplay", AbsorptionDisplay.values(), ClientConfig.ABSORPTION_DISPLAY, AbsorptionDisplay::displayName, "separate", "combined"));
         list.addEntry(textOption("healthText", ClientConfig.healthText(), ClientConfig.HEALTH_TEXT, ClientConfig.SHOW_HEALTH_TEXT));
-        list.addEntry(option("healthSize", CycleButton.builder(BarSize::displayName)
-                .withValues(BarSize.values())
-                .withInitialValue(ClientConfig.HEALTH_SIZE.get())
-                .withTooltip(value -> tooltip("healthSize", "full", "half")), ClientConfig.HEALTH_SIZE));
+        list.addEntry(option("healthSize", BarSize.values(), ClientConfig.HEALTH_SIZE, BarSize::displayName, "full", "half"));
 
         // The mana options only do something with Iron's Spells, so without it they can't be changed.
         boolean irons = IronsSpellsCompat.isAvailable();
         list.addEntry(new Header(Component.translatable("rpghealthbar.config.section.mana"),
                 Component.translatable(irons ? "rpghealthbar.config.ironsDetected" : "rpghealthbar.config.ironsNotDetected"), IRONS_NOTE_COLOR));
         WidgetRow manaText = textOption("manaText", ClientConfig.manaText(), ClientConfig.MANA_TEXT, ClientConfig.SHOW_MANA_TEXT);
-        WidgetRow manaSize = option("manaSize", CycleButton.builder(BarSize::displayName)
-                .withValues(BarSize.values())
-                .withInitialValue(ClientConfig.MANA_SIZE.get())
-                .withTooltip(value -> tooltip("manaSize", "full", "half")), ClientConfig.MANA_SIZE);
+        WidgetRow manaSize = option("manaSize", BarSize.values(), ClientConfig.MANA_SIZE, BarSize::displayName, "full", "half");
         manaText.setActive(irons);
         manaSize.setActive(irons);
         list.addEntry(manaText);
@@ -160,11 +141,26 @@ public class RpgConfigScreen extends Screen {
                         .build()));
     }
 
-    /** A "Name: [value]" row, whose button saves each change. */
-    private static <T> WidgetRow option(String key, CycleButton.Builder<T> builder, ModConfigSpec.ConfigValue<T> value) {
+    /** A "Name: [value]" row, whose button cycles through the values and saves each change. */
+    private static <T> WidgetRow option(String key, T[] values, ModConfigSpec.ConfigValue<T> value, Function<T, Component> displayName,
+                                        String... tooltipValues) {
+        return option(key, values, value.get(), displayName, newValue -> ClientConfig.set(value, newValue), tooltipValues);
+    }
+
+    /**
+     * A "Name: [value]" row; {@code tooltipValues} name each value's paragraph in the hover text,
+     * the default first.
+     */
+    private static <T> WidgetRow option(String key, T[] values, T current, Function<T, Component> displayName, Consumer<T> onChange,
+                                        String... tooltipValues) {
         Component name = Component.translatable("rpghealthbar.config." + key);
-        return new WidgetRow(name.copy().append(":"), builder.displayOnlyValue()
-                .create(0, 0, VALUE_WIDTH, BUTTON_HEIGHT, name, (button, newValue) -> ClientConfig.set(value, newValue)));
+        Tooltip tooltip = tooltip(key, tooltipValues);
+        return new WidgetRow(name.copy().append(":"), CycleButton.builder(displayName)
+                .withValues(values)
+                .withInitialValue(current)
+                .withTooltip(value -> tooltip)
+                .displayOnlyValue()
+                .create(0, 0, VALUE_WIDTH, BUTTON_HEIGHT, name, (button, newValue) -> onChange.accept(newValue)));
     }
 
     /**
@@ -172,25 +168,18 @@ public class RpgConfigScreen extends Screen {
      * ({@code legacyShown}), so the choice takes effect.
      */
     private static WidgetRow textOption(String key, BarText current, ModConfigSpec.EnumValue<BarText> value, ModConfigSpec.BooleanValue legacyShown) {
-        Component name = Component.translatable("rpghealthbar.config." + key);
-        return new WidgetRow(name.copy().append(":"), CycleButton.builder(BarText::displayName)
-                .withValues(BarText.values())
-                .withInitialValue(current)
-                .withTooltip(text -> tooltip(key, "left", "right", "center", "off"))
-                .displayOnlyValue()
-                .create(0, 0, VALUE_WIDTH, BUTTON_HEIGHT, name, (button, text) -> {
-                    ClientConfig.set(value, text);
-                    if (!legacyShown.get()) {
-                        ClientConfig.set(legacyShown, true);
-                    }
-                }));
+        return option(key, BarText.values(), current, BarText::displayName, text -> {
+            ClientConfig.set(value, text);
+            if (!legacyShown.get()) {
+                ClientConfig.set(legacyShown, true);
+            }
+        }, "left", "right", "center", "off");
     }
 
     /**
      * Hover text: a description, then each possible value on its own paragraph with its name highlighted.
-     * The first value is the default.
+     * The first value is the default. Also used by the Item Name and Move HUD pages.
      */
-    /** Also used by the position editor. */
     static Tooltip tooltip(String option, String... values) {
         String key = "rpghealthbar.config." + option + ".tooltip";
         MutableComponent text = Component.translatable(key);
@@ -256,7 +245,7 @@ public class RpgConfigScreen extends Screen {
     }
 
     /** A section's name and an optional note beside it, centered, with a divider under them. */
-    private class Header extends Row {
+    private static class Header extends Row {
         private final Component name;
         @Nullable
         private final Component note;
@@ -272,7 +261,7 @@ public class RpgConfigScreen extends Screen {
         public void render(GuiGraphics graphics, int index, int top, int left, int width, int height, int mouseX, int mouseY,
                            boolean hovering, float partialTick) {
             int textTop = top + 6;
-            Font font = RpgConfigScreen.this.font;
+            Font font = Minecraft.getInstance().font;
             int textWidth = font.width(this.name) + (this.note != null ? NOTE_GAP + font.width(this.note) : 0);
             int x = left + (width - textWidth) / 2;
             graphics.drawString(font, this.name, x, textTop, HEADER_COLOR);

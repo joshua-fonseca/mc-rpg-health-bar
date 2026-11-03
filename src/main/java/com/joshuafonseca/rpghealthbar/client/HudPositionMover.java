@@ -94,9 +94,11 @@ public final class HudPositionMover {
             graphics.pose().translate(0, LEVEL_DROP, 0);
         }
         boolean stackedRow = name.equals(VanillaGuiLayers.AIR_LEVEL) || name.equals(VanillaGuiLayers.VEHICLE_HEALTH);
-        HudPosition.Bounds hunger = frame.pieceBounds().get(HudPiece.HUNGER);
-        if (stackedRow && hunger != null && ClientConfig.AIR_POSITION.get() == AirPosition.BELOW) {
-            placeBelow(graphics, hunger, name.equals(VanillaGuiLayers.VEHICLE_HEALTH) ? vehicleRows() : 1);
+        if (stackedRow && ClientConfig.AIR_POSITION.get() == AirPosition.BELOW) {
+            HudPosition.Bounds hunger = frame.pieceBounds().get(HudPiece.HUNGER);
+            if (hunger != null) {
+                placeBelow(graphics, hunger, name.equals(VanillaGuiLayers.VEHICLE_HEALTH) ? vehicleRows() : 1);
+            }
         }
         pushed = true;
     }
