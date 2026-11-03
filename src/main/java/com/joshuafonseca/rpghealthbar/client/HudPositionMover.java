@@ -64,10 +64,11 @@ public final class HudPositionMover {
         graphics.pose().pushPose();
         HudPosition.moveTo(graphics.pose(), frame.pieceOffset(piece));
         boolean stackedRow = id.equals(VanillaGuiOverlay.AIR_LEVEL.id()) || id.equals(VanillaGuiOverlay.MOUNT_HEALTH.id());
-        HudPosition.Bounds hunger = frame.pieceBounds().get(HudPiece.HUNGER);
-        if (stackedRow && hunger != null && ClientConfig.AIR_POSITION.get() == AirPosition.BELOW
-                && Minecraft.getInstance().gui instanceof ForgeGui gui) {
-            placeBelow(graphics, gui, hunger, id.equals(VanillaGuiOverlay.MOUNT_HEALTH.id()) ? vehicleRows() : 1);
+        if (stackedRow && ClientConfig.AIR_POSITION.get() == AirPosition.BELOW && Minecraft.getInstance().gui instanceof ForgeGui gui) {
+            HudPosition.Bounds hunger = frame.pieceBounds().get(HudPiece.HUNGER);
+            if (hunger != null) {
+                placeBelow(graphics, gui, hunger, id.equals(VanillaGuiOverlay.MOUNT_HEALTH.id()) ? vehicleRows() : 1);
+            }
         }
         pushed = true;
     }
