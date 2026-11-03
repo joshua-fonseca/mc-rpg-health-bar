@@ -1,10 +1,8 @@
-# RPG Health Bar
-
-Highly customizable GUI mod that replaces the vanilla hearts with an RPG-style health bar, and adds a similar mana bar when **Iron's Spells 'n Spellbooks** is installed.
-
-#### Default: vanilla armor and hunger icons
-
 ![The HUD with vanilla armor and hunger icons](https://raw.githubusercontent.com/joshua-fonseca/mc-rpg-health-bar/main/docs/images/hud-vanilla-icons.png)
+
+Highly customizable GUI mod. Replaces the vanilla hearts with an RPG-style health bar, and adds a similar mana bar when Iron's Spells 'n Spellbooks is installed.
+
+***
 
 ## Features
 
