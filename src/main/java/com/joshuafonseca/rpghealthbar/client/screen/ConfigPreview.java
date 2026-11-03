@@ -36,11 +36,10 @@ final class ConfigPreview {
 
     /** A virtual screen the HUD is laid out on; only its height matters, as the HUD sits at the bottom. */
     private static final int VIRTUAL_HEIGHT = 200;
-    private static final int ICON = 9;
+    private static final int ICON = HudLayout.ICON_ROW_HEIGHT;
     private static final int ICON_SPACING = 8;
     /** Vanilla's rows are 9px icons plus a 1px gap. */
     private static final int ROW_HEIGHT = 10;
-    private static final int XP_BAR_HEIGHT = 5;
     private static final int LEVEL_COLOR = 0x80FF20;
 
     /** Health a bit down with some absorption, and mana partly used, so the text and fills show. */
@@ -100,8 +99,9 @@ final class ConfigPreview {
         }
 
         HudPosition.Bounds xp = frame.pieceBounds().get(HudPiece.XP);
-        graphics.blitSprite(XP_BACKGROUND, xp.left(), xp.top(), WIDTH, XP_BAR_HEIGHT);
-        graphics.blitSprite(XP_PROGRESS, WIDTH, XP_BAR_HEIGHT, 0, 0, xp.left(), xp.top(), (int) (WIDTH * XP_PROGRESS_FRACTION), XP_BAR_HEIGHT);
+        int xpHeight = xp.bottom() - xp.top();
+        graphics.blitSprite(XP_BACKGROUND, xp.left(), xp.top(), WIDTH, xpHeight);
+        graphics.blitSprite(XP_PROGRESS, WIDTH, xpHeight, 0, 0, xp.left(), xp.top(), (int) (WIDTH * XP_PROGRESS_FRACTION), xpHeight);
         // Outlined like vanilla's, and centered on the bar like the mod draws it.
         int levelX = (WIDTH - font.width(LEVEL)) / 2;
         int levelY = xp.top() - 1;
