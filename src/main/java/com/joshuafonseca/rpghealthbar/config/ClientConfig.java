@@ -38,14 +38,24 @@ public final class ClientConfig {
             .translation("rpghealthbar.config.absorptionDisplay")
             .defineEnum("absorptionDisplay", AbsorptionDisplay.SEPARATE);
 
+    public static final ModConfigSpec.EnumValue<BarText> HEALTH_TEXT = BUILDER
+            .comment("Where the numbers go on the health bar: LEFT, RIGHT, CENTER or OFF.")
+            .translation("rpghealthbar.config.healthText")
+            .defineEnum("healthText", BarText.LEFT);
+
+    public static final ModConfigSpec.EnumValue<BarText> MANA_TEXT = BUILDER
+            .comment("Where the numbers go on the mana bar (Iron's Spells 'n Spellbooks only): LEFT, RIGHT, CENTER or OFF.")
+            .translation("rpghealthbar.config.manaText")
+            .defineEnum("manaText", BarText.LEFT);
+
+    // Before healthText and manaText: whether the numbers were shown. False still turns them off,
+    // until the text is set in the config screen.
     public static final ModConfigSpec.BooleanValue SHOW_HEALTH_TEXT = BUILDER
-            .comment("Show the numbers on the health bar.")
-            .translation("rpghealthbar.config.showHealthText")
+            .comment("Replaced by healthText; false turns the numbers off, as before.")
             .define("showHealthText", true);
 
     public static final ModConfigSpec.BooleanValue SHOW_MANA_TEXT = BUILDER
-            .comment("Show the numbers on the mana bar (Iron's Spells 'n Spellbooks only).")
-            .translation("rpghealthbar.config.showManaText")
+            .comment("Replaced by manaText; false turns the numbers off, as before.")
             .define("showManaText", true);
 
     public static final ModConfigSpec.EnumValue<BarSize> HEALTH_SIZE = BUILDER
@@ -124,6 +134,16 @@ public final class ClientConfig {
     public static final ModConfigSpec SPEC = BUILDER.build();
 
     private ClientConfig() {
+    }
+
+    /** Where the health bar's numbers go, honoring an Off saved before healthText existed. */
+    public static BarText healthText() {
+        return SHOW_HEALTH_TEXT.get() ? HEALTH_TEXT.get() : BarText.OFF;
+    }
+
+    /** Where the mana bar's numbers go, honoring an Off saved before manaText existed. */
+    public static BarText manaText() {
+        return SHOW_MANA_TEXT.get() ? MANA_TEXT.get() : BarText.OFF;
     }
 
     public static HudAnchor pieceAnchor(HudPiece piece) {

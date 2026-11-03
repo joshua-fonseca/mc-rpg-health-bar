@@ -2,6 +2,7 @@ package com.joshuafonseca.rpghealthbar.client;
 
 import com.joshuafonseca.rpghealthbar.compat.AppleSkinCompat;
 import com.joshuafonseca.rpghealthbar.config.AbsorptionDisplay;
+import com.joshuafonseca.rpghealthbar.config.BarText;
 import com.joshuafonseca.rpghealthbar.config.ClientConfig;
 import com.joshuafonseca.rpghealthbar.config.HealthUnit;
 import com.joshuafonseca.rpghealthbar.config.HudPiece;
@@ -132,8 +133,9 @@ public final class HudRenderer {
             }
         }
 
-        if (ClientConfig.SHOW_HEALTH_TEXT.get()) {
-            BarRenderer.drawLabel(graphics, font, x, y, HudLayout.MAIN_BAR_HEIGHT, healthText(health, absorption, maxHealth));
+        BarText text = ClientConfig.healthText();
+        if (text != BarText.OFF) {
+            BarRenderer.drawLabel(graphics, font, x, y, width, HudLayout.MAIN_BAR_HEIGHT, healthText(health, absorption, maxHealth), text);
         }
     }
 
@@ -206,9 +208,10 @@ public final class HudRenderer {
                 BarRenderer.drawSection(graphics, x, y, width, HudLayout.MAIN_BAR_HEIGHT, true, (mana - cost) / maxMana, mana / maxMana, MANA_COST_COLOR, true, pulse(COST_PULSE_MILLIS));
             }
         }
-        if (ClientConfig.SHOW_MANA_TEXT.get()) {
-            BarRenderer.drawLabel(graphics, font, x, y, HudLayout.MAIN_BAR_HEIGHT,
-                    NumberText.format(mana) + "/" + NumberText.format(maxMana));
+        BarText text = ClientConfig.manaText();
+        if (text != BarText.OFF) {
+            BarRenderer.drawLabel(graphics, font, x, y, width, HudLayout.MAIN_BAR_HEIGHT,
+                    NumberText.format(mana) + "/" + NumberText.format(maxMana), text);
         }
     }
 }

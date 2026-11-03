@@ -1,6 +1,7 @@
 package com.joshuafonseca.rpghealthbar.client;
 
 import com.joshuafonseca.rpghealthbar.RpgHealthBar;
+import com.joshuafonseca.rpghealthbar.config.BarText;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
@@ -194,11 +195,16 @@ public final class BarRenderer {
         return Math.round(inner * Mth.clamp(fraction, 0.0F, 1.0F));
     }
 
-    /** Text on the left side of the bar, vertically centered. */
-    public static void drawLabel(GuiGraphics graphics, Font font, int x, int y, int height, String text) {
+    /** Text on the bar, vertically centered, on the side (or in the middle) the setting says. */
+    public static void drawLabel(GuiGraphics graphics, Font font, int x, int y, int width, int height, String text, BarText position) {
         // Digits are 7px tall; the shadow adds 1px below and doesn't count toward centering.
         int textY = y + Math.floorDiv(height - 7, 2);
-        graphics.drawString(font, text, x + TEXT_PADDING, textY, TEXT_COLOR, true);
+        int textX = switch (position) {
+            case RIGHT -> x + width - TEXT_PADDING - font.width(text);
+            case CENTER -> x + (width - font.width(text)) / 2;
+            default -> x + TEXT_PADDING;
+        };
+        graphics.drawString(font, text, textX, textY, TEXT_COLOR, true);
     }
 
     /**
