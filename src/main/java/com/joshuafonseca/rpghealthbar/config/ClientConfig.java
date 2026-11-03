@@ -23,6 +23,11 @@ public final class ClientConfig {
             .translation("rpghealthbar.config.enabled")
             .define("enabled", true);
 
+    public static final ForgeConfigSpec.BooleanValue SHOW_PREVIEW = BUILDER
+            .comment("Whether the config screen shows a preview of the HUD beside its options. Set with the eye button by the screen's title.")
+            .translation("rpghealthbar.config.preview")
+            .define("showPreview", false);
+
     public static final ForgeConfigSpec.EnumValue<HalfBarMode> ARMOR_MODE = BUILDER
             .comment("How armor is shown: VANILLA (vanilla armor icons), BAR (white bar above the health bar) or HIDDEN.")
             .translation("rpghealthbar.config.armorMode")

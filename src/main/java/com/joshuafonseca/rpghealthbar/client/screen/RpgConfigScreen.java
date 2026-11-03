@@ -68,6 +68,8 @@ public class RpgConfigScreen extends Screen {
     private static final int TOGGLE_PADDING = 24;
     private static final int DIVIDER_COLOR = 0x80FFFFFF;
     private static final int NOTE_GAP = 6;
+    /** Gap between the title and the preview button beside it. */
+    private static final int TITLE_GAP = 8;
 
     /** The settings this screen changes, put back by Back. Item Name and Move HUD save on their own pages. */
     private static final List<ForgeConfigSpec.ConfigValue<?>> EDITED = List.of(ClientConfig.ENABLED, ClientConfig.ARMOR_MODE,
@@ -101,7 +103,7 @@ public class RpgConfigScreen extends Screen {
         int listWidth = PREVIEW_ROW_WIDTH + LIST_SIDE * 2;
         int room = this.width - listWidth - PREVIEW_MARGIN * 2;
         float scale = Math.min(1.0F, Math.min((float) room / ConfigPreview.WIDTH, (float) contentHeight / ConfigPreview.height()));
-        if (scale >= MIN_PREVIEW_SCALE) {
+        if (ClientConfig.SHOW_PREVIEW.get() && scale >= MIN_PREVIEW_SCALE) {
             this.previewScale = scale;
             this.previewX = PREVIEW_MARGIN + room / 2;
             this.previewY = HEADER_HEIGHT + contentHeight / 2;
@@ -119,6 +121,10 @@ public class RpgConfigScreen extends Screen {
                 .bounds(footerLeft, footerY, FOOTER_BUTTON_WIDTH, BUTTON_HEIGHT).build());
         addRenderableWidget(Button.builder(Component.translatable("rpghealthbar.config.save"), button -> save())
                 .bounds(footerLeft + FOOTER_BUTTON_WIDTH + FOOTER_BUTTON_GAP, footerY, FOOTER_BUTTON_WIDTH, BUTTON_HEIGHT).build());
+        addRenderableWidget(new PreviewButton(button -> {
+            ClientConfig.set(ClientConfig.SHOW_PREVIEW, !ClientConfig.SHOW_PREVIEW.get());
+            rebuildWidgets();
+        })).setPosition(this.width / 2 + this.font.width(this.title) / 2 + TITLE_GAP, (HEADER_HEIGHT - BUTTON_HEIGHT) / 2);
         this.list.setScrollAmount(scroll);
     }
 
@@ -266,6 +272,77 @@ public class RpgConfigScreen extends Screen {
     private static <T> void restore(ForgeConfigSpec.ConfigValue<T> value, Object opened) {
         if (!value.get().equals(opened)) {
             ClientConfig.set(value, (T) opened);
+        }
+    }
+
+    /**
+     * Beside the title: shows or hides the preview. An eye, in the style of vanilla's Blindness
+     * icon, with a red slash over it while the preview is off.
+     */
+    private static class PreviewButton extends Button {
+        /** The eye, one character a pixel: outline, white, shade, iris, pupil, highlight; '.' is clear. */
+        private static final String[] EYE = {
+                "......LLLLLL......",
+                "....LLEEEEEELL....",
+                "...LEEEKHHKEEEL...",
+                "..LEEEKHHHHKEEEL..",
+                ".LEEEEHHJHHHEEEEL.",
+                ".LDEEEHHHHHHEEEDL.",
+                "..LDEEKHHHHKEEDL..",
+                "...LDDDKHHKDDDL...",
+                "....LLDDDDDDLL....",
+                "......LLLLLL......",
+        };
+        private static final int ICON_SIZE = 18;
+        private static final int SLASH_COLOR = 0xFFFF0606;
+        private static final int SLASH_SHADOW = 0xFFC80404;
+        private static final int SLASH_INSET = 3;
+
+        PreviewButton(OnPress onPress) {
+            super(0, 0, BUTTON_HEIGHT, BUTTON_HEIGHT, Component.empty(), onPress, DEFAULT_NARRATION);
+            update();
+        }
+
+        /** Matches the label and tip, read by narration and shown on hover, to the setting. */
+        void update() {
+            String state = ClientConfig.SHOW_PREVIEW.get() ? "on" : "off";
+            setMessage(Component.translatable("rpghealthbar.config.preview." + state));
+            setTooltip(Tooltip.create(Component.translatable("rpghealthbar.config.preview.tooltip." + state)));
+        }
+
+        /** The icon in place of the text. */
+        @Override
+        public void renderString(GuiGraphics graphics, Font font, int color) {
+            int x = getX() + (this.width - ICON_SIZE) / 2;
+            int y = getY() + (this.height - ICON_SIZE) / 2;
+            int eyeTop = y + (ICON_SIZE - EYE.length) / 2;
+            for (int row = 0; row < EYE.length; row++) {
+                for (int column = 0; column < ICON_SIZE; column++) {
+                    int pixel = eyeColor(EYE[row].charAt(column));
+                    if (pixel != 0) {
+                        graphics.fill(x + column, eyeTop + row, x + column + 1, eyeTop + row + 1, pixel);
+                    }
+                }
+            }
+            if (!ClientConfig.SHOW_PREVIEW.get()) {
+                // Top left to bottom right, two pixels wide with a darker edge.
+                for (int i = SLASH_INSET; i < ICON_SIZE - SLASH_INSET; i++) {
+                    graphics.fill(x + i, y + i, x + i + 1, y + i + 1, SLASH_COLOR);
+                    graphics.fill(x + i + 1, y + i, x + i + 2, y + i + 1, SLASH_SHADOW);
+                }
+            }
+        }
+
+        private static int eyeColor(char pixel) {
+            return switch (pixel) {
+                case 'L' -> 0xFF121C29;
+                case 'E' -> 0xFFFFFFFF;
+                case 'D' -> 0xFF9ABBB7;
+                case 'K' -> 0xFF506B68;
+                case 'H' -> 0xFF212121;
+                case 'J' -> 0xFFE7E7E7;
+                default -> 0;
+            };
         }
     }
 
