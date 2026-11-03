@@ -27,16 +27,18 @@ import net.minecraft.client.gui.components.CycleButton;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
+import net.minecraft.client.gui.screens.ConfirmScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraftforge.common.ForgeConfigSpec;
+import org.lwjgl.glfw.GLFW;
 
 /**
  * Opened from Mods → RPG Health Bar → Config. The options are in sections, in a list that scrolls
  * when the window is too small. Changes show on the HUD right away; Save Settings keeps them, and
- * Back (or Esc) puts back what they were when the screen opened.
+ * Back to Mods (or Esc) asks whether to keep them.
  */
 public class RpgConfigScreen extends Screen {
     private static final int ROW_WIDTH = 310;
@@ -122,7 +124,7 @@ public class RpgConfigScreen extends Screen {
         addWidget(this.list);
         int footerY = this.height - FOOTER_HEIGHT + (FOOTER_HEIGHT - BUTTON_HEIGHT) / 2;
         int footerLeft = this.width / 2 - FOOTER_BUTTON_WIDTH - FOOTER_BUTTON_GAP / 2;
-        addRenderableWidget(Button.builder(CommonComponents.GUI_BACK, button -> onClose())
+        addRenderableWidget(Button.builder(Component.translatable("rpghealthbar.config.back"), button -> onClose())
                 .bounds(footerLeft, footerY, FOOTER_BUTTON_WIDTH, BUTTON_HEIGHT).build());
         addRenderableWidget(Button.builder(Component.translatable("rpghealthbar.config.save"), button -> save())
                 .bounds(footerLeft + FOOTER_BUTTON_WIDTH + FOOTER_BUTTON_GAP, footerY, FOOTER_BUTTON_WIDTH, BUTTON_HEIGHT).build());
@@ -264,13 +266,34 @@ public class RpgConfigScreen extends Screen {
         this.minecraft.setScreen(this.parent);
     }
 
-    /** Back and Esc: puts back the settings as they were when the screen opened. */
+    /**
+     * Back to Mods and Esc. With unsaved changes, asks whether to keep them: Yes saves, No puts
+     * back the settings as they were when the screen opened, and Esc stays on this screen.
+     */
     @Override
     public void onClose() {
-        for (Map.Entry<ForgeConfigSpec.ConfigValue<?>, Object> entry : this.opened.entrySet()) {
-            restore(entry.getKey(), entry.getValue());
+        boolean changed = this.opened.entrySet().stream().anyMatch(entry -> !entry.getKey().get().equals(entry.getValue()));
+        if (!changed) {
+            this.minecraft.setScreen(this.parent);
+            return;
         }
-        this.minecraft.setScreen(this.parent);
+        this.minecraft.setScreen(new ConfirmScreen(save -> {
+            if (save) {
+                save();
+            } else {
+                this.opened.forEach((value, opened) -> restore(value, opened));
+                this.minecraft.setScreen(this.parent);
+            }
+        }, Component.translatable("rpghealthbar.config.unsaved.title"), Component.translatable("rpghealthbar.config.unsaved.message")) {
+            @Override
+            public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+                if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
+                    this.minecraft.setScreen(RpgConfigScreen.this);
+                    return true;
+                }
+                return super.keyPressed(keyCode, scanCode, modifiers);
+            }
+        });
     }
 
     @SuppressWarnings("unchecked")

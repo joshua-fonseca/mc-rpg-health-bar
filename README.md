@@ -28,7 +28,7 @@ This is the **1.20.1 (Forge)** branch. The 1.21.1 (NeoForge) version is on [`mai
   - **Text position:** the numbers on the health and mana bars can sit on the left, right or center, or be turned off.
   - **On/off switch:** turn the whole mod off for a fully vanilla HUD, and back on, without losing your settings.
   - **Live preview:** the config screen can show the HUD beside the options, drawn as your settings would, so you see each change without leaving the screen.
-  - **Everything in game:** changes show on the HUD as you make them, no restart. Save Settings keeps them; Back undoes them.
+  - **Everything in game:** changes show on the HUD as you make them, no restart. Save Settings keeps them, and leaving without saving asks first.
 
 #### Armor and hunger as bars, with absorption
 
@@ -52,7 +52,7 @@ This is the **1.20.1 (Forge)** branch. The 1.21.1 (NeoForge) version is on [`mai
 
 ## Settings
 
-Open them from **Mods → RPG Health Bar → Config** (the Mods button is also in the pause menu). The options are grouped into sections, and the list scrolls if the window is small. Hover over any option to see what each value does. Changes show on the HUD right away: **Save Settings** keeps them, and **Back** (or Esc) undoes them.
+Open them from **Mods → RPG Health Bar → Config** (the Mods button is also in the pause menu). The options are grouped into sections, and the list scrolls if the window is small. Hover over any option to see what each value does. Changes show on the HUD right away: **Save Settings** keeps them. **Back to Mods** (or Esc) asks whether to save them if you changed anything: Yes keeps them, No undoes them.
 
 | Option | Values |
 |---|---|
