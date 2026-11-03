@@ -33,7 +33,7 @@ public class ItemNameScreen extends Screen {
     private static final int XP_BAR_PREVIEW_COLOR = 0xFF80FF20;
     /** The previewed name is lightened like the piece being dragged in Move HUD. */
     private static final int NAME_HIGHLIGHT = 0x30FFFFFF;
-    private static final int HINT_COLOR = 0xC0C0C0;
+    private static final int HINT_COLOR = 0xFFFFFF;
     /** Title, slider, buttons and three lines of tips. */
     private static final int CONTROLS_HEIGHT = 104;
     private static final int CONTROLS_MARGIN = 8;

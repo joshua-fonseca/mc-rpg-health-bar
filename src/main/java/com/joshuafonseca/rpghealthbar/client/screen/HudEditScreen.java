@@ -21,7 +21,7 @@ import net.minecraft.network.chat.Component;
 import org.lwjgl.glfw.GLFW;
 
 /**
- * Drag the whole HUD set, or one piece of it, to a new position, then Save or Cancel. In a world
+ * Drag the whole HUD set, or one piece of it, to a new position, then Save (or Esc) or Cancel. In a world
  * the real HUD follows the drag; from the title screen a preview is drawn instead.
  */
 public class HudEditScreen extends Screen {
@@ -89,7 +89,7 @@ public class HudEditScreen extends Screen {
                 .bounds(x + step, 0, BUTTON_WIDTH, BUTTON_HEIGHT).build()));
         buttons.add(addRenderableWidget(Button.builder(Component.translatable("rpghealthbar.edit.reset"), button -> reset())
                 .bounds(x + step * 2, 0, BUTTON_WIDTH, BUTTON_HEIGHT).build()));
-        buttons.add(addRenderableWidget(Button.builder(CommonComponents.GUI_CANCEL, button -> onClose())
+        buttons.add(addRenderableWidget(Button.builder(CommonComponents.GUI_CANCEL, button -> close())
                 .bounds(x + step * 3, 0, BUTTON_WIDTH, BUTTON_HEIGHT).build()));
 
         // Start from the saved positions, or re-clamp the dragged ones if the window was resized.
@@ -170,11 +170,16 @@ public class HudEditScreen extends Screen {
 
     private void save() {
         HudPosition.save(pieces, this.width, this.height, frame().pieceBounds());
-        onClose();
+        close();
     }
 
+    /** Esc saves, like on the Item Name page; only Cancel leaves the old position. */
     @Override
     public void onClose() {
+        save();
+    }
+
+    private void close() {
         this.minecraft.setScreen(this.parent);
     }
 
