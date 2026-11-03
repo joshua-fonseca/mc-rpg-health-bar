@@ -1,13 +1,9 @@
 package com.joshuafonseca.rpghealthbar.client.screen;
 
 import com.joshuafonseca.rpghealthbar.client.HudLayer;
-import com.joshuafonseca.rpghealthbar.client.HudPosition;
-import com.joshuafonseca.rpghealthbar.client.HudRenderer;
 import com.joshuafonseca.rpghealthbar.client.HudTextPlacer;
-import com.joshuafonseca.rpghealthbar.client.HudValues;
 import com.joshuafonseca.rpghealthbar.compat.IronsSpellsCompat;
 import com.joshuafonseca.rpghealthbar.config.ClientConfig;
-import com.joshuafonseca.rpghealthbar.config.HudPiece;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractSliderButton;
 import net.minecraft.client.gui.components.Button;
@@ -27,10 +23,6 @@ public class ItemNameScreen extends Screen {
     private static final int BUTTON_WIDTH = 98;
     private static final int BUTTON_HEIGHT = 20;
     private static final int BUTTON_GAP = 4;
-    private static final int HOTBAR_WIDTH = 182;
-    private static final int HOTBAR_HEIGHT = 22;
-    private static final int HOTBAR_PREVIEW_COLOR = 0xFF2A2A2A;
-    private static final int XP_BAR_PREVIEW_COLOR = 0xFF80FF20;
     /** The previewed name is lightened like the piece being dragged in Move HUD. */
     private static final int NAME_HIGHLIGHT = 0x30FFFFFF;
     private static final int HINT_COLOR = 0xFFFFFF;
@@ -77,17 +69,7 @@ public class ItemNameScreen extends Screen {
         super.render(graphics, mouseX, mouseY, partialTick);
         HudLayer.Frame frame = HudLayer.Frame.compute(this.width, this.height, IronsSpellsCompat.isAvailable());
 
-        // Without a survival player the HUD isn't drawn, so draw a stand-in, as Move HUD does.
-        boolean inWorld = this.minecraft.level != null;
-        if (!inWorld || !HudLayer.isVisible(this.minecraft)) {
-            HudRenderer.render(graphics, this.font, frame.layout(), HudValues.placeholder(), frame.showArmor(), frame.showHunger(), frame.pieces(), false);
-            if (!inWorld) {
-                HudPosition.Bounds xp = frame.pieceBounds().get(HudPiece.XP).offset(frame.pieceOffset(HudPiece.XP));
-                graphics.fill(xp.left(), xp.top(), xp.right(), xp.bottom(), XP_BAR_PREVIEW_COLOR);
-                int hotbarLeft = this.width / 2 - HOTBAR_WIDTH / 2;
-                graphics.fill(hotbarLeft, this.height - HOTBAR_HEIGHT, hotbarLeft + HOTBAR_WIDTH, this.height, HOTBAR_PREVIEW_COLOR);
-            }
-        }
+        HudPreview.drawIfHidden(graphics, this.minecraft, frame, frame.pieces(), true);
 
         Component name = Component.translatable("rpghealthbar.itemName.sample");
         if (this.minecraft.player != null) {
