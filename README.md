@@ -23,7 +23,9 @@ A client-side Minecraft mod that replaces the vanilla hearts with an RPG-style h
   - **Move the HUD** by dragging it: the whole set, including the XP bar and level, or each piece (armor, hunger, health, mana, XP bar) on its own. It stays in place when you change the window size or GUI scale.
   - **Item name height:** set how high the held item's name sits, with a preview that moves as you change it. It starts at vanilla's height, which leaves room for mods that add hotbars.
   - **Air bubbles and mount health** can sit above hunger, like vanilla, or below it, for layouts with health or mana above hunger.
+  - **Text position:** the numbers on the health and mana bars can sit on the left, right or center, or be turned off.
   - **On/off switch:** turn the whole mod off for a fully vanilla HUD, and back on, without losing your settings.
+  - **Live preview:** the config screen can show the HUD beside the options, drawn as your settings would, so you see each change without leaving the screen.
   - **Everything in game:** changes show on the HUD as you make them, no restart. Save Settings keeps them; Back undoes them.
 
 #### Armor and hunger as bars, with absorption
@@ -72,7 +74,7 @@ Defaults are in bold. The eye button beside the title shows a preview of the HUD
 
 #### The config screen
 
-![The config screen](docs/images/config.png)
+![The config screen: options in sections on the right, and the preview of the HUD on the left](docs/images/config.png)
 
 #### Moving the whole HUD
 
