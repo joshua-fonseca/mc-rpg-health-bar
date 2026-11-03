@@ -1,6 +1,6 @@
 ![The HUD with vanilla armor and hunger icons](https://raw.githubusercontent.com/joshua-fonseca/mc-rpg-health-bar/main/docs/images/hud-vanilla-icons.png)
 
-Highly customizable GUI mod. Replaces the vanilla hearts with an RPG-style health bar, and adds a similar mana bar when Iron's Spells 'n Spellbooks is installed.
+A Highly customizable GUI mod. Replaces the vanilla hearts with an RPG-style health bar, and adds a similar mana bar when Iron's Spells 'n Spellbooks is installed.
 
 ***
 
@@ -13,7 +13,7 @@ Highly customizable GUI mod. Replaces the vanilla hearts with an RPG-style healt
 - **Armor and hunger** as the vanilla icons (default), thin bars, or hidden.
 - **AppleSkin support:** saturation is outlined in yellow on the hunger bar, and held food's value flashes on it, like AppleSkin's preview on the icons.
 
-#### Highly customizable
+#### Customization:
 
 - **Half-size bars:** health and mana can each be full or half width. With both set at half, they will sit side by side (But can be moved individually)
 - **Move the HUD** by dragging it: can either move the whole set, including the XP bar and level, or each piece (armor, hunger, health, mana, XP bar) on its own. It stays in place when you change the window size or GUI scale.
@@ -56,13 +56,15 @@ Highly customizable GUI mod. Replaces the vanilla hearts with an RPG-style healt
 - Air bubbles and mount health stay vanilla and stack above the bars.
 - **Texture packs:** armor and hunger on Vanilla use your pack's icons, and the hotbar, XP bar, air bubbles and mount health stay vanilla, so packs restyle them. The health and mana bars, and armor and hunger as bars, are drawn by the mod and don't change with a pack.
 
-#### Iron's Spells: choosing and casting a spell
+#### Iron's Spells: what spell cost preview looks like
 
 ![Choosing a spell in Iron's spell wheel shows the mana it costs on the mana bar, then casting it uses that mana](https://raw.githubusercontent.com/joshua-fonseca/mc-rpg-health-bar/main/docs/images/spell-cast.gif)
 
 ## Settings
 
-Open them from **Mods → RPG Health Bar → Config** (the Mods button is also in the pause menu). The options are grouped into sections, and the list scrolls if the window is small. Hover over any option to see what each value does. Changes show on the HUD right away: **Save Settings** keeps them. **Back to Mods** (or Esc) asks whether to save them if you changed anything: Yes keeps them, No undoes them. Defaults are in bold.
+Open them from **Mods → RPG Health Bar → Config** (the Mods button is also in the pause menu). Hover over any option to see what each value does. Changes show on the HUD right away: **Save Settings** keeps them. **Back to Mods** (or Esc) asks whether to save them if you changed anything.
+
+Defaults are in bold:
 
 <table>
 <tr><th>Category</th><th>Option</th><th>Values</th></tr>
@@ -99,10 +101,3 @@ Open them from **Mods → RPG Health Bar → Config** (the Mods button is also i
 #### Example layout: health and mana in the top-left
 
 ![Another layout: health and mana in the top-left corner, armor and hunger just above the XP bar](https://raw.githubusercontent.com/joshua-fonseca/mc-rpg-health-bar/main/docs/images/layout-top-left.png)
-
-## Requirements
-
-- Minecraft 1.21.1 with NeoForge, or 1.20.1 with Forge (minimum versions under Compatibility).
-- **Client-side only:** servers don't need it, and it works on servers that don't have it.
-
-Source code and issue tracker: [GitHub](https://github.com/joshua-fonseca/mc-rpg-health-bar)
