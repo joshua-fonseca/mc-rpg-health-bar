@@ -57,40 +57,23 @@ This is the **1.20.1 (Forge)** branch. The 1.21.1 (NeoForge) version is on [`mai
 
 ## Settings
 
-Open them from **Mods → RPG Health Bar → Config** (the Mods button is also in the pause menu). The options are grouped into sections, and the list scrolls if the window is small. Hover over any option to see what each value does. Changes show on the HUD right away: **Save Settings** keeps them. **Back to Mods** (or Esc) asks whether to save them if you changed anything: Yes keeps them, No undoes them.
+Open them from **Mods → RPG Health Bar → Config** (the Mods button is also in the pause menu). The options are grouped into sections, and the list scrolls if the window is small. Hover over any option to see what each value does. Changes show on the HUD right away: **Save Settings** keeps them. **Back to Mods** (or Esc) asks whether to save them if you changed anything: Yes keeps them, No undoes them. Defaults are in bold.
 
-| Option | Values |
-|---|---|
-| Mod State | **Enabled**, Disabled (a fully vanilla HUD; your settings are kept) |
-| **Armor + Hunger** | |
-| Armor | **Vanilla**, Bar, Hidden |
-| Hunger | **Vanilla**, Bar, Hidden |
-| Air Bubbles/Mount HP | **Above** hunger, Below it |
-| **Health** | |
-| Health Units | **HP** (20 for a full vanilla bar), Hearts (10) |
-| Absorption | **Separate** (`16+4/20`), Combined (`20/20`) |
-| HP Text | **Left**, Right, Center, Off |
-| Health Bar Width | **Full**, Half |
-| **Mana** | (only with Iron's Spells installed) |
-| Mana Text | **Left**, Right, Center, Off |
-| Mana Bar Width | **Full**, Half |
-| **Positioning** | |
-| Item Name... | Height of the held item's name: **Vanilla** (0), or pixels up (+) or down (-), down to right above the hotbar |
-
-Defaults are in bold.
-
-- **Preview (eye button beside the title):** shows the HUD on the left, drawn as your settings would at its default spot, so you can see each change without leaving the screen.
-  - Off by default.
-  - Needs a wide enough window.
-- **Move HUD...** opens the position editor.
-  - **Moving: All** drags the whole HUD; **Moving: One** drags a single piece. What you'd grab is highlighted.
-  - The arrow keys nudge it (Shift: 10 pixels).
-  - **Save** (or Esc) keeps the position; **Cancel** doesn't.
-  - **Reset** puts everything back above the hotbar.
-- **Item Name...** sets the held item's name height.
-  - Use the slider or the arrow keys (Shift: 10 pixels).
-  - A preview shows where the name will go as you change it, with the values for vanilla's height and right above the hotbar.
-  - The name never goes onto the HUD or the hotbar.
+<table>
+<tr><th>Category</th><th>Option</th><th>Values</th></tr>
+<tr><td valign="top" style="vertical-align: top"></td><td>Mod State</td><td><b>Enabled</b>, Disabled (a fully vanilla HUD; your settings are kept)</td></tr>
+<tr><td rowspan="3" valign="top" style="vertical-align: top"><b>Armor + Hunger</b></td><td>Armor</td><td><b>Vanilla</b>, Bar, Hidden</td></tr>
+<tr><td>Hunger</td><td><b>Vanilla</b>, Bar, Hidden</td></tr>
+<tr><td>Air Bubbles/Mount HP</td><td><b>Above</b> hunger, Below it</td></tr>
+<tr><td rowspan="4" valign="top" style="vertical-align: top"><b>Health</b></td><td>Health Units</td><td><b>HP</b> (20 for a full vanilla bar), Hearts (10)</td></tr>
+<tr><td>Absorption</td><td><b>Separate</b> (<code>16+4/20</code>), Combined (<code>20/20</code>)</td></tr>
+<tr><td>HP Text</td><td><b>Left</b>, Right, Center, Off</td></tr>
+<tr><td>Health Bar Width</td><td><b>Full</b>, Half</td></tr>
+<tr><td rowspan="2" valign="top" style="vertical-align: top"><b>Mana</b> (only with Iron's Spells installed)</td><td>Mana Text</td><td><b>Left</b>, Right, Center, Off</td></tr>
+<tr><td>Mana Bar Width</td><td><b>Full</b>, Half</td></tr>
+<tr><td rowspan="2" valign="top" style="vertical-align: top"><b>Positioning</b></td><td>Item Name...</td><td>Height of the held item's name: <b>Vanilla</b> (0), or pixels up (+) or down (-), down to right above the hotbar</td></tr>
+<tr><td>Move HUD...</td><td>Drag the whole HUD (<b>Moving: All</b>) or a single piece (<b>Moving: One</b>); the arrow keys nudge it. <b>Above the hotbar</b>, Reset puts it back</td></tr>
+</table>
 
 #### The config screen
 
