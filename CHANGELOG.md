@@ -4,7 +4,8 @@
 
 - The config screen is redesigned. Options are grouped into sections (Armor + Hunger, Health, Mana, Positioning), and the list scrolls when the window is small.
   - Notes beside the headers say whether AppleSkin and Iron's Spells are installed. Without Iron's, the mana options are greyed out.
-  - Changes still show right away. **Save Settings** keeps them, and **Back** (or Esc) undoes them.
+  - Changes still show right away. **Save Settings** keeps them.
+  - The Back button is now **Back to Mods**. With unsaved changes, it (and Esc) asks whether to save them: Yes keeps them, No undoes them, and Esc on the question returns to the config.
 - **Live preview:** the eye button beside the title shows the HUD on the left, drawn as your settings would at its default spot, so you can see each change without leaving the screen. It's off by default, the choice is remembered, and it's left out when the window is too narrow.
 - New **Mod State** switch: Disabled gives a fully vanilla HUD, including Iron's own mana bar, and keeps your settings and positions.
 - New **Air Bubbles/Mount HP** option: **Above** hunger, like vanilla, or **Below** it, for layouts with health or mana above hunger.
