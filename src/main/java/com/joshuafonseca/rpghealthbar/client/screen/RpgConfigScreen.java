@@ -45,6 +45,8 @@ public class RpgConfigScreen extends Screen {
     /** Either side of the rows, inside the list: room for the scrollbar. */
     private static final int LIST_SIDE = 18;
     private static final int PREVIEW_MARGIN = 8;
+    /** Between the preview and the list (whose rows have {@link #LIST_SIDE} more inside it). */
+    private static final int PREVIEW_GAP = 8;
     /** Smaller than this and the preview is too small to read, so it's left out. */
     private static final float MIN_PREVIEW_SCALE = 0.7F;
     private static final int EDGE_SHADOW = 4;
@@ -98,17 +100,20 @@ public class RpgConfigScreen extends Screen {
     protected void init() {
         // Rebuilt on resize and when coming back from Item Name or Move HUD; keep the scroll position.
         double scroll = this.list != null ? this.list.getScrollAmount() : 0;
-        // The preview goes left of the list, scaled down to fit the room there.
+        // The preview goes left of the list, scaled down to fit the room there; the two are
+        // centered together, the preview taking only the width it needs.
         int contentHeight = this.height - HEADER_HEIGHT - FOOTER_HEIGHT;
         int listWidth = PREVIEW_ROW_WIDTH + LIST_SIDE * 2;
-        int room = this.width - listWidth - PREVIEW_MARGIN * 2;
+        int room = this.width - listWidth - PREVIEW_GAP - PREVIEW_MARGIN * 2;
         float scale = Math.min(1.0F, Math.min((float) room / ConfigPreview.WIDTH, (float) contentHeight / ConfigPreview.height()));
         if (ClientConfig.SHOW_PREVIEW.get() && scale >= MIN_PREVIEW_SCALE) {
             this.previewScale = scale;
-            this.previewX = PREVIEW_MARGIN + room / 2;
+            int previewWidth = Math.round(ConfigPreview.WIDTH * scale);
+            int left = (this.width - previewWidth - PREVIEW_GAP - listWidth) / 2;
+            this.previewX = left + previewWidth / 2;
             this.previewY = HEADER_HEIGHT + contentHeight / 2;
             this.list = new OptionList(this.minecraft, listWidth, this.height, HEADER_HEIGHT, this.height - FOOTER_HEIGHT, PREVIEW_ROW_WIDTH);
-            this.list.setLeftPos(this.width - listWidth - PREVIEW_MARGIN);
+            this.list.setLeftPos(left + previewWidth + PREVIEW_GAP);
         } else {
             this.previewScale = 0;
             this.list = new OptionList(this.minecraft, this.width, this.height, HEADER_HEIGHT, this.height - FOOTER_HEIGHT, ROW_WIDTH);
