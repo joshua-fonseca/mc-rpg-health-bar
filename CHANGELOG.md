@@ -14,6 +14,7 @@
 - Esc in **Move HUD** now saves, like on the Item Name page. Cancel still leaves the old position.
 - The tips on the Item Name page are white, for easier reading.
 - The Reset Position button left the config screen. **Reset** in Move HUD does the same.
+- **Update check:** when a newer version is out, the Mods button and the mod's entry in the Mods list are marked, with a summary and a link to download it.
 
 ## 1.3.2 (2026-10-27)
 
