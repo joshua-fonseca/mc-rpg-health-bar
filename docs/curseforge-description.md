@@ -77,6 +77,7 @@ Open them from **Mods → RPG Health Bar → Config** (the Mods button is also i
 | **Mana** (only with Iron's Spells installed) | Mana Text | **Left**, Right, Center, Off |
 | | Mana Bar Width | **Full**, Half |
 | **Positioning** | Item Name... | Height of the held item's name: **Vanilla** (0), or pixels up (+) or down (-), down to right above the hotbar |
+| | Move HUD... | Drag the whole HUD (**Moving: All**) or a single piece (**Moving: One**); the arrow keys nudge it. **Above the hotbar**, Reset puts it back |
 
 #### The config screen
 
