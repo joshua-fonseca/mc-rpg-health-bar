@@ -2,8 +2,6 @@ package com.joshuafonseca.rpghealthbar.client.screen;
 
 import com.joshuafonseca.rpghealthbar.client.HudLayer;
 import com.joshuafonseca.rpghealthbar.client.HudPosition;
-import com.joshuafonseca.rpghealthbar.client.HudRenderer;
-import com.joshuafonseca.rpghealthbar.client.HudValues;
 import com.joshuafonseca.rpghealthbar.compat.IronsSpellsCompat;
 import com.joshuafonseca.rpghealthbar.config.HudPiece;
 import java.util.ArrayList;
@@ -28,7 +26,6 @@ public class HudEditScreen extends Screen {
     private static final int BUTTON_WIDTH = 70;
     private static final int BUTTON_HEIGHT = 20;
     private static final int BUTTON_GAP = 4;
-    private static final int XP_BAR_PREVIEW_COLOR = 0xFF80FF20;
 
     /** Title, hint and buttons; moved to whichever half of the screen the HUD isn't in. */
     private static final int CONTROLS_HEIGHT = 44;
@@ -206,16 +203,7 @@ public class HudEditScreen extends Screen {
         super.render(graphics, mouseX, mouseY, partialTick);
         HudLayer.Frame frame = frame();
 
-        // The HUD layer isn't drawn without a survival player (title screen, creative), so draw a
-        // preview of our bars, plus a stand-in for the XP bar when there's no world at all.
-        boolean inWorld = this.minecraft.level != null;
-        if (!inWorld || !HudLayer.isVisible(this.minecraft)) {
-            HudRenderer.render(graphics, this.font, frame.layout(), HudValues.placeholder(), frame.showArmor(), frame.showHunger(), pieces, false);
-            if (!inWorld) {
-                HudPosition.Bounds xp = frame.pieceBounds().get(HudPiece.XP).offset(pieces.get(HudPiece.XP));
-                graphics.fill(xp.left(), xp.top(), xp.right(), xp.bottom(), XP_BAR_PREVIEW_COLOR);
-            }
-        }
+        HudPreview.drawIfHidden(graphics, this.minecraft, frame, pieces, false);
 
         graphics.drawCenteredString(this.font, this.title, this.width / 2, controlsTop, 0xFFFFFF);
         if (dragging) {
