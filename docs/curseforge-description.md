@@ -14,7 +14,9 @@ Highly customizable GUI mod that replaces the vanilla hearts with an RPG-style h
 - **Status colors:** like the vanilla hearts, the health bar changes when poisoned, withered or frozen. The hunger bar turns green with the Hunger effect. On 1.21.1, heart colors added by other mods are followed too.
 - **Armor and hunger** as the vanilla icons (default), thin bars, or hidden.
 - **AppleSkin support:** saturation is outlined in yellow on the hunger bar, and held food's value flashes on it, like AppleSkin's preview on the icons.
-- **Highly customizable:**
+- <details>
+  <summary><b>Highly customizable</b> (click to expand)</summary>
+
   - **Half-size bars:** health and mana can each be full or half width. With both set at half, they will sit side by side (But can be moved individually)
   - **Move the HUD** by dragging it: can either move the whole set, including the XP bar and level, or each piece (armor, hunger, health, mana, XP bar) on its own. It stays in place when you change the window size or GUI scale.
   - **Item name height:** set how high the held item's name sits, with a preview that moves as you change it. It starts at vanilla's height, which leaves room for mods that add hotbars.
@@ -23,6 +25,8 @@ Highly customizable GUI mod that replaces the vanilla hearts with an RPG-style h
   - **On/off switch:** turn the whole mod off for a fully vanilla HUD, and back on, without losing your settings.
   - **Live preview:** the config screen can show the HUD beside the options, drawn as your settings would, so you see each change without leaving the screen.
   - **Everything in game:** changes show on the HUD as you make them, no restart. Save Settings keeps them, and leaving without saving asks first.
+
+  </details>
 
 #### Armor and hunger as bars, with absorption
 

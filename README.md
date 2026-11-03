@@ -20,7 +20,9 @@ This is the **1.20.1 (Forge)** branch. The 1.21.1 (NeoForge) version is on [`mai
 - **Status colors:** like the vanilla hearts, the health bar turns green-yellow when poisoned, black when withered and light blue when frozen, and the hunger bar turns green with the Hunger effect. On 1.21.1, heart colors added by other mods are followed too.
 - **Armor and hunger** as the vanilla icons (default), thin bars, or hidden.
 - **AppleSkin support:** saturation is outlined in yellow on the hunger bar, and held food's value flashes on it, like AppleSkin's preview on the icons.
-- **Highly customizable:**
+- <details>
+  <summary><b>Highly customizable</b> (click to expand)</summary>
+
   - **Half-size bars:** health and mana can each be full or half width. With both half, they sit side by side above the hotbar.
   - **Move the HUD** by dragging it: the whole set, including the XP bar and level, or each piece (armor, hunger, health, mana, XP bar) on its own. It stays in place when you change the window size or GUI scale.
   - **Item name height:** set how high the held item's name sits, with a preview that moves as you change it. It starts at vanilla's height, which leaves room for mods that add hotbars.
@@ -29,6 +31,8 @@ This is the **1.20.1 (Forge)** branch. The 1.21.1 (NeoForge) version is on [`mai
   - **On/off switch:** turn the whole mod off for a fully vanilla HUD, and back on, without losing your settings.
   - **Live preview:** the config screen can show the HUD beside the options, drawn as your settings would, so you see each change without leaving the screen.
   - **Everything in game:** changes show on the HUD as you make them, no restart. Save Settings keeps them, and leaving without saving asks first.
+
+  </details>
 
 #### Armor and hunger as bars, with absorption
 
