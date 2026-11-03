@@ -62,40 +62,21 @@ Highly customizable GUI mod. Replaces the vanilla hearts with an RPG-style healt
 
 ## Settings
 
-Open them from **Mods → RPG Health Bar → Config** (the Mods button is also in the pause menu). The options are grouped into sections, and the list scrolls if the window is small. Hover over any option to see what each value does. Changes show on the HUD right away: **Save Settings** keeps them. **Back to Mods** (or Esc) asks whether to save them if you changed anything: Yes keeps them, No undoes them.
+Open them from **Mods → RPG Health Bar → Config** (the Mods button is also in the pause menu). The options are grouped into sections, and the list scrolls if the window is small. Hover over any option to see what each value does. Changes show on the HUD right away: **Save Settings** keeps them. **Back to Mods** (or Esc) asks whether to save them if you changed anything: Yes keeps them, No undoes them. Defaults are in bold.
 
-| Option | Values |
-|---|---|
-| Mod State | **Enabled**, Disabled (a fully vanilla HUD; your settings are kept) |
-| **Armor + Hunger** | |
-| Armor | **Vanilla**, Bar, Hidden |
-| Hunger | **Vanilla**, Bar, Hidden |
-| Air Bubbles/Mount HP | **Above** hunger, Below it |
-| **Health** | |
-| Health Units | **HP** (20 for a full vanilla bar), Hearts (10) |
-| Absorption | **Separate** (`16+4/20`), Combined (`20/20`) |
-| HP Text | **Left**, Right, Center, Off |
-| Health Bar Width | **Full**, Half |
-| **Mana** | (only with Iron's Spells installed) |
-| Mana Text | **Left**, Right, Center, Off |
-| Mana Bar Width | **Full**, Half |
-| **Positioning** | |
-| Item Name... | Height of the held item's name: **Vanilla** (0), or pixels up (+) or down (-), down to right above the hotbar |
-
-Defaults are in bold.
-
-- **Preview (eye button beside the title):** shows the HUD on the left, drawn as your settings would at its default spot, so you can see each change without leaving the screen.
-  - Off by default.
-  - Needs a wide enough window.
-- **Move HUD...** opens the position editor.
-  - **Moving: All** drags the whole HUD; **Moving: One** drags a single piece. What you'd grab is highlighted.
-  - The arrow keys nudge it (Shift: 10 pixels).
-  - **Save** (or Esc) keeps the position; **Cancel** doesn't.
-  - **Reset** puts everything back above the hotbar.
-- **Item Name...** sets the held item's name height.
-  - Use the slider or the arrow keys (Shift: 10 pixels).
-  - A preview shows where the name will go as you change it, with the values for vanilla's height and right above the hotbar.
-  - The name never goes onto the HUD or the hotbar.
+| Category | Option | Values |
+|---|---|---|
+| | Mod State | **Enabled**, Disabled (a fully vanilla HUD; your settings are kept) |
+| **Armor + Hunger** | Armor | **Vanilla**, Bar, Hidden |
+| | Hunger | **Vanilla**, Bar, Hidden |
+| | Air Bubbles/Mount HP | **Above** hunger, Below it |
+| **Health** | Health Units | **HP** (20 for a full vanilla bar), Hearts (10) |
+| | Absorption | **Separate** (`16+4/20`), Combined (`20/20`) |
+| | HP Text | **Left**, Right, Center, Off |
+| | Health Bar Width | **Full**, Half |
+| **Mana** (only with Iron's Spells installed) | Mana Text | **Left**, Right, Center, Off |
+| | Mana Bar Width | **Full**, Half |
+| **Positioning** | Item Name... | Height of the held item's name: **Vanilla** (0), or pixels up (+) or down (-), down to right above the hotbar |
 
 #### The config screen
 
