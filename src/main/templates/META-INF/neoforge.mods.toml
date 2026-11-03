@@ -9,6 +9,8 @@ version="${mod_version}"
 displayName="${mod_name}"
 authors="itskkura"
 displayURL="https://github.com/joshua-fonseca/mc-rpg-health-bar"
+# Read once at startup: a newer version listed there flags the mod in the Mods list.
+updateJSONURL="https://raw.githubusercontent.com/joshua-fonseca/mc-rpg-health-bar/main/update.json"
 # Pixel art, so don't smooth it when it's scaled.
 logoFile="rpghealthbar.png"
 logoBlur=false

@@ -1,0 +1,15 @@
+{
+  "homepage": "https://www.curseforge.com/minecraft/mc-mods/rpg-health-bar",
+  "1.21.1": {
+    "1.4.0": "Redesigned config screen with a live HUD preview, a Mod State on/off switch, air bubble/mount position, and text position options."
+  },
+  "1.20.1": {
+    "1.4.0": "Redesigned config screen with a live HUD preview, a Mod State on/off switch, air bubble/mount position, and text position options."
+  },
+  "promos": {
+    "1.21.1-latest": "1.4.0",
+    "1.21.1-recommended": "1.4.0",
+    "1.20.1-latest": "1.4.0",
+    "1.20.1-recommended": "1.4.0"
+  }
+}
