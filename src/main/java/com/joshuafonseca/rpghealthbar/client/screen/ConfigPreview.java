@@ -6,6 +6,7 @@ import com.joshuafonseca.rpghealthbar.client.HudPosition;
 import com.joshuafonseca.rpghealthbar.client.HudRenderer;
 import com.joshuafonseca.rpghealthbar.client.HudValues;
 import com.joshuafonseca.rpghealthbar.client.StatusColors;
+import com.joshuafonseca.rpghealthbar.client.XpBarOverlay;
 import com.joshuafonseca.rpghealthbar.compat.IronsSpellsCompat;
 import com.joshuafonseca.rpghealthbar.config.AirPosition;
 import com.joshuafonseca.rpghealthbar.config.ClientConfig;
@@ -23,7 +24,7 @@ final class ConfigPreview {
     /** As wide as the HUD. */
     static final int WIDTH = HudLayout.WIDTH;
 
-    private static final ResourceLocation ICONS = new ResourceLocation("textures/gui/icons.png");
+    private static final ResourceLocation ICONS = XpBarOverlay.ICONS;
     /** Where vanilla's icons are in {@link #ICONS}: u of each kind, and v of each row. */
     private static final int ARMOR_V = 9;
     private static final int ARMOR_EMPTY_U = 16;
@@ -36,17 +37,13 @@ final class ConfigPreview {
     private static final int AIR_V = 18;
     private static final int AIR_U = 16;
     private static final int AIR_BURSTING_U = 25;
-    private static final int XP_BACKGROUND_V = 64;
-    private static final int XP_PROGRESS_V = 69;
 
     /** A virtual screen the HUD is laid out on; only its height matters, as the HUD sits at the bottom. */
     private static final int VIRTUAL_HEIGHT = 200;
-    private static final int ICON = 9;
+    private static final int ICON = HudLayout.ICON_ROW_HEIGHT;
     private static final int ICON_SPACING = 8;
     /** Vanilla's rows are 9px icons plus a 1px gap. */
     private static final int ROW_HEIGHT = 10;
-    private static final int XP_BAR_HEIGHT = 5;
-    private static final int LEVEL_COLOR = 0x80FF20;
 
     /** Health a bit down with some absorption, and mana partly used, so the text and fills show. */
     private static final float HEALTH = 15;
@@ -55,7 +52,7 @@ final class ConfigPreview {
     private static final float FOOD = 17;
     private static final int AIR_BUBBLES = 7;
     private static final float XP_PROGRESS_FRACTION = 0.6F;
-    private static final String LEVEL = "12";
+    private static final int LEVEL = 12;
 
     private ConfigPreview() {
     }
@@ -109,16 +106,7 @@ final class ConfigPreview {
         }
 
         HudPosition.Bounds xp = frame.pieceBounds().get(HudPiece.XP);
-        graphics.blit(ICONS, xp.left(), xp.top(), 0, XP_BACKGROUND_V, WIDTH, XP_BAR_HEIGHT);
-        graphics.blit(ICONS, xp.left(), xp.top(), 0, XP_PROGRESS_V, (int) (WIDTH * XP_PROGRESS_FRACTION), XP_BAR_HEIGHT);
-        // Outlined like vanilla's, and centered on the bar like the mod draws it.
-        int levelX = (WIDTH - font.width(LEVEL)) / 2;
-        int levelY = xp.top() - 1;
-        graphics.drawString(font, LEVEL, levelX + 1, levelY, 0, false);
-        graphics.drawString(font, LEVEL, levelX - 1, levelY, 0, false);
-        graphics.drawString(font, LEVEL, levelX, levelY + 1, 0, false);
-        graphics.drawString(font, LEVEL, levelX, levelY - 1, 0, false);
-        graphics.drawString(font, LEVEL, levelX, levelY, LEVEL_COLOR, false);
+        XpBarOverlay.draw(graphics, font, xp.left(), xp.top(), true, (int) (WIDTH * XP_PROGRESS_FRACTION), LEVEL);
         graphics.pose().popPose();
     }
 

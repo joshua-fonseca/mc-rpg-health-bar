@@ -17,7 +17,8 @@ import net.minecraftforge.client.gui.overlay.IGuiOverlay;
  * vanilla overlay, which draws both in one go.
  */
 public class XpBarOverlay implements IGuiOverlay {
-    private static final ResourceLocation ICONS = new ResourceLocation("textures/gui/icons.png");
+    /** Vanilla's HUD icons and XP bar. */
+    public static final ResourceLocation ICONS = new ResourceLocation("textures/gui/icons.png");
     private static final int WIDTH = 182;
     private static final int HEIGHT = 5;
     private static final int LEVEL_COLOR = 0x80FF20;
@@ -46,25 +47,33 @@ public class XpBarOverlay implements IGuiOverlay {
         graphics.pose().pushPose();
         HudPosition.moveTo(graphics.pose(), frame.pieceOffset(HudPiece.XP));
         RenderSystem.disableBlend();
-        if (player.getXpNeededForNextLevel() > 0) {
-            int progress = (int) (player.experienceProgress * (WIDTH + 1));
+        boolean withBar = player.getXpNeededForNextLevel() > 0;
+        draw(graphics, gui.getFont(), x, y, withBar, (int) (player.experienceProgress * (WIDTH + 1)), player.experienceLevel);
+        RenderSystem.enableBlend();
+        graphics.pose().popPose();
+    }
+
+    /**
+     * The bar with its top left at {@code (x, y)}, filled {@code progress} pixels, if {@code withBar};
+     * and the level, outlined like vanilla's and centered on the bar, if above 0. Also used by the
+     * config screen's preview.
+     */
+    public static void draw(GuiGraphics graphics, Font font, int x, int y, boolean withBar, int progress, int level) {
+        if (withBar) {
             graphics.blit(ICONS, x, y, 0, 64, WIDTH, HEIGHT);
             if (progress > 0) {
                 graphics.blit(ICONS, x, y, 0, 69, progress, HEIGHT);
             }
         }
-        if (player.experienceLevel > 0) {
-            Font font = gui.getFont();
-            String level = String.valueOf(player.experienceLevel);
-            int textX = (screenWidth - font.width(level)) / 2;
-            int textY = screenHeight - 35 + LEVEL_DROP;
-            graphics.drawString(font, level, textX + 1, textY, 0, false);
-            graphics.drawString(font, level, textX - 1, textY, 0, false);
-            graphics.drawString(font, level, textX, textY + 1, 0, false);
-            graphics.drawString(font, level, textX, textY - 1, 0, false);
-            graphics.drawString(font, level, textX, textY, LEVEL_COLOR, false);
+        if (level > 0) {
+            String text = String.valueOf(level);
+            int textX = x + (WIDTH - font.width(text)) / 2;
+            int textY = y - 6 + LEVEL_DROP;
+            graphics.drawString(font, text, textX + 1, textY, 0, false);
+            graphics.drawString(font, text, textX - 1, textY, 0, false);
+            graphics.drawString(font, text, textX, textY + 1, 0, false);
+            graphics.drawString(font, text, textX, textY - 1, 0, false);
+            graphics.drawString(font, text, textX, textY, LEVEL_COLOR, false);
         }
-        RenderSystem.enableBlend();
-        graphics.pose().popPose();
     }
 }

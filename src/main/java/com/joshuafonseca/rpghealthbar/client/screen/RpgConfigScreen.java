@@ -300,11 +300,7 @@ public class RpgConfigScreen extends Screen {
 
         PreviewButton(OnPress onPress) {
             super(0, 0, BUTTON_HEIGHT, BUTTON_HEIGHT, Component.empty(), onPress, DEFAULT_NARRATION);
-            update();
-        }
-
-        /** Matches the label and tip, read by narration and shown on hover, to the setting. */
-        void update() {
+            // The screen is rebuilt on each click, so this button always starts with the current setting.
             String state = ClientConfig.SHOW_PREVIEW.get() ? "on" : "off";
             setMessage(Component.translatable("rpghealthbar.config.preview." + state));
             setTooltip(Tooltip.create(Component.translatable("rpghealthbar.config.preview.tooltip." + state)));
