@@ -109,9 +109,10 @@ dependencies {
     }
 
     // AppleSkin is optional too; `-PwithAppleSkin` adds it to the dev client.
+    // Add `-PappleskinRuntimeVersion=mc1.21-3.0.9` to run another AppleSkin version than the one compiled against.
     compileOnly "squeek.appleskin:appleskin-neoforge:${appleskin_version}"
     if (project.hasProperty('withAppleSkin')) {
-        localRuntime("squeek.appleskin:appleskin-neoforge:${appleskin_version}") { transitive = false }
+        localRuntime("squeek.appleskin:appleskin-neoforge:${project.findProperty('appleskinRuntimeVersion') ?: appleskin_version}") { transitive = false }
     }
 }
 
