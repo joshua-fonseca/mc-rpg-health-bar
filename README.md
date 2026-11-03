@@ -117,7 +117,7 @@ Settings are stored in `config/rpghealthbar-client.toml`.
 | | 1.21.1 (NeoForge) | 1.20.1 (Forge) |
 |---|---|---|
 | **Mod loader** | NeoForge 21.1.1+ | Forge 47.0.0+ |
-| **Iron's Spells 'n Spellbooks** | 3.9.1+ | 1.1.5+ (spell cost preview: 3.2.0+) |
+| **Iron's Spells 'n Spellbooks** | 3.4.0+ | 1.1.5+ (spell cost preview: 3.1.4+) |
 | **AppleSkin** | 3.0.4+ | 2.5.0+ |
 | **Double Hotbar** | Any ([Double Hotbar NeoForge](https://www.curseforge.com/projects/1563792), unofficial port by \_retrospective\_) | 1.3.2.1+ ([Double Hotbar](https://www.curseforge.com/minecraft/mc-mods/double-hotbar) by sidezbros) |
 
