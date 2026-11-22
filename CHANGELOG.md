@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- New **Compatibility notes** at the top of the config screen: click the **+** or its label to see them. They list a supported mod installed at a version that's too old, or one that couldn't be read, or say that all is well. While there's a problem, its count shows in red beside the label.
 - New **Reset to Defaults** button beside Save Settings. After asking first, it puts every setting back to its default, including the HUD position and the item name height. Whether the preview is shown is kept.
 - Losing health or absorption flashes what's left white, fading quickly back to its color, while the lost section shows and fades as before.
 - Absorption above your max health now shows in layers, each as much as your max health: the current layer in bright gold, with a darker full one behind it while there's more. When the front layer runs out, the one behind takes its place, so every point lost shows. Before, anything over max health ran off the end of the bar.
