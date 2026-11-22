@@ -6,11 +6,12 @@
 - **Confluence: Otherworld support** (1.21.1, Confluence 1.1.4+): its mana gets its own darker blue bar.
   - With Iron's Spells too, Confluence's bar sits below Iron's. In Move HUD each mana bar can be moved on its own. If the server has Confluence's convertIronsSpellMana on, Iron's spells use Confluence's mana, so only Confluence's bar shows, with the spell cost preview on it.
   - Confluence's own mana display is hidden, except in soul mode, where it shows soul. Its own health display is hidden too, and its armor and hunger displays are hidden unless Armor or Hunger is on Default.
-  - The Mana header says which mana mods were found, and Compatibility notes flag a Confluence older than 1.1.4.
+  - Confluence's bar has its own **Confluence Mana Text** and **Confluence Mana Bar Width** options, listed only with Confluence; Iron's are now **Iron's Mana Text** and **Iron's Mana Bar Width**.
+  - The Mana header says which mana mods were found, and Compatibility notes flag a Confluence older than 1.1.4. With both mods, a note explains that two mana bars mean Confluence's unified mana (convertIronsSpellMana) is off.
   - With Armor or Hunger on Default, Confluence's own armor and hunger icons show there and move with the HUD in Move HUD, like vanilla's.
 - Half-width health and mana bars no longer share a row: they stack like full ones.
 - Armor and Hunger's **Vanilla** option is now **Default**: whatever the game normally shows there, the vanilla icons or another mod's display that replaces them, like Confluence's. Your setting is kept.
-- New **Compatibility notes** at the top of the config screen: click the **+** or its label to see them. They list a supported mod installed at a version that's too old, or one that couldn't be read, or say that all is well. While there's a problem, its count shows in red beside the label.
+- New **Compatibility notes** at the top of the config screen: click the **+** or its label to see them. They list a supported mod installed at a version that's too old, or one that couldn't be read, or say that all is well. The number of notes shows beside the label: red when any is a problem, white when they're just good to know.
 - New **Reset to Defaults** button beside Save Settings. After asking first, it puts every setting back to its default, including the HUD position and the item name height. Whether the preview is shown is kept.
 - Losing health or absorption flashes what's left white, fading quickly back to its color, while the lost section shows and fades as before.
 - Absorption above your max health now shows in layers, each as much as your max health: the current layer in bright gold, with a darker full one behind it while there's more. When the front layer runs out, the one behind takes its place, so every point lost shows. Before, anything over max health ran off the end of the bar.

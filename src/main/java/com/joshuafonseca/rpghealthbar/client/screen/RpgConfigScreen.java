@@ -86,6 +86,8 @@ public class RpgConfigScreen extends Screen {
     private static final int COMPAT_OK_COLOR = 0x55FF55;
     private static final int COMPAT_PROBLEM_COLOR = 0xFF5555;
     /** Between the notes' + button and its label, and how far the notes are indented under it. */
+    /** Notes that are just good to know, and their count when none is a problem. */
+    private static final int COMPAT_INFO_COLOR = 0xFFFFFF;
     private static final int COMPAT_GAP = 6;
     /** How far the notes are indented: under the label, past the + button. */
     private static final int NOTE_INDENT = BUTTON_HEIGHT + COMPAT_GAP;
@@ -94,7 +96,7 @@ public class RpgConfigScreen extends Screen {
     private static final List<ModConfigSpec.ConfigValue<?>> EDITED = List.of(ClientConfig.ENABLED, ClientConfig.ARMOR_MODE,
             ClientConfig.HUNGER_MODE, ClientConfig.AIR_POSITION, ClientConfig.HEALTH_UNIT, ClientConfig.ABSORPTION_DISPLAY,
             ClientConfig.HEALTH_TEXT, ClientConfig.SHOW_HEALTH_TEXT, ClientConfig.HEALTH_SIZE, ClientConfig.MANA_TEXT, ClientConfig.SHOW_MANA_TEXT,
-            ClientConfig.MANA_SIZE, ClientConfig.LEVEL_TEXT);
+            ClientConfig.MANA_SIZE, ClientConfig.CONFLUENCE_MANA_TEXT, ClientConfig.CONFLUENCE_MANA_SIZE, ClientConfig.LEVEL_TEXT);
 
     private final Screen parent;
     private final Map<ModConfigSpec.ConfigValue<?>, Object> opened = new HashMap<>();
@@ -170,17 +172,17 @@ public class RpgConfigScreen extends Screen {
     private void addOptions(OptionList list) {
         // Compatibility notes: a + button and its label open them; a supported mod that's too
         // old, or that couldn't be read, is listed, otherwise a line says all is well.
-        List<Component> notes = CompatNotes.notes();
-        list.addEntry(new CompatRow(notes.size(), this.compatOpen, () -> {
+        List<CompatNotes.Note> notes = CompatNotes.notes();
+        list.addEntry(new CompatRow(notes.size(), CompatNotes.anyProblem(notes), this.compatOpen, () -> {
             this.compatOpen = !this.compatOpen;
             rebuildOptions();
         }));
         if (this.compatOpen) {
-            if (notes.isEmpty()) {
+            if (!CompatNotes.anyProblem(notes)) {
                 addNote(list, Component.translatable("rpghealthbar.config.compat.none"), COMPAT_OK_COLOR);
             }
-            for (Component note : notes) {
-                addNote(list, note, COMPAT_PROBLEM_COLOR);
+            for (CompatNotes.Note note : notes) {
+                addNote(list, note.text(), note.problem() ? COMPAT_PROBLEM_COLOR : COMPAT_INFO_COLOR);
             }
         }
         this.notesRowWidth = list.getRowWidth();
@@ -215,12 +217,17 @@ public class RpgConfigScreen extends Screen {
         String detected = irons && confluence ? "ironsAndConfluenceDetected" : irons ? "ironsDetected" : confluence ? "confluenceDetected" : "ironsNotDetected";
         list.addEntry(new Header(Component.translatable("rpghealthbar.config.section.mana"),
                 Component.translatable("rpghealthbar.config." + detected), IRONS_NOTE_COLOR));
+        // Iron's options are always listed (greyed out without it); Confluence's only with Confluence.
         WidgetRow manaText = textOption("manaText", ClientConfig.manaText(), ClientConfig.MANA_TEXT, ClientConfig.SHOW_MANA_TEXT);
         WidgetRow manaSize = option("manaSize", BarSize.values(), ClientConfig.MANA_SIZE, BarSize::displayName, "full", "half");
-        manaText.setActive(irons || confluence);
-        manaSize.setActive(irons || confluence);
+        manaText.setActive(irons);
+        manaSize.setActive(irons);
         list.addEntry(manaText);
         list.addEntry(manaSize);
+        if (confluence) {
+            list.addEntry(option("confluenceManaText", BarText.values(), ClientConfig.CONFLUENCE_MANA_TEXT, BarText::displayName, "left", "right", "center", "off"));
+            list.addEntry(option("confluenceManaSize", BarSize.values(), ClientConfig.CONFLUENCE_MANA_SIZE, BarSize::displayName, "full", "half"));
+        }
 
         list.addEntry(new Header(Component.translatable("rpghealthbar.config.section.xp"), null, NOTE_COLOR));
         list.addEntry(option("levelText", LevelText.values(), ClientConfig.LEVEL_TEXT, LevelText::displayName, "center", "left", "right"));
@@ -560,7 +567,8 @@ public class RpgConfigScreen extends Screen {
 
     /**
      * The compatibility notes' row: a + button (− while they're open) and the label beside it, both
-     * of which open and close them. While there are problems, how many is shown in red after the label.
+     * of which open and close them. How many notes there are follows the label: red when any is a
+     * problem, white otherwise.
      */
     private static class CompatRow extends Row {
         private final Button button;
@@ -569,12 +577,12 @@ public class RpgConfigScreen extends Screen {
         private int labelLeft;
         private int labelTop;
 
-        CompatRow(int problems, boolean open, Runnable toggle) {
+        CompatRow(int count, boolean problem, boolean open, Runnable toggle) {
             this.toggle = toggle;
             this.button = Button.builder(Component.literal(open ? "-" : "+"), b -> toggle.run()).size(BUTTON_HEIGHT, BUTTON_HEIGHT).build();
             MutableComponent label = Component.translatable("rpghealthbar.config.compat").copy();
-            if (problems > 0) {
-                label.append(Component.literal(" (" + problems + ")").withColor(COMPAT_PROBLEM_COLOR));
+            if (count > 0) {
+                label.append(Component.literal(" (" + count + ")").withColor(problem ? COMPAT_PROBLEM_COLOR : COMPAT_INFO_COLOR));
             }
             this.label = label;
         }

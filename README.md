@@ -69,8 +69,10 @@ Defaults are in bold:
 |  | Absorption | **Separate** (`16+4/20`), Combined (`20/20`) |
 |  | HP Text | **Left**, Right, Center, Off |
 |  | Health Bar Width | **Full**, Half |
-| **Mana** (only with Iron's Spells or Confluence installed) | Mana Text | **Left**, Right, Center, Off |
-|  | Mana Bar Width | **Full**, Half |
+| **Mana** (only with Iron's Spells or Confluence installed) | Iron's Mana Text | **Left**, Right, Center, Off |
+|  | Iron's Mana Bar Width | **Full**, Half |
+|  | Confluence Mana Text (only with Confluence) | **Left**, Right, Center, Off |
+|  | Confluence Mana Bar Width (only with Confluence) | **Full**, Half |
 | **XP Bar** | Level Text | **Center**, Left, Right |
 | **Positioning** | Item Name... | Height of the held item's name: **Vanilla** (0), or pixels up (+) or down (-), down to right above the hotbar |
 |  | Move HUD... | Drag the whole HUD (**Moving: All**) or a single piece (**Moving: One**); the arrow keys nudge it. **Above the hotbar**, Reset puts it back |

@@ -84,7 +84,7 @@ public class HudLayer implements LayeredDraw.Layer {
             boolean vanillaHunger = hungerMode == HalfBarMode.VANILLA;
 
             HudLayout layout = HudLayout.compute(screenWidth, screenHeight, showArmor || showHunger, vanillaArmor || vanillaHunger, ManaBars.count(),
-                    ClientConfig.HEALTH_SIZE.get() == BarSize.HALF, ClientConfig.MANA_SIZE.get() == BarSize.HALF);
+                    ClientConfig.HEALTH_SIZE.get() == BarSize.HALF);
             Map<HudPiece, HudPosition.Bounds> pieceBounds = pieceBounds(screenHeight, layout, armorMode, hungerMode);
             HudPosition.Pieces pieces = HudPosition.pieces(screenWidth, screenHeight, pieceBounds);
             HudPosition.Bounds bounds = null;
@@ -120,18 +120,18 @@ public class HudLayer implements LayeredDraw.Layer {
             bounds.put(HudPiece.HEALTH, new HudPosition.Bounds(left, layout.healthY(), left + layout.healthWidth(), layout.healthY() + HudLayout.MAIN_BAR_HEIGHT));
             int manaRow = 0;
             if (ManaBars.showIrons()) {
-                bounds.put(HudPiece.MANA, manaBounds(layout, manaRow++));
+                bounds.put(HudPiece.MANA, manaBounds(layout, manaRow++, ClientConfig.MANA_SIZE.get()));
             }
             if (ManaBars.showConfluence()) {
-                bounds.put(HudPiece.CONFLUENCE_MANA, manaBounds(layout, manaRow));
+                bounds.put(HudPiece.CONFLUENCE_MANA, manaBounds(layout, manaRow, ClientConfig.CONFLUENCE_MANA_SIZE.get()));
             }
             bounds.put(HudPiece.XP, HudPosition.xpBar(screenHeight, layout));
             return bounds;
         }
 
-        private static HudPosition.Bounds manaBounds(HudLayout layout, int row) {
+        private static HudPosition.Bounds manaBounds(HudLayout layout, int row, BarSize size) {
             int top = layout.manaY(row);
-            return new HudPosition.Bounds(layout.x(), top, layout.x() + layout.manaWidth(), top + HudLayout.MAIN_BAR_HEIGHT);
+            return new HudPosition.Bounds(layout.x(), top, layout.x() + HudLayout.width(size), top + HudLayout.MAIN_BAR_HEIGHT);
         }
     }
 

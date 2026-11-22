@@ -50,7 +50,7 @@ public final class ClientConfig {
             .defineEnum("healthText", BarText.LEFT);
 
     public static final ModConfigSpec.EnumValue<BarText> MANA_TEXT = BUILDER
-            .comment("Where the numbers go on the mana bars (Iron's Spells 'n Spellbooks or Confluence only): LEFT, RIGHT, CENTER or OFF.")
+            .comment("Where the numbers go on Iron's Spells 'n Spellbooks' mana bar: LEFT, RIGHT, CENTER or OFF.")
             .translation("rpghealthbar.config.manaText")
             .defineEnum("manaText", BarText.LEFT);
 
@@ -70,7 +70,7 @@ public final class ClientConfig {
             .defineEnum("healthSize", BarSize.FULL);
 
     public static final ModConfigSpec.EnumValue<BarSize> MANA_SIZE = BUILDER
-            .comment("Width of the mana bars: FULL or HALF (Iron's Spells 'n Spellbooks or Confluence only).")
+            .comment("Width of Iron's Spells 'n Spellbooks' mana bar: FULL (as wide as the hotbar) or HALF (like the armor and hunger bars).")
             .translation("rpghealthbar.config.manaSize")
             .defineEnum("manaSize", BarSize.FULL);
 
@@ -78,6 +78,16 @@ public final class ClientConfig {
             .comment("Where the XP level's number goes on the XP bar: CENTER (like vanilla), LEFT or RIGHT.")
             .translation("rpghealthbar.config.levelText")
             .defineEnum("levelText", LevelText.CENTER);
+
+    public static final ModConfigSpec.EnumValue<BarText> CONFLUENCE_MANA_TEXT = BUILDER
+            .comment("Where the numbers go on Confluence: Otherworld's mana bar: LEFT, RIGHT, CENTER or OFF.")
+            .translation("rpghealthbar.config.confluenceManaText")
+            .defineEnum("confluenceManaText", BarText.LEFT);
+
+    public static final ModConfigSpec.EnumValue<BarSize> CONFLUENCE_MANA_SIZE = BUILDER
+            .comment("Width of Confluence: Otherworld's mana bar: FULL (as wide as the hotbar) or HALF (like the armor and hunger bars).")
+            .translation("rpghealthbar.config.confluenceManaSize")
+            .defineEnum("confluenceManaSize", BarSize.FULL);
 
     public static final int ITEM_NAME_OFFSET_MIN = -50;
     public static final int ITEM_NAME_OFFSET_MAX = 100;
@@ -152,7 +162,7 @@ public final class ClientConfig {
         return SHOW_HEALTH_TEXT.get() ? HEALTH_TEXT.get() : BarText.OFF;
     }
 
-    /** Where the mana bar's numbers go, honoring an Off saved before manaText existed. */
+    /** Where Iron's mana bar's numbers go, honoring an Off saved before manaText existed. */
     public static BarText manaText() {
         return SHOW_MANA_TEXT.get() ? MANA_TEXT.get() : BarText.OFF;
     }

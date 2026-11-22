@@ -74,13 +74,13 @@ public final class HudRenderer {
         int confluenceRow = 0;
         if (values.ironsMana() != null) {
             confluenceRow = 1;
-            inPiece(graphics, pieces, HudPiece.MANA, () -> renderMana(graphics, font, layout, layout.manaY(0), values.ironsMana(),
-                    MANA_COLOR, MANA_LOST_COLOR, MANA_COST_COLOR, MANA_TRAIL, live));
+            inPiece(graphics, pieces, HudPiece.MANA, () -> renderMana(graphics, font, layout, layout.manaY(0), HudLayout.width(ClientConfig.MANA_SIZE.get()),
+                    ClientConfig.manaText(), values.ironsMana(), MANA_COLOR, MANA_LOST_COLOR, MANA_COST_COLOR, MANA_TRAIL, live));
         }
         if (values.confluenceMana() != null) {
             int row = confluenceRow;
-            inPiece(graphics, pieces, HudPiece.CONFLUENCE_MANA, () -> renderMana(graphics, font, layout, layout.manaY(row), values.confluenceMana(),
-                    CONFLUENCE_MANA_COLOR, CONFLUENCE_MANA_DARK_COLOR, CONFLUENCE_MANA_DARK_COLOR, CONFLUENCE_MANA_TRAIL, live));
+            inPiece(graphics, pieces, HudPiece.CONFLUENCE_MANA, () -> renderMana(graphics, font, layout, layout.manaY(row),
+                    HudLayout.width(ClientConfig.CONFLUENCE_MANA_SIZE.get()), ClientConfig.CONFLUENCE_MANA_TEXT.get(), values.confluenceMana(), CONFLUENCE_MANA_COLOR, CONFLUENCE_MANA_DARK_COLOR, CONFLUENCE_MANA_DARK_COLOR, CONFLUENCE_MANA_TRAIL, live));
         }
     }
 
@@ -225,14 +225,13 @@ public final class HudRenderer {
         return NumberText.formatQuarters(unit.fromHp(health)) + "+" + NumberText.formatQuarters(unit.fromHp(absorption)) + "/" + max;
     }
 
-    /** One mana bar, at row top {@code y}; Iron's and Confluence's differ only in colors. */
-    private static void renderMana(GuiGraphics graphics, Font font, HudLayout layout, int y, Mana values, int color, int lostColor, int costColor,
-                                   BarTrail manaTrail, boolean live) {
+    /** One mana bar, at row top {@code y}; Iron's and Confluence's differ in colors and their own settings. */
+    private static void renderMana(GuiGraphics graphics, Font font, HudLayout layout, int y, int width, BarText text, Mana values,
+                                   int color, int lostColor, int costColor, BarTrail manaTrail, boolean live) {
         float mana = values.current();
         float maxMana = values.max();
 
         int x = layout.x();
-        int width = layout.manaWidth();
         BarRenderer.drawTrack(graphics, x, y, width, HudLayout.MAIN_BAR_HEIGHT, true);
         if (maxMana > 0) {
             BarRenderer.drawFill(graphics, x, y, width, HudLayout.MAIN_BAR_HEIGHT, true, mana / maxMana, color, true);
@@ -246,7 +245,6 @@ public final class HudRenderer {
                 BarRenderer.drawSection(graphics, x, y, width, HudLayout.MAIN_BAR_HEIGHT, true, (mana - cost) / maxMana, mana / maxMana, costColor, true, pulse(COST_PULSE_MILLIS));
             }
         }
-        BarText text = ClientConfig.manaText();
         if (text != BarText.OFF) {
             BarRenderer.drawLabel(graphics, font, x, y, width, HudLayout.MAIN_BAR_HEIGHT,
                     NumberText.format(mana) + "/" + NumberText.format(maxMana), text);
