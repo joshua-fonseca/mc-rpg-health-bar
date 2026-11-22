@@ -9,6 +9,8 @@ import net.minecraft.Util;
 public final class BarTrail {
     /** How long the lost section stays before it starts shrinking, unless given. */
     private static final long DEFAULT_HOLD_MILLIS = 750;
+    /** How long the bar flashes white right after a drop, before the lost section shows as the trail: about a game tick. */
+    private static final long FLASH_MILLIS = 50;
     /** Time for the remaining lost section to shrink by about two thirds; it's gone in well under a second. */
     private static final float SHRINK_MILLIS = 120.0F;
 
@@ -43,5 +45,10 @@ public final class BarTrail {
         lastValue = value;
         lastUpdate = now;
         return trail;
+    }
+
+    /** Whether the value dropped just now, so the bar should flash white before the lost section shows as the trail. */
+    public boolean flashing() {
+        return Util.getMillis() - lastDrop < FLASH_MILLIS;
     }
 }
