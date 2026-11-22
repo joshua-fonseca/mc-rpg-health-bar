@@ -14,6 +14,8 @@ import net.minecraft.util.Mth;
 /** Draws the bar group at a layout. Used by the HUD layer and the position editor's preview. */
 public final class HudRenderer {
     private static final int ABSORPTION_COLOR = 0xFFD8A820;
+    /** A full layer of absorption behind the current one, when there's more than max health of it: 75% of {@link #ABSORPTION_COLOR}. */
+    private static final int ABSORPTION_BACK_COLOR = 0xFFA27E18;
     private static final int MANA_COLOR = 0xFF2C88D0;
     private static final int ARMOR_COLOR = 0xFFB0B0B0;
     /** Saturation is outlined on the hunger bar in this color, like AppleSkin's outlines on the food icons. */
@@ -121,15 +123,25 @@ public final class HudRenderer {
             BarRenderer.drawSection(graphics, x, y, width, HudLayout.MAIN_BAR_HEIGHT, true, health / maxHealth, trail / maxHealth, StatusColors.lost(values.healthColor()), false, 1.0F);
             renderHealthEffects(graphics, x, y, width, values);
         }
+        // Absorption comes in layers of max health each: the current one in front, bright, and a full
+        // darker one behind it while there's more. When the front layer runs out, the one behind takes its place.
         float shownAbsorption = live ? ABSORPTION_GROW.update(absorption) : absorption;
+        int layers = shownAbsorption > 0 ? (int) Math.ceil(shownAbsorption / maxHealth) : 0;
+        float layerBase = Math.max(0, layers - 1) * maxHealth;
+        if (layers > 1) {
+            BarRenderer.drawFill(graphics, x, y, width, HudLayout.MAIN_BAR_HEIGHT, true, 1.0F, ABSORPTION_BACK_COLOR, false);
+        }
         if (shownAbsorption > 0) {
-            BarRenderer.drawFill(graphics, x, y, width, HudLayout.MAIN_BAR_HEIGHT, true, shownAbsorption / maxHealth, ABSORPTION_COLOR, shownAbsorption < maxHealth);
+            float front = shownAbsorption - layerBase;
+            BarRenderer.drawFill(graphics, x, y, width, HudLayout.MAIN_BAR_HEIGHT, true, front / maxHealth, ABSORPTION_COLOR, front < maxHealth);
         }
         if (live) {
-            // absorption lost fades like health does; while it grows the trail is at the value, so nothing shows
+            // absorption lost fades like health does, within the front layer; while it grows the trail is at the value, so nothing shows
             float trail = ABSORPTION_TRAIL.update(absorption);
             if (trail > absorption) {
-                BarRenderer.drawSection(graphics, x, y, width, HudLayout.MAIN_BAR_HEIGHT, true, absorption / maxHealth, trail / maxHealth, StatusColors.lost(ABSORPTION_COLOR), false, 1.0F);
+                float from = (absorption - layerBase) / maxHealth;
+                float to = Math.min(trail - layerBase, maxHealth) / maxHealth;
+                BarRenderer.drawSection(graphics, x, y, width, HudLayout.MAIN_BAR_HEIGHT, true, from, to, StatusColors.lost(ABSORPTION_COLOR), false, 1.0F);
             }
         }
 
