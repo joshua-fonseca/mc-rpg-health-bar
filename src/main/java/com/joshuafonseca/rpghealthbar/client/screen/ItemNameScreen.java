@@ -2,7 +2,6 @@ package com.joshuafonseca.rpghealthbar.client.screen;
 
 import com.joshuafonseca.rpghealthbar.client.HudLayer;
 import com.joshuafonseca.rpghealthbar.client.HudTextPlacer;
-import com.joshuafonseca.rpghealthbar.compat.ManaBars;
 import com.joshuafonseca.rpghealthbar.config.ClientConfig;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractSliderButton;
@@ -45,7 +44,7 @@ public class ItemNameScreen extends Screen {
     @Override
     protected void init() {
         // At the top, unless the HUD has been moved there; then in the middle.
-        HudLayer.Frame frame = HudLayer.Frame.compute(this.width, this.height, ManaBars.count());
+        HudLayer.Frame frame = HudLayer.Frame.compute(this.width, this.height);
         this.controlsTop = frame.bounds().top() < CONTROLS_MARGIN + CONTROLS_HEIGHT ? (this.height - CONTROLS_HEIGHT) / 2 : CONTROLS_MARGIN;
         int y = this.controlsTop + 14;
         this.slider = new HeightSlider(this.width / 2 - SLIDER_WIDTH / 2, y, SLIDER_WIDTH, BUTTON_HEIGHT,
@@ -71,7 +70,7 @@ public class ItemNameScreen extends Screen {
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         super.render(graphics, mouseX, mouseY, partialTick);
-        HudLayer.Frame frame = HudLayer.Frame.compute(this.width, this.height, ManaBars.count());
+        HudLayer.Frame frame = HudLayer.Frame.compute(this.width, this.height);
 
         HudPreview.drawIfHidden(graphics, this.minecraft, frame, frame.pieces(), true);
 

@@ -2,7 +2,6 @@ package com.joshuafonseca.rpghealthbar.client.screen;
 
 import com.joshuafonseca.rpghealthbar.client.HudLayer;
 import com.joshuafonseca.rpghealthbar.client.HudPosition;
-import com.joshuafonseca.rpghealthbar.compat.ManaBars;
 import com.joshuafonseca.rpghealthbar.config.HudPiece;
 import java.util.ArrayList;
 import java.util.List;
@@ -136,7 +135,7 @@ public class HudEditScreen extends Screen {
     }
 
     private HudLayer.Frame frame() {
-        return HudLayer.Frame.compute(this.width, this.height, ManaBars.count());
+        return HudLayer.Frame.compute(this.width, this.height);
     }
 
     /** Shows the pieces where they'd be saved, each kept on screen. */

@@ -148,7 +148,7 @@
   "rpghealthbar.config.moveMode.tooltip.all.name": "All",
   "rpghealthbar.config.moveMode.tooltip.all": "The whole HUD, with every piece keeping its place in it.",
   "rpghealthbar.config.moveMode.tooltip.one.name": "One",
-  "rpghealthbar.config.moveMode.tooltip.one": "One piece on its own: armor, hunger, health, mana, or the XP bar with the level. Air bubbles and mount health move with hunger.",
+  "rpghealthbar.config.moveMode.tooltip.one": "One piece on its own: armor, hunger, health, a mana bar, or the XP bar with the level. Air bubbles and mount health move with hunger.",
   "rpghealthbar.config.armorOffsetX": "Armor Horizontal Shift",
   "rpghealthbar.config.armorOffsetY": "Armor Vertical Shift",
   "rpghealthbar.config.hungerOffsetX": "Hunger Horizontal Shift",
@@ -157,6 +157,8 @@
   "rpghealthbar.config.healthOffsetY": "Health Vertical Shift",
   "rpghealthbar.config.manaOffsetX": "Mana Horizontal Shift",
   "rpghealthbar.config.manaOffsetY": "Mana Vertical Shift",
+  "rpghealthbar.config.confluenceManaOffsetX": "Confluence Mana Horizontal Shift",
+  "rpghealthbar.config.confluenceManaOffsetY": "Confluence Mana Vertical Shift",
   "rpghealthbar.config.xpOffsetX": "XP Bar Horizontal Shift",
   "rpghealthbar.config.xpOffsetY": "XP Bar Vertical Shift",
   "rpghealthbar.config.layoutVersion": "Layout Version",
@@ -164,5 +166,6 @@
   "rpghealthbar.config.hungerAnchor": "Hunger Anchor",
   "rpghealthbar.config.healthAnchor": "Health Anchor",
   "rpghealthbar.config.manaAnchor": "Mana Anchor",
+  "rpghealthbar.config.confluenceManaAnchor": "Confluence Mana Anchor",
   "rpghealthbar.config.xpAnchor": "XP Bar Anchor"
 }

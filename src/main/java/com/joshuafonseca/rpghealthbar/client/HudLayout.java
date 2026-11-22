@@ -57,11 +57,6 @@ public record HudLayout(int x, int top, int iconRowY, int halfBarY, int healthY,
         return manaY + row * (MAIN_BAR_HEIGHT + ROW_GAP);
     }
 
-    /** Bottom edge of the last mana bar. */
-    public int manaBottom() {
-        return manaY(manaBars - 1) + MAIN_BAR_HEIGHT;
-    }
-
     /** Left edge of the hunger bar (the armor bar starts at {@link #x()}). */
     public int hungerX() {
         return x + WIDTH - HALF_BAR_WIDTH;

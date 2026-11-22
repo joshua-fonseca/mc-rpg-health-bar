@@ -8,7 +8,10 @@ public enum HudPiece {
     ARMOR("armor"),
     HUNGER("hunger"),
     HEALTH("health"),
+    /** Iron's Spells' mana bar. */
     MANA("mana"),
+    /** Confluence's mana bar, below Iron's by default. */
+    CONFLUENCE_MANA("confluenceMana"),
     XP("xp");
 
     private final String key;

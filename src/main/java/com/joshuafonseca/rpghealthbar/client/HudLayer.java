@@ -64,7 +64,7 @@ public class HudLayer implements LayeredDraw.Layer {
         /** The frame for the HUD being drawn, worked out once per frame. */
         public static Frame current(int screenWidth, int screenHeight) {
             if (current == null) {
-                current = compute(screenWidth, screenHeight, ManaBars.count());
+                current = compute(screenWidth, screenHeight);
             }
             return current;
         }
@@ -74,8 +74,8 @@ public class HudLayer implements LayeredDraw.Layer {
             current = null;
         }
 
-        /** @param manaBars how many mana bars to lay out, normally {@link ManaBars#count()} */
-        public static Frame compute(int screenWidth, int screenHeight, int manaBars) {
+        /** The frame for the current settings, with the mana bars {@link ManaBars} shows. */
+        public static Frame compute(int screenWidth, int screenHeight) {
             HalfBarMode armorMode = ClientConfig.ARMOR_MODE.get();
             HalfBarMode hungerMode = ClientConfig.HUNGER_MODE.get();
             boolean showArmor = armorMode == HalfBarMode.BAR;
@@ -83,7 +83,7 @@ public class HudLayer implements LayeredDraw.Layer {
             boolean vanillaArmor = armorMode == HalfBarMode.VANILLA;
             boolean vanillaHunger = hungerMode == HalfBarMode.VANILLA;
 
-            HudLayout layout = HudLayout.compute(screenWidth, screenHeight, showArmor || showHunger, vanillaArmor || vanillaHunger, manaBars,
+            HudLayout layout = HudLayout.compute(screenWidth, screenHeight, showArmor || showHunger, vanillaArmor || vanillaHunger, ManaBars.count(),
                     ClientConfig.HEALTH_SIZE.get() == BarSize.HALF, ClientConfig.MANA_SIZE.get() == BarSize.HALF);
             Map<HudPiece, HudPosition.Bounds> pieceBounds = pieceBounds(screenHeight, layout, armorMode, hungerMode);
             HudPosition.Pieces pieces = HudPosition.pieces(screenWidth, screenHeight, pieceBounds);
@@ -100,7 +100,7 @@ public class HudLayer implements LayeredDraw.Layer {
             return pieces.get(piece);
         }
 
-        /** Each shown piece at its default position. Health and XP are always shown; the mana bars are one piece. */
+        /** Each shown piece at its default position. Health and XP are always shown; each mana bar is its own piece. */
         private static Map<HudPiece, HudPosition.Bounds> pieceBounds(int screenHeight, HudLayout layout, HalfBarMode armorMode, HalfBarMode hungerMode) {
             Map<HudPiece, HudPosition.Bounds> bounds = new EnumMap<>(HudPiece.class);
             int left = layout.x();
@@ -118,11 +118,20 @@ public class HudLayer implements LayeredDraw.Layer {
                 bounds.put(HudPiece.HUNGER, new HudPosition.Bounds(layout.hungerX(), layout.halfBarY(), right, barBottom));
             }
             bounds.put(HudPiece.HEALTH, new HudPosition.Bounds(left, layout.healthY(), left + layout.healthWidth(), layout.healthY() + HudLayout.MAIN_BAR_HEIGHT));
-            if (layout.manaBars() > 0) {
-                bounds.put(HudPiece.MANA, new HudPosition.Bounds(left, layout.manaY(), left + layout.manaWidth(), layout.manaBottom()));
+            int manaRow = 0;
+            if (ManaBars.showIrons()) {
+                bounds.put(HudPiece.MANA, manaBounds(layout, manaRow++));
+            }
+            if (ManaBars.showConfluence()) {
+                bounds.put(HudPiece.CONFLUENCE_MANA, manaBounds(layout, manaRow));
             }
             bounds.put(HudPiece.XP, HudPosition.xpBar(screenHeight, layout));
             return bounds;
+        }
+
+        private static HudPosition.Bounds manaBounds(HudLayout layout, int row) {
+            int top = layout.manaY(row);
+            return new HudPosition.Bounds(layout.x(), top, layout.x() + layout.manaWidth(), top + HudLayout.MAIN_BAR_HEIGHT);
         }
     }
 

@@ -70,17 +70,17 @@ public final class HudRenderer {
             inPiece(graphics, pieces, HudPiece.HUNGER, () -> renderHunger(graphics, layout, values));
         }
         inPiece(graphics, pieces, HudPiece.HEALTH, () -> renderHealth(graphics, font, layout, values, live));
-        if (values.ironsMana() != null || values.confluenceMana() != null) {
-            inPiece(graphics, pieces, HudPiece.MANA, () -> {
-                int row = 0;
-                if (values.ironsMana() != null) {
-                    renderMana(graphics, font, layout, layout.manaY(row++), values.ironsMana(), MANA_COLOR, MANA_LOST_COLOR, MANA_COST_COLOR, MANA_TRAIL, live);
-                }
-                if (values.confluenceMana() != null) {
-                    renderMana(graphics, font, layout, layout.manaY(row), values.confluenceMana(),
-                            CONFLUENCE_MANA_COLOR, CONFLUENCE_MANA_DARK_COLOR, CONFLUENCE_MANA_DARK_COLOR, CONFLUENCE_MANA_TRAIL, live);
-                }
-            });
+        // Confluence's bar goes in the row under Iron's, or the first when it's the only one.
+        int confluenceRow = 0;
+        if (values.ironsMana() != null) {
+            confluenceRow = 1;
+            inPiece(graphics, pieces, HudPiece.MANA, () -> renderMana(graphics, font, layout, layout.manaY(0), values.ironsMana(),
+                    MANA_COLOR, MANA_LOST_COLOR, MANA_COST_COLOR, MANA_TRAIL, live));
+        }
+        if (values.confluenceMana() != null) {
+            int row = confluenceRow;
+            inPiece(graphics, pieces, HudPiece.CONFLUENCE_MANA, () -> renderMana(graphics, font, layout, layout.manaY(row), values.confluenceMana(),
+                    CONFLUENCE_MANA_COLOR, CONFLUENCE_MANA_DARK_COLOR, CONFLUENCE_MANA_DARK_COLOR, CONFLUENCE_MANA_TRAIL, live));
         }
     }
 

@@ -121,7 +121,7 @@ final class ConfigPreview {
     }
 
     private static Layout layout() {
-        HudLayer.Frame frame = HudLayer.Frame.compute(WIDTH, VIRTUAL_HEIGHT, ManaBars.count());
+        HudLayer.Frame frame = HudLayer.Frame.compute(WIDTH, VIRTUAL_HEIGHT);
         HudPosition.Bounds hunger = frame.pieceBounds().get(HudPiece.HUNGER);
         int airTop = ClientConfig.AIR_POSITION.get() == AirPosition.BELOW && hunger != null
                 ? hunger.bottom() + 1

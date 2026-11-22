@@ -23,7 +23,7 @@ A highly customizable, client-side GUI mod. Replaces the vanilla hearts with an 
 <summary><b>Customization</b> (click to expand)</summary>
 
 - **Half-size bars:** health and mana can each be full or half width.
-- **Move the HUD** by dragging it: the whole set, including the XP bar and level, or each piece (armor, hunger, health, mana, XP bar) on its own. It stays in place when you change the window size or GUI scale.
+- **Move the HUD** by dragging it: the whole set, including the XP bar and level, or each piece (armor, hunger, health, each mana bar, XP bar) on its own. It stays in place when you change the window size or GUI scale.
 - **Item name height:** set how high the held item's name sits, with a preview that moves as you change it. It starts at vanilla's height, which leaves room for mods that add hotbars.
 - **Air bubbles and mount health** can sit above hunger, like vanilla, or below it, for layouts with health or mana above hunger.
 - **Text position:** the numbers on the health and mana bars can sit on the left, right or center, or be turned off.
