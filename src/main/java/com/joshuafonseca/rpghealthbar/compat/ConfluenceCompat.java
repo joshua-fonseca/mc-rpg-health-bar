@@ -24,6 +24,7 @@ public final class ConfluenceCompat {
     private static final String CLIENT_PACKETS = "org.confluence.mod.client.handler.ClientPacketHandler";
     private static final String COMPATIBILITY = "org.confluence.mod.client.handler.CompatibilityHandler";
     private static final String PLAYER_UTILS = "org.confluence.mod.util.PlayerUtils";
+    private static final String CLIENT_CONFIGS = "org.confluence.mod.client.ClientConfigs";
 
     private static final boolean INSTALLED = ModList.get().isLoaded(MODID);
     private static boolean available = INSTALLED;
@@ -90,6 +91,28 @@ public final class ConfluenceCompat {
             soulMode = null;
             RpgHealthBar.LOGGER.warn("Couldn't read Confluence's soul mode; treating it as off.", e);
             return false;
+        }
+    }
+
+    /** Whether Confluence's own armor display is on in its client config (terraStyleArmor, on by default). */
+    public static boolean showsOwnArmor() {
+        return clientSwitch("terraStyleArmor");
+    }
+
+    /** Whether Confluence's own hunger display is on in its client config (terraStyleFood, on by default). */
+    public static boolean showsOwnFood() {
+        return clientSwitch("terraStyleFood");
+    }
+
+    /** One of Confluence's client switches; if it can't be read, assumed on, its default. */
+    private static boolean clientSwitch(String name) {
+        if (!INSTALLED) {
+            return false;
+        }
+        try {
+            return Class.forName(CLIENT_CONFIGS).getField(name).getBoolean(null);
+        } catch (ReflectiveOperationException | RuntimeException | LinkageError e) {
+            return true;
         }
     }
 

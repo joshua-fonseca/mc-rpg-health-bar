@@ -40,6 +40,7 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.FormattedCharSequence;
+import net.minecraft.util.Mth;
 import net.neoforged.neoforge.common.ModConfigSpec;
 import org.lwjgl.glfw.GLFW;
 
@@ -85,6 +86,8 @@ public class RpgConfigScreen extends Screen {
     private static final int COMPAT_PROBLEM_COLOR = 0xFF5555;
     /** Between the notes' + button and its label, and how far the notes are indented under it. */
     private static final int COMPAT_GAP = 6;
+    /** How far the notes are indented: under the label, past the + button. */
+    private static final int NOTE_INDENT = BUTTON_HEIGHT + COMPAT_GAP;
 
     /** The settings this screen changes, put back by Back. Item Name and Move HUD save on their own pages. */
     private static final List<ModConfigSpec.ConfigValue<?>> EDITED = List.of(ClientConfig.ENABLED, ClientConfig.ARMOR_MODE,
@@ -105,6 +108,8 @@ public class RpgConfigScreen extends Screen {
     private PreviewButton previewButton;
     /** Whether the compatibility notes are shown; they start hidden. */
     private boolean compatOpen;
+    /** The row width the open notes were wrapped to. */
+    private int notesRowWidth;
 
     public RpgConfigScreen(Screen parent) {
         super(Component.translatable("rpghealthbar.config.title"));
@@ -116,8 +121,8 @@ public class RpgConfigScreen extends Screen {
 
     @Override
     protected void init() {
-        // Built once: on resize, and when coming back from Item Name, Move HUD or the unsaved
-        // changes prompt, only repositionElements runs, so the widgets and scroll position stay.
+        // Built once: on resize only repositionElements runs. Coming back from Item Name, Move HUD
+        // or the unsaved changes prompt, added() refills the rows and keeps the scroll position.
         this.layout.addTitleHeader(this.title, this.font);
         this.list = this.layout.addToContents(new OptionList(this.minecraft, this.width, this.layout));
         addOptions(this.list);
@@ -131,6 +136,26 @@ public class RpgConfigScreen extends Screen {
             repositionElements();
         }));
         repositionElements();
+    }
+
+    /** Coming back from Move HUD and the like: the Compatibility notes may have changed (see CompatNotes). */
+    @Override
+    public void added() {
+        super.added();
+        if (this.list != null) {
+            double scroll = this.list.getScrollAmount();
+            rebuildOptions();
+            this.list.setScrollAmount(scroll);
+        }
+    }
+
+    /** A note, wrapped to the list's width; a long one goes on over as many rows as it needs. */
+    private void addNote(OptionList list, Component note, int color) {
+        List<FormattedCharSequence> lines = this.font.split(note, list.getRowWidth() - NOTE_INDENT);
+        int rows = Math.max(1, Mth.positiveCeilDiv(NoteRow.LONG_TOP + lines.size() * this.font.lineHeight, ROW_HEIGHT));
+        for (int row = 0; row < rows; row++) {
+            list.addEntry(new NoteRow(lines, row, color));
+        }
     }
 
     /** Adds the rows again, showing the settings' current values. */
@@ -151,12 +176,13 @@ public class RpgConfigScreen extends Screen {
         }));
         if (this.compatOpen) {
             if (notes.isEmpty()) {
-                list.addEntry(new NoteRow(Component.translatable("rpghealthbar.config.compat.none"), COMPAT_OK_COLOR));
+                addNote(list, Component.translatable("rpghealthbar.config.compat.none"), COMPAT_OK_COLOR);
             }
             for (Component note : notes) {
-                list.addEntry(new NoteRow(note, COMPAT_PROBLEM_COLOR));
+                addNote(list, note, COMPAT_PROBLEM_COLOR);
             }
         }
+        this.notesRowWidth = list.getRowWidth();
 
         Component enabled = Component.translatable("rpghealthbar.config.enabled.on");
         Component disabled = Component.translatable("rpghealthbar.config.enabled.off");
@@ -288,6 +314,12 @@ public class RpgConfigScreen extends Screen {
             this.previewScale = 0;
             this.list.rowWidth = ROW_WIDTH;
             this.list.updateSize(this.width, this.layout);
+        }
+        // The notes are wrapped to the row width, which changes with the preview.
+        if (this.compatOpen && this.list.getRowWidth() != this.notesRowWidth) {
+            double scroll = this.list.getScrollAmount();
+            rebuildOptions();
+            this.list.setScrollAmount(scroll);
         }
     }
 
@@ -548,7 +580,7 @@ public class RpgConfigScreen extends Screen {
                            boolean hovering, float partialTick) {
             this.button.setPosition(left, top);
             this.button.render(graphics, mouseX, mouseY, partialTick);
-            this.labelLeft = left + BUTTON_HEIGHT + COMPAT_GAP;
+            this.labelLeft = left + NOTE_INDENT;
             this.labelTop = top;
             graphics.drawString(Minecraft.getInstance().font, this.label, this.labelLeft, top + (BUTTON_HEIGHT - 8) / 2, LABEL_COLOR);
         }
@@ -580,12 +612,20 @@ public class RpgConfigScreen extends Screen {
     }
 
     /** One compatibility note, under the notes' label, wrapped onto a second line if it's long. */
+    /**
+     * One row of a note. A note that fits a row is centered in it; a longer one goes on over the
+     * next rows with even line spacing, each row drawing the lines that start in it.
+     */
     private static class NoteRow extends Row {
-        private final Component text;
+        /** Where a note longer than one row starts, from the top of its first row. */
+        static final int LONG_TOP = 2;
+        private final List<FormattedCharSequence> lines;
+        private final int row;
         private final int color;
 
-        NoteRow(Component text, int color) {
-            this.text = text;
+        NoteRow(List<FormattedCharSequence> lines, int row, int color) {
+            this.lines = lines;
+            this.row = row;
             this.color = color;
         }
 
@@ -593,12 +633,14 @@ public class RpgConfigScreen extends Screen {
         public void render(GuiGraphics graphics, int index, int top, int left, int width, int height, int mouseX, int mouseY,
                            boolean hovering, float partialTick) {
             Font font = Minecraft.getInstance().font;
-            int indent = BUTTON_HEIGHT + COMPAT_GAP;
-            List<FormattedCharSequence> lines = font.split(this.text, width - indent);
-            int shown = Math.min(2, lines.size());
-            int y = top + (BUTTON_HEIGHT - shown * font.lineHeight) / 2 + 1;
-            for (int i = 0; i < shown; i++) {
-                graphics.drawString(font, lines.get(i), left + indent, y + i * font.lineHeight, this.color);
+            int textHeight = this.lines.size() * font.lineHeight;
+            int start = textHeight <= BUTTON_HEIGHT ? (BUTTON_HEIGHT - textHeight) / 2 + 1 : LONG_TOP;
+            int rowTop = this.row * ROW_HEIGHT;
+            for (int i = 0; i < this.lines.size(); i++) {
+                int y = start + i * font.lineHeight;
+                if (y >= rowTop && y < rowTop + ROW_HEIGHT) {
+                    graphics.drawString(font, this.lines.get(i), left + NOTE_INDENT, top - rowTop + y, this.color);
+                }
             }
         }
 
