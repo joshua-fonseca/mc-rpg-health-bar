@@ -1,9 +1,5 @@
 # Changelog
 
-## Unreleased
-
-- Absorption above your max health now fits on the bar: while it lasts, the gold is measured against the most you had, so every point lost shows. Before, anything over max health ran off the end of the bar.
-
 ## 1.4.0 (2026-11-03)
 
 - The config screen is redesigned. Options are grouped into sections (Armor + Hunger, Health, Mana, Positioning), and the list scrolls when the window is small.
