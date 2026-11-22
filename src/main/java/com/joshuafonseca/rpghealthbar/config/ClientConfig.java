@@ -1,5 +1,6 @@
 package com.joshuafonseca.rpghealthbar.config;
 
+import com.electronwill.nightconfig.core.UnmodifiableConfig;
 import java.util.EnumMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -187,6 +188,29 @@ public final class ClientConfig {
     /** Marks the positions as layout 2; they're written to the file over the next few ticks. */
     public static void savePositions() {
         queue(LAYOUT_VERSION, 2);
+    }
+
+    /**
+     * Puts every setting back to its default, as on a fresh install, HUD position and item name
+     * height included. Whether the config screen shows the preview is kept.
+     */
+    public static void resetToDefaults() {
+        PENDING.clear();
+        resetToDefaults(SPEC.getValues());
+    }
+
+    private static void resetToDefaults(UnmodifiableConfig values) {
+        for (Object value : values.valueMap().values()) {
+            if (value instanceof UnmodifiableConfig section) {
+                resetToDefaults(section);
+            } else if (value instanceof ForgeConfigSpec.ConfigValue<?> configValue && configValue != SHOW_PREVIEW) {
+                setDefault(configValue);
+            }
+        }
+    }
+
+    private static <T> void setDefault(ForgeConfigSpec.ConfigValue<T> value) {
+        value.set(value.getDefault());
     }
 
     /** Updates a value; Forge writes the config file on every change. */

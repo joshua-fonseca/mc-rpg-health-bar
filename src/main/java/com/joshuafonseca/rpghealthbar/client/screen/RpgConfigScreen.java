@@ -57,7 +57,8 @@ public class RpgConfigScreen extends Screen {
     /** Options are "Name: ... [value]": the name as text on the left, a button with the value on the right. */
     private static final int VALUE_WIDTH = 110;
     private static final int BUTTON_GAP = 10;
-    private static final int FOOTER_BUTTON_WIDTH = 150;
+    /** Three footer buttons fit a window 400 GUI pixels wide. */
+    private static final int FOOTER_BUTTON_WIDTH = 120;
     private static final int FOOTER_BUTTON_GAP = 8;
     /** The title above the list and the buttons below it, as in vanilla's option screens. */
     private static final int HEADER_HEIGHT = 32;
@@ -123,11 +124,13 @@ public class RpgConfigScreen extends Screen {
         addOptions(this.list);
         addWidget(this.list);
         int footerY = this.height - FOOTER_HEIGHT + (FOOTER_HEIGHT - BUTTON_HEIGHT) / 2;
-        int footerLeft = this.width / 2 - FOOTER_BUTTON_WIDTH - FOOTER_BUTTON_GAP / 2;
+        int footerLeft = this.width / 2 - FOOTER_BUTTON_WIDTH * 3 / 2 - FOOTER_BUTTON_GAP;
         addRenderableWidget(Button.builder(Component.translatable("rpghealthbar.config.back"), button -> onClose())
                 .bounds(footerLeft, footerY, FOOTER_BUTTON_WIDTH, BUTTON_HEIGHT).build());
         addRenderableWidget(Button.builder(Component.translatable("rpghealthbar.config.save"), button -> save())
                 .bounds(footerLeft + FOOTER_BUTTON_WIDTH + FOOTER_BUTTON_GAP, footerY, FOOTER_BUTTON_WIDTH, BUTTON_HEIGHT).build());
+        addRenderableWidget(Button.builder(Component.translatable("rpghealthbar.config.reset"), button -> confirmReset())
+                .bounds(footerLeft + (FOOTER_BUTTON_WIDTH + FOOTER_BUTTON_GAP) * 2, footerY, FOOTER_BUTTON_WIDTH, BUTTON_HEIGHT).build());
         addRenderableWidget(new PreviewButton(button -> {
             ClientConfig.set(ClientConfig.SHOW_PREVIEW, !ClientConfig.SHOW_PREVIEW.get());
             rebuildWidgets();
@@ -294,6 +297,23 @@ public class RpgConfigScreen extends Screen {
                 return super.keyPressed(keyCode, scanCode, modifiers);
             }
         });
+    }
+
+    /**
+     * Reset to Defaults: asks first. Yes puts every setting back to its default and saves it, HUD
+     * position and item name height included; No, or Esc, leaves them.
+     */
+    private void confirmReset() {
+        this.minecraft.setScreen(new ConfirmScreen(reset -> {
+            if (reset) {
+                ClientConfig.resetToDefaults();
+                for (ForgeConfigSpec.ConfigValue<?> value : EDITED) {
+                    this.opened.put(value, value.get());
+                }
+            }
+            // Coming back rebuilds the options, showing their new values.
+            this.minecraft.setScreen(this);
+        }, Component.translatable("rpghealthbar.config.reset.title"), Component.translatable("rpghealthbar.config.reset.message")));
     }
 
     @SuppressWarnings("unchecked")
