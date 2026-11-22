@@ -220,7 +220,7 @@ public class HudEditScreen extends Screen {
         }
 
         String hint = mode == Mode.ALL ? "rpghealthbar.edit.hint" : "rpghealthbar.edit.hint.one";
-        graphics.drawCenteredString(this.font, Component.translatable(hint), this.width / 2, controlsTop + 10, 0xC0C0C0);
+        graphics.drawCenteredString(this.font, Component.translatable(hint), this.width / 2, controlsTop + 10, 0xFFFFFF);
     }
 
     /**
