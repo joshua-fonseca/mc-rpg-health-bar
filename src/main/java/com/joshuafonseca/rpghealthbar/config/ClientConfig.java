@@ -1,5 +1,6 @@
 package com.joshuafonseca.rpghealthbar.config;
 
+import com.electronwill.nightconfig.core.UnmodifiableConfig;
 import java.util.EnumMap;
 import java.util.Map;
 import net.neoforged.neoforge.common.ModConfigSpec;
@@ -174,6 +175,29 @@ public final class ClientConfig {
     public static void savePositions() {
         LAYOUT_VERSION.set(2);
         SPEC.save();
+    }
+
+    /**
+     * Puts every setting back to its default, as on a fresh install, HUD position and item name
+     * height included, and writes the config file. Whether the config screen shows the preview is kept.
+     */
+    public static void resetToDefaults() {
+        resetToDefaults(SPEC.getValues());
+        SPEC.save();
+    }
+
+    private static void resetToDefaults(UnmodifiableConfig values) {
+        for (Object value : values.valueMap().values()) {
+            if (value instanceof UnmodifiableConfig section) {
+                resetToDefaults(section);
+            } else if (value instanceof ModConfigSpec.ConfigValue<?> configValue && configValue != SHOW_PREVIEW) {
+                setDefault(configValue);
+            }
+        }
+    }
+
+    private static <T> void setDefault(ModConfigSpec.ConfigValue<T> value) {
+        value.set(value.getDefault());
     }
 
     /** Updates a value and writes the config file. */

@@ -61,7 +61,8 @@ public class RpgConfigScreen extends Screen {
     /** Options are "Name: ... [value]": the name as text on the left, a button with the value on the right. */
     private static final int VALUE_WIDTH = 110;
     private static final int BUTTON_GAP = 10;
-    private static final int FOOTER_BUTTON_WIDTH = 150;
+    /** Three footer buttons fit a window 400 GUI pixels wide. */
+    private static final int FOOTER_BUTTON_WIDTH = 120;
     private static final int LABEL_COLOR = 0xFFFFFF;
     private static final int HEADER_COLOR = 0xFFFFFF;
     /** Dark yellow, for a note that a supported mod is installed. */
@@ -111,6 +112,7 @@ public class RpgConfigScreen extends Screen {
         LinearLayout footer = this.layout.addToFooter(LinearLayout.horizontal().spacing(8));
         footer.addChild(Button.builder(Component.translatable("rpghealthbar.config.back"), button -> onClose()).width(FOOTER_BUTTON_WIDTH).build());
         footer.addChild(Button.builder(Component.translatable("rpghealthbar.config.save"), button -> save()).width(FOOTER_BUTTON_WIDTH).build());
+        footer.addChild(Button.builder(Component.translatable("rpghealthbar.config.reset"), button -> confirmReset()).width(FOOTER_BUTTON_WIDTH).build());
         this.layout.visitWidgets(this::addRenderableWidget);
         this.previewButton = addRenderableWidget(new PreviewButton(button -> {
             ClientConfig.set(ClientConfig.SHOW_PREVIEW, !ClientConfig.SHOW_PREVIEW.get());
@@ -295,6 +297,27 @@ public class RpgConfigScreen extends Screen {
         });
     }
 
+    /**
+     * Reset to Defaults: asks first. Yes puts every setting back to its default and saves it, HUD
+     * position and item name height included; No, or Esc, leaves them.
+     */
+    private void confirmReset() {
+        this.minecraft.setScreen(new ConfirmScreen(reset -> {
+            if (reset) {
+                ClientConfig.resetToDefaults();
+                for (ModConfigSpec.ConfigValue<?> value : EDITED) {
+                    this.opened.put(value, value.get());
+                }
+                if (this.list != null) {
+                    this.list.clear();
+                    addOptions(this.list);
+                    this.list.setScrollAmount(0);
+                }
+            }
+            this.minecraft.setScreen(this);
+        }, Component.translatable("rpghealthbar.config.reset.title"), Component.translatable("rpghealthbar.config.reset.message")));
+    }
+
     @SuppressWarnings("unchecked")
     private static <T> void restore(ModConfigSpec.ConfigValue<T> value, Object opened) {
         if (!value.get().equals(opened)) {
@@ -408,6 +431,11 @@ public class RpgConfigScreen extends Screen {
         @Override
         public int addEntry(Row row) {
             return super.addEntry(row);
+        }
+
+        /** Removes every row, so they can be added again with fresh values. */
+        void clear() {
+            clearEntries();
         }
 
         @Override
