@@ -1,5 +1,6 @@
 package com.joshuafonseca.rpghealthbar.client.screen;
 
+import com.joshuafonseca.rpghealthbar.client.BarWidths;
 import com.joshuafonseca.rpghealthbar.client.HudLayer;
 import com.joshuafonseca.rpghealthbar.client.HudLayout;
 import com.joshuafonseca.rpghealthbar.client.HudPosition;
@@ -7,6 +8,7 @@ import com.joshuafonseca.rpghealthbar.client.HudPositionMover;
 import com.joshuafonseca.rpghealthbar.client.HudRenderer;
 import com.joshuafonseca.rpghealthbar.client.HudValues;
 import com.joshuafonseca.rpghealthbar.client.StatusColors;
+import com.joshuafonseca.rpghealthbar.client.XpBarRenderer;
 import com.joshuafonseca.rpghealthbar.compat.ManaBars;
 import com.joshuafonseca.rpghealthbar.config.AirPosition;
 import com.joshuafonseca.rpghealthbar.config.ClientConfig;
@@ -21,8 +23,8 @@ import net.minecraft.resources.ResourceLocation;
  * Drawn every frame from the current settings, so it follows each click.
  */
 final class ConfigPreview {
-    /** As wide as the HUD. */
-    static final int WIDTH = HudLayout.WIDTH;
+    /** The virtual screen's width: the default HUD fills it. */
+    private static final int WIDTH = HudLayout.WIDTH;
 
     private static final ResourceLocation ARMOR_FULL = ResourceLocation.withDefaultNamespace("hud/armor_full");
     private static final ResourceLocation ARMOR_HALF = ResourceLocation.withDefaultNamespace("hud/armor_half");
@@ -61,6 +63,12 @@ final class ConfigPreview {
         return layout.bottom() - layout.top();
     }
 
+    /** The preview's width at full size: the HUD's, or wider with bars made longer in Advanced mode. */
+    static int width() {
+        Layout layout = layout();
+        return layout.right() - layout.left();
+    }
+
     /** Draws the preview centered on {@code (centerX, centerY)}, scaled by {@code scale}; nothing while the mod is off. */
     static void draw(GuiGraphics graphics, Font font, int centerX, int centerY, float scale) {
         if (!ClientConfig.ENABLED.get()) {
@@ -72,7 +80,7 @@ final class ConfigPreview {
         graphics.pose().pushPose();
         graphics.pose().translate(centerX, centerY, 0);
         graphics.pose().scale(scale, scale, 1);
-        graphics.pose().translate(-WIDTH / 2.0F, -(preview.top() + preview.bottom()) / 2.0F, 0);
+        graphics.pose().translate(-(preview.left() + preview.right()) / 2.0F, -(preview.top() + preview.bottom()) / 2.0F, 0);
 
         HudValues values = new HudValues(HEALTH, 20, ABSORPTION, ARMOR, FOOD, 0, null, ManaBars.placeholderIrons(60), ManaBars.placeholderConfluence(60),
                 StatusColors.HEALTH, StatusColors.HUNGER, false);
@@ -100,9 +108,7 @@ final class ConfigPreview {
         }
 
         HudPosition.Bounds xp = frame.pieceBounds().get(HudPiece.XP);
-        int xpHeight = xp.bottom() - xp.top();
-        graphics.blitSprite(XP_BACKGROUND, xp.left(), xp.top(), WIDTH, xpHeight);
-        graphics.blitSprite(XP_PROGRESS, WIDTH, xpHeight, 0, 0, xp.left(), xp.top(), (int) (WIDTH * XP_PROGRESS_FRACTION), xpHeight);
+        XpBarRenderer.draw(graphics, xp.left(), xp.top(), BarWidths.xpCells(), XP_BACKGROUND, XP_PROGRESS, XP_PROGRESS_FRACTION);
         // Outlined like vanilla's, and centered on the bar like the mod draws it.
         int levelX = HudPositionMover.levelX(xp, font.width(LEVEL));
         int levelY = xp.top() - 1;
@@ -118,7 +124,7 @@ final class ConfigPreview {
      * The HUD laid out on the virtual screen, and the air bubbles' row: stacked above everything
      * (Above, or with no hunger to go under), or right under hunger (Below).
      */
-    private record Layout(HudLayer.Frame frame, int airTop, int top, int bottom) {
+    private record Layout(HudLayer.Frame frame, int airTop, int left, int top, int right, int bottom) {
     }
 
     private static Layout layout() {
@@ -129,12 +135,16 @@ final class ConfigPreview {
                 ? hunger.bottom() + 1
                 : frame.layout().top() - ROW_HEIGHT;
         // The pieces at their default spots, ignoring where they've been moved.
+        int left = 0;
         int top = airTop;
+        int right = WIDTH;
         int bottom = 0;
         for (HudPosition.Bounds piece : frame.pieceBounds().values()) {
+            left = Math.min(left, piece.left());
             top = Math.min(top, piece.top());
+            right = Math.max(right, piece.right());
             bottom = Math.max(bottom, piece.bottom());
         }
-        return new Layout(frame, airTop, top, bottom);
+        return new Layout(frame, airTop, left, top, right, bottom);
     }
 }

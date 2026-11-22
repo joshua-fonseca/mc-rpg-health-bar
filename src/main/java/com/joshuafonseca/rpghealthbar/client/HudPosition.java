@@ -104,10 +104,10 @@ public final class HudPosition {
         }
     }
 
-    /** The XP bar (with the level number centered on it) at its default position. */
+    /** The XP bar (with the level number on it) at its default position, as long as {@link BarWidths} says. */
     public static Bounds xpBar(int screenHeight, HudLayout layout) {
         int bottom = screenHeight - XP_BAR_BOTTOM_MARGIN;
-        return new Bounds(layout.x(), bottom - XP_BAR_HEIGHT, layout.x() + HudLayout.WIDTH, bottom);
+        return new Bounds(layout.x(), bottom - XP_BAR_HEIGHT, layout.x() + BarWidths.width(HudPiece.XP), bottom);
     }
 
     /**

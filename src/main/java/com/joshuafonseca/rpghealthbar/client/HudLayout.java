@@ -28,8 +28,8 @@ public record HudLayout(int x, int top, int iconRowY, int halfBarY, int healthY,
 
     /**
      * Rows from top to bottom: armor/hunger, health, then the mana bars (Iron's Spells', then
-     * Confluence's). Health and each mana bar are full or half width ({@link #HALF_BAR_WIDTH}),
-     * lined up on the left.
+     * Confluence's). Health and each mana bar are as wide as {@link BarWidths} says, lined up on
+     * the left.
      * <p>
      * The armor/hunger row holds our half bars and/or the vanilla icons, side by side. With any
      * vanilla icons in it, it's as tall as the icons and the bars are centered vertically in it;
@@ -42,10 +42,9 @@ public record HudLayout(int x, int top, int iconRowY, int halfBarY, int healthY,
      * @param belowHunger height of the rows drawn below hunger, 0 when they go above it
      */
     public static HudLayout compute(int screenWidth, int screenHeight, boolean hasBars, boolean hasIcons, int manaBars,
-                                    boolean halfHealth, int belowHunger) {
+                                    int healthWidth, int belowHunger) {
         int x = screenWidth / 2 - WIDTH / 2;
         int bottom = screenHeight - BOTTOM_MARGIN;
-        int healthWidth = halfHealth ? HALF_BAR_WIDTH : WIDTH;
         int manaY = bottom - manaBars * (MAIN_BAR_HEIGHT + ROW_GAP) + ROW_GAP;
         int healthY = manaBars > 0 ? manaY - ROW_GAP - MAIN_BAR_HEIGHT : bottom - MAIN_BAR_HEIGHT;
         int rowHeight = hasIcons ? ICON_ROW_HEIGHT : hasBars ? HALF_BAR_HEIGHT : 0;

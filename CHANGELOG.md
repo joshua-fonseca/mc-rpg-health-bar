@@ -2,11 +2,15 @@
 
 ## Unreleased
 
+- New **Edit mode** button at the top right of the config screen: **Simple** (default) keeps the Full and Half width presets; **Advanced** lets you set the health, mana and XP bars to any width by dragging their ends in the HUD Editor, where the cursor turns into a resize arrow over them. In Advanced, the width options become **Edit in HUD Editor** buttons, and the XP section gets an XP Bar Width one.
+  - The XP bar resizes a cell at a time, built from vanilla's own cells (so texture packs still apply), and its fill and the jump bar stretch over the new length.
+  - A bar not resized yet keeps its preset, and the HUD Editor's Reset puts the widths back too.
+- **Move HUD...** is now the **HUD Editor...**.
 - While riding a mount whose health shows (like a horse), the hunger bar is hidden, as vanilla hides the hunger icons for the mount's hearts.
 - With **Air Bubbles/Mount HP** on **Below**, the armor and hunger row moves up to make room while air bubbles or mount health show, a row for each, instead of the rows covering the health bar.
 - New **XP Bar** section in the config screen, with **Level Text**: the level's number in the **Center** of the XP bar (default), or at its **Left** or **Right** end.
 - **Confluence: Otherworld support** (1.21.1, Confluence 1.1.4+): its mana gets its own darker blue bar.
-  - With Iron's Spells too, Confluence's bar sits below Iron's. In Move HUD each mana bar can be moved on its own. If the server has Confluence's convertIronsSpellMana on, Iron's spells use Confluence's mana, so only Confluence's bar shows, with the spell cost preview on it.
+  - With Iron's Spells too, Confluence's bar sits below Iron's. In the HUD Editor each mana bar can be moved on its own. If the server has Confluence's convertIronsSpellMana on, Iron's spells use Confluence's mana, so only Confluence's bar shows, with the spell cost preview on it.
   - Confluence's own mana display is hidden, except in soul mode, where it shows soul. Its own health display is hidden too, and its armor and hunger displays are hidden unless Armor or Hunger is on Default.
   - Confluence's bar has its own **Confluence Mana Text** and **Confluence Mana Bar Width** options, listed only with Confluence; Iron's are now **Iron's Mana Text** and **Iron's Mana Bar Width**.
   - The Mana header says which mana mods were found, and Compatibility notes flag a Confluence older than 1.1.4. With both mods, a note explains that two mana bars mean Confluence's unified mana (convertIronsSpellMana) is off.

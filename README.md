@@ -62,6 +62,7 @@ Defaults are in bold:
 | Category | Option | Values |
 |---|---|---|
 |  | Mod State | **Enabled**, Disabled (a fully vanilla HUD; your settings are kept) |
+|  | Edit mode (top right) | **Simple** (preset widths), Advanced (the health, mana and XP bars' widths are set by dragging their ends in the HUD Editor, and the width options become Edit in HUD Editor buttons) |
 | **Armor + Hunger** | Armor | **Default** (armor icons, or another mod's armor display), Bar, Hidden |
 |  | Hunger | **Default** (hunger icons, or another mod's hunger display), Bar, Hidden |
 |  | Air Bubbles/Mount HP | **Above** hunger, Below it |
@@ -74,8 +75,9 @@ Defaults are in bold:
 |  | Confluence Mana Text (only with Confluence) | **Left**, Right, Center, Off |
 |  | Confluence Mana Bar Width (only with Confluence) | **Full**, Half |
 | **XP Bar** | Level Text | **Center**, Left, Right |
+|  | XP Bar Width (Advanced only) | Edit in HUD Editor: the XP bar is resized a cell at a time, its fill stretched over its length (**18 cells**, like vanilla) |
 | **Positioning** | Item Name... | Height of the held item's name: **Vanilla** (0), or pixels up (+) or down (-), down to right above the hotbar |
-|  | Move HUD... | Drag the whole HUD (**Moving: All**) or a single piece (**Moving: One**); the arrow keys nudge it. **Above the hotbar**, Reset puts it back |
+|  | HUD Editor... | Drag the whole HUD (**Moving: All**) or a single piece (**Moving: One**); the arrow keys nudge it. In Advanced edit mode, drag a bar's ends to resize it. **Above the hotbar**, Reset puts it back |
 
 #### The config screen
 

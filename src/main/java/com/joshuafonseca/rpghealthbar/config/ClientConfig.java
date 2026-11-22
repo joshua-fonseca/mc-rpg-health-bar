@@ -89,6 +89,32 @@ public final class ClientConfig {
             .translation("rpghealthbar.config.confluenceManaSize")
             .defineEnum("confluenceManaSize", BarSize.FULL);
 
+    public static final ModConfigSpec.EnumValue<EditMode> EDIT_MODE = BUILDER
+            .comment("SIMPLE: the bars' widths are the presets above (healthSize, manaSize, confluenceManaSize). ADVANCED: the widths below, set by dragging the bars' ends in Config → HUD Editor.")
+            .translation("rpghealthbar.config.editMode")
+            .defineEnum("editMode", EditMode.SIMPLE);
+
+    // Advanced widths: set in the HUD Editor. 0 keeps the preset (or vanilla's 18 cells for the XP bar).
+    public static final ModConfigSpec.IntValue HEALTH_WIDTH = BUILDER
+            .comment("Advanced only: width of the health bar in GUI pixels; 0 uses healthSize.")
+            .translation("rpghealthbar.config.healthWidth")
+            .defineInRange("healthWidth", 0, 0, 10000);
+
+    public static final ModConfigSpec.IntValue MANA_WIDTH = BUILDER
+            .comment("Advanced only: width of Iron's Spells 'n Spellbooks' mana bar in GUI pixels; 0 uses manaSize.")
+            .translation("rpghealthbar.config.manaWidth")
+            .defineInRange("manaWidth", 0, 0, 10000);
+
+    public static final ModConfigSpec.IntValue CONFLUENCE_MANA_WIDTH = BUILDER
+            .comment("Advanced only: width of Confluence: Otherworld's mana bar in GUI pixels; 0 uses confluenceManaSize.")
+            .translation("rpghealthbar.config.confluenceManaWidth")
+            .defineInRange("confluenceManaWidth", 0, 0, 10000);
+
+    public static final ModConfigSpec.IntValue XP_CELLS = BUILDER
+            .comment("Advanced only: how many cells long the XP bar is (vanilla's has 18); 0 keeps vanilla's.")
+            .translation("rpghealthbar.config.xpCells")
+            .defineInRange("xpCells", 0, 0, 1000);
+
     public static final int ITEM_NAME_OFFSET_MIN = -50;
     public static final int ITEM_NAME_OFFSET_MAX = 100;
 
@@ -97,11 +123,11 @@ public final class ClientConfig {
             .translation("rpghealthbar.config.itemNameOffset")
             .defineInRange("itemNameOffset", 0, ITEM_NAME_OFFSET_MIN, ITEM_NAME_OFFSET_MAX);
 
-    // Position: set by dragging the HUD in Config → Move HUD; not meant to be edited by hand.
+    // Position: set by dragging the HUD in Config → HUD Editor; not meant to be edited by hand.
     // Layout 2 (1.2.1 on): each piece has its own anchor and offset (below).
     // Layout 1 (before): the whole HUD's matching point (e.g. its bottom-center for BOTTOM_CENTER)
     // is placed at the anchor's screen point plus the offset, and each piece is shifted from there.
-    // Layout 1 is still read, and saving in Move HUD switches to layout 2.
+    // Layout 1 is still read, and saving in HUD Editor switches to layout 2.
     private static final int DEFAULT_OFFSET_X = 0;
     private static final int DEFAULT_OFFSET_Y = -24;
 
@@ -129,7 +155,7 @@ public final class ClientConfig {
      * Layout 2: each piece's anchor, and its shift from its default spot above the hotbar, in GUI
      * pixels, for a screen where the anchor is at the bottom-center; when the screen size changes,
      * the piece keeps its distance from its anchor. Layout 1: only the shifts are used, on top of
-     * the whole HUD's position. Set with Config → Move HUD.
+     * the whole HUD's position. Set with Config → HUD Editor.
      */
     private static final Map<HudPiece, ModConfigSpec.EnumValue<HudAnchor>> PIECE_ANCHORS = new EnumMap<>(HudPiece.class);
     private static final Map<HudPiece, ModConfigSpec.IntValue> PIECE_OFFSETS_X = new EnumMap<>(HudPiece.class);

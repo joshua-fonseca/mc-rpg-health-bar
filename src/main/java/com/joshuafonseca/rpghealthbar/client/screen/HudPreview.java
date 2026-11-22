@@ -9,7 +9,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 
 /**
- * A stand-in for the HUD on the Move HUD and Item Name pages, for when the real one isn't drawn:
+ * A stand-in for the HUD on the HUD Editor and Item Name pages, for when the real one isn't drawn:
  * without a survival player (title screen, creative), our bars with placeholder values, and with
  * no world at all, the XP bar (and the hotbar, if asked for) as plain boxes.
  */

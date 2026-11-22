@@ -74,13 +74,13 @@ public final class HudRenderer {
         int confluenceRow = 0;
         if (values.ironsMana() != null) {
             confluenceRow = 1;
-            inPiece(graphics, pieces, HudPiece.MANA, () -> renderMana(graphics, font, layout, layout.manaY(0), HudLayout.width(ClientConfig.MANA_SIZE.get()),
+            inPiece(graphics, pieces, HudPiece.MANA, () -> renderMana(graphics, font, layout, layout.manaY(0), BarWidths.width(HudPiece.MANA),
                     ClientConfig.manaText(), values.ironsMana(), MANA_COLOR, MANA_LOST_COLOR, MANA_COST_COLOR, MANA_TRAIL, live));
         }
         if (values.confluenceMana() != null) {
             int row = confluenceRow;
             inPiece(graphics, pieces, HudPiece.CONFLUENCE_MANA, () -> renderMana(graphics, font, layout, layout.manaY(row),
-                    HudLayout.width(ClientConfig.CONFLUENCE_MANA_SIZE.get()), ClientConfig.CONFLUENCE_MANA_TEXT.get(), values.confluenceMana(), CONFLUENCE_MANA_COLOR, CONFLUENCE_MANA_DARK_COLOR, CONFLUENCE_MANA_DARK_COLOR, CONFLUENCE_MANA_TRAIL, live));
+                    BarWidths.width(HudPiece.CONFLUENCE_MANA), ClientConfig.CONFLUENCE_MANA_TEXT.get(), values.confluenceMana(), CONFLUENCE_MANA_COLOR, CONFLUENCE_MANA_DARK_COLOR, CONFLUENCE_MANA_DARK_COLOR, CONFLUENCE_MANA_TRAIL, live));
         }
     }
 

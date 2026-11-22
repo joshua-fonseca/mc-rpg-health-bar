@@ -1,7 +1,6 @@
 package com.joshuafonseca.rpghealthbar.client;
 
 import com.joshuafonseca.rpghealthbar.compat.ManaBars;
-import com.joshuafonseca.rpghealthbar.config.BarSize;
 import com.joshuafonseca.rpghealthbar.config.ClientConfig;
 import com.joshuafonseca.rpghealthbar.config.HalfBarMode;
 import com.joshuafonseca.rpghealthbar.config.HudPiece;
@@ -96,7 +95,7 @@ public class HudLayer implements LayeredDraw.Layer {
             boolean vanillaHunger = hungerMode == HalfBarMode.VANILLA;
 
             HudLayout layout = HudLayout.compute(screenWidth, screenHeight, showArmor || showHunger, vanillaArmor || vanillaHunger, ManaBars.count(),
-                    ClientConfig.HEALTH_SIZE.get() == BarSize.HALF,
+                    BarWidths.width(HudPiece.HEALTH),
                     hungerMode == HalfBarMode.HIDDEN ? 0 : rowsBelowHunger * HudPositionMover.ROW_HEIGHT);
             Map<HudPiece, HudPosition.Bounds> pieceBounds = pieceBounds(screenHeight, layout, armorMode, hungerMode);
             HudPosition.Pieces pieces = HudPosition.pieces(screenWidth, screenHeight, pieceBounds);
@@ -133,18 +132,18 @@ public class HudLayer implements LayeredDraw.Layer {
             bounds.put(HudPiece.HEALTH, new HudPosition.Bounds(left, layout.healthY(), left + layout.healthWidth(), layout.healthY() + HudLayout.MAIN_BAR_HEIGHT));
             int manaRow = 0;
             if (ManaBars.showIrons()) {
-                bounds.put(HudPiece.MANA, manaBounds(layout, manaRow++, ClientConfig.MANA_SIZE.get()));
+                bounds.put(HudPiece.MANA, manaBounds(layout, manaRow++, HudPiece.MANA));
             }
             if (ManaBars.showConfluence()) {
-                bounds.put(HudPiece.CONFLUENCE_MANA, manaBounds(layout, manaRow, ClientConfig.CONFLUENCE_MANA_SIZE.get()));
+                bounds.put(HudPiece.CONFLUENCE_MANA, manaBounds(layout, manaRow, HudPiece.CONFLUENCE_MANA));
             }
             bounds.put(HudPiece.XP, HudPosition.xpBar(screenHeight, layout));
             return bounds;
         }
 
-        private static HudPosition.Bounds manaBounds(HudLayout layout, int row, BarSize size) {
+        private static HudPosition.Bounds manaBounds(HudLayout layout, int row, HudPiece piece) {
             int top = layout.manaY(row);
-            return new HudPosition.Bounds(layout.x(), top, layout.x() + HudLayout.width(size), top + HudLayout.MAIN_BAR_HEIGHT);
+            return new HudPosition.Bounds(layout.x(), top, layout.x() + BarWidths.width(piece), top + HudLayout.MAIN_BAR_HEIGHT);
         }
     }
 

@@ -1,6 +1,9 @@
 package com.joshuafonseca.rpghealthbar;
 
+import com.joshuafonseca.rpghealthbar.client.BarWidths;
 import com.joshuafonseca.rpghealthbar.client.HudLayer;
+import com.joshuafonseca.rpghealthbar.client.HudPosition;
+import com.joshuafonseca.rpghealthbar.client.XpBarRenderer;
 import com.joshuafonseca.rpghealthbar.client.HudPositionMover;
 import com.joshuafonseca.rpghealthbar.client.screen.RpgConfigScreen;
 import com.joshuafonseca.rpghealthbar.compat.AppleSkinCompat;
@@ -8,8 +11,12 @@ import com.joshuafonseca.rpghealthbar.compat.ConfluenceCompat;
 import com.joshuafonseca.rpghealthbar.compat.IronsSpellsCompat;
 import com.joshuafonseca.rpghealthbar.config.ClientConfig;
 import com.joshuafonseca.rpghealthbar.config.HalfBarMode;
+import com.joshuafonseca.rpghealthbar.config.HudPiece;
 import com.mojang.logging.LogUtils;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.world.entity.PlayerRideableJumping;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.EventPriority;
@@ -77,6 +84,12 @@ public class RpgHealthBar {
         // display that replaces them, like Confluence's. Otherwise ours replaces both.
         boolean armorReplaced = ClientConfig.ARMOR_MODE.get() != HalfBarMode.VANILLA;
         boolean hungerReplaced = ClientConfig.HUNGER_MODE.get() != HalfBarMode.VANILLA;
+        if ((name.equals(VanillaGuiLayers.EXPERIENCE_BAR) || name.equals(VanillaGuiLayers.JUMP_METER)) && BarWidths.customXp()) {
+            // Not vanilla's length: drawn here instead, at its place in the set.
+            drawXpBar(event.getGuiGraphics(), name.equals(VanillaGuiLayers.JUMP_METER));
+            event.setCanceled(true);
+            return;
+        }
         if (name.equals(VanillaGuiLayers.PLAYER_HEALTH)
                 || name.equals(ConfluenceCompat.HEALTH_LAYER)
                 || (name.equals(ConfluenceCompat.ARMOR_LAYER) && armorReplaced)
@@ -93,5 +106,29 @@ public class RpgHealthBar {
                 || (name.equals(VanillaGuiLayers.FOOD_LEVEL) && hungerReplaced)) {
             event.setCanceled(true);
         }
+    }
+
+    /** The XP bar, or the jump bar while riding, with the cells set in the HUD Editor; shown when vanilla's would be. */
+    private static void drawXpBar(GuiGraphics graphics, boolean jump) {
+        Minecraft minecraft = Minecraft.getInstance();
+        LocalPlayer player = minecraft.player;
+        if (player == null || minecraft.gameMode == null) {
+            return;
+        }
+        PlayerRideableJumping rideable = player.jumpableVehicle();
+        boolean shown = jump ? rideable != null : rideable == null && minecraft.gameMode.hasExperience();
+        if (!shown) {
+            return;
+        }
+        HudLayer.Frame frame = HudLayer.Frame.current(graphics.guiWidth(), graphics.guiHeight());
+        HudPosition.Bounds xp = frame.pieceBounds().get(HudPiece.XP);
+        graphics.pose().pushPose();
+        HudPosition.moveTo(graphics.pose(), frame.pieceOffset(HudPiece.XP));
+        if (jump) {
+            XpBarRenderer.renderJump(graphics, xp.left(), xp.top(), BarWidths.xpCells(), rideable);
+        } else {
+            XpBarRenderer.renderXp(graphics, xp.left(), xp.top(), BarWidths.xpCells());
+        }
+        graphics.pose().popPose();
     }
 }
