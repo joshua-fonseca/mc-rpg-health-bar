@@ -59,10 +59,20 @@ public class RpgHealthBar {
     }
 
     private static void hideVanillaLayers(RenderGuiLayerEvent.Pre event) {
+        ResourceLocation name = event.getName();
+        // Confluence's own displays replace these vanilla ones, and Confluence hides them later, at
+        // normal priority. Hidden here first, even with the mod off (it doesn't change what shows),
+        // so mods that shift them in Pre and back in Post, like Double Hotbar, never shift them
+        // without shifting back: the leftover shift would move everything drawn after, menus included.
+        if ((name.equals(VanillaGuiLayers.PLAYER_HEALTH) && ConfluenceCompat.showsOwnHealth())
+                || (name.equals(VanillaGuiLayers.ARMOR_LEVEL) && ConfluenceCompat.showsOwnArmor())
+                || (name.equals(VanillaGuiLayers.FOOD_LEVEL) && ConfluenceCompat.showsOwnFood())) {
+            event.setCanceled(true);
+            return;
+        }
         if (!ClientConfig.ENABLED.get()) {
             return;
         }
-        ResourceLocation name = event.getName();
         // Armor and hunger on Default leave whatever the game shows: the vanilla icons, or a mod's
         // display that replaces them, like Confluence's. Otherwise ours replaces both.
         boolean armorReplaced = ClientConfig.ARMOR_MODE.get() != HalfBarMode.VANILLA;
@@ -79,10 +89,8 @@ public class RpgHealthBar {
                 || name.equals(AppleSkinCompat.HEALTH_RESTORED_LAYER)
                 // Its hunger overlays only fit the vanilla icons.
                 || (AppleSkinCompat.isHungerOverlay(name) && hungerReplaced)
-                // Confluence's own icons replace these too; hidden here first, as Confluence would
-                // later, so mods that shift them in Pre and back in Post never shift them for nothing.
-                || (name.equals(VanillaGuiLayers.ARMOR_LEVEL) && (armorReplaced || ConfluenceCompat.showsOwnArmor()))
-                || (name.equals(VanillaGuiLayers.FOOD_LEVEL) && (hungerReplaced || ConfluenceCompat.showsOwnFood()))) {
+                || (name.equals(VanillaGuiLayers.ARMOR_LEVEL) && armorReplaced)
+                || (name.equals(VanillaGuiLayers.FOOD_LEVEL) && hungerReplaced)) {
             event.setCanceled(true);
         }
     }

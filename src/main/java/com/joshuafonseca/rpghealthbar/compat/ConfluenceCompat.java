@@ -99,6 +99,11 @@ public final class ConfluenceCompat {
         }
     }
 
+    /** Whether Confluence's own health display is on in its client config (terraStyleHealth, on by default). */
+    public static boolean showsOwnHealth() {
+        return clientSwitch("terraStyleHealth");
+    }
+
     /** Whether Confluence's own armor display is on in its client config (terraStyleArmor, on by default). */
     public static boolean showsOwnArmor() {
         return clientSwitch("terraStyleArmor");
