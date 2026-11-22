@@ -43,8 +43,6 @@ public class RpgHealthBar {
         NeoForge.EVENT_BUS.addListener(EventPriority.HIGHEST, true, (RenderGuiEvent.Pre event) -> {
             HudLayer.Frame.clearCurrent();
             HudPositionMover.newFrame();
-            // Before any layer draws, so Confluence's HUD neither draws nor hides the vanilla icons.
-            ConfluenceCompat.applyHudSwitches(ClientConfig.ENABLED.get());
         });
         // Highest priority: hide replaced layers before other mods' Pre listeners run, so a mod that
         // pushes the pose in Pre (and pops in Post) never pushes for a layer that won't render.
@@ -65,7 +63,14 @@ public class RpgHealthBar {
             return;
         }
         ResourceLocation name = event.getName();
+        // Armor and hunger on Default leave whatever the game shows: the vanilla icons, or a mod's
+        // display that replaces them, like Confluence's. Otherwise ours replaces both.
+        boolean armorReplaced = ClientConfig.ARMOR_MODE.get() != HalfBarMode.VANILLA;
+        boolean hungerReplaced = ClientConfig.HUNGER_MODE.get() != HalfBarMode.VANILLA;
         if (name.equals(VanillaGuiLayers.PLAYER_HEALTH)
+                || name.equals(ConfluenceCompat.HEALTH_LAYER)
+                || (name.equals(ConfluenceCompat.ARMOR_LAYER) && armorReplaced)
+                || (name.equals(ConfluenceCompat.FOOD_LAYER) && hungerReplaced)
                 || name.equals(IronsSpellsCompat.MANA_OVERLAY)
                 // Our bar shows its mana; in soul mode its display shows soul instead, so it's kept.
                 || (name.equals(ConfluenceCompat.MANA_LAYER) && ConfluenceCompat.isAvailable()
@@ -73,9 +78,9 @@ public class RpgHealthBar {
                 // Its heart previews would draw over our bars.
                 || name.equals(AppleSkinCompat.HEALTH_RESTORED_LAYER)
                 // Its hunger overlays only fit the vanilla icons.
-                || (AppleSkinCompat.isHungerOverlay(name) && ClientConfig.HUNGER_MODE.get() != HalfBarMode.VANILLA)
-                || (name.equals(VanillaGuiLayers.ARMOR_LEVEL) && ClientConfig.ARMOR_MODE.get() != HalfBarMode.VANILLA)
-                || (name.equals(VanillaGuiLayers.FOOD_LEVEL) && ClientConfig.HUNGER_MODE.get() != HalfBarMode.VANILLA)) {
+                || (AppleSkinCompat.isHungerOverlay(name) && hungerReplaced)
+                || (name.equals(VanillaGuiLayers.ARMOR_LEVEL) && armorReplaced)
+                || (name.equals(VanillaGuiLayers.FOOD_LEVEL) && hungerReplaced)) {
             event.setCanceled(true);
         }
     }

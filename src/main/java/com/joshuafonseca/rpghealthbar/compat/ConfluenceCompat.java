@@ -1,31 +1,29 @@
 package com.joshuafonseca.rpghealthbar.compat;
 
 import com.joshuafonseca.rpghealthbar.RpgHealthBar;
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import javax.annotation.Nullable;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.fml.ModList;
-import net.neoforged.neoforge.common.ModConfigSpec;
 
 /**
  * Safe to call whether or not Confluence: Otherworld is installed. Confluence has no API for other
- * mods, so its mana and settings are read by name; if a future version renames something, support
- * is turned off (and the config screen's Compatibility notes say so) instead of crashing the game.
+ * mods, so its mana is read by name; if a future version renames something, support is turned
+ * off (and the config screen's Compatibility notes say so) instead of crashing the game.
  */
 public final class ConfluenceCompat {
     public static final String MODID = "confluence";
     /** Its mana display (soul in soul mode), which our mana bar replaces outside soul mode. */
     public static final ResourceLocation MANA_LAYER = ResourceLocation.fromNamespaceAndPath(MODID, "mana_hud");
+    /** Its own health, armor and hunger displays, drawn when they're on in its client config (they are by default). */
+    public static final ResourceLocation HEALTH_LAYER = ResourceLocation.fromNamespaceAndPath(MODID, "health_hud");
+    public static final ResourceLocation ARMOR_LAYER = ResourceLocation.fromNamespaceAndPath(MODID, "armor_hud");
+    public static final ResourceLocation FOOD_LAYER = ResourceLocation.fromNamespaceAndPath(MODID, "food_hud");
 
     private static final String CLIENT_PACKETS = "org.confluence.mod.client.handler.ClientPacketHandler";
     private static final String COMPATIBILITY = "org.confluence.mod.client.handler.CompatibilityHandler";
     private static final String PLAYER_UTILS = "org.confluence.mod.util.PlayerUtils";
-    private static final String CLIENT_CONFIGS = "org.confluence.mod.client.ClientConfigs";
-    /** Confluence's own health, hunger and armor HUD: the switch read each frame, and the setting behind it. */
-    private static final String[][] HUD_SWITCHES = {
-            {"terraStyleHealth", "TERRA_STYLE_HEALTH"}, {"terraStyleFood", "TERRA_STYLE_FOOD"}, {"terraStyleArmor", "TERRA_STYLE_ARMOR"}};
 
     private static final boolean INSTALLED = ModList.get().isLoaded(MODID);
     private static boolean available = INSTALLED;
@@ -39,10 +37,6 @@ public final class ConfluenceCompat {
     private static Method convertsIronsMana;
     @Nullable
     private static Method soulMode;
-    @Nullable
-    private static Field[] hudSwitches;
-    @Nullable
-    private static ModConfigSpec.BooleanValue[] hudSettings;
 
     private ConfluenceCompat() {
     }
@@ -99,30 +93,6 @@ public final class ConfluenceCompat {
         }
     }
 
-    /**
-     * Turns Confluence's own health, hunger and armor HUD off while ours is on, so it neither draws
-     * nor hides the vanilla armor and hunger icons ours can use; with ours off, puts back what
-     * Confluence's settings say. Only the switches in memory change, never Confluence's config file.
-     */
-    public static void applyHudSwitches(boolean ours) {
-        if (!isAvailable() || hudSwitches == null) {
-            return;
-        }
-        try {
-            for (int i = 0; i < hudSwitches.length; i++) {
-                boolean wanted = !ours && hudSettings[i].get();
-                if (hudSwitches[i].getBoolean(null) != wanted) {
-                    hudSwitches[i].setBoolean(null, wanted);
-                }
-            }
-        } catch (IllegalStateException e) {
-            // Confluence's config isn't loaded yet; try again next frame.
-        } catch (ReflectiveOperationException | RuntimeException | LinkageError e) {
-            hudSwitches = null;
-            RpgHealthBar.LOGGER.warn("Couldn't turn Confluence's own health, hunger and armor HUD off; turn it off in its client config.", e);
-        }
-    }
-
     /** Whether reading Confluence still works, for the Compatibility notes. */
     public static boolean isWorking() {
         return isAvailable();
@@ -143,21 +113,6 @@ public final class ConfluenceCompat {
         }
         convertsIronsMana = optionalMethod(COMPATIBILITY, "isConvertIronsSpellMana");
         soulMode = optionalMethod(PLAYER_UTILS, "isSoulMode", Player.class);
-        try {
-            Class<?> configs = Class.forName(CLIENT_CONFIGS);
-            Field[] switches = new Field[HUD_SWITCHES.length];
-            ModConfigSpec.BooleanValue[] settings = new ModConfigSpec.BooleanValue[HUD_SWITCHES.length];
-            for (int i = 0; i < HUD_SWITCHES.length; i++) {
-                switches[i] = configs.getField(HUD_SWITCHES[i][0]);
-                Field setting = configs.getDeclaredField(HUD_SWITCHES[i][1]);
-                setting.setAccessible(true);
-                settings[i] = (ModConfigSpec.BooleanValue) setting.get(null);
-            }
-            hudSwitches = switches;
-            hudSettings = settings;
-        } catch (ReflectiveOperationException | RuntimeException | LinkageError e) {
-            RpgHealthBar.LOGGER.warn("Couldn't find Confluence's own health, hunger and armor HUD switches; turn them off in its client config.", e);
-        }
     }
 
     @Nullable

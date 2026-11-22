@@ -20,12 +20,12 @@ public final class ClientConfig {
             .define("showPreview", false);
 
     public static final ModConfigSpec.EnumValue<HalfBarMode> ARMOR_MODE = BUILDER
-            .comment("How armor is shown: VANILLA (vanilla armor icons), BAR (white bar above the health bar) or HIDDEN.")
+            .comment("How armor is shown: VANILLA (shown as Default: the armor icons, or another mod's armor display), BAR (white bar above the health bar) or HIDDEN.")
             .translation("rpghealthbar.config.armorMode")
             .defineEnum("armorMode", HalfBarMode.VANILLA);
 
     public static final ModConfigSpec.EnumValue<HalfBarMode> HUNGER_MODE = BUILDER
-            .comment("How hunger is shown: VANILLA (vanilla hunger icons), BAR (orange bar above the health bar) or HIDDEN.")
+            .comment("How hunger is shown: VANILLA (shown as Default: the hunger icons, or another mod's hunger display), BAR (orange bar above the health bar) or HIDDEN.")
             .translation("rpghealthbar.config.hungerMode")
             .defineEnum("hungerMode", HalfBarMode.VANILLA);
 

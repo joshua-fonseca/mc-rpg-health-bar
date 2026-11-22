@@ -53,11 +53,11 @@ A highly customizable GUI mod. Replaces the vanilla hearts with an RPG-style hea
 - **Client-side only:** servers don't need it, and it works on servers that don't have it.
 - **[Iron's Spells 'n Spellbooks](https://www.curseforge.com/projects/855414) by Iron431 and Lab3:** optional. When it's installed you get the mana bar and the spell cost preview, and Iron's own mana bar is hidden.
 - **[AppleSkin](https://www.curseforge.com/minecraft/mc-mods/appleskin) by squeek502:** optional. When it's installed, saturation is outlined in yellow on the hunger bar and held food's value flashes on it; with the vanilla hunger icons, AppleSkin's own overlays move with them.
-- **[Confluence: Otherworld](https://www.curseforge.com/minecraft/mc-mods/confluence):** optional. When it's installed its mana gets its own darker blue bar, below Iron's when both are installed; with Confluence's convertIronsSpellMana on, Iron's spells use Confluence's mana, so only that bar shows, with the spell cost preview. Confluence's own health, hunger, armor and mana displays are hidden while this mod is on; in soul mode its soul display stays.
+- **[Confluence: Otherworld](https://www.curseforge.com/minecraft/mc-mods/confluence):** optional. When it's installed its mana gets its own darker blue bar, below Iron's when both are installed; with Confluence's convertIronsSpellMana on, Iron's spells use Confluence's mana, so only that bar shows, with the spell cost preview. Confluence's own health and mana displays are hidden while this mod is on (in soul mode its soul display stays); with Armor or Hunger on Default, Confluence's own armor and hunger displays show, if they're on in its config.
 - **Double Hotbar:** compatible with [Double Hotbar](https://www.curseforge.com/minecraft/mc-mods/double-hotbar) by sidezbros on 1.20.1, and its unofficial NeoForge port, [Double Hotbar NeoForge](https://www.curseforge.com/projects/1563792) by \_retrospective\_, on 1.21.1. Open **Move HUD...** and drag the HUD up above the second hotbar once; the bars, XP bar and level move together and stay there, and the item name stays above them.
 - Works with other mods that draw near the hotbar the same way: drag the HUD, or just the pieces in the way, clear of them.
 - Air bubbles and mount health stay vanilla and stack above the bars.
-- **Texture packs:** armor and hunger on Vanilla use your pack's icons, and the hotbar, XP bar, air bubbles and mount health stay vanilla, so packs restyle them. The health and mana bars, and armor and hunger as bars, are drawn by the mod and don't change with a pack.
+- **Texture packs:** armor and hunger on Default use your pack's icons, and the hotbar, XP bar, air bubbles and mount health stay vanilla, so packs restyle them. The health and mana bars, and armor and hunger as bars, are drawn by the mod and don't change with a pack.
 
 #### Iron's Spells: what spell cost preview looks like
 
@@ -72,8 +72,8 @@ Defaults are in bold:
 | Category | Option | Values |
 |---|---|---|
 |  | Mod State | **Enabled**, Disabled (a fully vanilla HUD; your settings are kept) |
-| **Armor + Hunger** | Armor | **Vanilla**, Bar, Hidden |
-|  | Hunger | **Vanilla**, Bar, Hidden |
+| **Armor + Hunger** | Armor | **Default** (armor icons, or another mod's armor display), Bar, Hidden |
+|  | Hunger | **Default** (hunger icons, or another mod's hunger display), Bar, Hidden |
 |  | Air Bubbles/Mount HP | **Above** hunger, Below it |
 | **Health** | Health Units | **HP** (20 for a full vanilla bar), Hearts (10) |
 |  | Absorption | **Separate** (`16+4/20`), Combined (`20/20`) |
