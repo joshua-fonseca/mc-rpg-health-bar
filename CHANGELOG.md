@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- While riding a mount whose health shows (like a horse), the hunger bar is hidden, as vanilla hides the hunger icons for the mount's hearts.
 - With **Air Bubbles/Mount HP** on **Below**, the armor and hunger row moves up to make room while air bubbles or mount health show, a row for each, instead of the rows covering the health bar.
 - New **XP Bar** section in the config screen, with **Level Text**: the level's number in the **Center** of the XP bar (default), or at its **Left** or **Right** end.
 - **Confluence: Otherworld support** (1.21.1, Confluence 1.1.4+): its mana gets its own darker blue bar.

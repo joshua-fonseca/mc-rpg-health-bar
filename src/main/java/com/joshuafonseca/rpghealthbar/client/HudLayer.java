@@ -13,6 +13,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.LayeredDraw;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 
 /** Draws the whole bar group. */
@@ -34,7 +35,10 @@ public class HudLayer implements LayeredDraw.Layer {
         graphics.pose().pushPose();
         // Each piece is shifted on its own by HudRenderer; this only undoes other mods' shifts.
         HudPosition.moveTo(graphics.pose(), HudPosition.Offset.ZERO);
-        HudRenderer.render(graphics, minecraft.font, frame.layout(), values, frame.showArmor(), frame.showHunger(), frame.pieces(), true);
+        // Riding a mount whose health vanilla shows, its hearts take hunger's place, as in vanilla.
+        boolean mounted = player.getVehicle() instanceof LivingEntity vehicle && vehicle.showVehicleHealth();
+        HudRenderer.render(graphics, minecraft.font, frame.layout(), values, frame.showArmor(), frame.showHunger() && !mounted,
+                frame.pieces(), true);
         graphics.pose().popPose();
     }
 
