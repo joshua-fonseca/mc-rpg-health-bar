@@ -29,6 +29,11 @@ public final class HudRenderer {
     /** Absorption grows in from the left when gained, rather than appearing at once. */
     private static final BarGrow ABSORPTION_GROW = new BarGrow();
     private static final BarTrail ABSORPTION_TRAIL = new BarTrail(500);
+    /**
+     * The most absorption since it was last gone. Absorption above max health is measured against
+     * this instead, so the bar fills with all of it and every point lost shows.
+     */
+    private static float absorptionPeak;
     /** At or below this much health (plus absorption), the bar pulses as a warning, like vanilla's shaking hearts. */
     private static final float LOW_HEALTH = 4.0F;
     private static final long LOW_HEALTH_PULSE_MILLIS = 900;
@@ -122,15 +127,21 @@ public final class HudRenderer {
             renderHealthEffects(graphics, x, y, width, values);
         }
         float shownAbsorption = live ? ABSORPTION_GROW.update(absorption) : absorption;
-        if (shownAbsorption > 0) {
-            BarRenderer.drawFill(graphics, x, y, width, HudLayout.MAIN_BAR_HEIGHT, true, shownAbsorption / maxHealth, ABSORPTION_COLOR, shownAbsorption < maxHealth);
-        }
+        // absorption lost fades like health does; while it grows the trail is at the value, so nothing shows
+        float absorptionTrail = live ? ABSORPTION_TRAIL.update(absorption) : absorption;
+        float absorptionScale;
         if (live) {
-            // absorption lost fades like health does; while it grows the trail is at the value, so nothing shows
-            float trail = ABSORPTION_TRAIL.update(absorption);
-            if (trail > absorption) {
-                BarRenderer.drawSection(graphics, x, y, width, HudLayout.MAIN_BAR_HEIGHT, true, absorption / maxHealth, trail / maxHealth, StatusColors.lost(ABSORPTION_COLOR), false, 1.0F);
-            }
+            // The peak resets only once the absorption has fully gone, trail included, so the scale never jumps mid-fade.
+            absorptionPeak = absorptionTrail <= 0 && shownAbsorption <= 0 ? 0 : Math.max(absorptionPeak, absorption);
+            absorptionScale = Math.max(maxHealth, absorptionPeak);
+        } else {
+            absorptionScale = Math.max(maxHealth, absorption);
+        }
+        if (shownAbsorption > 0) {
+            BarRenderer.drawFill(graphics, x, y, width, HudLayout.MAIN_BAR_HEIGHT, true, shownAbsorption / absorptionScale, ABSORPTION_COLOR, shownAbsorption < absorptionScale);
+        }
+        if (absorptionTrail > absorption) {
+            BarRenderer.drawSection(graphics, x, y, width, HudLayout.MAIN_BAR_HEIGHT, true, absorption / absorptionScale, absorptionTrail / absorptionScale, StatusColors.lost(ABSORPTION_COLOR), false, 1.0F);
         }
 
         BarText text = ClientConfig.healthText();
