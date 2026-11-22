@@ -117,7 +117,7 @@ Settings are stored in `config/rpghealthbar-client.toml`.
 
 ## Development
 
-Requires Java 17. See [PLAN.md](PLAN.md) for the full design (written for 1.21.1; the differences on 1.20.1 are listed below).
+Requires Java 17. The differences from the 1.21.1 version are listed below.
 
 ```sh
 ./gradlew build      # builds the jar into build/libs/
