@@ -18,7 +18,7 @@ A highly customizable GUI mod. Replaces the vanilla hearts with an RPG-style hea
 - **Half-size bars:** health and mana can each be full or half width.
 - **Move the HUD** by dragging it: can either move the whole set, including the XP bar and level, or each piece (armor, hunger, health, each mana bar, XP bar) on its own. It stays in place when you change the window size or GUI scale.
 - **Item name height:** set how high the held item's name sits, with a preview that moves as you change it. It starts at vanilla's height, which leaves room for mods that add hotbars.
-- **Air bubbles and mount health** can sit above hunger, like vanilla, or below it, for layouts with health or mana above hunger.
+- **Air bubbles and mount health** can sit above hunger, like vanilla, or below it, for layouts with health or mana above hunger. Below, hunger and armor move up to make room while they show, one row per row of bubbles or hearts.
 - **Text position:** the numbers on the health and mana bars can sit on the left, right or center, or be turned off.
 - **On/off switch:** turn the whole mod off for a fully vanilla HUD, and back on, without losing your settings.
 - **Live preview:** the config screen can show the HUD beside the options, drawn as your settings would, so you see each change without leaving the screen.

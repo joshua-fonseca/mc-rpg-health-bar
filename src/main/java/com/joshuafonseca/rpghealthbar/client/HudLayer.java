@@ -74,8 +74,16 @@ public class HudLayer implements LayeredDraw.Layer {
             current = null;
         }
 
-        /** The frame for the current settings, with the mana bars {@link ManaBars} shows. */
+        /**
+         * The frame for the current settings, with the mana bars {@link ManaBars} shows, and room
+         * under hunger for the air and mount health rows shown there now.
+         */
         public static Frame compute(int screenWidth, int screenHeight) {
+            return compute(screenWidth, screenHeight, HudPositionMover.rowsBelowHunger());
+        }
+
+        /** @param rowsBelowHunger how many rows of air and mount health go between hunger and the health bar */
+        public static Frame compute(int screenWidth, int screenHeight, int rowsBelowHunger) {
             HalfBarMode armorMode = ClientConfig.ARMOR_MODE.get();
             HalfBarMode hungerMode = ClientConfig.HUNGER_MODE.get();
             boolean showArmor = armorMode == HalfBarMode.BAR;
@@ -84,7 +92,8 @@ public class HudLayer implements LayeredDraw.Layer {
             boolean vanillaHunger = hungerMode == HalfBarMode.VANILLA;
 
             HudLayout layout = HudLayout.compute(screenWidth, screenHeight, showArmor || showHunger, vanillaArmor || vanillaHunger, ManaBars.count(),
-                    ClientConfig.HEALTH_SIZE.get() == BarSize.HALF);
+                    ClientConfig.HEALTH_SIZE.get() == BarSize.HALF,
+                    hungerMode == HalfBarMode.HIDDEN ? 0 : rowsBelowHunger * HudPositionMover.ROW_HEIGHT);
             Map<HudPiece, HudPosition.Bounds> pieceBounds = pieceBounds(screenHeight, layout, armorMode, hungerMode);
             HudPosition.Pieces pieces = HudPosition.pieces(screenWidth, screenHeight, pieceBounds);
             HudPosition.Bounds bounds = null;

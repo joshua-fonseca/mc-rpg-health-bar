@@ -10,7 +10,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.FluidTags;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.client.event.RenderGuiLayerEvent;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 
@@ -47,7 +49,7 @@ public final class HudPositionMover {
     private static final int LEVEL_DROP = 5;
 
     /** Vanilla's rows are 9px icons plus a 1px gap. */
-    private static final int ROW_HEIGHT = 10;
+    public static final int ROW_HEIGHT = 10;
     /** Height of the air and mount health rows already drawn below hunger this frame. */
     private static int belowHeight;
     /** Gui.rightHeight before a row drawn below hunger, or -1; put back after it, see {@link #onPost}. */
@@ -139,6 +141,26 @@ public final class HudPositionMover {
         int firstRow = hunger.bottom() + 1 + belowHeight + (rows - 1) * ROW_HEIGHT;
         graphics.pose().translate(0, firstRow - vanillaFirstRow, 0);
         rightHeightBefore = gui.rightHeight;
+    }
+
+    /**
+     * How many rows go below hunger now: air while vanilla shows it (head underwater, or air not
+     * full) and mount health's rows while riding. 0 with Air Bubbles/Mount HP on Above.
+     */
+    public static int rowsBelowHunger() {
+        Minecraft minecraft = Minecraft.getInstance();
+        if (ClientConfig.AIR_POSITION.get() != AirPosition.BELOW || !(minecraft.getCameraEntity() instanceof Player player)) {
+            return 0;
+        }
+        int rows = 0;
+        // As in Gui.renderAirLevel.
+        if (player.isEyeInFluid(FluidTags.WATER) || Math.min(player.getAirSupply(), player.getMaxAirSupply()) < player.getMaxAirSupply()) {
+            rows++;
+        }
+        if (player.getVehicle() instanceof LivingEntity vehicle && vehicle.showVehicleHealth()) {
+            rows += vehicleRows();
+        }
+        return rows;
     }
 
     /** Rows of mount health vanilla draws: 10 hearts a row, up to 30 hearts (as in Gui.getVehicleMaxHearts). */
