@@ -16,7 +16,7 @@ public final class HudRenderer {
     private static final int ABSORPTION_COLOR = 0xFFD8A820;
     /** A full layer of absorption behind the current one, when there's more than max health of it: 75% of {@link #ABSORPTION_COLOR}. */
     private static final int ABSORPTION_BACK_COLOR = 0xFFA27E18;
-    /** What the fill flashes right after a drop, before the lost section shows as the darker trail. */
+    /** What's left of the fill flashes this right after a drop, fading back to its color. */
     private static final int FLASH_COLOR = 0xFFFFFFFF;
     private static final int MANA_COLOR = 0xFF2C88D0;
     private static final int ARMOR_COLOR = 0xFFB0B0B0;
@@ -124,9 +124,7 @@ public final class HudRenderer {
             float trail = HEALTH_TRAIL.update(health);
             BarRenderer.drawSection(graphics, x, y, width, HudLayout.MAIN_BAR_HEIGHT, true, health / maxHealth, trail / maxHealth, StatusColors.lost(values.healthColor()), false, 1.0F);
             renderHealthEffects(graphics, x, y, width, values);
-            if (HEALTH_TRAIL.flashing()) {
-                flash(graphics, x, y, width, trail / maxHealth);
-            }
+            flash(graphics, x, y, width, health / maxHealth, HEALTH_TRAIL.flash());
         }
         // Absorption comes in layers of max health each: the current one in front, bright, and a full
         // darker one behind it while there's more. When the front layer runs out, the one behind takes its place.
@@ -147,10 +145,8 @@ public final class HudRenderer {
                 float from = (absorption - layerBase) / maxHealth;
                 float to = Math.min(trail - layerBase, maxHealth) / maxHealth;
                 BarRenderer.drawSection(graphics, x, y, width, HudLayout.MAIN_BAR_HEIGHT, true, from, to, StatusColors.lost(ABSORPTION_COLOR), false, 1.0F);
-                if (ABSORPTION_TRAIL.flashing()) {
-                    flash(graphics, x, y, width, to);
-                }
             }
+            flash(graphics, x, y, width, (absorption - layerBase) / maxHealth, ABSORPTION_TRAIL.flash());
         }
 
         BarText text = ClientConfig.healthText();
@@ -159,9 +155,11 @@ public final class HudRenderer {
         }
     }
 
-    /** Right after a drop, the whole fill, what's left and what was lost, flashes white before the lost trail shows. */
-    private static void flash(GuiGraphics graphics, int x, int y, int width, float toFraction) {
-        BarRenderer.drawSection(graphics, x, y, width, HudLayout.MAIN_BAR_HEIGHT, true, 0, toFraction, FLASH_COLOR, false, 1.0F);
+    /** Right after a drop, what's left of the fill flashes white and quickly fades back to its color. */
+    private static void flash(GuiGraphics graphics, int x, int y, int width, float toFraction, float alpha) {
+        if (alpha > 0) {
+            BarRenderer.drawSection(graphics, x, y, width, HudLayout.MAIN_BAR_HEIGHT, true, 0, toFraction, FLASH_COLOR, false, alpha);
+        }
     }
 
     /** The low-health pulse and the Regeneration sweep over the health fill, like the vanilla hearts' movement. */
