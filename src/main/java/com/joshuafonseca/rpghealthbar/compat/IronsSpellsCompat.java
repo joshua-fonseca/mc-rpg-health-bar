@@ -23,13 +23,6 @@ public final class IronsSpellsCompat {
     private IronsSpellsCompat() {
     }
 
-    /**
-     * @param hoveredCost mana cost of the spell hovered in Iron's spell wheel, or 0 when the wheel
-     *                    is closed
-     */
-    public record Mana(float current, float max, float hoveredCost) {
-    }
-
     /** Whether the mana bar should be part of the layout. */
     public static boolean isAvailable() {
         return available;
@@ -63,9 +56,12 @@ public final class IronsSpellsCompat {
         return new Mana(current, max, hoveredCost(player));
     }
 
-    /** 0 if the wheel is closed, nothing is hovered yet, or the wheel can't be read. */
-    private static float hoveredCost(Player player) {
-        if (!wheelAvailable) {
+    /**
+     * Mana cost of the spell hovered in Iron's spell wheel: 0 if the wheel is closed, nothing is
+     * hovered yet, or the wheel can't be read.
+     */
+    public static float hoveredCost(Player player) {
+        if (!available || !wheelAvailable) {
             return 0;
         }
         try {

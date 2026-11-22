@@ -2,6 +2,7 @@ package com.joshuafonseca.rpghealthbar.client.screen;
 
 import com.joshuafonseca.rpghealthbar.compat.AppleSkinCompat;
 import com.joshuafonseca.rpghealthbar.compat.CompatNotes;
+import com.joshuafonseca.rpghealthbar.compat.ConfluenceCompat;
 import com.joshuafonseca.rpghealthbar.compat.IronsSpellsCompat;
 import com.joshuafonseca.rpghealthbar.config.AbsorptionDisplay;
 import com.joshuafonseca.rpghealthbar.config.AirPosition;
@@ -181,14 +182,16 @@ public class RpgConfigScreen extends Screen {
         list.addEntry(textOption("healthText", ClientConfig.healthText(), ClientConfig.HEALTH_TEXT, ClientConfig.SHOW_HEALTH_TEXT));
         list.addEntry(option("healthSize", BarSize.values(), ClientConfig.HEALTH_SIZE, BarSize::displayName, "full", "half"));
 
-        // The mana options only do something with Iron's Spells, so without it they can't be changed.
+        // The mana options only do something with a mana mod, so without one they can't be changed.
         boolean irons = IronsSpellsCompat.isAvailable();
+        boolean confluence = ConfluenceCompat.isAvailable();
+        String detected = irons && confluence ? "ironsAndConfluenceDetected" : irons ? "ironsDetected" : confluence ? "confluenceDetected" : "ironsNotDetected";
         list.addEntry(new Header(Component.translatable("rpghealthbar.config.section.mana"),
-                Component.translatable(irons ? "rpghealthbar.config.ironsDetected" : "rpghealthbar.config.ironsNotDetected"), IRONS_NOTE_COLOR));
+                Component.translatable("rpghealthbar.config." + detected), IRONS_NOTE_COLOR));
         WidgetRow manaText = textOption("manaText", ClientConfig.manaText(), ClientConfig.MANA_TEXT, ClientConfig.SHOW_MANA_TEXT);
         WidgetRow manaSize = option("manaSize", BarSize.values(), ClientConfig.MANA_SIZE, BarSize::displayName, "full", "half");
-        manaText.setActive(irons);
-        manaSize.setActive(irons);
+        manaText.setActive(irons || confluence);
+        manaSize.setActive(irons || confluence);
         list.addEntry(manaText);
         list.addEntry(manaSize);
 

@@ -6,7 +6,7 @@ import com.joshuafonseca.rpghealthbar.client.HudPosition;
 import com.joshuafonseca.rpghealthbar.client.HudRenderer;
 import com.joshuafonseca.rpghealthbar.client.HudValues;
 import com.joshuafonseca.rpghealthbar.client.StatusColors;
-import com.joshuafonseca.rpghealthbar.compat.IronsSpellsCompat;
+import com.joshuafonseca.rpghealthbar.compat.ManaBars;
 import com.joshuafonseca.rpghealthbar.config.AirPosition;
 import com.joshuafonseca.rpghealthbar.config.ClientConfig;
 import com.joshuafonseca.rpghealthbar.config.HudPiece;
@@ -73,8 +73,8 @@ final class ConfigPreview {
         graphics.pose().scale(scale, scale, 1);
         graphics.pose().translate(-WIDTH / 2.0F, -(preview.top() + preview.bottom()) / 2.0F, 0);
 
-        IronsSpellsCompat.Mana mana = IronsSpellsCompat.isAvailable() ? new IronsSpellsCompat.Mana(60, 100, 0) : null;
-        HudValues values = new HudValues(HEALTH, 20, ABSORPTION, ARMOR, FOOD, 0, null, mana, StatusColors.HEALTH, StatusColors.HUNGER, false);
+        HudValues values = new HudValues(HEALTH, 20, ABSORPTION, ARMOR, FOOD, 0, null, ManaBars.placeholderIrons(60), ManaBars.placeholderConfluence(60),
+                StatusColors.HEALTH, StatusColors.HUNGER, false);
         HudRenderer.render(graphics, font, layout, values, frame.showArmor(), frame.showHunger(), HudPosition.Pieces.NONE, false);
 
         HudPosition.Bounds armor = frame.pieceBounds().get(HudPiece.ARMOR);
@@ -121,7 +121,7 @@ final class ConfigPreview {
     }
 
     private static Layout layout() {
-        HudLayer.Frame frame = HudLayer.Frame.compute(WIDTH, VIRTUAL_HEIGHT, IronsSpellsCompat.isAvailable());
+        HudLayer.Frame frame = HudLayer.Frame.compute(WIDTH, VIRTUAL_HEIGHT, ManaBars.count());
         HudPosition.Bounds hunger = frame.pieceBounds().get(HudPiece.HUNGER);
         int airTop = ClientConfig.AIR_POSITION.get() == AirPosition.BELOW && hunger != null
                 ? hunger.bottom() + 1

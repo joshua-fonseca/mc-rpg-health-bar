@@ -50,7 +50,7 @@ public final class ClientConfig {
             .defineEnum("healthText", BarText.LEFT);
 
     public static final ModConfigSpec.EnumValue<BarText> MANA_TEXT = BUILDER
-            .comment("Where the numbers go on the mana bar (Iron's Spells 'n Spellbooks only): LEFT, RIGHT, CENTER or OFF.")
+            .comment("Where the numbers go on the mana bars (Iron's Spells 'n Spellbooks or Confluence only): LEFT, RIGHT, CENTER or OFF.")
             .translation("rpghealthbar.config.manaText")
             .defineEnum("manaText", BarText.LEFT);
 
@@ -70,7 +70,7 @@ public final class ClientConfig {
             .defineEnum("healthSize", BarSize.FULL);
 
     public static final ModConfigSpec.EnumValue<BarSize> MANA_SIZE = BUILDER
-            .comment("Width of the mana bar: FULL or HALF. With both bars HALF, they share a row, health on the left (Iron's Spells 'n Spellbooks only).")
+            .comment("Width of the mana bars: FULL or HALF (Iron's Spells 'n Spellbooks or Confluence only).")
             .translation("rpghealthbar.config.manaSize")
             .defineEnum("manaSize", BarSize.FULL);
 

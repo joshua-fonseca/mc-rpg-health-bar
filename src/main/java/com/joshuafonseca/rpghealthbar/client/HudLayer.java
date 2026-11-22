@@ -1,6 +1,6 @@
 package com.joshuafonseca.rpghealthbar.client;
 
-import com.joshuafonseca.rpghealthbar.compat.IronsSpellsCompat;
+import com.joshuafonseca.rpghealthbar.compat.ManaBars;
 import com.joshuafonseca.rpghealthbar.config.BarSize;
 import com.joshuafonseca.rpghealthbar.config.ClientConfig;
 import com.joshuafonseca.rpghealthbar.config.HalfBarMode;
@@ -64,7 +64,7 @@ public class HudLayer implements LayeredDraw.Layer {
         /** The frame for the HUD being drawn, worked out once per frame. */
         public static Frame current(int screenWidth, int screenHeight) {
             if (current == null) {
-                current = compute(screenWidth, screenHeight, IronsSpellsCompat.isAvailable());
+                current = compute(screenWidth, screenHeight, ManaBars.count());
             }
             return current;
         }
@@ -74,7 +74,8 @@ public class HudLayer implements LayeredDraw.Layer {
             current = null;
         }
 
-        public static Frame compute(int screenWidth, int screenHeight, boolean showMana) {
+        /** @param manaBars how many mana bars to lay out, normally {@link ManaBars#count()} */
+        public static Frame compute(int screenWidth, int screenHeight, int manaBars) {
             HalfBarMode armorMode = ClientConfig.ARMOR_MODE.get();
             HalfBarMode hungerMode = ClientConfig.HUNGER_MODE.get();
             boolean showArmor = armorMode == HalfBarMode.BAR;
@@ -82,9 +83,9 @@ public class HudLayer implements LayeredDraw.Layer {
             boolean vanillaArmor = armorMode == HalfBarMode.VANILLA;
             boolean vanillaHunger = hungerMode == HalfBarMode.VANILLA;
 
-            HudLayout layout = HudLayout.compute(screenWidth, screenHeight, showArmor || showHunger, vanillaArmor || vanillaHunger, showMana,
+            HudLayout layout = HudLayout.compute(screenWidth, screenHeight, showArmor || showHunger, vanillaArmor || vanillaHunger, manaBars,
                     ClientConfig.HEALTH_SIZE.get() == BarSize.HALF, ClientConfig.MANA_SIZE.get() == BarSize.HALF);
-            Map<HudPiece, HudPosition.Bounds> pieceBounds = pieceBounds(screenHeight, layout, armorMode, hungerMode, showMana);
+            Map<HudPiece, HudPosition.Bounds> pieceBounds = pieceBounds(screenHeight, layout, armorMode, hungerMode);
             HudPosition.Pieces pieces = HudPosition.pieces(screenWidth, screenHeight, pieceBounds);
             HudPosition.Bounds bounds = null;
             for (Map.Entry<HudPiece, HudPosition.Bounds> entry : pieceBounds.entrySet()) {
@@ -99,8 +100,8 @@ public class HudLayer implements LayeredDraw.Layer {
             return pieces.get(piece);
         }
 
-        /** Each shown piece at its default position. Health and XP are always shown. */
-        private static Map<HudPiece, HudPosition.Bounds> pieceBounds(int screenHeight, HudLayout layout, HalfBarMode armorMode, HalfBarMode hungerMode, boolean showMana) {
+        /** Each shown piece at its default position. Health and XP are always shown; the mana bars are one piece. */
+        private static Map<HudPiece, HudPosition.Bounds> pieceBounds(int screenHeight, HudLayout layout, HalfBarMode armorMode, HalfBarMode hungerMode) {
             Map<HudPiece, HudPosition.Bounds> bounds = new EnumMap<>(HudPiece.class);
             int left = layout.x();
             int right = left + HudLayout.WIDTH;
@@ -117,8 +118,8 @@ public class HudLayer implements LayeredDraw.Layer {
                 bounds.put(HudPiece.HUNGER, new HudPosition.Bounds(layout.hungerX(), layout.halfBarY(), right, barBottom));
             }
             bounds.put(HudPiece.HEALTH, new HudPosition.Bounds(left, layout.healthY(), left + layout.healthWidth(), layout.healthY() + HudLayout.MAIN_BAR_HEIGHT));
-            if (showMana) {
-                bounds.put(HudPiece.MANA, new HudPosition.Bounds(layout.manaX(), layout.manaY(), layout.manaX() + layout.manaWidth(), layout.manaY() + HudLayout.MAIN_BAR_HEIGHT));
+            if (layout.manaBars() > 0) {
+                bounds.put(HudPiece.MANA, new HudPosition.Bounds(left, layout.manaY(), left + layout.manaWidth(), layout.manaBottom()));
             }
             bounds.put(HudPiece.XP, HudPosition.xpBar(screenHeight, layout));
             return bounds;

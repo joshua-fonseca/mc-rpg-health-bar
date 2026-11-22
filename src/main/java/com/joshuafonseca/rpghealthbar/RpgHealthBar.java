@@ -4,10 +4,12 @@ import com.joshuafonseca.rpghealthbar.client.HudLayer;
 import com.joshuafonseca.rpghealthbar.client.HudPositionMover;
 import com.joshuafonseca.rpghealthbar.client.screen.RpgConfigScreen;
 import com.joshuafonseca.rpghealthbar.compat.AppleSkinCompat;
+import com.joshuafonseca.rpghealthbar.compat.ConfluenceCompat;
 import com.joshuafonseca.rpghealthbar.compat.IronsSpellsCompat;
 import com.joshuafonseca.rpghealthbar.config.ClientConfig;
 import com.joshuafonseca.rpghealthbar.config.HalfBarMode;
 import com.mojang.logging.LogUtils;
+import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.EventPriority;
@@ -41,6 +43,8 @@ public class RpgHealthBar {
         NeoForge.EVENT_BUS.addListener(EventPriority.HIGHEST, true, (RenderGuiEvent.Pre event) -> {
             HudLayer.Frame.clearCurrent();
             HudPositionMover.newFrame();
+            // Before any layer draws, so Confluence's HUD neither draws nor hides the vanilla icons.
+            ConfluenceCompat.applyHudSwitches(ClientConfig.ENABLED.get());
         });
         // Highest priority: hide replaced layers before other mods' Pre listeners run, so a mod that
         // pushes the pose in Pre (and pops in Post) never pushes for a layer that won't render.
@@ -63,6 +67,9 @@ public class RpgHealthBar {
         ResourceLocation name = event.getName();
         if (name.equals(VanillaGuiLayers.PLAYER_HEALTH)
                 || name.equals(IronsSpellsCompat.MANA_OVERLAY)
+                // Our bar shows its mana; in soul mode its display shows soul instead, so it's kept.
+                || (name.equals(ConfluenceCompat.MANA_LAYER) && ConfluenceCompat.isAvailable()
+                        && !ConfluenceCompat.isSoulMode(Minecraft.getInstance().player))
                 // Its heart previews would draw over our bars.
                 || name.equals(AppleSkinCompat.HEALTH_RESTORED_LAYER)
                 // Its hunger overlays only fit the vanilla icons.

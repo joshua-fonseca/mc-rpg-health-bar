@@ -21,7 +21,9 @@ public final class CompatNotes {
 
     private static final List<Requirement> REQUIREMENTS = List.of(
             new Requirement(IronsSpellsCompat.MODID, "Iron's Spells", "3.4.0"),
-            new Requirement(AppleSkinCompat.MODID, "AppleSkin", "3.0.4"));
+            new Requirement(AppleSkinCompat.MODID, "AppleSkin", "3.0.4"),
+            // The first version whose mana is a decimal, as read now.
+            new Requirement(ConfluenceCompat.MODID, "Confluence", "1.1.4"));
 
     private CompatNotes() {
     }
@@ -45,6 +47,9 @@ public final class CompatNotes {
         }
         if (!noted.contains(AppleSkinCompat.MODID) && installedVersion(AppleSkinCompat.MODID).isPresent() && !AppleSkinCompat.isWorking()) {
             notes.add(Component.translatable("rpghealthbar.config.compat.failed", "AppleSkin"));
+        }
+        if (!noted.contains(ConfluenceCompat.MODID) && installedVersion(ConfluenceCompat.MODID).isPresent() && !ConfluenceCompat.isWorking()) {
+            notes.add(Component.translatable("rpghealthbar.config.compat.failed", "Confluence"));
         }
         return notes;
     }

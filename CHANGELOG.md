@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+- **Confluence: Otherworld support** (1.21.1, Confluence 1.1.4+): its mana gets its own darker blue bar.
+  - With Iron's Spells too, Confluence's bar sits below Iron's. If the server has Confluence's convertIronsSpellMana on, Iron's spells use Confluence's mana, so only Confluence's bar shows, with the spell cost preview on it.
+  - Confluence's own mana display is hidden, except in soul mode, where it shows soul. Its own health, hunger and armor displays are turned off while this mod is on (its config file isn't changed), so your Vanilla armor and hunger icons still show.
+  - The Mana header says which mana mods were found, and Compatibility notes flag a Confluence older than 1.1.4.
+- Half-width health and mana bars no longer share a row: they stack like full ones.
 - New **Compatibility notes** at the top of the config screen: click the **+** or its label to see them. They list a supported mod installed at a version that's too old, or one that couldn't be read, or say that all is well. While there's a problem, its count shows in red beside the label.
 - New **Reset to Defaults** button beside Save Settings. After asking first, it puts every setting back to its default, including the HUD position and the item name height. Whether the preview is shown is kept.
 - Losing health or absorption flashes what's left white, fading quickly back to its color, while the lost section shows and fades as before.

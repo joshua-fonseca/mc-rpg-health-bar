@@ -31,6 +31,11 @@ repositories {
     maven { url = "https://maven.kosmx.dev/" }
     // AppleSkin
     maven { url = "https://maven.ryanliptak.com/" }
+    // Confluence: Otherworld, only for testing in the dev client
+    exclusiveContent {
+        forRepository { maven { url = "https://api.modrinth.com/maven" } }
+        filter { includeGroup "maven.modrinth" }
+    }
 }
 
 base {
@@ -113,6 +118,16 @@ dependencies {
     compileOnly "squeek.appleskin:appleskin-neoforge:${appleskin_version}"
     if (project.hasProperty('withAppleSkin')) {
         localRuntime("squeek.appleskin:appleskin-neoforge:${project.findProperty('appleskinRuntimeVersion') ?: appleskin_version}") { transitive = false }
+    }
+
+    // Confluence: Otherworld is read by reflection, so it's not compiled against. `-PwithConfluence`
+    // adds it and the libraries it needs to the dev client; `-PconfluenceRuntimeVersion=1.1.4` runs another version.
+    if (project.hasProperty('withConfluence')) {
+        localRuntime("maven.modrinth:confluence:${project.findProperty('confluenceRuntimeVersion') ?: confluence_version}") { transitive = false }
+        if (!project.hasProperty('withIronsSpells')) {
+            localRuntime("top.theillusivec4.curios:curios-neoforge:${curios_version}") { transitive = false }
+            localRuntime("software.bernie.geckolib:geckolib-neoforge-1.21.1:${geckolib_version}") { transitive = false }
+        }
     }
 }
 
