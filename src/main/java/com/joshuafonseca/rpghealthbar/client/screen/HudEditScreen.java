@@ -71,14 +71,15 @@ public class HudEditScreen extends Screen {
     private HudPiece selected;
     private double grabX;
     private double grabY;
-    /** The widths being edited (cells for the XP bar), shown on the HUD as they change. */
+    /** The bars' sizes being edited, shown on the HUD as they change. */
     @Nullable
-    private Map<HudPiece, Integer> widths;
+    private Map<HudPiece, BarWidths.Size> sizes;
     /** The bar end being dragged, and the bar's width and box when it was grabbed. */
     @Nullable
     private Edge resizing;
     private int resizeStartWidth;
-    private HudPosition.Offset resizeStartOffset = HudPosition.Offset.ZERO;
+    /** How far left the bar's left end had been dragged when it was grabbed. */
+    private int resizeStartLeft;
     @Nullable
     private HudPosition.Bounds resizeStartBox;
     private boolean resizeCursorShown;
@@ -113,9 +114,9 @@ public class HudEditScreen extends Screen {
         buttons.add(addRenderableWidget(Button.builder(CommonComponents.GUI_CANCEL, button -> close())
                 .bounds(x + step * 3, 0, BUTTON_WIDTH, BUTTON_HEIGHT).build()));
 
-        if (widths == null) {
-            widths = new EnumMap<>(BarWidths.saved());
-            BarWidths.setPreview(widths);
+        if (sizes == null) {
+            sizes = new EnumMap<>(BarWidths.saved());
+            BarWidths.setPreview(sizes);
         }
         // Start from the saved positions, or re-clamp the dragged ones if the window was resized.
         // This also places the controls.
@@ -197,13 +198,13 @@ public class HudEditScreen extends Screen {
     /** Puts every piece back above the hotbar, and in Advanced mode each bar back to its preset width. */
     private void reset() {
         if (BarWidths.advanced()) {
-            widths.replaceAll((piece, width) -> 0);
+            sizes.replaceAll((piece, size) -> BarWidths.Size.PRESET);
         }
         setPieces(HudPosition.Pieces.NONE);
     }
 
     private void save() {
-        BarWidths.save(widths);
+        BarWidths.save(sizes);
         HudPosition.save(pieces, this.width, this.height, frame().pieceBounds());
         close();
     }
@@ -319,20 +320,22 @@ public class HudEditScreen extends Screen {
         int wanted = resizeStartWidth + (resizing.left() ? -moved : moved);
         int room = resizing.left() ? resizeStartBox.right() : this.width - resizeStartBox.left();
         int width;
+        int stored;
         if (piece == HudPiece.XP) {
             int cells = Mth.clamp(Math.round((wanted - BarWidths.xpWidth(0)) / (float) BarWidths.XP_CELL_WIDTH),
                     BarWidths.MIN_XP_CELLS, Math.max(BarWidths.MIN_XP_CELLS, (room - BarWidths.xpWidth(0)) / BarWidths.XP_CELL_WIDTH));
-            widths.put(piece, cells);
             width = BarWidths.xpWidth(cells);
+            stored = cells;
         } else {
             width = Mth.clamp(wanted, BarWidths.MIN_WIDTH, Math.max(BarWidths.MIN_WIDTH, room));
-            widths.put(piece, width);
+            stored = width;
         }
-        // Dragging the left end moves the bar's start, keeping its right end where it was.
-        HudPosition.Offset offset = resizing.left()
-                ? new HudPosition.Offset(resizeStartOffset.x() + resizeStartWidth - width, resizeStartOffset.y())
-                : resizeStartOffset;
-        setPieces(pieces.with(piece, offset));
+        // Dragging the left end moves the bar's start, keeping its right end where it was. That's
+        // kept with the size rather than the position, so the preset width (Simple mode) is back
+        // where it was.
+        int left = resizing.left() ? resizeStartLeft + width - resizeStartWidth : resizeStartLeft;
+        sizes.put(piece, new BarWidths.Size(stored, left));
+        setPieces(pieces);
     }
 
     /**
@@ -362,7 +365,7 @@ public class HudEditScreen extends Screen {
             resizing = edge;
             resizeStartBox = frame.pieceBounds().get(edge.piece()).offset(frame.pieceOffset(edge.piece()));
             resizeStartWidth = resizeStartBox.width();
-            resizeStartOffset = frame.pieceOffset(edge.piece());
+            resizeStartLeft = BarWidths.left(edge.piece());
             grabX = mouseX;
             return true;
         }

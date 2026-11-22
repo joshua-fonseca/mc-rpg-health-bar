@@ -4,7 +4,8 @@
 
 - New **Edit mode** button at the top right of the config screen: **Simple** (default) keeps the Full and Half width presets; **Advanced** lets you set the health, mana and XP bars to any width by dragging their ends in the HUD Editor, where the cursor turns into a resize arrow over them. In Advanced, the width options become **Edit in HUD Editor** buttons, and the XP section gets an XP Bar Width one.
   - The XP bar resizes a cell at a time, built from vanilla's own cells (so texture packs still apply), and its fill and the jump bar stretch over the new length.
-  - A bar not resized yet keeps its preset, and the HUD Editor's Reset puts the widths back too.
+  - A bar not resized yet keeps its preset, and the HUD Editor's Reset puts the widths back too. Back in Simple mode, a bar whose left end was dragged is where it was before.
+- New **XP Bar** option in the XP Bar section: **Shown** (default) or **Hidden**, which hides the XP bar and its level. The jump bar still shows while riding.
 - **Move HUD...** is now the **HUD Editor...**.
 - While riding a mount whose health shows (like a horse), the hunger bar is hidden, as vanilla hides the hunger icons for the mount's hearts.
 - With **Air Bubbles/Mount HP** on **Below**, the armor and hunger row moves up to make room while air bubbles or mount health show, a row for each, instead of the rows covering the health bar.

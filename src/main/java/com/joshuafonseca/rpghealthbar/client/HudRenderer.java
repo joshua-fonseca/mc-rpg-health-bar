@@ -84,9 +84,12 @@ public final class HudRenderer {
         }
     }
 
-    /** Draws with the pose shifted by the piece's own offset. */
+    /**
+     * Draws with the pose shifted by the piece's own offset, and for a bar whose left end was
+     * dragged in Advanced mode, by how far it was dragged.
+     */
     private static void inPiece(GuiGraphics graphics, HudPosition.Pieces pieces, HudPiece piece, Runnable draw) {
-        HudPosition.Offset offset = pieces.get(piece);
+        HudPosition.Offset offset = pieces.get(piece).minus(new HudPosition.Offset(BarWidths.left(piece), 0));
         if (offset.equals(HudPosition.Offset.ZERO)) {
             draw.run();
             return;

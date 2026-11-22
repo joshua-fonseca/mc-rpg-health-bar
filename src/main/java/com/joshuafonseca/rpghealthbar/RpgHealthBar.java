@@ -84,6 +84,11 @@ public class RpgHealthBar {
         // display that replaces them, like Confluence's. Otherwise ours replaces both.
         boolean armorReplaced = ClientConfig.ARMOR_MODE.get() != HalfBarMode.VANILLA;
         boolean hungerReplaced = ClientConfig.HUNGER_MODE.get() != HalfBarMode.VANILLA;
+        if ((name.equals(VanillaGuiLayers.EXPERIENCE_BAR) || name.equals(VanillaGuiLayers.EXPERIENCE_LEVEL)) && !ClientConfig.XP_BAR_SHOWN.get()) {
+            // XP Bar set to Hidden; the jump bar still shows while riding.
+            event.setCanceled(true);
+            return;
+        }
         if ((name.equals(VanillaGuiLayers.EXPERIENCE_BAR) || name.equals(VanillaGuiLayers.JUMP_METER)) && BarWidths.customXp()) {
             // Not vanilla's length: drawn here instead, at its place in the set.
             drawXpBar(event.getGuiGraphics(), name.equals(VanillaGuiLayers.JUMP_METER));

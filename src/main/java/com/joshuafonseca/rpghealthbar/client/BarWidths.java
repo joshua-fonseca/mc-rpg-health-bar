@@ -14,6 +14,9 @@ import net.neoforged.neoforge.common.ModConfigSpec;
  * Advanced, the widths set by dragging the bars' ends in the HUD Editor, where a bar not resized yet
  * keeps its preset.
  * <p>
+ * Dragging a bar's left end also moves where it starts ({@link #left}). That's kept with the width,
+ * not in the bar's position, so with the preset back (Simple mode) the bar is where it was.
+ * <p>
  * The XP bar is measured in cells, like vanilla's: two halves, each a 1px border and 10px cells
  * (9px plus a 1px divider). Vanilla's 18 cells make it 182px, as wide as the hotbar.
  */
@@ -25,9 +28,14 @@ public final class BarWidths {
     /** One cell in each half. */
     public static final int MIN_XP_CELLS = 2;
 
-    /** Widths (cells for the XP bar) while the HUD Editor is open, so the HUD follows the drag; null otherwise. */
+    /** A bar's custom width (cells for the XP bar; 0 for the preset) and how far left its left end was dragged. */
+    public record Size(int width, int left) {
+        public static final Size PRESET = new Size(0, 0);
+    }
+
+    /** The sizes while the HUD Editor is open, so the HUD follows the drag; null otherwise. */
     @Nullable
-    private static Map<HudPiece, Integer> preview;
+    private static Map<HudPiece, Size> preview;
 
     private BarWidths() {
     }
@@ -56,46 +64,62 @@ public final class BarWidths {
         return custom > 0 ? custom : VANILLA_XP_CELLS;
     }
 
-    /** Whether the XP bar isn't vanilla's length, so the mod draws it. */
+    /** Whether the XP bar isn't vanilla's length or spot, so the mod draws it. */
     public static boolean customXp() {
-        return xpCells() != VANILLA_XP_CELLS;
+        return xpCells() != VANILLA_XP_CELLS || left(HudPiece.XP) != 0;
+    }
+
+    /** How far left of its usual spot the bar starts, from dragging its left end; 0 with the preset width. */
+    public static int left(HudPiece piece) {
+        if (!advanced()) {
+            return 0;
+        }
+        Size size = size(piece);
+        return size.width() > 0 ? size.left() : 0;
     }
 
     public static int xpWidth(int cells) {
         return 2 + cells * XP_CELL_WIDTH;
     }
 
-    /** The stored width (cells for the XP bar), or 0 for the preset; the editor's while it's open. */
-    public static int custom(HudPiece piece) {
-        if (preview != null) {
-            return preview.getOrDefault(piece, 0);
-        }
-        ModConfigSpec.IntValue value = config(piece);
-        return value == null ? 0 : value.get();
+    /** The stored width (cells for the XP bar), or 0 for the preset. */
+    private static int custom(HudPiece piece) {
+        return size(piece).width();
     }
 
-    /** The stored widths, for the HUD Editor to start from. */
-    public static Map<HudPiece, Integer> saved() {
-        Map<HudPiece, Integer> widths = new EnumMap<>(HudPiece.class);
+    /** The stored size, or the editor's while it's open. */
+    private static Size size(HudPiece piece) {
+        if (preview != null) {
+            return preview.getOrDefault(piece, Size.PRESET);
+        }
+        ModConfigSpec.IntValue width = widthConfig(piece);
+        ModConfigSpec.IntValue left = leftConfig(piece);
+        return width == null || left == null ? Size.PRESET : new Size(width.get(), left.get());
+    }
+
+    /** The stored sizes, for the HUD Editor to start from. */
+    public static Map<HudPiece, Size> saved() {
+        Map<HudPiece, Size> sizes = new EnumMap<>(HudPiece.class);
         for (HudPiece piece : HudPiece.values()) {
-            ModConfigSpec.IntValue value = config(piece);
-            if (value != null) {
-                widths.put(piece, value.get());
+            if (resizable(piece)) {
+                sizes.put(piece, size(piece));
             }
         }
-        return widths;
+        return sizes;
     }
 
-    public static void setPreview(@Nullable Map<HudPiece, Integer> widths) {
-        preview = widths;
+    public static void setPreview(@Nullable Map<HudPiece, Size> sizes) {
+        preview = sizes;
     }
 
-    /** Stores the widths; written to the file with the positions. */
-    public static void save(Map<HudPiece, Integer> widths) {
-        widths.forEach((piece, width) -> {
-            ModConfigSpec.IntValue value = config(piece);
-            if (value != null) {
-                value.set(width);
+    /** Stores the sizes; written to the file with the positions. */
+    public static void save(Map<HudPiece, Size> sizes) {
+        sizes.forEach((piece, size) -> {
+            ModConfigSpec.IntValue width = widthConfig(piece);
+            ModConfigSpec.IntValue left = leftConfig(piece);
+            if (width != null && left != null) {
+                width.set(size.width());
+                left.set(size.left());
             }
         });
     }
@@ -109,7 +133,18 @@ public final class BarWidths {
     }
 
     @Nullable
-    private static ModConfigSpec.IntValue config(HudPiece piece) {
+    private static ModConfigSpec.IntValue leftConfig(HudPiece piece) {
+        return switch (piece) {
+            case HEALTH -> ClientConfig.HEALTH_LEFT;
+            case MANA -> ClientConfig.MANA_LEFT;
+            case CONFLUENCE_MANA -> ClientConfig.CONFLUENCE_MANA_LEFT;
+            case XP -> ClientConfig.XP_LEFT;
+            default -> null;
+        };
+    }
+
+    @Nullable
+    private static ModConfigSpec.IntValue widthConfig(HudPiece piece) {
         return switch (piece) {
             case HEALTH -> ClientConfig.HEALTH_WIDTH;
             case MANA -> ClientConfig.MANA_WIDTH;

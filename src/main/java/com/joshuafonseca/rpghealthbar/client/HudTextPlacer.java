@@ -78,9 +78,9 @@ public final class HudTextPlacer {
     private record View(boolean barsShown, boolean xpRowShown, boolean creative, int rowsHeight) {
         static View current() {
             Minecraft minecraft = Minecraft.getInstance();
-            // Creative has neither the bars nor the XP bar.
+            // Creative has neither the bars nor the XP bar, and XP Bar can hide it; the jump bar shows while riding.
             boolean xpRowShown = minecraft.player != null && minecraft.gameMode != null
-                    && (minecraft.gameMode.hasExperience() || minecraft.player.jumpableVehicle() != null);
+                    && ((minecraft.gameMode.hasExperience() && ClientConfig.XP_BAR_SHOWN.get()) || minecraft.player.jumpableVehicle() != null);
             boolean creative = minecraft.gameMode != null && !minecraft.gameMode.canHurtPlayer();
             return new View(HudLayer.isVisible(minecraft), xpRowShown, creative, HudTextPlacer.rowsHeight());
         }

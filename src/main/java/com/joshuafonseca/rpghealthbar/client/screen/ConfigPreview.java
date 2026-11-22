@@ -107,6 +107,10 @@ final class ConfigPreview {
             graphics.blitSprite(i == AIR_BUBBLES - 1 ? AIR_BURSTING : AIR, WIDTH - i * ICON_SPACING - ICON, preview.airTop(), ICON, ICON);
         }
 
+        if (!ClientConfig.XP_BAR_SHOWN.get()) {
+            graphics.pose().popPose();
+            return;
+        }
         HudPosition.Bounds xp = frame.pieceBounds().get(HudPiece.XP);
         XpBarRenderer.draw(graphics, xp.left(), xp.top(), BarWidths.xpCells(), XP_BACKGROUND, XP_PROGRESS, XP_PROGRESS_FRACTION);
         // Outlined like vanilla's, and centered on the bar like the mod draws it.

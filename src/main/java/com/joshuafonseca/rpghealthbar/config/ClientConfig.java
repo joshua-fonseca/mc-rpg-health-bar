@@ -79,6 +79,11 @@ public final class ClientConfig {
             .translation("rpghealthbar.config.levelText")
             .defineEnum("levelText", LevelText.CENTER);
 
+    public static final ModConfigSpec.BooleanValue XP_BAR_SHOWN = BUILDER
+            .comment("Whether the XP bar and its level number are shown. The jump bar still shows while riding.")
+            .translation("rpghealthbar.config.xpBar")
+            .define("xpBarShown", true);
+
     public static final ModConfigSpec.EnumValue<BarText> CONFLUENCE_MANA_TEXT = BUILDER
             .comment("Where the numbers go on Confluence: Otherworld's mana bar: LEFT, RIGHT, CENTER or OFF.")
             .translation("rpghealthbar.config.confluenceManaText")
@@ -114,6 +119,28 @@ public final class ClientConfig {
             .comment("Advanced only: how many cells long the XP bar is (vanilla's has 18); 0 keeps vanilla's.")
             .translation("rpghealthbar.config.xpCells")
             .defineInRange("xpCells", 0, 0, 1000);
+
+    // How far each bar's left end was dragged out (negative: in), in GUI pixels; applied with the
+    // width above, so Simple mode puts the bar back where it was.
+    public static final ModConfigSpec.IntValue HEALTH_LEFT = BUILDER
+            .comment("Advanced only: how far left of its usual spot the health bar starts, from dragging its left end in the HUD Editor.")
+            .translation("rpghealthbar.config.healthLeft")
+            .defineInRange("healthLeft", 0, -10000, 10000);
+
+    public static final ModConfigSpec.IntValue MANA_LEFT = BUILDER
+            .comment("Advanced only: how far left of its usual spot Iron's Spells 'n Spellbooks' mana bar starts, from dragging its left end in the HUD Editor.")
+            .translation("rpghealthbar.config.manaLeft")
+            .defineInRange("manaLeft", 0, -10000, 10000);
+
+    public static final ModConfigSpec.IntValue CONFLUENCE_MANA_LEFT = BUILDER
+            .comment("Advanced only: how far left of its usual spot Confluence: Otherworld's mana bar starts, from dragging its left end in the HUD Editor.")
+            .translation("rpghealthbar.config.confluenceManaLeft")
+            .defineInRange("confluenceManaLeft", 0, -10000, 10000);
+
+    public static final ModConfigSpec.IntValue XP_LEFT = BUILDER
+            .comment("Advanced only: how far left of its usual spot the XP bar starts, from dragging its left end in the HUD Editor.")
+            .translation("rpghealthbar.config.xpLeft")
+            .defineInRange("xpLeft", 0, -10000, 10000);
 
     public static final int ITEM_NAME_OFFSET_MIN = -50;
     public static final int ITEM_NAME_OFFSET_MAX = 100;

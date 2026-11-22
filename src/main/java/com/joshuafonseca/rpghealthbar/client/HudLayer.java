@@ -129,7 +129,8 @@ public class HudLayer implements LayeredDraw.Layer {
             } else if (hungerMode == HalfBarMode.BAR) {
                 bounds.put(HudPiece.HUNGER, new HudPosition.Bounds(layout.hungerX(), layout.halfBarY(), right, barBottom));
             }
-            bounds.put(HudPiece.HEALTH, new HudPosition.Bounds(left, layout.healthY(), left + layout.healthWidth(), layout.healthY() + HudLayout.MAIN_BAR_HEIGHT));
+            int healthLeft = left - BarWidths.left(HudPiece.HEALTH);
+            bounds.put(HudPiece.HEALTH, new HudPosition.Bounds(healthLeft, layout.healthY(), healthLeft + layout.healthWidth(), layout.healthY() + HudLayout.MAIN_BAR_HEIGHT));
             int manaRow = 0;
             if (ManaBars.showIrons()) {
                 bounds.put(HudPiece.MANA, manaBounds(layout, manaRow++, HudPiece.MANA));
@@ -143,7 +144,8 @@ public class HudLayer implements LayeredDraw.Layer {
 
         private static HudPosition.Bounds manaBounds(HudLayout layout, int row, HudPiece piece) {
             int top = layout.manaY(row);
-            return new HudPosition.Bounds(layout.x(), top, layout.x() + BarWidths.width(piece), top + HudLayout.MAIN_BAR_HEIGHT);
+            int left = layout.x() - BarWidths.left(piece);
+            return new HudPosition.Bounds(left, top, left + BarWidths.width(piece), top + HudLayout.MAIN_BAR_HEIGHT);
         }
     }
 

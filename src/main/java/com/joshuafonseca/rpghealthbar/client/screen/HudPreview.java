@@ -4,6 +4,7 @@ import com.joshuafonseca.rpghealthbar.client.HudLayer;
 import com.joshuafonseca.rpghealthbar.client.HudPosition;
 import com.joshuafonseca.rpghealthbar.client.HudRenderer;
 import com.joshuafonseca.rpghealthbar.client.HudValues;
+import com.joshuafonseca.rpghealthbar.config.ClientConfig;
 import com.joshuafonseca.rpghealthbar.config.HudPiece;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -28,7 +29,7 @@ final class HudPreview {
             return;
         }
         HudRenderer.render(graphics, minecraft.font, frame.layout(), HudValues.placeholder(), frame.showArmor(), frame.showHunger(), pieces, false);
-        if (!inWorld) {
+        if (!inWorld && ClientConfig.XP_BAR_SHOWN.get()) {
             HudPosition.Bounds xp = frame.pieceBounds().get(HudPiece.XP).offset(pieces.get(HudPiece.XP));
             graphics.fill(xp.left(), xp.top(), xp.right(), xp.bottom(), XP_BAR_COLOR);
             if (hotbar) {

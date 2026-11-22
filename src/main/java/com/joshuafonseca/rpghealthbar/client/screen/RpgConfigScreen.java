@@ -101,7 +101,8 @@ public class RpgConfigScreen extends Screen {
     private static final List<ModConfigSpec.ConfigValue<?>> EDITED = List.of(ClientConfig.ENABLED, ClientConfig.ARMOR_MODE,
             ClientConfig.HUNGER_MODE, ClientConfig.AIR_POSITION, ClientConfig.HEALTH_UNIT, ClientConfig.ABSORPTION_DISPLAY,
             ClientConfig.HEALTH_TEXT, ClientConfig.SHOW_HEALTH_TEXT, ClientConfig.HEALTH_SIZE, ClientConfig.MANA_TEXT, ClientConfig.SHOW_MANA_TEXT,
-            ClientConfig.MANA_SIZE, ClientConfig.CONFLUENCE_MANA_TEXT, ClientConfig.CONFLUENCE_MANA_SIZE, ClientConfig.LEVEL_TEXT, ClientConfig.EDIT_MODE);
+            ClientConfig.MANA_SIZE, ClientConfig.CONFLUENCE_MANA_TEXT, ClientConfig.CONFLUENCE_MANA_SIZE, ClientConfig.LEVEL_TEXT, ClientConfig.EDIT_MODE,
+            ClientConfig.XP_BAR_SHOWN);
 
     private final Screen parent;
     private final Map<ModConfigSpec.ConfigValue<?>, Object> opened = new HashMap<>();
@@ -258,6 +259,8 @@ public class RpgConfigScreen extends Screen {
         }
 
         list.addEntry(new Header(Component.translatable("rpghealthbar.config.section.xp"), null, NOTE_COLOR));
+        list.addEntry(option("xpBar", new Boolean[]{true, false}, ClientConfig.XP_BAR_SHOWN,
+                shown -> Component.translatable("rpghealthbar.config.xpBar." + (shown ? "shown" : "hidden")), "shown", "hidden"));
         list.addEntry(option("levelText", LevelText.values(), ClientConfig.LEVEL_TEXT, LevelText::displayName, "center", "left", "right"));
         if (BarWidths.advanced()) {
             list.addEntry(widthOption("xpWidth", null));

@@ -74,7 +74,8 @@ Defaults are in bold:
 |  | Iron's Mana Bar Width | **Full**, Half |
 |  | Confluence Mana Text (only with Confluence) | **Left**, Right, Center, Off |
 |  | Confluence Mana Bar Width (only with Confluence) | **Full**, Half |
-| **XP Bar** | Level Text | **Center**, Left, Right |
+| **XP Bar** | XP Bar | **Shown**, Hidden (no XP bar or level; the jump bar still shows while riding) |
+|  | Level Text | **Center**, Left, Right |
 |  | XP Bar Width (Advanced only) | Edit in HUD Editor: the XP bar is resized a cell at a time, its fill stretched over its length (**18 cells**, like vanilla) |
 | **Positioning** | Item Name... | Height of the held item's name: **Vanilla** (0), or pixels up (+) or down (-), down to right above the hotbar |
 |  | HUD Editor... | Drag the whole HUD (**Moving: All**) or a single piece (**Moving: One**); the arrow keys nudge it. In Advanced edit mode, drag a bar's ends to resize it. **Above the hotbar**, Reset puts it back |
