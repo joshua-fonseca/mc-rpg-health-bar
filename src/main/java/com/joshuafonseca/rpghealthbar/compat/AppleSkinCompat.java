@@ -37,6 +37,11 @@ public final class AppleSkinCompat {
         return ModList.get().isLoaded(MODID);
     }
 
+    /** Whether our AppleSkin support is still on; it's turned off if using AppleSkin ever fails. */
+    public static boolean isWorking() {
+        return available;
+    }
+
     /**
      * What eating the held food would bring hunger and saturation up to, previewed on the hunger
      * bar like AppleSkin previews it on the icons.

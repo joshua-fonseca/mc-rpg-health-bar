@@ -1,6 +1,7 @@
 package com.joshuafonseca.rpghealthbar.client.screen;
 
 import com.joshuafonseca.rpghealthbar.compat.AppleSkinCompat;
+import com.joshuafonseca.rpghealthbar.compat.CompatNotes;
 import com.joshuafonseca.rpghealthbar.compat.IronsSpellsCompat;
 import com.joshuafonseca.rpghealthbar.config.AbsorptionDisplay;
 import com.joshuafonseca.rpghealthbar.config.AirPosition;
@@ -29,12 +30,15 @@ import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.layouts.HeaderAndFooterLayout;
 import net.minecraft.client.gui.layouts.LinearLayout;
 import net.minecraft.client.gui.narration.NarratableEntry;
+import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.client.gui.screens.ConfirmScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.util.FormattedCharSequence;
 import net.neoforged.neoforge.common.ModConfigSpec;
 import org.lwjgl.glfw.GLFW;
 
@@ -75,6 +79,11 @@ public class RpgConfigScreen extends Screen {
     private static final int NOTE_GAP = 6;
     /** Gap between the title and the preview button beside it. */
     private static final int TITLE_GAP = 8;
+    /** The compatibility notes: green when all is well, red for a problem. */
+    private static final int COMPAT_OK_COLOR = 0x55FF55;
+    private static final int COMPAT_PROBLEM_COLOR = 0xFF5555;
+    /** Between the notes' + button and its label, and how far the notes are indented under it. */
+    private static final int COMPAT_GAP = 6;
 
     /** The settings this screen changes, put back by Back. Item Name and Move HUD save on their own pages. */
     private static final List<ModConfigSpec.ConfigValue<?>> EDITED = List.of(ClientConfig.ENABLED, ClientConfig.ARMOR_MODE,
@@ -93,6 +102,8 @@ public class RpgConfigScreen extends Screen {
     private int previewY;
     @Nullable
     private PreviewButton previewButton;
+    /** Whether the compatibility notes are shown; they start hidden. */
+    private boolean compatOpen;
 
     public RpgConfigScreen(Screen parent) {
         super(Component.translatable("rpghealthbar.config.title"));
@@ -121,7 +132,31 @@ public class RpgConfigScreen extends Screen {
         repositionElements();
     }
 
+    /** Adds the rows again, showing the settings' current values. */
+    private void rebuildOptions() {
+        if (this.list != null) {
+            this.list.clear();
+            addOptions(this.list);
+        }
+    }
+
     private void addOptions(OptionList list) {
+        // Compatibility notes: a + button and its label open them; a supported mod that's too
+        // old, or that couldn't be read, is listed, otherwise a line says all is well.
+        List<Component> notes = CompatNotes.notes();
+        list.addEntry(new CompatRow(notes.size(), this.compatOpen, () -> {
+            this.compatOpen = !this.compatOpen;
+            rebuildOptions();
+        }));
+        if (this.compatOpen) {
+            if (notes.isEmpty()) {
+                list.addEntry(new NoteRow(Component.translatable("rpghealthbar.config.compat.none"), COMPAT_OK_COLOR));
+            }
+            for (Component note : notes) {
+                list.addEntry(new NoteRow(note, COMPAT_PROBLEM_COLOR));
+            }
+        }
+
         Component enabled = Component.translatable("rpghealthbar.config.enabled.on");
         Component disabled = Component.translatable("rpghealthbar.config.enabled.off");
         Component modState = Component.translatable("rpghealthbar.config.enabled");
@@ -308,9 +343,8 @@ public class RpgConfigScreen extends Screen {
                 for (ModConfigSpec.ConfigValue<?> value : EDITED) {
                     this.opened.put(value, value.get());
                 }
+                rebuildOptions();
                 if (this.list != null) {
-                    this.list.clear();
-                    addOptions(this.list);
                     this.list.setScrollAmount(0);
                 }
             }
@@ -472,6 +506,97 @@ public class RpgConfigScreen extends Screen {
                 graphics.drawString(font, this.note, x + font.width(this.name) + NOTE_GAP, textTop, this.noteColor);
             }
             graphics.fill(left, textTop + 11, left + width, textTop + 12, DIVIDER_COLOR);
+        }
+
+        @Override
+        public List<? extends GuiEventListener> children() {
+            return List.of();
+        }
+
+        @Override
+        public List<? extends NarratableEntry> narratables() {
+            return List.of();
+        }
+    }
+
+    /**
+     * The compatibility notes' row: a + button (− while they're open) and the label beside it, both
+     * of which open and close them. While there are problems, how many is shown in red after the label.
+     */
+    private static class CompatRow extends Row {
+        private final Button button;
+        private final Component label;
+        private final Runnable toggle;
+        private int labelLeft;
+        private int labelTop;
+
+        CompatRow(int problems, boolean open, Runnable toggle) {
+            this.toggle = toggle;
+            this.button = Button.builder(Component.literal(open ? "-" : "+"), b -> toggle.run()).size(BUTTON_HEIGHT, BUTTON_HEIGHT).build();
+            MutableComponent label = Component.translatable("rpghealthbar.config.compat").copy();
+            if (problems > 0) {
+                label.append(Component.literal(" (" + problems + ")").withColor(COMPAT_PROBLEM_COLOR));
+            }
+            this.label = label;
+        }
+
+        @Override
+        public void render(GuiGraphics graphics, int index, int top, int left, int width, int height, int mouseX, int mouseY,
+                           boolean hovering, float partialTick) {
+            this.button.setPosition(left, top);
+            this.button.render(graphics, mouseX, mouseY, partialTick);
+            this.labelLeft = left + BUTTON_HEIGHT + COMPAT_GAP;
+            this.labelTop = top;
+            graphics.drawString(Minecraft.getInstance().font, this.label, this.labelLeft, top + (BUTTON_HEIGHT - 8) / 2, LABEL_COLOR);
+        }
+
+        @Override
+        public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) {
+            if (super.mouseClicked(mouseX, mouseY, mouseButton)) {
+                return true;
+            }
+            int labelWidth = Minecraft.getInstance().font.width(this.label);
+            if (mouseButton == 0 && mouseX >= this.labelLeft && mouseX < this.labelLeft + labelWidth
+                    && mouseY >= this.labelTop && mouseY < this.labelTop + BUTTON_HEIGHT) {
+                Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
+                this.toggle.run();
+                return true;
+            }
+            return false;
+        }
+
+        @Override
+        public List<? extends GuiEventListener> children() {
+            return List.of(this.button);
+        }
+
+        @Override
+        public List<? extends NarratableEntry> narratables() {
+            return List.of(this.button);
+        }
+    }
+
+    /** One compatibility note, under the notes' label, wrapped onto a second line if it's long. */
+    private static class NoteRow extends Row {
+        private final Component text;
+        private final int color;
+
+        NoteRow(Component text, int color) {
+            this.text = text;
+            this.color = color;
+        }
+
+        @Override
+        public void render(GuiGraphics graphics, int index, int top, int left, int width, int height, int mouseX, int mouseY,
+                           boolean hovering, float partialTick) {
+            Font font = Minecraft.getInstance().font;
+            int indent = BUTTON_HEIGHT + COMPAT_GAP;
+            List<FormattedCharSequence> lines = font.split(this.text, width - indent);
+            int shown = Math.min(2, lines.size());
+            int y = top + (BUTTON_HEIGHT - shown * font.lineHeight) / 2 + 1;
+            for (int i = 0; i < shown; i++) {
+                graphics.drawString(font, lines.get(i), left + indent, y + i * font.lineHeight, this.color);
+            }
         }
 
         @Override

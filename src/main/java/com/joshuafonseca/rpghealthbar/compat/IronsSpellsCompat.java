@@ -35,6 +35,11 @@ public final class IronsSpellsCompat {
         return available;
     }
 
+    /** Whether the spell cost preview still works; it's turned off if reading the spell wheel ever fails. */
+    public static boolean isWheelAvailable() {
+        return wheelAvailable;
+    }
+
     /**
      * The local player's mana, or null if Iron's Spells isn't installed or its API has changed in a
      * way we can't read. In the latter case a warning is logged once and the mana bar is turned off
