@@ -1,6 +1,7 @@
 package com.joshuafonseca.rpghealthbar.client;
 
 import com.joshuafonseca.rpghealthbar.compat.AppleSkinCompat;
+import com.joshuafonseca.rpghealthbar.compat.ConfluenceCompat;
 import com.joshuafonseca.rpghealthbar.config.AirPosition;
 import com.joshuafonseca.rpghealthbar.config.ClientConfig;
 import com.joshuafonseca.rpghealthbar.config.HudPiece;
@@ -18,7 +19,7 @@ import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
  * replacing any shift other mods gave them so the set always stays together.
  */
 public final class HudPositionMover {
-    /** The vanilla (and AppleSkin) layers that move, and the piece each moves with. */
+    /** The vanilla (AppleSkin's and Confluence's) layers that move, and the piece each moves with. */
     private static final Map<ResourceLocation, HudPiece> MOVED_LAYERS = Map.ofEntries(
             Map.entry(VanillaGuiLayers.EXPERIENCE_BAR, HudPiece.XP),
             Map.entry(VanillaGuiLayers.EXPERIENCE_LEVEL, HudPiece.XP),
@@ -31,7 +32,11 @@ public final class HudPositionMover {
             // AppleSkin draws over the food icons, at the spot vanilla's Gui.rightHeight gives it.
             Map.entry(AppleSkinCompat.SATURATION_LAYER, HudPiece.HUNGER),
             Map.entry(AppleSkinCompat.HUNGER_RESTORED_LAYER, HudPiece.HUNGER),
-            Map.entry(AppleSkinCompat.EXHAUSTION_LAYER, HudPiece.HUNGER));
+            Map.entry(AppleSkinCompat.EXHAUSTION_LAYER, HudPiece.HUNGER),
+            // Confluence's own armor and hunger icons, shown with Armor or Hunger on Default, sit
+            // where vanilla's would.
+            Map.entry(ConfluenceCompat.ARMOR_LAYER, HudPiece.ARMOR),
+            Map.entry(ConfluenceCompat.FOOD_LAYER, HudPiece.HUNGER));
 
     /** Whether the layer currently rendering was translated, so Post only pops what Pre pushed. */
     private static boolean pushed;

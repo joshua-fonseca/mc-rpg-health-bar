@@ -6,7 +6,7 @@
   - With Iron's Spells too, Confluence's bar sits below Iron's. If the server has Confluence's convertIronsSpellMana on, Iron's spells use Confluence's mana, so only Confluence's bar shows, with the spell cost preview on it.
   - Confluence's own mana display is hidden, except in soul mode, where it shows soul. Its own health display is hidden too, and its armor and hunger displays are hidden unless Armor or Hunger is on Default.
   - The Mana header says which mana mods were found, and Compatibility notes flag a Confluence older than 1.1.4.
-  - With Armor or Hunger on Default, Confluence's own icons show there but don't move with Move HUD. Once those pieces are moved, Compatibility notes say how to get icons that do: Bar, or turning off terraStyleArmor/terraStyleFood in Confluence's client config.
+  - With Armor or Hunger on Default, Confluence's own armor and hunger icons show there and move with the HUD in Move HUD, like vanilla's.
 - Half-width health and mana bars no longer share a row: they stack like full ones.
 - Armor and Hunger's **Vanilla** option is now **Default**: whatever the game normally shows there, the vanilla icons or another mod's display that replaces them, like Confluence's. Your setting is kept.
 - New **Compatibility notes** at the top of the config screen: click the **+** or its label to see them. They list a supported mod installed at a version that's too old, or one that couldn't be read, or say that all is well. While there's a problem, its count shows in red beside the label.

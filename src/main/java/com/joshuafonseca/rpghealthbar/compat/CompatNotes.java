@@ -5,12 +5,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import com.joshuafonseca.rpghealthbar.client.HudLayer;
-import com.joshuafonseca.rpghealthbar.client.HudPosition;
-import com.joshuafonseca.rpghealthbar.config.ClientConfig;
-import com.joshuafonseca.rpghealthbar.config.HalfBarMode;
-import com.joshuafonseca.rpghealthbar.config.HudPiece;
-import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.neoforged.fml.ModList;
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
@@ -57,28 +51,9 @@ public final class CompatNotes {
         if (!noted.contains(ConfluenceCompat.MODID) && installedVersion(ConfluenceCompat.MODID).isPresent()) {
             if (!ConfluenceCompat.isWorking()) {
                 notes.add(Component.translatable("rpghealthbar.config.compat.failed", "Confluence"));
-            } else {
-                confluenceIconsNote().ifPresent(notes::add);
             }
         }
         return notes;
-    }
-
-    /**
-     * With Armor or Hunger on Default, Confluence's own icons show there, but only vanilla's move
-     * with Move HUD; once those pieces are moved, say how to get icons that move along.
-     */
-    private static Optional<Component> confluenceIconsNote() {
-        Minecraft minecraft = Minecraft.getInstance();
-        HudLayer.Frame frame = HudLayer.Frame.compute(minecraft.getWindow().getGuiScaledWidth(), minecraft.getWindow().getGuiScaledHeight(), ManaBars.count());
-        boolean armor = ClientConfig.ARMOR_MODE.get() == HalfBarMode.VANILLA && ConfluenceCompat.showsOwnArmor()
-                && !frame.pieceOffset(HudPiece.ARMOR).equals(HudPosition.Offset.ZERO);
-        boolean hunger = ClientConfig.HUNGER_MODE.get() == HalfBarMode.VANILLA && ConfluenceCompat.showsOwnFood()
-                && !frame.pieceOffset(HudPiece.HUNGER).equals(HudPosition.Offset.ZERO);
-        if (!armor && !hunger) {
-            return Optional.empty();
-        }
-        return Optional.of(Component.translatable("rpghealthbar.config.compat.confluenceIcons." + (armor && hunger ? "both" : armor ? "armor" : "hunger")));
     }
 
     /**

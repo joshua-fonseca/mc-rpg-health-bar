@@ -79,8 +79,10 @@ public class RpgHealthBar {
                 || name.equals(AppleSkinCompat.HEALTH_RESTORED_LAYER)
                 // Its hunger overlays only fit the vanilla icons.
                 || (AppleSkinCompat.isHungerOverlay(name) && hungerReplaced)
-                || (name.equals(VanillaGuiLayers.ARMOR_LEVEL) && armorReplaced)
-                || (name.equals(VanillaGuiLayers.FOOD_LEVEL) && hungerReplaced)) {
+                // Confluence's own icons replace these too; hidden here first, as Confluence would
+                // later, so mods that shift them in Pre and back in Post never shift them for nothing.
+                || (name.equals(VanillaGuiLayers.ARMOR_LEVEL) && (armorReplaced || ConfluenceCompat.showsOwnArmor()))
+                || (name.equals(VanillaGuiLayers.FOOD_LEVEL) && (hungerReplaced || ConfluenceCompat.showsOwnFood()))) {
             event.setCanceled(true);
         }
     }

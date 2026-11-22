@@ -1,7 +1,11 @@
 package com.joshuafonseca.rpghealthbar.compat;
 
 import com.joshuafonseca.rpghealthbar.RpgHealthBar;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 import javax.annotation.Nullable;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
@@ -38,6 +42,7 @@ public final class ConfluenceCompat {
     private static Method convertsIronsMana;
     @Nullable
     private static Method soulMode;
+    private static final Map<String, Optional<Field>> SWITCHES = new HashMap<>();
 
     private ConfluenceCompat() {
     }
@@ -104,14 +109,21 @@ public final class ConfluenceCompat {
         return clientSwitch("terraStyleFood");
     }
 
-    /** One of Confluence's client switches; if it can't be read, assumed on, its default. */
+    /** One of Confluence's client switches, looked up once; if it can't be read, assumed on, its default. */
     private static boolean clientSwitch(String name) {
         if (!INSTALLED) {
             return false;
         }
+        Field field = SWITCHES.computeIfAbsent(name, key -> {
+            try {
+                return Optional.of(Class.forName(CLIENT_CONFIGS).getField(key));
+            } catch (ReflectiveOperationException | RuntimeException | LinkageError e) {
+                return Optional.empty();
+            }
+        }).orElse(null);
         try {
-            return Class.forName(CLIENT_CONFIGS).getField(name).getBoolean(null);
-        } catch (ReflectiveOperationException | RuntimeException | LinkageError e) {
+            return field == null || field.getBoolean(null);
+        } catch (ReflectiveOperationException | RuntimeException e) {
             return true;
         }
     }
