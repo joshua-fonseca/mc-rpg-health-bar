@@ -95,8 +95,16 @@ public final class HudPositionMover {
         graphics.pose().pushPose();
         HudPosition.moveTo(graphics.pose(), frame.pieceOffset(piece));
         if (event.getName().equals(VanillaGuiLayers.EXPERIENCE_LEVEL)) {
-            // Vanilla draws the level above the XP bar; center it on the bar instead.
-            graphics.pose().translate(0, LEVEL_DROP, 0);
+            // Vanilla draws the level above the XP bar; center it on the bar instead, and put it at
+            // the end the Level Text setting asks for.
+            Minecraft minecraft = Minecraft.getInstance();
+            int levelX = 0;
+            if (minecraft.player != null) {
+                int width = minecraft.font.width(String.valueOf(minecraft.player.experienceLevel));
+                int vanillaX = (graphics.guiWidth() - width) / 2;
+                levelX = levelX(frame.pieceBounds().get(HudPiece.XP), width) - vanillaX;
+            }
+            graphics.pose().translate(levelX, LEVEL_DROP, 0);
         }
         boolean stackedRow = name.equals(VanillaGuiLayers.AIR_LEVEL) || name.equals(VanillaGuiLayers.VEHICLE_HEALTH);
         if (stackedRow && ClientConfig.AIR_POSITION.get() == AirPosition.BELOW) {
@@ -106,6 +114,18 @@ public final class HudPositionMover {
             }
         }
         pushed = true;
+    }
+
+    /**
+     * Where the XP level's number starts, for text {@code width} wide on the XP bar at {@code xp}:
+     * centered, or {@link BarRenderer#TEXT_PADDING} in from the end Level Text picks.
+     */
+    public static int levelX(HudPosition.Bounds xp, int width) {
+        return switch (ClientConfig.LEVEL_TEXT.get()) {
+            case LEFT -> xp.left() + BarRenderer.TEXT_PADDING;
+            case RIGHT -> xp.right() - BarRenderer.TEXT_PADDING - width;
+            case CENTER -> xp.left() + (xp.right() - xp.left() - width) / 2;
+        };
     }
 
     /**

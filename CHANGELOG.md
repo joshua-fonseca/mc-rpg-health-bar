@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- New **XP Bar** section in the config screen, with **Level Text**: the level's number in the **Center** of the XP bar (default), or at its **Left** or **Right** end.
 - **Confluence: Otherworld support** (1.21.1, Confluence 1.1.4+): its mana gets its own darker blue bar.
   - With Iron's Spells too, Confluence's bar sits below Iron's. In Move HUD each mana bar can be moved on its own. If the server has Confluence's convertIronsSpellMana on, Iron's spells use Confluence's mana, so only Confluence's bar shows, with the spell cost preview on it.
   - Confluence's own mana display is hidden, except in soul mode, where it shows soul. Its own health display is hidden too, and its armor and hunger displays are hidden unless Armor or Hunger is on Default.

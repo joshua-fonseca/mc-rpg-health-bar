@@ -37,7 +37,8 @@ public final class BarRenderer {
     private static final int TRACK_NEAR_EDGE = 0xFF202C25;
     private static final int TRACK_MIDDLE = 0xFF19241E;
     private static final int TEXT_COLOR = 0xFFFFFFFF;
-    private static final int TEXT_PADDING = 3;
+    /** Space between a bar's end and text at that end (the bars' numbers, the XP level). */
+    public static final int TEXT_PADDING = 3;
     /** Brightness of each fill row relative to the bar's color, top to bottom, like the XP bar's rows. */
     private static final float[] ROWS_5 = {0.85F, 1.15F, 1.3F, 1.0F, 0.7F};
     private static final float[] ROWS_3 = {0.9F, 1.25F, 0.7F};

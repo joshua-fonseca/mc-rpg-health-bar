@@ -74,6 +74,11 @@ public final class ClientConfig {
             .translation("rpghealthbar.config.manaSize")
             .defineEnum("manaSize", BarSize.FULL);
 
+    public static final ModConfigSpec.EnumValue<LevelText> LEVEL_TEXT = BUILDER
+            .comment("Where the XP level's number goes on the XP bar: CENTER (like vanilla), LEFT or RIGHT.")
+            .translation("rpghealthbar.config.levelText")
+            .defineEnum("levelText", LevelText.CENTER);
+
     public static final int ITEM_NAME_OFFSET_MIN = -50;
     public static final int ITEM_NAME_OFFSET_MAX = 100;
 

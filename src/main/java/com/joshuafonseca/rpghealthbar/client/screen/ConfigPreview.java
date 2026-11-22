@@ -3,6 +3,7 @@ package com.joshuafonseca.rpghealthbar.client.screen;
 import com.joshuafonseca.rpghealthbar.client.HudLayer;
 import com.joshuafonseca.rpghealthbar.client.HudLayout;
 import com.joshuafonseca.rpghealthbar.client.HudPosition;
+import com.joshuafonseca.rpghealthbar.client.HudPositionMover;
 import com.joshuafonseca.rpghealthbar.client.HudRenderer;
 import com.joshuafonseca.rpghealthbar.client.HudValues;
 import com.joshuafonseca.rpghealthbar.client.StatusColors;
@@ -103,7 +104,7 @@ final class ConfigPreview {
         graphics.blitSprite(XP_BACKGROUND, xp.left(), xp.top(), WIDTH, xpHeight);
         graphics.blitSprite(XP_PROGRESS, WIDTH, xpHeight, 0, 0, xp.left(), xp.top(), (int) (WIDTH * XP_PROGRESS_FRACTION), xpHeight);
         // Outlined like vanilla's, and centered on the bar like the mod draws it.
-        int levelX = (WIDTH - font.width(LEVEL)) / 2;
+        int levelX = HudPositionMover.levelX(xp, font.width(LEVEL));
         int levelY = xp.top() - 1;
         graphics.drawString(font, LEVEL, levelX + 1, levelY, 0, false);
         graphics.drawString(font, LEVEL, levelX - 1, levelY, 0, false);

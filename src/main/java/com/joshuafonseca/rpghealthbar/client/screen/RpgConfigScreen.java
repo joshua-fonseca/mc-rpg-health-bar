@@ -11,6 +11,7 @@ import com.joshuafonseca.rpghealthbar.config.BarText;
 import com.joshuafonseca.rpghealthbar.config.ClientConfig;
 import com.joshuafonseca.rpghealthbar.config.HalfBarMode;
 import com.joshuafonseca.rpghealthbar.config.HealthUnit;
+import com.joshuafonseca.rpghealthbar.config.LevelText;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -93,7 +94,7 @@ public class RpgConfigScreen extends Screen {
     private static final List<ModConfigSpec.ConfigValue<?>> EDITED = List.of(ClientConfig.ENABLED, ClientConfig.ARMOR_MODE,
             ClientConfig.HUNGER_MODE, ClientConfig.AIR_POSITION, ClientConfig.HEALTH_UNIT, ClientConfig.ABSORPTION_DISPLAY,
             ClientConfig.HEALTH_TEXT, ClientConfig.SHOW_HEALTH_TEXT, ClientConfig.HEALTH_SIZE, ClientConfig.MANA_TEXT, ClientConfig.SHOW_MANA_TEXT,
-            ClientConfig.MANA_SIZE);
+            ClientConfig.MANA_SIZE, ClientConfig.LEVEL_TEXT);
 
     private final Screen parent;
     private final Map<ModConfigSpec.ConfigValue<?>, Object> opened = new HashMap<>();
@@ -220,6 +221,9 @@ public class RpgConfigScreen extends Screen {
         manaSize.setActive(irons || confluence);
         list.addEntry(manaText);
         list.addEntry(manaSize);
+
+        list.addEntry(new Header(Component.translatable("rpghealthbar.config.section.xp"), null, NOTE_COLOR));
+        list.addEntry(option("levelText", LevelText.values(), ClientConfig.LEVEL_TEXT, LevelText::displayName, "center", "left", "right"));
 
         list.addEntry(new Header(Component.translatable("rpghealthbar.config.section.positioning"), null, NOTE_COLOR));
         list.addEntry(new WidgetRow(null,
