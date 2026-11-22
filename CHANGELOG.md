@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Losing health or absorption flashes the bar white for a moment, then the lost section shows and fades as before.
 - Absorption above your max health now shows in layers, each as much as your max health: the current layer in bright gold, with a darker full one behind it while there's more. When the front layer runs out, the one behind takes its place, so every point lost shows. Before, anything over max health ran off the end of the bar.
 
 ## 1.4.0 (2026-11-03)
