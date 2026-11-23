@@ -1,21 +1,23 @@
 ![The HUD with vanilla armor and hunger icons](https://raw.githubusercontent.com/joshua-fonseca/mc-rpg-health-bar/main/docs/images/hud-vanilla-icons.png)
 
-A highly customizable GUI mod. Replaces the vanilla hearts with an RPG-style health bar, and adds similar mana bars when Iron's Spells 'n Spellbooks or Confluence: Otherworld is installed.
+My original plan was to only replace the vanilla hearts with an RPG-style health bar and add a similar mana bar when Iron's Spells 'n Spellbooks is installed, but now this has turned into a full-blown GUI customization mod, with the goal of looking not too far from Vanilla.
 
 ***
 
 ## Features
 
-- **Health bar** the width of the hotbar. It goes beyond the vanilla max of 20 for mods that add hearts to the player (`32/40`).
-- **Absorption** fills the bar in gold, and the text shows it separately (`15.5+4/20`) or added in (`19.5/20`).
-- **Mana bar support:** an overhaul of the mana bars from Iron's Spells 'n Spellbooks and Confluence: Otherworld, in the same style as the health bar, replacing their own.
-- **Status colors:** like the vanilla hearts, the health bar changes when poisoned, withered or frozen. The hunger bar turns green with the Hunger effect. On 1.21.1, heart colors added by other mods are followed too.
-- **Armor and hunger** as the vanilla icons (default), thin bars, or hidden.
+- **Health bar** that goes beyond the vanilla max of 20 for mods that increase max health (`32/40`).
+- **Absorption** fills the health bar in yellow, and the text shows it separately (`15.5+4/20`) or added in (`19.5/20`).
+- **Mana bar support:** an overhaul of the mana bars from Iron's Spells 'n Spellbooks and Confluence: Otherworld, in the same style as the health bar.
+- **Status colors:** the health bar changes when poisoned, withered or frozen. The hunger bar changes with the Hunger effect. On 1.21.1, heart colors added by other mods are followed too.
+- **Armor and hunger** can be the vanilla icons (default), thin bars, or hidden.
 - **AppleSkin support:** saturation is outlined in yellow on the hunger bar, and held food's value flashes on it, like AppleSkin's preview on the icons.
 
 #### Customization:
 
-- **Half-size bars:** health and mana can each be full or half width.
+- **Half-size bars:** health and mana can each be full or half width, and moved individually.
+- **Advanced edit mode:** set the health, mana and XP bars to any width by dragging their ends in the HUD Editor. The XP bar resizes a cell at a time, built from vanilla's own cells.
+- **XP bar:** put the level number in the center or at either end, or hide the XP bar entirely (the jump bar still shows while riding).
 - **Move the HUD** by dragging it: can either move the whole set, including the XP bar and level, or each piece (armor, hunger, health, each mana bar, XP bar) on its own. It stays in place when you change the window size or GUI scale.
 - **Item name height:** set how high the held item's name sits, with a preview that moves as you change it. It starts at vanilla's height, which leaves room for mods that add hotbars.
 - **Air bubbles and mount health** can sit above hunger, like vanilla, or below it, for layouts with health or mana above hunger. Below, hunger and armor move up to make room while they show, one row per row of bubbles or hearts.
@@ -54,9 +56,9 @@ A highly customizable GUI mod. Replaces the vanilla hearts with an RPG-style hea
 - **[Iron's Spells 'n Spellbooks](https://www.curseforge.com/projects/855414) by Iron431 and Lab3:** optional. When it's installed you get the mana bar and the spell cost preview, and Iron's own mana bar is hidden.
 - **[AppleSkin](https://www.curseforge.com/minecraft/mc-mods/appleskin) by squeek502:** optional. When it's installed, saturation is outlined in yellow on the hunger bar and held food's value flashes on it; with the vanilla hunger icons, AppleSkin's own overlays move with them.
 - **[Confluence: Otherworld](https://www.curseforge.com/minecraft/mc-mods/confluence):** optional. When it's installed its mana gets its own darker blue bar, below Iron's when both are installed; with Confluence's convertIronsSpellMana on, Iron's spells use Confluence's mana, so only that bar shows, with the spell cost preview. Confluence's own health and mana displays are hidden while this mod is on (in soul mode its soul display stays); with Armor or Hunger on Default, Confluence's own armor and hunger displays show, if they're on in its config. They move with the HUD, like vanilla's.
-- **Double Hotbar:** compatible with [Double Hotbar](https://www.curseforge.com/minecraft/mc-mods/double-hotbar) by sidezbros on 1.20.1, and its unofficial NeoForge port, [Double Hotbar NeoForge](https://www.curseforge.com/projects/1563792) by \_retrospective\_, on 1.21.1. Open **Move HUD...** and drag the HUD up above the second hotbar once; the bars, XP bar and level move together and stay there, and the item name stays above them.
+- **Double Hotbar:** compatible with [Double Hotbar](https://www.curseforge.com/minecraft/mc-mods/double-hotbar) by sidezbros on 1.20.1, and its unofficial NeoForge port, [Double Hotbar NeoForge](https://www.curseforge.com/projects/1563792) by \_retrospective\_, on 1.21.1. Open the **HUD Editor...** and drag the HUD up above the second hotbar once; the bars, XP bar and level move together and stay there, and the item name stays above them.
 - Works with other mods that draw near the hotbar the same way: drag the HUD, or just the pieces in the way, clear of them.
-- Air bubbles and mount health stay vanilla and stack above the bars.
+- Air bubbles and mount health stay vanilla, stacked above hunger or below it.
 - **Texture packs:** armor and hunger on Default use your pack's icons, and the hotbar, XP bar, air bubbles and mount health stay vanilla, so packs restyle them. The health and mana bars, and armor and hunger as bars, are drawn by the mod and don't change with a pack.
 
 #### Iron's Spells: what spell cost preview looks like
