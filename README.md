@@ -74,8 +74,8 @@ Defaults are in bold:
 |  | Absorption | **Separate** (`16+4/20`), Combined (`20/20`) |
 |  | HP Text | **Left**, Right, Center, Off |
 |  | Health Bar Width | **Full**, Half |
-| **Mana** (only with Iron's Spells or Confluence installed) | Iron's Mana Text | **Left**, Right, Center, Off |
-|  | Iron's Mana Bar Width | **Full**, Half |
+| **Mana** (only with Iron's Spells or Confluence installed) | Iron's Mana Text (only with Iron's Spells) | **Left**, Right, Center, Off |
+|  | Iron's Mana Bar Width (only with Iron's Spells) | **Full**, Half |
 |  | Confluence Mana Text (only with Confluence) | **Left**, Right, Center, Off |
 |  | Confluence Mana Bar Width (only with Confluence) | **Full**, Half |
 | **XP Bar** | XP Bar | **Shown**, Hidden (no XP bar or level; the jump bar still shows while riding) |

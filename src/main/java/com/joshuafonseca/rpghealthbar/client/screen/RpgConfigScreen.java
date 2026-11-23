@@ -246,13 +246,11 @@ public class RpgConfigScreen extends Screen {
         String detected = irons && confluence ? "ironsAndConfluenceDetected" : irons ? "ironsDetected" : confluence ? "confluenceDetected" : "ironsNotDetected";
         list.addEntry(new Header(Component.translatable("rpghealthbar.config.section.mana"),
                 Component.translatable("rpghealthbar.config." + detected), IRONS_NOTE_COLOR));
-        // Iron's options are always listed (greyed out without it); Confluence's only with Confluence.
-        WidgetRow manaText = textOption("manaText", ClientConfig.manaText(), ClientConfig.MANA_TEXT, ClientConfig.SHOW_MANA_TEXT);
-        WidgetRow manaSize = widthOption("manaSize", ClientConfig.MANA_SIZE);
-        manaText.setActive(irons);
-        manaSize.setActive(irons);
-        list.addEntry(manaText);
-        list.addEntry(manaSize);
+        // Each mod's options are listed only with that mod.
+        if (irons) {
+            list.addEntry(textOption("manaText", ClientConfig.manaText(), ClientConfig.MANA_TEXT, ClientConfig.SHOW_MANA_TEXT));
+            list.addEntry(widthOption("manaSize", ClientConfig.MANA_SIZE));
+        }
         if (confluence) {
             list.addEntry(option("confluenceManaText", BarText.values(), ClientConfig.CONFLUENCE_MANA_TEXT, BarText::displayName, "left", "right", "center", "off"));
             list.addEntry(widthOption("confluenceManaSize", ClientConfig.CONFLUENCE_MANA_SIZE));
@@ -789,13 +787,6 @@ public class RpgConfigScreen extends Screen {
             }
             for (AbstractWidget widget : this.widgets) {
                 widget.render(graphics, mouseX, mouseY, partialTick);
-            }
-        }
-
-        /** Inactive buttons are greyed out and can't be clicked. */
-        void setActive(boolean active) {
-            for (AbstractWidget widget : this.widgets) {
-                widget.active = active;
             }
         }
 
