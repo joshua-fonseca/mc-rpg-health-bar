@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.0.1 (2026-11-23)
+
+- With **Air Bubbles/Mount HP** on **Below**, armor and hunger no longer move up while air bubbles or mount health show, so they stay where you put them.
+
 ## 2.0.0 (2026-11-22)
 
 - New **Edit mode** button at the top right of the config screen: **Simple** (default) gives you the standard full and half width configurations like before, but wow the new **Advanced** option lets you set the health, mana and XP bars to any width by dragging their sides.
