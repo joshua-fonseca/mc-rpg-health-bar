@@ -1,15 +1,19 @@
 package com.joshuafonseca.rpghealthbar.client.screen;
 
+import com.joshuafonseca.rpghealthbar.client.BarWidths;
 import com.joshuafonseca.rpghealthbar.compat.AppleSkinCompat;
 import com.joshuafonseca.rpghealthbar.compat.CompatNotes;
+import com.joshuafonseca.rpghealthbar.compat.ConfluenceCompat;
 import com.joshuafonseca.rpghealthbar.compat.IronsSpellsCompat;
 import com.joshuafonseca.rpghealthbar.config.AbsorptionDisplay;
 import com.joshuafonseca.rpghealthbar.config.AirPosition;
 import com.joshuafonseca.rpghealthbar.config.BarSize;
 import com.joshuafonseca.rpghealthbar.config.BarText;
 import com.joshuafonseca.rpghealthbar.config.ClientConfig;
+import com.joshuafonseca.rpghealthbar.config.EditMode;
 import com.joshuafonseca.rpghealthbar.config.HalfBarMode;
 import com.joshuafonseca.rpghealthbar.config.HealthUnit;
+import com.joshuafonseca.rpghealthbar.config.LevelText;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +41,7 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.FormattedCharSequence;
+import net.minecraft.util.Mth;
 import net.minecraftforge.common.ForgeConfigSpec;
 import org.lwjgl.glfw.GLFW;
 
@@ -80,17 +85,25 @@ public class RpgConfigScreen extends Screen {
     private static final int NOTE_GAP = 6;
     /** Gap between the title and the preview button beside it. */
     private static final int TITLE_GAP = 8;
+    /** The Edit Mode button: room either side of its text, and from the screen's right edge. */
+    private static final int EDIT_MODE_PADDING = 8;
+    private static final int EDIT_MODE_MARGIN = 8;
     /** The compatibility notes: green when all is well, red for a problem. */
     private static final int COMPAT_OK_COLOR = 0x55FF55;
     private static final int COMPAT_PROBLEM_COLOR = 0xFF5555;
     /** Between the notes' + button and its label, and how far the notes are indented under it. */
+    /** Notes that are just good to know, and their count when none is a problem. */
+    private static final int COMPAT_INFO_COLOR = 0xFFFFFF;
     private static final int COMPAT_GAP = 6;
+    /** How far the notes are indented: under the label, past the + button. */
+    private static final int NOTE_INDENT = BUTTON_HEIGHT + COMPAT_GAP;
 
-    /** The settings this screen changes, put back by Back. Item Name and Move HUD save on their own pages. */
+    /** The settings this screen changes, put back by Back. Item Name and HUD Editor save on their own pages. */
     private static final List<ForgeConfigSpec.ConfigValue<?>> EDITED = List.of(ClientConfig.ENABLED, ClientConfig.ARMOR_MODE,
             ClientConfig.HUNGER_MODE, ClientConfig.AIR_POSITION, ClientConfig.HEALTH_UNIT, ClientConfig.ABSORPTION_DISPLAY,
             ClientConfig.HEALTH_TEXT, ClientConfig.SHOW_HEALTH_TEXT, ClientConfig.HEALTH_SIZE, ClientConfig.MANA_TEXT, ClientConfig.SHOW_MANA_TEXT,
-            ClientConfig.MANA_SIZE);
+            ClientConfig.MANA_SIZE, ClientConfig.CONFLUENCE_MANA_TEXT, ClientConfig.CONFLUENCE_MANA_SIZE, ClientConfig.LEVEL_TEXT, ClientConfig.EDIT_MODE,
+            ClientConfig.XP_BAR_SHOWN);
 
     private final Screen parent;
     private final Map<ForgeConfigSpec.ConfigValue<?>, Object> opened = new HashMap<>();
@@ -100,6 +113,11 @@ public class RpgConfigScreen extends Screen {
     private float previewScale;
     private int previewX;
     private int previewY;
+    /** Top right: Simple or Advanced, with "Edit mode:" to its left. */
+    @Nullable
+    private CycleButton<EditMode> editModeButton;
+    @Nullable
+    private PreviewButton previewButton;
     /** Whether the compatibility notes are shown; they start hidden. */
     private boolean compatOpen;
 
@@ -113,17 +131,18 @@ public class RpgConfigScreen extends Screen {
 
     @Override
     protected void init() {
-        // Rebuilt on resize and when coming back from Item Name or Move HUD; keep the scroll position.
+        // Rebuilt on resize and when coming back from Item Name or the HUD Editor (whose bar widths
+        // the preview is sized to, and which can change the Compatibility notes); keep the scroll position.
         double scroll = this.list != null ? this.list.getScrollAmount() : 0;
         // The preview goes left of the list, scaled down to fit the room there; the two are
         // centered together, the preview taking only the width it needs.
         int contentHeight = this.height - HEADER_HEIGHT - FOOTER_HEIGHT;
         int listWidth = PREVIEW_ROW_WIDTH + LIST_SIDE * 2;
         int room = this.width - listWidth - PREVIEW_GAP - PREVIEW_MARGIN * 2;
-        float scale = Math.min(1.0F, Math.min((float) room / ConfigPreview.WIDTH, (float) contentHeight / ConfigPreview.height()));
+        float scale = Math.min(1.0F, Math.min((float) room / ConfigPreview.width(), (float) contentHeight / ConfigPreview.height()));
         if (ClientConfig.SHOW_PREVIEW.get() && scale >= MIN_PREVIEW_SCALE) {
             this.previewScale = scale;
-            int previewWidth = Math.round(ConfigPreview.WIDTH * scale);
+            int previewWidth = Math.round(ConfigPreview.width() * scale);
             int left = (this.width - previewWidth - PREVIEW_GAP - listWidth) / 2;
             this.previewX = left + previewWidth / 2;
             this.previewY = HEADER_HEIGHT + contentHeight / 2;
@@ -143,27 +162,49 @@ public class RpgConfigScreen extends Screen {
                 .bounds(footerLeft + FOOTER_BUTTON_WIDTH + FOOTER_BUTTON_GAP, footerY, FOOTER_BUTTON_WIDTH, BUTTON_HEIGHT).build());
         addRenderableWidget(Button.builder(Component.translatable("rpghealthbar.config.reset"), button -> confirmReset())
                 .bounds(footerLeft + (FOOTER_BUTTON_WIDTH + FOOTER_BUTTON_GAP) * 2, footerY, FOOTER_BUTTON_WIDTH, BUTTON_HEIGHT).build());
-        addRenderableWidget(new PreviewButton(button -> {
+        this.previewButton = addRenderableWidget(new PreviewButton(button -> {
             ClientConfig.set(ClientConfig.SHOW_PREVIEW, !ClientConfig.SHOW_PREVIEW.get());
             rebuildWidgets();
-        })).setPosition(this.width / 2 + this.font.width(this.title) / 2 + TITLE_GAP, (HEADER_HEIGHT - BUTTON_HEIGHT) / 2);
+        }));
+        this.previewButton.setPosition(this.width / 2 + this.font.width(this.title) / 2 + TITLE_GAP, (HEADER_HEIGHT - BUTTON_HEIGHT) / 2);
         this.list.setScrollAmount(scroll);
+        int editModeWidth = EDIT_MODE_PADDING * 2 + Math.max(this.font.width(EditMode.SIMPLE.displayName()), this.font.width(EditMode.ADVANCED.displayName()));
+        this.editModeButton = addRenderableWidget(CycleButton.builder(EditMode::displayName)
+                .withValues(EditMode.values())
+                .withInitialValue(ClientConfig.EDIT_MODE.get())
+                .withTooltip(value -> tooltip("editMode", "simple", "advanced"))
+                .displayOnlyValue()
+                .create(this.width - EDIT_MODE_MARGIN - editModeWidth, (HEADER_HEIGHT - BUTTON_HEIGHT) / 2, editModeWidth, BUTTON_HEIGHT,
+                        Component.translatable("rpghealthbar.config.editMode"), (button, value) -> {
+                            // The width rows change between presets and Edit in HUD Editor buttons.
+                            ClientConfig.set(ClientConfig.EDIT_MODE, value);
+                            rebuildWidgets();
+                        }));
+    }
+
+    /** A note, wrapped to the list's width; a long one goes on over as many rows as it needs. */
+    private void addNote(OptionList list, Component note, int color) {
+        List<FormattedCharSequence> lines = this.font.split(note, list.getRowWidth() - NOTE_INDENT);
+        int rows = Math.max(1, Mth.positiveCeilDiv(NoteRow.LONG_TOP + lines.size() * this.font.lineHeight, ROW_HEIGHT));
+        for (int row = 0; row < rows; row++) {
+            list.addEntry(new NoteRow(lines, row, color));
+        }
     }
 
     private void addOptions(OptionList list) {
         // Compatibility notes: a + button and its label open them; a supported mod that's too
         // old, or that couldn't be read, is listed, otherwise a line says all is well.
-        List<Component> notes = CompatNotes.notes();
-        list.addEntry(new CompatRow(notes.size(), this.compatOpen, () -> {
+        List<CompatNotes.Note> notes = CompatNotes.notes();
+        list.addEntry(new CompatRow(notes.size(), CompatNotes.anyProblem(notes), this.compatOpen, () -> {
             this.compatOpen = !this.compatOpen;
             rebuildWidgets();
         }));
         if (this.compatOpen) {
-            if (notes.isEmpty()) {
-                list.addEntry(new NoteRow(Component.translatable("rpghealthbar.config.compat.none"), COMPAT_OK_COLOR));
+            if (!CompatNotes.anyProblem(notes)) {
+                addNote(list, Component.translatable("rpghealthbar.config.compat.none"), COMPAT_OK_COLOR);
             }
-            for (Component note : notes) {
-                list.addEntry(new NoteRow(note, COMPAT_PROBLEM_COLOR));
+            for (CompatNotes.Note note : notes) {
+                addNote(list, note.text(), note.problem() ? COMPAT_PROBLEM_COLOR : COMPAT_INFO_COLOR);
             }
         }
 
@@ -189,18 +230,33 @@ public class RpgConfigScreen extends Screen {
         list.addEntry(option("healthUnit", HealthUnit.values(), ClientConfig.HEALTH_UNIT, HealthUnit::displayName, "hp", "hearts"));
         list.addEntry(option("absorptionDisplay", AbsorptionDisplay.values(), ClientConfig.ABSORPTION_DISPLAY, AbsorptionDisplay::displayName, "separate", "combined"));
         list.addEntry(textOption("healthText", ClientConfig.healthText(), ClientConfig.HEALTH_TEXT, ClientConfig.SHOW_HEALTH_TEXT));
-        list.addEntry(option("healthSize", BarSize.values(), ClientConfig.HEALTH_SIZE, BarSize::displayName, "full", "half"));
+        list.addEntry(widthOption("healthSize", ClientConfig.HEALTH_SIZE));
 
-        // The mana options only do something with Iron's Spells, so without it they can't be changed.
+        // The mana options only do something with a mana mod, so without one they can't be changed.
         boolean irons = IronsSpellsCompat.isAvailable();
+        boolean confluence = ConfluenceCompat.isAvailable();
+        String detected = irons && confluence ? "ironsAndConfluenceDetected" : irons ? "ironsDetected" : confluence ? "confluenceDetected" : "ironsNotDetected";
         list.addEntry(new Header(Component.translatable("rpghealthbar.config.section.mana"),
-                Component.translatable(irons ? "rpghealthbar.config.ironsDetected" : "rpghealthbar.config.ironsNotDetected"), IRONS_NOTE_COLOR));
+                Component.translatable("rpghealthbar.config." + detected), IRONS_NOTE_COLOR));
+        // Iron's options are always listed (greyed out without it); Confluence's only with Confluence.
         WidgetRow manaText = textOption("manaText", ClientConfig.manaText(), ClientConfig.MANA_TEXT, ClientConfig.SHOW_MANA_TEXT);
-        WidgetRow manaSize = option("manaSize", BarSize.values(), ClientConfig.MANA_SIZE, BarSize::displayName, "full", "half");
+        WidgetRow manaSize = widthOption("manaSize", ClientConfig.MANA_SIZE);
         manaText.setActive(irons);
         manaSize.setActive(irons);
         list.addEntry(manaText);
         list.addEntry(manaSize);
+        if (confluence) {
+            list.addEntry(option("confluenceManaText", BarText.values(), ClientConfig.CONFLUENCE_MANA_TEXT, BarText::displayName, "left", "right", "center", "off"));
+            list.addEntry(widthOption("confluenceManaSize", ClientConfig.CONFLUENCE_MANA_SIZE));
+        }
+
+        list.addEntry(new Header(Component.translatable("rpghealthbar.config.section.xp"), null, NOTE_COLOR));
+        list.addEntry(option("xpBar", new Boolean[]{true, false}, ClientConfig.XP_BAR_SHOWN,
+                shown -> Component.translatable("rpghealthbar.config.xpBar." + (shown ? "shown" : "hidden")), "shown", "hidden"));
+        list.addEntry(option("levelText", LevelText.values(), ClientConfig.LEVEL_TEXT, LevelText::displayName, "center", "left", "right"));
+        if (BarWidths.advanced()) {
+            list.addEntry(widthOption("xpWidth", null));
+        }
 
         list.addEntry(new Header(Component.translatable("rpghealthbar.config.section.positioning"), null, NOTE_COLOR));
         list.addEntry(new WidgetRow(null,
@@ -210,8 +266,48 @@ public class RpgConfigScreen extends Screen {
                         .build(),
                 Button.builder(Component.translatable("rpghealthbar.config.moveHud"), button -> this.minecraft.setScreen(new HudEditScreen(this)))
                         .size(0, BUTTON_HEIGHT)
-                        .tooltip(tooltip("moveHud"))
+                        .tooltip(Tooltip.create(hudEditorTooltip()))
                         .build()));
+    }
+
+    /**
+     * A bar's width: Full or Half in Simple edit mode; in Advanced, a button that opens the HUD
+     * Editor, where the bar's ends are dragged.
+     */
+    private WidgetRow widthOption(String key, @Nullable ForgeConfigSpec.EnumValue<BarSize> preset) {
+        if (preset == null || BarWidths.advanced()) {
+            return new WidgetRow(label(key),
+                    Button.builder(Component.translatable("rpghealthbar.config.editInHudEditor"), button -> this.minecraft.setScreen(new HudEditScreen(this)))
+                            .size(VALUE_WIDTH, BUTTON_HEIGHT)
+                            .tooltip(Tooltip.create(advancedWidthTooltip(key)))
+                            .build());
+        }
+        return option(key, BarSize.values(), preset, BarSize::displayName, "full", "half");
+    }
+
+    /**
+     * A width's tooltip in Advanced mode: "Advanced Mode:" in cyan, what the width is, and how to
+     * change it in the HUD Editor.
+     */
+    private static Component advancedWidthTooltip(String key) {
+        return Component.translatable("rpghealthbar.config.advancedModeTitle").withStyle(ChatFormatting.AQUA)
+                .append(" ").append(Component.translatable("rpghealthbar.config." + key + ".tooltip").withStyle(ChatFormatting.WHITE))
+                .append(" ").append(Component.translatable("rpghealthbar.config.editInHudEditor.tooltip").withStyle(ChatFormatting.WHITE));
+    }
+
+    /** The HUD Editor button's tooltip; in Advanced mode, with how to resize the bars ("advanced mode" in cyan). */
+    private static Component hudEditorTooltip() {
+        MutableComponent text = Component.translatable("rpghealthbar.config.moveHud.tooltip");
+        if (BarWidths.advanced()) {
+            Component mode = Component.translatable("rpghealthbar.config.advancedMode").withStyle(ChatFormatting.AQUA);
+            text.append("\n\n").append(Component.translatable("rpghealthbar.config.moveHud.tooltip.advanced", mode));
+        }
+        return text;
+    }
+
+    /** An option's name with a colon, as written left of its button. */
+    private static Component label(String key) {
+        return Component.translatable("rpghealthbar.config." + key).append(":");
     }
 
     /** A "Name: [value]" row, whose button cycles through the values and saves each change. */
@@ -228,7 +324,7 @@ public class RpgConfigScreen extends Screen {
                                         String... tooltipValues) {
         Component name = Component.translatable("rpghealthbar.config." + key);
         Tooltip tooltip = tooltip(key, tooltipValues);
-        return new WidgetRow(name.copy().append(":"), CycleButton.builder(displayName)
+        return new WidgetRow(label(key), CycleButton.builder(displayName)
                 .withValues(values)
                 .withInitialValue(current)
                 .withTooltip(value -> tooltip)
@@ -251,7 +347,7 @@ public class RpgConfigScreen extends Screen {
 
     /**
      * Hover text: a description, then each possible value on its own paragraph with its name highlighted.
-     * The first value is the default. Also used by the Item Name and Move HUD pages.
+     * The first value is the default. Also used by the Item Name and HUD Editor pages.
      */
     static Tooltip tooltip(String option, String... values) {
         String key = "rpghealthbar.config." + option + ".tooltip";
@@ -284,6 +380,14 @@ public class RpgConfigScreen extends Screen {
         graphics.setColor(1.0F, 1.0F, 1.0F, 1.0F);
         graphics.fillGradient(RenderType.guiOverlay(), 0, top, this.width, top + EDGE_SHADOW, 0xFF000000, 0, 0);
         graphics.fillGradient(RenderType.guiOverlay(), 0, bottom - EDGE_SHADOW, this.width, bottom, 0, 0xFF000000, 0);
+        if (this.editModeButton != null && this.previewButton != null) {
+            // Left out on a narrow window, where it would run into the title.
+            Component label = Component.translatable("rpghealthbar.config.editMode").append(":");
+            int labelX = this.editModeButton.getX() - TITLE_GAP / 2 - this.font.width(label);
+            if (labelX >= this.previewButton.getX() + this.previewButton.getWidth() + TITLE_GAP) {
+                graphics.drawString(this.font, label, labelX, this.editModeButton.getY() + (BUTTON_HEIGHT - 8) / 2, LABEL_COLOR);
+            }
+        }
         if (this.previewScale > 0) {
             ConfigPreview.draw(graphics, this.font, this.previewX, this.previewY, this.previewScale);
         }
@@ -489,7 +593,8 @@ public class RpgConfigScreen extends Screen {
 
     /**
      * The compatibility notes' row: a + button (− while they're open) and the label beside it, both
-     * of which open and close them. While there are problems, how many is shown in red after the label.
+     * of which open and close them. How many notes there are follows the label: red when any is a
+     * problem, white otherwise.
      */
     private static class CompatRow extends Row {
         private final Button button;
@@ -498,12 +603,12 @@ public class RpgConfigScreen extends Screen {
         private int labelLeft;
         private int labelTop;
 
-        CompatRow(int problems, boolean open, Runnable toggle) {
+        CompatRow(int count, boolean problem, boolean open, Runnable toggle) {
             this.toggle = toggle;
             this.button = Button.builder(Component.literal(open ? "-" : "+"), b -> toggle.run()).size(BUTTON_HEIGHT, BUTTON_HEIGHT).build();
             MutableComponent label = Component.translatable("rpghealthbar.config.compat").copy();
-            if (problems > 0) {
-                label.append(Component.literal(" (" + problems + ")").withStyle(style -> style.withColor(COMPAT_PROBLEM_COLOR)));
+            if (count > 0) {
+                label.append(Component.literal(" (" + count + ")").withStyle(style -> style.withColor(problem ? COMPAT_PROBLEM_COLOR : COMPAT_INFO_COLOR)));
             }
             this.label = label;
         }
@@ -513,7 +618,7 @@ public class RpgConfigScreen extends Screen {
                            boolean hovering, float partialTick) {
             this.button.setPosition(left, top);
             this.button.render(graphics, mouseX, mouseY, partialTick);
-            this.labelLeft = left + BUTTON_HEIGHT + COMPAT_GAP;
+            this.labelLeft = left + NOTE_INDENT;
             this.labelTop = top;
             graphics.drawString(Minecraft.getInstance().font, this.label, this.labelLeft, top + (BUTTON_HEIGHT - 8) / 2, LABEL_COLOR);
         }
@@ -545,12 +650,20 @@ public class RpgConfigScreen extends Screen {
     }
 
     /** One compatibility note, under the notes' label, wrapped onto a second line if it's long. */
+    /**
+     * One row of a note. A note that fits a row is centered in it; a longer one goes on over the
+     * next rows with even line spacing, each row drawing the lines that start in it.
+     */
     private static class NoteRow extends Row {
-        private final Component text;
+        /** Where a note longer than one row starts, from the top of its first row. */
+        static final int LONG_TOP = 2;
+        private final List<FormattedCharSequence> lines;
+        private final int row;
         private final int color;
 
-        NoteRow(Component text, int color) {
-            this.text = text;
+        NoteRow(List<FormattedCharSequence> lines, int row, int color) {
+            this.lines = lines;
+            this.row = row;
             this.color = color;
         }
 
@@ -558,12 +671,14 @@ public class RpgConfigScreen extends Screen {
         public void render(GuiGraphics graphics, int index, int top, int left, int width, int height, int mouseX, int mouseY,
                            boolean hovering, float partialTick) {
             Font font = Minecraft.getInstance().font;
-            int indent = BUTTON_HEIGHT + COMPAT_GAP;
-            List<FormattedCharSequence> lines = font.split(this.text, width - indent);
-            int shown = Math.min(2, lines.size());
-            int y = top + (BUTTON_HEIGHT - shown * font.lineHeight) / 2 + 1;
-            for (int i = 0; i < shown; i++) {
-                graphics.drawString(font, lines.get(i), left + indent, y + i * font.lineHeight, this.color);
+            int textHeight = this.lines.size() * font.lineHeight;
+            int start = textHeight <= BUTTON_HEIGHT ? (BUTTON_HEIGHT - textHeight) / 2 + 1 : LONG_TOP;
+            int rowTop = this.row * ROW_HEIGHT;
+            for (int i = 0; i < this.lines.size(); i++) {
+                int y = start + i * font.lineHeight;
+                if (y >= rowTop && y < rowTop + ROW_HEIGHT) {
+                    graphics.drawString(font, this.lines.get(i), left + NOTE_INDENT, top - rowTop + y, this.color);
+                }
             }
         }
 

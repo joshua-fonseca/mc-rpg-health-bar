@@ -4,7 +4,10 @@ import net.minecraft.network.chat.Component;
 
 /** How the armor and hunger stats are shown. */
 public enum HalfBarMode {
-    /** The vanilla icons, in the row above the health bar (the default). */
+    /**
+     * Left to the game (the default): the vanilla icons, in the row above the health bar, or
+     * another mod's display if one replaces them. Stored as VANILLA, its name before.
+     */
     VANILLA,
     /** Our half-width bar, in the row above the health bar. */
     BAR,

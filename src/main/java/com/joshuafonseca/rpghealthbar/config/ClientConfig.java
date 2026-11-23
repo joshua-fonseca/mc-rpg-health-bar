@@ -30,12 +30,12 @@ public final class ClientConfig {
             .define("showPreview", false);
 
     public static final ForgeConfigSpec.EnumValue<HalfBarMode> ARMOR_MODE = BUILDER
-            .comment("How armor is shown: VANILLA (vanilla armor icons), BAR (white bar above the health bar) or HIDDEN.")
+            .comment("How armor is shown: VANILLA (shown as Default: the armor icons, or another mod's armor display), BAR (white bar above the health bar) or HIDDEN.")
             .translation("rpghealthbar.config.armorMode")
             .defineEnum("armorMode", HalfBarMode.VANILLA);
 
     public static final ForgeConfigSpec.EnumValue<HalfBarMode> HUNGER_MODE = BUILDER
-            .comment("How hunger is shown: VANILLA (vanilla hunger icons), BAR (orange bar above the health bar) or HIDDEN.")
+            .comment("How hunger is shown: VANILLA (shown as Default: the hunger icons, or another mod's hunger display), BAR (orange bar above the health bar) or HIDDEN.")
             .translation("rpghealthbar.config.hungerMode")
             .defineEnum("hungerMode", HalfBarMode.VANILLA);
 
@@ -60,7 +60,7 @@ public final class ClientConfig {
             .defineEnum("healthText", BarText.LEFT);
 
     public static final ForgeConfigSpec.EnumValue<BarText> MANA_TEXT = BUILDER
-            .comment("Where the numbers go on the mana bar (Iron's Spells 'n Spellbooks only): LEFT, RIGHT, CENTER or OFF.")
+            .comment("Where the numbers go on Iron's Spells 'n Spellbooks' mana bar: LEFT, RIGHT, CENTER or OFF.")
             .translation("rpghealthbar.config.manaText")
             .defineEnum("manaText", BarText.LEFT);
 
@@ -80,9 +80,77 @@ public final class ClientConfig {
             .defineEnum("healthSize", BarSize.FULL);
 
     public static final ForgeConfigSpec.EnumValue<BarSize> MANA_SIZE = BUILDER
-            .comment("Width of the mana bar: FULL or HALF. With both bars HALF, they share a row, health on the left (Iron's Spells 'n Spellbooks only).")
+            .comment("Width of Iron's Spells 'n Spellbooks' mana bar: FULL (as wide as the hotbar) or HALF (like the armor and hunger bars).")
             .translation("rpghealthbar.config.manaSize")
             .defineEnum("manaSize", BarSize.FULL);
+
+    public static final ForgeConfigSpec.EnumValue<LevelText> LEVEL_TEXT = BUILDER
+            .comment("Where the XP level's number goes on the XP bar: CENTER (like vanilla), LEFT or RIGHT.")
+            .translation("rpghealthbar.config.levelText")
+            .defineEnum("levelText", LevelText.CENTER);
+
+    public static final ForgeConfigSpec.BooleanValue XP_BAR_SHOWN = BUILDER
+            .comment("Whether the XP bar and its level number are shown. The jump bar still shows while riding.")
+            .translation("rpghealthbar.config.xpBar")
+            .define("xpBarShown", true);
+
+    public static final ForgeConfigSpec.EnumValue<BarText> CONFLUENCE_MANA_TEXT = BUILDER
+            .comment("Where the numbers go on Confluence: Otherworld's mana bar: LEFT, RIGHT, CENTER or OFF.")
+            .translation("rpghealthbar.config.confluenceManaText")
+            .defineEnum("confluenceManaText", BarText.LEFT);
+
+    public static final ForgeConfigSpec.EnumValue<BarSize> CONFLUENCE_MANA_SIZE = BUILDER
+            .comment("Width of Confluence: Otherworld's mana bar: FULL (as wide as the hotbar) or HALF (like the armor and hunger bars).")
+            .translation("rpghealthbar.config.confluenceManaSize")
+            .defineEnum("confluenceManaSize", BarSize.FULL);
+
+    public static final ForgeConfigSpec.EnumValue<EditMode> EDIT_MODE = BUILDER
+            .comment("SIMPLE: the bars' widths are the presets above (healthSize, manaSize, confluenceManaSize). ADVANCED: the widths below, set by dragging the bars' ends in Config → HUD Editor.")
+            .translation("rpghealthbar.config.editMode")
+            .defineEnum("editMode", EditMode.SIMPLE);
+
+    // Advanced widths: set in the HUD Editor. 0 keeps the preset (or vanilla's 18 cells for the XP bar).
+    public static final ForgeConfigSpec.IntValue HEALTH_WIDTH = BUILDER
+            .comment("Advanced only: width of the health bar in GUI pixels; 0 uses healthSize.")
+            .translation("rpghealthbar.config.healthWidth")
+            .defineInRange("healthWidth", 0, 0, 10000);
+
+    public static final ForgeConfigSpec.IntValue MANA_WIDTH = BUILDER
+            .comment("Advanced only: width of Iron's Spells 'n Spellbooks' mana bar in GUI pixels; 0 uses manaSize.")
+            .translation("rpghealthbar.config.manaWidth")
+            .defineInRange("manaWidth", 0, 0, 10000);
+
+    public static final ForgeConfigSpec.IntValue CONFLUENCE_MANA_WIDTH = BUILDER
+            .comment("Advanced only: width of Confluence: Otherworld's mana bar in GUI pixels; 0 uses confluenceManaSize.")
+            .translation("rpghealthbar.config.confluenceManaWidth")
+            .defineInRange("confluenceManaWidth", 0, 0, 10000);
+
+    public static final ForgeConfigSpec.IntValue XP_CELLS = BUILDER
+            .comment("Advanced only: how many cells long the XP bar is (vanilla's has 18); 0 keeps vanilla's.")
+            .translation("rpghealthbar.config.xpCells")
+            .defineInRange("xpCells", 0, 0, 1000);
+
+    // How far each bar's left end was dragged out (negative: in), in GUI pixels; applied with the
+    // width above, so Simple mode puts the bar back where it was.
+    public static final ForgeConfigSpec.IntValue HEALTH_LEFT = BUILDER
+            .comment("Advanced only: how far left of its usual spot the health bar starts, from dragging its left end in the HUD Editor.")
+            .translation("rpghealthbar.config.healthLeft")
+            .defineInRange("healthLeft", 0, -10000, 10000);
+
+    public static final ForgeConfigSpec.IntValue MANA_LEFT = BUILDER
+            .comment("Advanced only: how far left of its usual spot Iron's Spells 'n Spellbooks' mana bar starts, from dragging its left end in the HUD Editor.")
+            .translation("rpghealthbar.config.manaLeft")
+            .defineInRange("manaLeft", 0, -10000, 10000);
+
+    public static final ForgeConfigSpec.IntValue CONFLUENCE_MANA_LEFT = BUILDER
+            .comment("Advanced only: how far left of its usual spot Confluence: Otherworld's mana bar starts, from dragging its left end in the HUD Editor.")
+            .translation("rpghealthbar.config.confluenceManaLeft")
+            .defineInRange("confluenceManaLeft", 0, -10000, 10000);
+
+    public static final ForgeConfigSpec.IntValue XP_LEFT = BUILDER
+            .comment("Advanced only: how far left of its usual spot the XP bar starts, from dragging its left end in the HUD Editor.")
+            .translation("rpghealthbar.config.xpLeft")
+            .defineInRange("xpLeft", 0, -10000, 10000);
 
     public static final int ITEM_NAME_OFFSET_MIN = -50;
     public static final int ITEM_NAME_OFFSET_MAX = 100;
@@ -92,11 +160,11 @@ public final class ClientConfig {
             .translation("rpghealthbar.config.itemNameOffset")
             .defineInRange("itemNameOffset", 0, ITEM_NAME_OFFSET_MIN, ITEM_NAME_OFFSET_MAX);
 
-    // Position: set by dragging the HUD in Config → Move HUD; not meant to be edited by hand.
+    // Position: set by dragging the HUD in Config → HUD Editor; not meant to be edited by hand.
     // Layout 2 (1.2.1 on): each piece has its own anchor and offset (below).
     // Layout 1 (before): the whole HUD's matching point (e.g. its bottom-center for BOTTOM_CENTER)
     // is placed at the anchor's screen point plus the offset, and each piece is shifted from there.
-    // Layout 1 is still read, and saving in Move HUD switches to layout 2.
+    // Layout 1 is still read, and saving in HUD Editor switches to layout 2.
     private static final int DEFAULT_OFFSET_X = 0;
     private static final int DEFAULT_OFFSET_Y = -24;
 
@@ -124,7 +192,7 @@ public final class ClientConfig {
      * Layout 2: each piece's anchor, and its shift from its default spot above the hotbar, in GUI
      * pixels, for a screen where the anchor is at the bottom-center; when the screen size changes,
      * the piece keeps its distance from its anchor. Layout 1: only the shifts are used, on top of
-     * the whole HUD's position. Set with Config → Move HUD.
+     * the whole HUD's position. Set with Config → HUD Editor.
      */
     private static final Map<HudPiece, ForgeConfigSpec.EnumValue<HudAnchor>> PIECE_ANCHORS = new EnumMap<>(HudPiece.class);
     private static final Map<HudPiece, ForgeConfigSpec.IntValue> PIECE_OFFSETS_X = new EnumMap<>(HudPiece.class);
@@ -161,7 +229,7 @@ public final class ClientConfig {
         return SHOW_HEALTH_TEXT.get() ? HEALTH_TEXT.get() : BarText.OFF;
     }
 
-    /** Where the mana bar's numbers go, honoring an Off saved before manaText existed. */
+    /** Where Iron's mana bar's numbers go, honoring an Off saved before manaText existed. */
     public static BarText manaText() {
         return SHOW_MANA_TEXT.get() ? MANA_TEXT.get() : BarText.OFF;
     }
@@ -235,14 +303,16 @@ public final class ClientConfig {
         }
     }
 
-    private static <T> void queue(ForgeConfigSpec.ConfigValue<T> value, T newValue) {
+    /** Updates a value saved with the positions (like a bar's size); written over the next few ticks. */
+    public static <T> void queue(ForgeConfigSpec.ConfigValue<T> value, T newValue) {
         // Re-inserted, so a value queued again is written after the others queued with it.
         PENDING.remove(value);
         PENDING.put(value, newValue);
     }
 
+    /** A value saved with the positions, including a change not written yet. */
     @SuppressWarnings("unchecked")
-    private static <T> T read(ForgeConfigSpec.ConfigValue<T> value) {
+    public static <T> T read(ForgeConfigSpec.ConfigValue<T> value) {
         Object pending = PENDING.get(value);
         return pending != null ? (T) pending : value.get();
     }

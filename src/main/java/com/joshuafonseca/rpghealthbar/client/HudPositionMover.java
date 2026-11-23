@@ -1,13 +1,17 @@
 package com.joshuafonseca.rpghealthbar.client;
 
+import com.joshuafonseca.rpghealthbar.compat.ConfluenceCompat;
 import com.joshuafonseca.rpghealthbar.config.AirPosition;
 import com.joshuafonseca.rpghealthbar.config.ClientConfig;
 import com.joshuafonseca.rpghealthbar.config.HudPiece;
 import java.util.Map;
+import javax.annotation.Nullable;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.client.gui.overlay.ForgeGui;
 import net.minecraftforge.client.event.RenderGuiOverlayEvent;
 import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay;
@@ -27,13 +31,17 @@ public final class HudPositionMover {
             // Vanilla stacks air and mount health (which replaces food while riding) on the food side.
             Map.entry(VanillaGuiOverlay.FOOD_LEVEL.id(), HudPiece.HUNGER),
             Map.entry(VanillaGuiOverlay.AIR_LEVEL.id(), HudPiece.HUNGER),
-            Map.entry(VanillaGuiOverlay.MOUNT_HEALTH.id(), HudPiece.HUNGER));
+            Map.entry(VanillaGuiOverlay.MOUNT_HEALTH.id(), HudPiece.HUNGER),
+            // Confluence's own armor and hunger icons, shown with Armor or Hunger on Default, sit
+            // where vanilla's would.
+            Map.entry(ConfluenceCompat.ARMOR_LAYER, HudPiece.ARMOR),
+            Map.entry(ConfluenceCompat.FOOD_LAYER, HudPiece.HUNGER));
 
     /** Whether the overlay currently rendering was translated, so Post only pops what Pre pushed. */
     private static boolean pushed;
 
     /** Vanilla's rows are 9px icons plus a 1px gap. */
-    private static final int ROW_HEIGHT = 10;
+    public static final int ROW_HEIGHT = 10;
     /** Height of the air and mount health rows already drawn below hunger this frame. */
     private static int belowHeight;
     /** ForgeGui.rightHeight before a row drawn below hunger, or -1; put back after it, see {@link #onPost}. */
@@ -85,14 +93,47 @@ public final class HudPositionMover {
         rightHeightBefore = gui.rightHeight;
     }
 
-    /** Rows of mount health vanilla draws: 10 hearts a row, up to 30 hearts (as in ForgeGui.renderHealthMount). */
-    private static int vehicleRows() {
+    /**
+     * How many rows go below hunger now: air while vanilla shows it (head underwater, or air not
+     * full) and mount health's rows while riding. 0 with Air Bubbles/Mount HP on Above.
+     */
+    public static int rowsBelowHunger() {
         Minecraft minecraft = Minecraft.getInstance();
-        if (minecraft.player != null && minecraft.player.getVehicle() instanceof LivingEntity vehicle) {
-            int hearts = Math.min((int) (vehicle.getMaxHealth() + 0.5F) / 2, 30);
-            return Math.max(1, (hearts + 9) / 10);
+        if (ClientConfig.AIR_POSITION.get() != AirPosition.BELOW || !(minecraft.getCameraEntity() instanceof Player player)) {
+            return 0;
         }
-        return 1;
+        int rows = 0;
+        // As in ForgeGui.renderAir.
+        if (player.isEyeInFluidType(ForgeMod.WATER_TYPE.get()) || player.getAirSupply() < 300) {
+            rows++;
+        }
+        LivingEntity mount = mountWithHealth(player);
+        if (mount != null) {
+            rows += vehicleRows(mount);
+        }
+        return rows;
+    }
+
+    /**
+     * The mount the player rides, if vanilla shows its health in hunger's place (the food overlay
+     * checks showVehicleHealth); null otherwise.
+     */
+    @Nullable
+    public static LivingEntity mountWithHealth(Player player) {
+        return player.getVehicle() instanceof LivingEntity vehicle && vehicle.showVehicleHealth() ? vehicle : null;
+    }
+
+    /** Rows of mount health vanilla draws: 10 hearts a row, up to 30 hearts (as in ForgeGui.renderHealthMount). */
+    private static int vehicleRows(LivingEntity mount) {
+        int hearts = Math.min((int) (mount.getMaxHealth() + 0.5F) / 2, 30);
+        return Math.max(1, (hearts + 9) / 10);
+    }
+
+    /** {@link #vehicleRows(LivingEntity)} for the local player's mount; 1 if there's none. */
+    private static int vehicleRows() {
+        Player player = Minecraft.getInstance().player;
+        LivingEntity mount = player == null ? null : mountWithHealth(player);
+        return mount == null ? 1 : vehicleRows(mount);
     }
 
     /**

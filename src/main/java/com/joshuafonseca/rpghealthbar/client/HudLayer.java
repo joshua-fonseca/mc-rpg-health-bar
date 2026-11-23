@@ -1,7 +1,6 @@
 package com.joshuafonseca.rpghealthbar.client;
 
-import com.joshuafonseca.rpghealthbar.compat.IronsSpellsCompat;
-import com.joshuafonseca.rpghealthbar.config.BarSize;
+import com.joshuafonseca.rpghealthbar.compat.ManaBars;
 import com.joshuafonseca.rpghealthbar.config.ClientConfig;
 import com.joshuafonseca.rpghealthbar.config.HalfBarMode;
 import com.joshuafonseca.rpghealthbar.config.HudPiece;
@@ -34,7 +33,10 @@ public class HudLayer implements IGuiOverlay {
         graphics.pose().pushPose();
         // Each piece is shifted on its own by HudRenderer; this only undoes other mods' shifts.
         HudPosition.moveTo(graphics.pose(), HudPosition.Offset.ZERO);
-        HudRenderer.render(graphics, minecraft.font, frame.layout(), values, frame.showArmor(), frame.showHunger(), frame.pieces(), true);
+        // Riding a mount whose health vanilla shows, its hearts take hunger's place, as in vanilla.
+        boolean mounted = HudPositionMover.mountWithHealth(player) != null;
+        HudRenderer.render(graphics, minecraft.font, frame.layout(), values, frame.showArmor(), frame.showHunger() && !mounted,
+                frame.pieces(), true);
         graphics.pose().popPose();
     }
 
@@ -64,7 +66,7 @@ public class HudLayer implements IGuiOverlay {
         /** The frame for the HUD being drawn, worked out once per frame. */
         public static Frame current(int screenWidth, int screenHeight) {
             if (current == null) {
-                current = compute(screenWidth, screenHeight, IronsSpellsCompat.isAvailable());
+                current = compute(screenWidth, screenHeight);
             }
             return current;
         }
@@ -74,7 +76,16 @@ public class HudLayer implements IGuiOverlay {
             current = null;
         }
 
-        public static Frame compute(int screenWidth, int screenHeight, boolean showMana) {
+        /**
+         * The frame for the current settings, with the mana bars {@link ManaBars} shows, and room
+         * under hunger for the air and mount health rows shown there now.
+         */
+        public static Frame compute(int screenWidth, int screenHeight) {
+            return compute(screenWidth, screenHeight, HudPositionMover.rowsBelowHunger());
+        }
+
+        /** @param rowsBelowHunger how many rows of air and mount health go between hunger and the health bar */
+        public static Frame compute(int screenWidth, int screenHeight, int rowsBelowHunger) {
             HalfBarMode armorMode = ClientConfig.ARMOR_MODE.get();
             HalfBarMode hungerMode = ClientConfig.HUNGER_MODE.get();
             boolean showArmor = armorMode == HalfBarMode.BAR;
@@ -82,16 +93,23 @@ public class HudLayer implements IGuiOverlay {
             boolean vanillaArmor = armorMode == HalfBarMode.VANILLA;
             boolean vanillaHunger = hungerMode == HalfBarMode.VANILLA;
 
-            HudLayout layout = HudLayout.compute(screenWidth, screenHeight, showArmor || showHunger, vanillaArmor || vanillaHunger, showMana,
-                    ClientConfig.HEALTH_SIZE.get() == BarSize.HALF, ClientConfig.MANA_SIZE.get() == BarSize.HALF);
-            Map<HudPiece, HudPosition.Bounds> pieceBounds = pieceBounds(screenHeight, layout, armorMode, hungerMode, showMana);
+            HudLayout layout = HudLayout.compute(screenWidth, screenHeight, showArmor || showHunger, vanillaArmor || vanillaHunger, ManaBars.count(),
+                    BarWidths.width(HudPiece.HEALTH),
+                    hungerMode == HalfBarMode.HIDDEN ? 0 : rowsBelowHunger * HudPositionMover.ROW_HEIGHT);
+            Map<HudPiece, HudPosition.Bounds> pieceBounds = pieceBounds(screenHeight, layout, armorMode, hungerMode);
             HudPosition.Pieces pieces = HudPosition.pieces(screenWidth, screenHeight, pieceBounds);
-            HudPosition.Bounds bounds = null;
-            for (Map.Entry<HudPiece, HudPosition.Bounds> entry : pieceBounds.entrySet()) {
-                HudPosition.Bounds moved = entry.getValue().offset(pieces.get(entry.getKey()));
-                bounds = bounds == null ? moved : bounds.union(moved);
-            }
+            HudPosition.Bounds bounds = HudPosition.union(HudPosition.placed(pieceBounds, pieces::get).values());
             return new Frame(layout, bounds, pieces, pieceBounds, showArmor, showHunger, vanillaArmor, vanillaHunger);
+        }
+
+        /** Each shown piece where it's drawn: its default box moved by its shift. */
+        public Map<HudPiece, HudPosition.Bounds> placedBounds() {
+            return HudPosition.placed(pieceBounds, pieces::get);
+        }
+
+        /** A shown piece where it's drawn. */
+        public HudPosition.Bounds placed(HudPiece piece) {
+            return pieceBounds.get(piece).offset(pieces.get(piece));
         }
 
         /** Where a piece is drawn, as a shift from its default position. */
@@ -99,8 +117,8 @@ public class HudLayer implements IGuiOverlay {
             return pieces.get(piece);
         }
 
-        /** Each shown piece at its default position. Health and XP are always shown. */
-        private static Map<HudPiece, HudPosition.Bounds> pieceBounds(int screenHeight, HudLayout layout, HalfBarMode armorMode, HalfBarMode hungerMode, boolean showMana) {
+        /** Each shown piece at its default position. Health and XP are always shown; each mana bar is its own piece. */
+        private static Map<HudPiece, HudPosition.Bounds> pieceBounds(int screenHeight, HudLayout layout, HalfBarMode armorMode, HalfBarMode hungerMode) {
             Map<HudPiece, HudPosition.Bounds> bounds = new EnumMap<>(HudPiece.class);
             int left = layout.x();
             int right = left + HudLayout.WIDTH;
@@ -116,12 +134,23 @@ public class HudLayer implements IGuiOverlay {
             } else if (hungerMode == HalfBarMode.BAR) {
                 bounds.put(HudPiece.HUNGER, new HudPosition.Bounds(layout.hungerX(), layout.halfBarY(), right, barBottom));
             }
-            bounds.put(HudPiece.HEALTH, new HudPosition.Bounds(left, layout.healthY(), left + layout.healthWidth(), layout.healthY() + HudLayout.MAIN_BAR_HEIGHT));
-            if (showMana) {
-                bounds.put(HudPiece.MANA, new HudPosition.Bounds(layout.manaX(), layout.manaY(), layout.manaX() + layout.manaWidth(), layout.manaY() + HudLayout.MAIN_BAR_HEIGHT));
+            int healthLeft = left - BarWidths.left(HudPiece.HEALTH);
+            bounds.put(HudPiece.HEALTH, new HudPosition.Bounds(healthLeft, layout.healthY(), healthLeft + layout.healthWidth(), layout.healthY() + HudLayout.MAIN_BAR_HEIGHT));
+            int manaRow = 0;
+            if (ManaBars.showIrons()) {
+                bounds.put(HudPiece.MANA, manaBounds(layout, manaRow++, HudPiece.MANA));
+            }
+            if (ManaBars.showConfluence()) {
+                bounds.put(HudPiece.CONFLUENCE_MANA, manaBounds(layout, manaRow, HudPiece.CONFLUENCE_MANA));
             }
             bounds.put(HudPiece.XP, HudPosition.xpBar(screenHeight, layout));
             return bounds;
+        }
+
+        private static HudPosition.Bounds manaBounds(HudLayout layout, int row, HudPiece piece) {
+            int top = layout.manaY(row);
+            int left = layout.x() - BarWidths.left(piece);
+            return new HudPosition.Bounds(left, top, left + BarWidths.width(piece), top + HudLayout.MAIN_BAR_HEIGHT);
         }
     }
 

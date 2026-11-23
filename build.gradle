@@ -32,6 +32,11 @@ repositories {
     maven { url = "https://maven.kosmx.dev/" }
     // AppleSkin
     maven { url = "https://maven.ryanliptak.com/" }
+    // Confluence: Otherworld, only for testing in the dev client
+    exclusiveContent {
+        forRepository { maven { url = "https://api.modrinth.com/maven" } }
+        filter { includeGroup "maven.modrinth" }
+    }
 }
 
 base {
@@ -43,7 +48,8 @@ java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
 legacyForge {
     // Specify the version of Forge to use.
-    version = "${minecraft_version}-${forge_version}"
+    // Confluence: Otherworld needs a newer Forge, so the dev client runs one with -PwithConfluence.
+    version = "${minecraft_version}-${project.hasProperty('withConfluence') ? confluence_forge_version : forge_version}"
 
     parchment {
         mappingsVersion = project.parchment_mappings_version
@@ -107,9 +113,12 @@ dependencies {
     // Add `-PironsRuntimeVersion=...` to run another Iron's version than the one compiled against.
     if (project.hasProperty('withIronsSpells')) {
         modLocalRuntime(project.findProperty('ironsRuntime') ?: "io.redspace.ironsspellbooks:irons_spellbooks:${project.findProperty('ironsRuntimeVersion') ?: irons_spellbooks_version}") { transitive = false }
-        modLocalRuntime("top.theillusivec4.curios:curios-forge:${curios_version}") { transitive = false }
+        if (!project.hasProperty('withConfluence')) {
+            // With Confluence, its newer Curios and GeckoLib are used instead.
+            modLocalRuntime("top.theillusivec4.curios:curios-forge:${curios_version}") { transitive = false }
+            modLocalRuntime("software.bernie.geckolib:geckolib-forge-1.20.1:${geckolib_version}") { transitive = false }
+        }
         modLocalRuntime("top.theillusivec4.caelus:caelus-forge:${caelus_version}") { transitive = false }
-        modLocalRuntime("software.bernie.geckolib:geckolib-forge-1.20.1:${geckolib_version}") { transitive = false }
         modLocalRuntime("dev.kosmx.player-anim:player-animation-lib-forge:${player_animator_version}") { transitive = false }
         if (project.hasProperty('withIronsLib')) {
             modLocalRuntime("io.redspace:irons_lib:${irons_lib_version}") { transitive = false }
@@ -121,6 +130,19 @@ dependencies {
     modCompileOnly "squeek.appleskin:appleskin-forge:${appleskin_version}"
     if (project.hasProperty('withAppleSkin')) {
         modLocalRuntime("squeek.appleskin:appleskin-forge:${project.findProperty('appleskinRuntimeVersion') ?: appleskin_version}") { transitive = false }
+    }
+
+    // Confluence: Otherworld is read by reflection, so it's not compiled against. `-PwithConfluence`
+    // adds it and the libraries it needs to the dev client; `-PconfluenceRuntimeVersion=40G2vna4` runs 1.2.9 (see gradle.properties).
+    // It also needs PortLib (MesdagPortLib), which is only on CurseForge: download it and pass
+    // `-PportlibJar=/path/to/portlib.jar`.
+    if (project.hasProperty('withConfluence')) {
+        modLocalRuntime("maven.modrinth:confluence:${project.findProperty('confluenceRuntimeVersion') ?: confluence_version}") { transitive = false }
+        modLocalRuntime("top.theillusivec4.curios:curios-forge:${confluence_curios_version}") { transitive = false }
+        modLocalRuntime("software.bernie.geckolib:geckolib-forge-1.20.1:${confluence_geckolib_version}") { transitive = false }
+        if (project.hasProperty('portlibJar')) {
+            modLocalRuntime files(project.property('portlibJar'))
+        }
     }
 }
 

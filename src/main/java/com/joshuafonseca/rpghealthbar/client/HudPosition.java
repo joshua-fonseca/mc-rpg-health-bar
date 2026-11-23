@@ -5,9 +5,11 @@ import com.joshuafonseca.rpghealthbar.config.HudAnchor;
 import com.joshuafonseca.rpghealthbar.config.HudPiece;
 import com.mojang.blaze3d.vertex.PoseStack;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import javax.annotation.Nullable;
 import net.minecraft.util.Mth;
 import org.joml.Matrix4f;
@@ -104,10 +106,28 @@ public final class HudPosition {
         }
     }
 
-    /** The XP bar (with the level number centered on it) at its default position. */
+    /** Each piece's box moved by its shift. */
+    public static Map<HudPiece, Bounds> placed(Map<HudPiece, Bounds> shown, Function<HudPiece, Offset> shift) {
+        Map<HudPiece, Bounds> placed = new EnumMap<>(HudPiece.class);
+        shown.forEach((piece, box) -> placed.put(piece, box.offset(shift.apply(piece))));
+        return placed;
+    }
+
+    /** The box around all the boxes; null if there are none. */
+    @Nullable
+    public static Bounds union(Collection<Bounds> boxes) {
+        Bounds union = null;
+        for (Bounds box : boxes) {
+            union = union == null ? box : union.union(box);
+        }
+        return union;
+    }
+
+    /** The XP bar (with the level number on it) at its default position, as long as {@link BarWidths} says. */
     public static Bounds xpBar(int screenHeight, HudLayout layout) {
         int bottom = screenHeight - XP_BAR_BOTTOM_MARGIN;
-        return new Bounds(layout.x(), bottom - XP_BAR_HEIGHT, layout.x() + HudLayout.WIDTH, bottom);
+        int left = layout.x() - BarWidths.left(HudPiece.XP);
+        return new Bounds(left, bottom - XP_BAR_HEIGHT, left + BarWidths.width(HudPiece.XP), bottom);
     }
 
     /**
@@ -194,11 +214,9 @@ public final class HudPosition {
      * anchor nearest its center, so a group stays together when the screen size changes.
      */
     private static Map<HudPiece, HudAnchor> anchors(Pieces pieces, int screenWidth, int screenHeight, Map<HudPiece, Bounds> shown) {
-        List<HudPiece> keys = new ArrayList<>(shown.keySet());
-        List<Bounds> boxes = new ArrayList<>();
-        for (HudPiece piece : keys) {
-            boxes.add(shown.get(piece).offset(pieces.get(piece)));
-        }
+        Map<HudPiece, Bounds> placed = placed(shown, pieces::get);
+        List<HudPiece> keys = new ArrayList<>(placed.keySet());
+        List<Bounds> boxes = new ArrayList<>(placed.values());
         int[] group = new int[keys.size()];
         for (int i = 0; i < group.length; i++) {
             group[i] = i;
@@ -234,11 +252,7 @@ public final class HudPosition {
      * box around all shown pieces (each with its own shift).
      */
     private static Offset legacySetOffset(int screenWidth, int screenHeight, Map<HudPiece, Bounds> shown) {
-        Bounds bounds = null;
-        for (Map.Entry<HudPiece, Bounds> entry : shown.entrySet()) {
-            Bounds moved = entry.getValue().offset(storedOffset(entry.getKey()));
-            bounds = bounds == null ? moved : bounds.union(moved);
-        }
+        Bounds bounds = union(placed(shown, HudPosition::storedOffset).values());
         HudAnchor anchor = ClientConfig.ANCHOR.get();
         int left = anchor.x(screenWidth) - anchor.x(bounds.width()) + ClientConfig.OFFSET_X.get();
         int top = anchor.y(screenHeight) - anchor.y(bounds.height()) + ClientConfig.OFFSET_Y.get();

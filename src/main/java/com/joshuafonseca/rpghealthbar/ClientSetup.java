@@ -1,12 +1,19 @@
 package com.joshuafonseca.rpghealthbar;
 
+import com.joshuafonseca.rpghealthbar.client.BarWidths;
 import com.joshuafonseca.rpghealthbar.client.HudLayer;
+import com.joshuafonseca.rpghealthbar.client.HudPosition;
 import com.joshuafonseca.rpghealthbar.client.HudPositionMover;
 import com.joshuafonseca.rpghealthbar.client.XpBarOverlay;
+import com.joshuafonseca.rpghealthbar.client.XpBarRenderer;
 import com.joshuafonseca.rpghealthbar.client.screen.RpgConfigScreen;
+import com.joshuafonseca.rpghealthbar.compat.ConfluenceCompat;
 import com.joshuafonseca.rpghealthbar.compat.IronsSpellsCompat;
 import com.joshuafonseca.rpghealthbar.config.ClientConfig;
 import com.joshuafonseca.rpghealthbar.config.HalfBarMode;
+import com.joshuafonseca.rpghealthbar.config.HudPiece;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.client.ConfigScreenHandler;
 import net.minecraftforge.client.event.RegisterGuiOverlaysEvent;
@@ -69,16 +76,57 @@ final class ClientSetup {
     }
 
     private static void hideVanillaOverlays(RenderGuiOverlayEvent.Pre event) {
+        ResourceLocation id = event.getOverlay().id();
+        // Confluence's own displays replace these vanilla ones, and Confluence hides them later, at
+        // normal priority. Hidden here first, even with the mod off (it doesn't change what shows),
+        // so mods that shift them in Pre and back in Post, like Double Hotbar, never shift them
+        // without shifting back: the leftover shift would move everything drawn after, menus included.
+        if ((id.equals(VanillaGuiOverlay.PLAYER_HEALTH.id()) && ConfluenceCompat.showsOwnHealth())
+                || (id.equals(VanillaGuiOverlay.ARMOR_LEVEL.id()) && ConfluenceCompat.showsOwnArmor())
+                || (id.equals(VanillaGuiOverlay.FOOD_LEVEL.id()) && ConfluenceCompat.showsOwnFood())) {
+            event.setCanceled(true);
+            return;
+        }
         if (!ClientConfig.ENABLED.get()) {
             return;
         }
-        ResourceLocation id = event.getOverlay().id();
+        // Armor and hunger on Default leave whatever the game shows: the vanilla icons, or a mod's
+        // display that replaces them, like Confluence's. Otherwise ours replaces both.
+        boolean armorReplaced = ClientConfig.ARMOR_MODE.get() != HalfBarMode.VANILLA;
+        boolean hungerReplaced = ClientConfig.HUNGER_MODE.get() != HalfBarMode.VANILLA;
+        if (id.equals(VanillaGuiOverlay.JUMP_BAR.id()) && BarWidths.customXp()) {
+            // Not vanilla's length or spot: drawn here instead, at its place in the set.
+            drawJumpBar(event.getGuiGraphics());
+            event.setCanceled(true);
+            return;
+        }
         if (id.equals(VanillaGuiOverlay.PLAYER_HEALTH.id())
+                // Ours draws it; see XpBarOverlay.
                 || id.equals(VanillaGuiOverlay.EXPERIENCE_BAR.id())
+                || id.equals(ConfluenceCompat.HEALTH_LAYER)
+                || (id.equals(ConfluenceCompat.ARMOR_LAYER) && armorReplaced)
+                || (id.equals(ConfluenceCompat.FOOD_LAYER) && hungerReplaced)
                 || id.equals(IronsSpellsCompat.MANA_OVERLAY)
-                || (id.equals(VanillaGuiOverlay.ARMOR_LEVEL.id()) && ClientConfig.ARMOR_MODE.get() != HalfBarMode.VANILLA)
-                || (id.equals(VanillaGuiOverlay.FOOD_LEVEL.id()) && ClientConfig.HUNGER_MODE.get() != HalfBarMode.VANILLA)) {
+                // Our bar shows its mana; in soul mode its display shows soul instead, so it's kept.
+                || (id.equals(ConfluenceCompat.MANA_LAYER) && ConfluenceCompat.isAvailable()
+                        && !ConfluenceCompat.isSoulMode(Minecraft.getInstance().player))
+                || (id.equals(VanillaGuiOverlay.ARMOR_LEVEL.id()) && armorReplaced)
+                || (id.equals(VanillaGuiOverlay.FOOD_LEVEL.id()) && hungerReplaced)) {
             event.setCanceled(true);
         }
+    }
+
+    /** The jump bar at the XP bar's length and place, as vanilla shows it (not with F1). */
+    private static void drawJumpBar(GuiGraphics graphics) {
+        Minecraft minecraft = Minecraft.getInstance();
+        if (!XpBarRenderer.jumpBarShown(minecraft) || minecraft.options.hideGui) {
+            return;
+        }
+        HudLayer.Frame frame = HudLayer.Frame.current(graphics.guiWidth(), graphics.guiHeight());
+        HudPosition.Bounds xp = frame.pieceBounds().get(HudPiece.XP);
+        graphics.pose().pushPose();
+        HudPosition.moveTo(graphics.pose(), frame.pieceOffset(HudPiece.XP));
+        XpBarRenderer.renderJump(graphics, xp.left(), xp.top(), BarWidths.xpCells(), minecraft.player.jumpableVehicle());
+        graphics.pose().popPose();
     }
 }

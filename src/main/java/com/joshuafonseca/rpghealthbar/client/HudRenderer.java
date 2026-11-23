@@ -1,6 +1,7 @@
 package com.joshuafonseca.rpghealthbar.client;
 
 import com.joshuafonseca.rpghealthbar.compat.AppleSkinCompat;
+import com.joshuafonseca.rpghealthbar.compat.Mana;
 import com.joshuafonseca.rpghealthbar.config.AbsorptionDisplay;
 import com.joshuafonseca.rpghealthbar.config.BarText;
 import com.joshuafonseca.rpghealthbar.config.ClientConfig;
@@ -19,6 +20,9 @@ public final class HudRenderer {
     /** What's left of the fill flashes this right after a drop, fading back to its color. */
     private static final int FLASH_COLOR = 0xFFFFFFFF;
     private static final int MANA_COLOR = 0xFF2C88D0;
+    /** Confluence's mana bar: a darker, purplish blue like its mana stars, so it stands apart from Iron's. */
+    private static final int CONFLUENCE_MANA_COLOR = 0xFF3A50B8;
+    private static final int CONFLUENCE_MANA_DARK_COLOR = 0xFF1A2456;
     private static final int ARMOR_COLOR = 0xFFB0B0B0;
     /** Saturation is outlined on the hunger bar in this color, like AppleSkin's outlines on the food icons. */
     private static final int SATURATION_COLOR = 0xFFF0D030;
@@ -42,6 +46,7 @@ public final class HudRenderer {
     private static final int REGEN_BAND_WIDTH = 24;
     private static final float REGEN_BAND_ALPHA = 0.4F;
     private static final BarTrail MANA_TRAIL = new BarTrail();
+    private static final BarTrail CONFLUENCE_MANA_TRAIL = new BarTrail();
     /** Vanilla's HUD shows at most 20 armor points and 20 food points. */
     private static final float MAX_ARMOR = 20.0F;
     private static final float MAX_FOOD = 20.0F;
@@ -65,14 +70,26 @@ public final class HudRenderer {
             inPiece(graphics, pieces, HudPiece.HUNGER, () -> renderHunger(graphics, layout, values));
         }
         inPiece(graphics, pieces, HudPiece.HEALTH, () -> renderHealth(graphics, font, layout, values, live));
-        if (values.mana() != null) {
-            inPiece(graphics, pieces, HudPiece.MANA, () -> renderMana(graphics, font, layout, values, live));
+        // Confluence's bar goes in the row under Iron's, or the first when it's the only one.
+        int confluenceRow = 0;
+        if (values.ironsMana() != null) {
+            confluenceRow = 1;
+            inPiece(graphics, pieces, HudPiece.MANA, () -> renderMana(graphics, font, layout, layout.manaY(0), BarWidths.width(HudPiece.MANA),
+                    ClientConfig.manaText(), values.ironsMana(), MANA_COLOR, MANA_LOST_COLOR, MANA_COST_COLOR, MANA_TRAIL, live));
+        }
+        if (values.confluenceMana() != null) {
+            int row = confluenceRow;
+            inPiece(graphics, pieces, HudPiece.CONFLUENCE_MANA, () -> renderMana(graphics, font, layout, layout.manaY(row),
+                    BarWidths.width(HudPiece.CONFLUENCE_MANA), ClientConfig.CONFLUENCE_MANA_TEXT.get(), values.confluenceMana(), CONFLUENCE_MANA_COLOR, CONFLUENCE_MANA_DARK_COLOR, CONFLUENCE_MANA_DARK_COLOR, CONFLUENCE_MANA_TRAIL, live));
         }
     }
 
-    /** Draws with the pose shifted by the piece's own offset. */
+    /**
+     * Draws with the pose shifted by the piece's own offset, and for a bar whose left end was
+     * dragged in Advanced mode, by how far it was dragged.
+     */
     private static void inPiece(GuiGraphics graphics, HudPosition.Pieces pieces, HudPiece piece, Runnable draw) {
-        HudPosition.Offset offset = pieces.get(piece);
+        HudPosition.Offset offset = pieces.get(piece).minus(new HudPosition.Offset(BarWidths.left(piece), 0));
         if (offset.equals(HudPosition.Offset.ZERO)) {
             draw.run();
             return;
@@ -211,27 +228,26 @@ public final class HudRenderer {
         return NumberText.formatQuarters(unit.fromHp(health)) + "+" + NumberText.formatQuarters(unit.fromHp(absorption)) + "/" + max;
     }
 
-    private static void renderMana(GuiGraphics graphics, Font font, HudLayout layout, HudValues values, boolean live) {
-        float mana = values.mana().current();
-        float maxMana = values.mana().max();
+    /** One mana bar, at row top {@code y}; Iron's and Confluence's differ in colors and their own settings. */
+    private static void renderMana(GuiGraphics graphics, Font font, HudLayout layout, int y, int width, BarText text, Mana values,
+                                   int color, int lostColor, int costColor, BarTrail manaTrail, boolean live) {
+        float mana = values.current();
+        float maxMana = values.max();
 
-        int x = layout.manaX();
-        int y = layout.manaY();
-        int width = layout.manaWidth();
+        int x = layout.x();
         BarRenderer.drawTrack(graphics, x, y, width, HudLayout.MAIN_BAR_HEIGHT, true);
         if (maxMana > 0) {
-            BarRenderer.drawFill(graphics, x, y, width, HudLayout.MAIN_BAR_HEIGHT, true, mana / maxMana, MANA_COLOR, true);
+            BarRenderer.drawFill(graphics, x, y, width, HudLayout.MAIN_BAR_HEIGHT, true, mana / maxMana, color, true);
             if (live) {
-                float trail = MANA_TRAIL.update(mana);
-                BarRenderer.drawSection(graphics, x, y, width, HudLayout.MAIN_BAR_HEIGHT, true, mana / maxMana, trail / maxMana, MANA_LOST_COLOR, false, 1.0F);
+                float trail = manaTrail.update(mana);
+                BarRenderer.drawSection(graphics, x, y, width, HudLayout.MAIN_BAR_HEIGHT, true, mana / maxMana, trail / maxMana, lostColor, false, 1.0F);
             }
-            float cost = values.mana().hoveredCost();
+            float cost = values.hoveredCost();
             if (cost > 0) {
                 // The mana the hovered spell would use, pulsing between normal and dark blue.
-                BarRenderer.drawSection(graphics, x, y, width, HudLayout.MAIN_BAR_HEIGHT, true, (mana - cost) / maxMana, mana / maxMana, MANA_COST_COLOR, true, pulse(COST_PULSE_MILLIS));
+                BarRenderer.drawSection(graphics, x, y, width, HudLayout.MAIN_BAR_HEIGHT, true, (mana - cost) / maxMana, mana / maxMana, costColor, true, pulse(COST_PULSE_MILLIS));
             }
         }
-        BarText text = ClientConfig.manaText();
         if (text != BarText.OFF) {
             BarRenderer.drawLabel(graphics, font, x, y, width, HudLayout.MAIN_BAR_HEIGHT,
                     NumberText.format(mana) + "/" + NumberText.format(maxMana), text);

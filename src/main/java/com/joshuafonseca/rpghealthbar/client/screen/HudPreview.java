@@ -4,12 +4,13 @@ import com.joshuafonseca.rpghealthbar.client.HudLayer;
 import com.joshuafonseca.rpghealthbar.client.HudPosition;
 import com.joshuafonseca.rpghealthbar.client.HudRenderer;
 import com.joshuafonseca.rpghealthbar.client.HudValues;
+import com.joshuafonseca.rpghealthbar.config.ClientConfig;
 import com.joshuafonseca.rpghealthbar.config.HudPiece;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 
 /**
- * A stand-in for the HUD on the Move HUD and Item Name pages, for when the real one isn't drawn:
+ * A stand-in for the HUD on the HUD Editor and Item Name pages, for when the real one isn't drawn:
  * without a survival player (title screen, creative), our bars with placeholder values, and with
  * no world at all, the XP bar (and the hotbar, if asked for) as plain boxes.
  */
@@ -22,14 +23,14 @@ final class HudPreview {
     private HudPreview() {
     }
 
-    static void drawIfHidden(GuiGraphics graphics, Minecraft minecraft, HudLayer.Frame frame, HudPosition.Pieces pieces, boolean hotbar) {
+    static void drawIfHidden(GuiGraphics graphics, Minecraft minecraft, HudLayer.Frame frame, boolean hotbar) {
         boolean inWorld = minecraft.level != null;
         if (inWorld && HudLayer.isVisible(minecraft)) {
             return;
         }
-        HudRenderer.render(graphics, minecraft.font, frame.layout(), HudValues.placeholder(), frame.showArmor(), frame.showHunger(), pieces, false);
-        if (!inWorld) {
-            HudPosition.Bounds xp = frame.pieceBounds().get(HudPiece.XP).offset(pieces.get(HudPiece.XP));
+        HudRenderer.render(graphics, minecraft.font, frame.layout(), HudValues.placeholder(), frame.showArmor(), frame.showHunger(), frame.pieces(), false);
+        if (!inWorld && ClientConfig.XP_BAR_SHOWN.get()) {
+            HudPosition.Bounds xp = frame.placed(HudPiece.XP);
             graphics.fill(xp.left(), xp.top(), xp.right(), xp.bottom(), XP_BAR_COLOR);
             if (hotbar) {
                 int left = graphics.guiWidth() / 2 - HOTBAR_WIDTH / 2;

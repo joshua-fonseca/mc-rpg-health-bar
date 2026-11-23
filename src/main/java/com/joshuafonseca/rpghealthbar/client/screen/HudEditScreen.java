@@ -1,10 +1,11 @@
 package com.joshuafonseca.rpghealthbar.client.screen;
 
+import com.joshuafonseca.rpghealthbar.client.BarWidths;
 import com.joshuafonseca.rpghealthbar.client.HudLayer;
 import com.joshuafonseca.rpghealthbar.client.HudPosition;
-import com.joshuafonseca.rpghealthbar.compat.IronsSpellsCompat;
 import com.joshuafonseca.rpghealthbar.config.HudPiece;
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -16,11 +17,14 @@ import net.minecraft.client.gui.components.CycleButton;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.Mth;
 import org.lwjgl.glfw.GLFW;
 
 /**
- * Drag the whole HUD set, or one piece of it, to a new position, then Save (or Esc) or Cancel. In a world
- * the real HUD follows the drag; from the title screen a preview is drawn instead.
+ * The HUD Editor. Drag the whole HUD set, or one piece of it, to a new position, then Save (or Esc)
+ * or Cancel. In Advanced edit mode, dragging either end of the health, mana or XP bar resizes it
+ * (the XP bar a cell at a time). In a world the real HUD follows the drag; from the title screen a
+ * preview is drawn instead.
  */
 public class HudEditScreen extends Screen {
     private static final int BUTTON_WIDTH = 70;
@@ -29,6 +33,11 @@ public class HudEditScreen extends Screen {
 
     /** Title, hint and buttons; moved to whichever half of the screen the HUD isn't in. */
     private static final int CONTROLS_HEIGHT = 44;
+    private static final int LINE_HEIGHT = 10;
+    /** A bar's end can be grabbed this far either side of it. */
+    private static final int EDGE_MARGIN = 2;
+    /** The system's left-right resize cursor, shown over a bar's end; made the first time it's needed. */
+    private static long resizeCursor;
     private static final int CONTROLS_MARGIN = 8;
     /** Pieces can be grabbed this far outside their edges, so the thin bars are easy to pick up. */
     private static final int GRAB_MARGIN = 2;
@@ -62,6 +71,22 @@ public class HudEditScreen extends Screen {
     private HudPiece selected;
     private double grabX;
     private double grabY;
+    /** The bars' sizes being edited, shown on the HUD as they change. */
+    @Nullable
+    private Map<HudPiece, BarWidths.Size> sizes;
+    /** The bar end being dragged, and the bar's width and box when it was grabbed. */
+    @Nullable
+    private Edge resizing;
+    private int resizeStartWidth;
+    /** How far left the bar's left end had been dragged when it was grabbed. */
+    private int resizeStartLeft;
+    @Nullable
+    private HudPosition.Bounds resizeStartBox;
+    private boolean resizeCursorShown;
+
+    /** One end of a resizable bar. */
+    private record Edge(HudPiece piece, boolean left) {
+    }
 
     public HudEditScreen(Screen parent) {
         super(Component.translatable("rpghealthbar.edit.title"));
@@ -89,6 +114,10 @@ public class HudEditScreen extends Screen {
         buttons.add(addRenderableWidget(Button.builder(CommonComponents.GUI_CANCEL, button -> close())
                 .bounds(x + step * 3, 0, BUTTON_WIDTH, BUTTON_HEIGHT).build()));
 
+        if (sizes == null) {
+            sizes = new EnumMap<>(BarWidths.saved());
+            BarWidths.setPreview(sizes);
+        }
         // Start from the saved positions, or re-clamp the dragged ones if the window was resized.
         // This also places the controls.
         setPieces(pieces != null ? pieces : frame().pieces());
@@ -101,10 +130,10 @@ public class HudEditScreen extends Screen {
     private void placeControls() {
         HudLayer.Frame frame = frame();
         int top = CONTROLS_MARGIN;
-        int bottom = this.height - CONTROLS_MARGIN - CONTROLS_HEIGHT;
+        int bottom = this.height - CONTROLS_MARGIN - controlsHeight();
         HudPosition.Bounds box = frame.bounds();
         boolean hudInTopHalf = (box.top() + box.bottom()) / 2 < this.height / 2;
-        int[] candidates = {hudInTopHalf ? bottom : top, hudInTopHalf ? top : bottom, this.height / 2 - CONTROLS_HEIGHT / 2};
+        int[] candidates = {hudInTopHalf ? bottom : top, hudInTopHalf ? top : bottom, this.height / 2 - controlsHeight() / 2};
         controlsTop = candidates[0];
         int least = coveredArea(frame, candidates[0]);
         for (int i = 1; i < candidates.length && least > 0; i++) {
@@ -115,17 +144,22 @@ public class HudEditScreen extends Screen {
             }
         }
         for (AbstractButton button : buttons) {
-            button.setY(controlsTop + CONTROLS_HEIGHT - BUTTON_HEIGHT);
+            button.setY(controlsTop + controlsHeight() - BUTTON_HEIGHT);
         }
+    }
+
+    /** With a line more in Advanced mode, on resizing the bars. */
+    private static int controlsHeight() {
+        return CONTROLS_HEIGHT + (BarWidths.advanced() ? LINE_HEIGHT : 0);
     }
 
     /** How many pixels of the pieces the title, hint and buttons would cover with their top at {@code y}. */
     private int coveredArea(HudLayer.Frame frame, int y) {
-        int halfWidth = Math.max(BUTTON_WIDTH * 4 + BUTTON_GAP * 3, this.font.width(Component.translatable("rpghealthbar.edit.hint.one"))) / 2;
-        HudPosition.Bounds controls = new HudPosition.Bounds(this.width / 2 - halfWidth, y, this.width / 2 + halfWidth, y + CONTROLS_HEIGHT);
+        int halfWidth = Math.max(BUTTON_WIDTH * 4 + BUTTON_GAP * 3, Math.max(this.font.width(Component.translatable("rpghealthbar.edit.hint.one")),
+                this.font.width(Component.translatable("rpghealthbar.edit.hint.resize")))) / 2;
+        HudPosition.Bounds controls = new HudPosition.Bounds(this.width / 2 - halfWidth, y, this.width / 2 + halfWidth, y + controlsHeight());
         int area = 0;
-        for (Map.Entry<HudPiece, HudPosition.Bounds> entry : frame.pieceBounds().entrySet()) {
-            HudPosition.Bounds box = entry.getValue().offset(frame.pieceOffset(entry.getKey()));
+        for (HudPosition.Bounds box : frame.placedBounds().values()) {
             int w = Math.min(box.right(), controls.right()) - Math.max(box.left(), controls.left());
             int h = Math.min(box.bottom(), controls.bottom()) - Math.max(box.top(), controls.top());
             if (w > 0 && h > 0) {
@@ -136,7 +170,7 @@ public class HudEditScreen extends Screen {
     }
 
     private HudLayer.Frame frame() {
-        return HudLayer.Frame.compute(this.width, this.height, IronsSpellsCompat.isAvailable());
+        return HudLayer.Frame.compute(this.width, this.height);
     }
 
     /** Shows the pieces where they'd be saved, each kept on screen. */
@@ -152,20 +186,20 @@ public class HudEditScreen extends Screen {
 
     /** Moves every piece by the same amount, as far as keeps them all on screen. */
     private void moveAll(HudPosition.Pieces from, HudPosition.Offset delta) {
-        HudPosition.Bounds bounds = null;
-        for (Map.Entry<HudPiece, HudPosition.Bounds> entry : frame().pieceBounds().entrySet()) {
-            HudPosition.Bounds moved = entry.getValue().offset(from.get(entry.getKey()));
-            bounds = bounds == null ? moved : bounds.union(moved);
-        }
+        HudPosition.Bounds bounds = HudPosition.union(HudPosition.placed(frame().pieceBounds(), from::get).values());
         setPieces(from.shiftedBy(HudPosition.clamp(delta, this.width, this.height, bounds)));
     }
 
-    /** Puts every piece back above the hotbar. */
+    /** Puts every piece back above the hotbar, and in Advanced mode each bar back to its preset width. */
     private void reset() {
+        if (BarWidths.advanced()) {
+            sizes.replaceAll((piece, size) -> BarWidths.Size.PRESET);
+        }
         setPieces(HudPosition.Pieces.NONE);
     }
 
     private void save() {
+        BarWidths.save(sizes);
         HudPosition.save(pieces, this.width, this.height, frame().pieceBounds());
         close();
     }
@@ -183,6 +217,8 @@ public class HudEditScreen extends Screen {
     @Override
     public void removed() {
         HudPosition.setPreview(null);
+        BarWidths.setPreview(null);
+        showResizeCursor(false);
     }
 
     @Override
@@ -199,10 +235,16 @@ public class HudEditScreen extends Screen {
         super.render(graphics, mouseX, mouseY, partialTick);
         HudLayer.Frame frame = frame();
 
-        HudPreview.drawIfHidden(graphics, this.minecraft, frame, pieces, false);
+        HudPreview.drawIfHidden(graphics, this.minecraft, frame, false);
 
         graphics.drawCenteredString(this.font, this.title, this.width / 2, controlsTop, 0xFFFFFF);
-        if (dragging) {
+        Edge hoveredEdge = resizing == null && !dragging && getChildAt(mouseX, mouseY).isEmpty() ? edgeAt(mouseX, mouseY) : null;
+        showResizeCursor(resizing != null || hoveredEdge != null);
+        if (resizing != null) {
+            highlight(graphics, frame, resizing.piece(), GRABBED_HIGHLIGHT);
+        } else if (hoveredEdge != null) {
+            highlight(graphics, frame, hoveredEdge.piece(), HOVER_HIGHLIGHT);
+        } else if (dragging) {
             highlight(graphics, frame, mode == Mode.ALL ? null : selected, GRABBED_HIGHLIGHT);
         } else if (mode == Mode.ALL) {
             if (frame.bounds().contains(mouseX, mouseY)) {
@@ -216,7 +258,75 @@ public class HudEditScreen extends Screen {
         }
 
         String hint = mode == Mode.ALL ? "rpghealthbar.edit.hint" : "rpghealthbar.edit.hint.one";
-        graphics.drawCenteredString(this.font, Component.translatable(hint), this.width / 2, controlsTop + 10, 0xFFFFFF);
+        graphics.drawCenteredString(this.font, Component.translatable(hint), this.width / 2, controlsTop + LINE_HEIGHT, 0xFFFFFF);
+        if (BarWidths.advanced()) {
+            graphics.drawCenteredString(this.font, Component.translatable("rpghealthbar.edit.hint.resize"), this.width / 2, controlsTop + LINE_HEIGHT * 2, 0xFFFFFF);
+        }
+    }
+
+    /** Switches between the left-right resize cursor and the normal one. */
+    private void showResizeCursor(boolean show) {
+        if (show == resizeCursorShown) {
+            return;
+        }
+        if (show && resizeCursor == 0) {
+            resizeCursor = GLFW.glfwCreateStandardCursor(GLFW.GLFW_HRESIZE_CURSOR);
+        }
+        GLFW.glfwSetCursor(this.minecraft.getWindow().getWindow(), show ? resizeCursor : 0L);
+        resizeCursorShown = show;
+    }
+
+    /** In Advanced mode, the end of a resizable bar under the cursor. */
+    @Nullable
+    private Edge edgeAt(double mouseX, double mouseY) {
+        if (!BarWidths.advanced()) {
+            return null;
+        }
+        HudLayer.Frame frame = frame();
+        for (Map.Entry<HudPiece, HudPosition.Bounds> entry : frame.placedBounds().entrySet()) {
+            if (!BarWidths.resizable(entry.getKey())) {
+                continue;
+            }
+            HudPosition.Bounds box = entry.getValue();
+            if (mouseY < box.top() - EDGE_MARGIN || mouseY >= box.bottom() + EDGE_MARGIN) {
+                continue;
+            }
+            if (Math.abs(mouseX - box.left()) <= EDGE_MARGIN) {
+                return new Edge(entry.getKey(), true);
+            }
+            if (Math.abs(mouseX - box.right()) <= EDGE_MARGIN) {
+                return new Edge(entry.getKey(), false);
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Resizes the grabbed bar to follow the cursor: the dragged end moves, the other stays put. Kept
+     * between its narrowest and the screen's edge; the XP bar snaps to whole cells.
+     */
+    private void resize(double mouseX) {
+        HudPiece piece = resizing.piece();
+        int moved = (int) Math.round(mouseX - grabX);
+        int wanted = resizeStartWidth + (resizing.left() ? -moved : moved);
+        int room = resizing.left() ? resizeStartBox.right() : this.width - resizeStartBox.left();
+        int width;
+        int stored;
+        if (piece == HudPiece.XP) {
+            int cells = Mth.clamp(Math.round((wanted - BarWidths.xpWidth(0)) / (float) BarWidths.XP_CELL_WIDTH),
+                    BarWidths.MIN_XP_CELLS, Math.max(BarWidths.MIN_XP_CELLS, (room - BarWidths.xpWidth(0)) / BarWidths.XP_CELL_WIDTH));
+            width = BarWidths.xpWidth(cells);
+            stored = cells;
+        } else {
+            width = Mth.clamp(wanted, BarWidths.MIN_WIDTH, Math.max(BarWidths.MIN_WIDTH, room));
+            stored = width;
+        }
+        // Dragging the left end moves the bar's start, keeping its right end where it was. That's
+        // kept with the size rather than the position, so the preset width (Simple mode) is back
+        // where it was.
+        int left = resizing.left() ? resizeStartLeft + width - resizeStartWidth : resizeStartLeft;
+        sizes.put(piece, new BarWidths.Size(stored, left));
+        setPieces(pieces);
     }
 
     /**
@@ -224,9 +334,9 @@ public class HudEditScreen extends Screen {
      * it doesn't get in the way of lining things up.
      */
     private static void highlight(GuiGraphics graphics, HudLayer.Frame frame, @Nullable HudPiece only, int color) {
-        for (Map.Entry<HudPiece, HudPosition.Bounds> entry : frame.pieceBounds().entrySet()) {
+        for (Map.Entry<HudPiece, HudPosition.Bounds> entry : frame.placedBounds().entrySet()) {
             if (only == null || entry.getKey() == only) {
-                HudPosition.Bounds box = entry.getValue().offset(frame.pieceOffset(entry.getKey()));
+                HudPosition.Bounds box = entry.getValue();
                 graphics.fill(box.left(), box.top(), box.right(), box.bottom(), color);
             }
         }
@@ -239,6 +349,16 @@ public class HudEditScreen extends Screen {
         }
         if (button != GLFW.GLFW_MOUSE_BUTTON_LEFT) {
             return false;
+        }
+        Edge edge = edgeAt(mouseX, mouseY);
+        if (edge != null) {
+            HudLayer.Frame frame = frame();
+            resizing = edge;
+            resizeStartBox = frame.placed(edge.piece());
+            resizeStartWidth = resizeStartBox.width();
+            resizeStartLeft = BarWidths.left(edge.piece());
+            grabX = mouseX;
+            return true;
         }
         if (mode == Mode.ALL) {
             if (frame().bounds().contains(mouseX, mouseY)) {
@@ -266,8 +386,8 @@ public class HudEditScreen extends Screen {
     private HudPiece pieceAt(double mouseX, double mouseY) {
         HudLayer.Frame frame = frame();
         HudPiece near = null;
-        for (Map.Entry<HudPiece, HudPosition.Bounds> entry : frame.pieceBounds().entrySet()) {
-            HudPosition.Bounds bounds = entry.getValue().offset(frame.pieceOffset(entry.getKey()));
+        for (Map.Entry<HudPiece, HudPosition.Bounds> entry : frame.placedBounds().entrySet()) {
+            HudPosition.Bounds bounds = entry.getValue();
             if (bounds.contains(mouseX, mouseY)) {
                 return entry.getKey();
             }
@@ -280,6 +400,10 @@ public class HudEditScreen extends Screen {
 
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
+        if (resizing != null) {
+            resize(mouseX);
+            return true;
+        }
         if (dragging) {
             HudPosition.Offset moved = new HudPosition.Offset((int) Math.round(mouseX - grabX), (int) Math.round(mouseY - grabY));
             if (mode == Mode.ALL) {
@@ -295,6 +419,7 @@ public class HudEditScreen extends Screen {
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
         dragging = false;
+        resizing = null;
         return super.mouseReleased(mouseX, mouseY, button);
     }
 

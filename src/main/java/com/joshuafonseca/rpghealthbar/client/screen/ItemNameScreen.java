@@ -2,7 +2,6 @@ package com.joshuafonseca.rpghealthbar.client.screen;
 
 import com.joshuafonseca.rpghealthbar.client.HudLayer;
 import com.joshuafonseca.rpghealthbar.client.HudTextPlacer;
-import com.joshuafonseca.rpghealthbar.compat.IronsSpellsCompat;
 import com.joshuafonseca.rpghealthbar.config.ClientConfig;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractSliderButton;
@@ -23,13 +22,13 @@ public class ItemNameScreen extends Screen {
     private static final int BUTTON_WIDTH = 98;
     private static final int BUTTON_HEIGHT = 20;
     private static final int BUTTON_GAP = 4;
-    /** The previewed name is lightened like the piece being dragged in Move HUD. */
+    /** The previewed name is lightened like the piece being dragged in HUD Editor. */
     private static final int NAME_HIGHLIGHT = 0x30FFFFFF;
     private static final int HINT_COLOR = 0xFFFFFF;
     /** Title, slider, buttons and three lines of tips. */
     private static final int CONTROLS_HEIGHT = 104;
     private static final int CONTROLS_MARGIN = 8;
-    /** The arrow keys move the name this much, or {@link #SHIFT_STEP} with Shift held, as in Move HUD. */
+    /** The arrow keys move the name this much, or {@link #SHIFT_STEP} with Shift held, as in HUD Editor. */
     private static final int STEP = 1;
     private static final int SHIFT_STEP = 10;
 
@@ -45,7 +44,7 @@ public class ItemNameScreen extends Screen {
     @Override
     protected void init() {
         // At the top, unless the HUD has been moved there; then in the middle.
-        HudLayer.Frame frame = HudLayer.Frame.compute(this.width, this.height, IronsSpellsCompat.isAvailable());
+        HudLayer.Frame frame = HudLayer.Frame.compute(this.width, this.height);
         this.controlsTop = frame.bounds().top() < CONTROLS_MARGIN + CONTROLS_HEIGHT ? (this.height - CONTROLS_HEIGHT) / 2 : CONTROLS_MARGIN;
         int y = this.controlsTop + 14;
         this.slider = new HeightSlider(this.width / 2 - SLIDER_WIDTH / 2, y, SLIDER_WIDTH, BUTTON_HEIGHT,
@@ -67,9 +66,9 @@ public class ItemNameScreen extends Screen {
             renderBackground(graphics);
         }
         super.render(graphics, mouseX, mouseY, partialTick);
-        HudLayer.Frame frame = HudLayer.Frame.compute(this.width, this.height, IronsSpellsCompat.isAvailable());
+        HudLayer.Frame frame = HudLayer.Frame.compute(this.width, this.height);
 
-        HudPreview.drawIfHidden(graphics, this.minecraft, frame, frame.pieces(), true);
+        HudPreview.drawIfHidden(graphics, this.minecraft, frame, true);
 
         Component name = Component.translatable("rpghealthbar.itemName.sample");
         if (this.minecraft.player != null) {

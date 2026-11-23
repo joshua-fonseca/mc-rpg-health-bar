@@ -17,8 +17,16 @@ import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
  */
 public final class CompatNotes {
     /**
+     * One note. A problem (a mod too old, or support turned off) shows in red; anything else is
+     * just good to know, and shows in white.
+     */
+    public record Note(Component text, boolean problem) {
+    }
+
+    /**
      * The oldest version of {@code modId} that works, as the README's Compatibility table gives it;
-     * with a {@code feature}, the oldest for just that feature.
+     * with a {@code feature}, the oldest for just that feature. Every Forge build of Confluence
+     * (1.2.9 and later) works, so it has none.
      */
     private record Requirement(String modId, String name, String minVersion, @Nullable String feature) {
     }
@@ -31,31 +39,40 @@ public final class CompatNotes {
     private CompatNotes() {
     }
 
-    public static List<Component> notes() {
-        List<Component> notes = new ArrayList<>();
+    public static List<Note> notes() {
+        List<Note> notes = new ArrayList<>();
         Set<String> noted = new HashSet<>();
         for (Requirement requirement : REQUIREMENTS) {
             Optional<String> installed = installedVersion(requirement.modId());
             if (installed.isEmpty() || noted.contains(requirement.modId()) || !isOlder(installed.get(), requirement.minVersion())) {
                 continue;
             }
-            notes.add(requirement.feature() == null
+            Component text = requirement.feature() == null
                     ? Component.translatable("rpghealthbar.config.compat.tooOld", requirement.name(), requirement.minVersion(), installed.get())
                     : Component.translatable("rpghealthbar.config.compat.tooOldFeature", requirement.name(), requirement.minVersion(),
-                            Component.translatable(requirement.feature()), installed.get()));
+                            Component.translatable(requirement.feature()), installed.get());
+            notes.add(new Note(text, true));
             noted.add(requirement.modId());
         }
         if (!noted.contains(IronsSpellsCompat.MODID) && installedVersion(IronsSpellsCompat.MODID).isPresent()) {
             if (!IronsSpellsCompat.isAvailable()) {
-                notes.add(Component.translatable("rpghealthbar.config.compat.failed", "Iron's Spells"));
+                notes.add(new Note(Component.translatable("rpghealthbar.config.compat.failed", "Iron's Spells"), true));
             } else if (!IronsSpellsCompat.isWheelAvailable()) {
-                notes.add(Component.translatable("rpghealthbar.config.compat.wheelFailed"));
+                notes.add(new Note(Component.translatable("rpghealthbar.config.compat.wheelFailed"), true));
             }
         }
         if (!noted.contains(AppleSkinCompat.MODID) && installedVersion(AppleSkinCompat.MODID).isPresent() && !AppleSkinCompat.isWorking()) {
-            notes.add(Component.translatable("rpghealthbar.config.compat.failed", "AppleSkin"));
+            notes.add(new Note(Component.translatable("rpghealthbar.config.compat.failed", "AppleSkin"), true));
+        }
+        if (installedVersion(ConfluenceCompat.MODID).isPresent() && !ConfluenceCompat.isWorking()) {
+            notes.add(new Note(Component.translatable("rpghealthbar.config.compat.failed", "Confluence"), true));
         }
         return notes;
+    }
+
+    /** Whether any note is a problem, rather than just good to know. */
+    public static boolean anyProblem(List<Note> notes) {
+        return notes.stream().anyMatch(Note::problem);
     }
 
     /**
