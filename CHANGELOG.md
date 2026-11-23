@@ -10,11 +10,11 @@
 - While riding a mount whose health shows (like a horse), the hunger bar is hidden, as vanilla hides the hunger icons for the mount's hearts.
 - With **Air Bubbles/Mount HP** on **Below**, the armor and hunger row moves up to make room while air bubbles or mount health show, a row for each, instead of the rows covering the health bar.
 - New **XP Bar** section in the config screen, with **Level Text**: the level's number in the **Center** of the XP bar (default), or at its **Left** or **Right** end.
-- **Confluence: Otherworld support** (1.21.1, Confluence 1.1.4+): its mana gets its own darker blue bar.
-  - With Iron's Spells too, Confluence's bar sits below Iron's. In the HUD Editor each mana bar can be moved on its own. If the server has Confluence's convertIronsSpellMana on, Iron's spells use Confluence's mana, so only Confluence's bar shows, with the spell cost preview on it.
+- **Confluence: Otherworld support** (Confluence 1.1.4+ on 1.21.1, 1.2.9+ on 1.20.1): its mana gets its own darker blue bar.
+  - With Iron's Spells too, Confluence's bar sits below Iron's. In the HUD Editor each mana bar can be moved on its own. On 1.21.1, if the server has Confluence's convertIronsSpellMana on, Iron's spells use Confluence's mana, so only Confluence's bar shows, with the spell cost preview on it.
   - Confluence's own mana display is hidden, except in soul mode, where it shows soul. Its own health display is hidden too, and its armor and hunger displays are hidden unless Armor or Hunger is on Default.
   - Confluence's bar has its own **Confluence Mana Text** and **Confluence Mana Bar Width** options, listed only with Confluence; Iron's are now **Iron's Mana Text** and **Iron's Mana Bar Width**.
-  - The Mana header says which mana mods were found, and Compatibility notes flag a Confluence older than 1.1.4. With both mods, a note explains that two mana bars mean Confluence's unified mana (convertIronsSpellMana) is off.
+  - The Mana header says which mana mods were found, and Compatibility notes flag a Confluence older than 1.1.4. With both mods on 1.21.1, a note explains that two mana bars mean Confluence's unified mana (convertIronsSpellMana) is off.
   - With Armor or Hunger on Default, Confluence's own armor and hunger icons show there and move with the HUD in Move HUD, like vanilla's.
 - Half-width health and mana bars no longer share a row: they stack like full ones.
 - Armor and Hunger's **Vanilla** option is now **Default**: whatever the game normally shows there, the vanilla icons or another mod's display that replaces them, like Confluence's. Your setting is kept.

@@ -55,13 +55,13 @@ My original plan was to only replace the vanilla hearts with an RPG-style health
 | **Mod loader** | NeoForge 21.1.1+ | Forge 47.0.0+ |
 | **Iron's Spells 'n Spellbooks** | 3.4.0+ | 1.1.5+ (spell cost preview: 3.1.4+) |
 | **AppleSkin** | 3.0.4+ | 2.5.0+ |
-| **Confluence: Otherworld** | 1.1.4+ | Not yet |
+| **Confluence: Otherworld** | 1.1.4+ | 1.2.9+ |
 | **Double Hotbar** | Any ([Double Hotbar NeoForge](https://www.curseforge.com/projects/1563792), unofficial port by \_retrospective\_) | 1.3.2.1+ ([Double Hotbar](https://www.curseforge.com/minecraft/mc-mods/double-hotbar) by sidezbros) |
 
 - **Client-side only:** servers don't need it, and it works on servers that don't have it.
 - **[Iron's Spells 'n Spellbooks](https://www.curseforge.com/projects/855414) by Iron431 and Lab3:** optional. When it's installed you get the mana bar and the spell cost preview, and Iron's own mana bar is hidden.
 - **[AppleSkin](https://www.curseforge.com/minecraft/mc-mods/appleskin) by squeek502:** optional. When it's installed, saturation is outlined in yellow on the hunger bar and held food's value flashes on it; with the vanilla hunger icons, AppleSkin's own overlays move with them.
-- **[Confluence: Otherworld](https://www.curseforge.com/minecraft/mc-mods/confluence):** optional. When it's installed its mana gets its own darker blue bar, below Iron's when both are installed; with Confluence's convertIronsSpellMana on, Iron's spells use Confluence's mana, so only that bar shows, with the spell cost preview. Confluence's own health and mana displays are hidden while this mod is on (in soul mode its soul display stays); with Armor or Hunger on Default, Confluence's own armor and hunger displays show, if they're on in its config. They move with the HUD, like vanilla's.
+- **[Confluence: Otherworld](https://www.curseforge.com/minecraft/mc-mods/confluence):** optional. When it's installed its mana gets its own darker blue bar, below Iron's when both are installed; with Confluence's convertIronsSpellMana on (1.21.1 only: Confluence's Forge build doesn't use it), Iron's spells use Confluence's mana, so only that bar shows, with the spell cost preview. Confluence's own health and mana displays are hidden while this mod is on (in soul mode its soul display stays); with Armor or Hunger on Default, Confluence's own armor and hunger displays show, if they're on in its config. They move with the HUD, like vanilla's.
 - **Double Hotbar:** compatible with [Double Hotbar](https://www.curseforge.com/minecraft/mc-mods/double-hotbar) by sidezbros on 1.20.1, and its unofficial NeoForge port, [Double Hotbar NeoForge](https://www.curseforge.com/projects/1563792) by \_retrospective\_, on 1.21.1. Open the **HUD Editor...** and drag the HUD up above the second hotbar once; the bars, XP bar and level move together and stay there, and the item name stays above them.
 - Works with other mods that draw near the hotbar the same way: drag the HUD, or just the pieces in the way, clear of them.
 - Air bubbles and mount health stay vanilla, stacked above hunger or below it.
