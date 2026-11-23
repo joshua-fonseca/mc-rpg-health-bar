@@ -11,7 +11,6 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.client.gui.overlay.ForgeGui;
 import net.minecraftforge.client.event.RenderGuiOverlayEvent;
 import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay;
@@ -91,27 +90,6 @@ public final class HudPositionMover {
         int firstRow = hunger.bottom() + 1 + belowHeight + (rows - 1) * ROW_HEIGHT;
         graphics.pose().translate(0, firstRow - vanillaFirstRow, 0);
         rightHeightBefore = gui.rightHeight;
-    }
-
-    /**
-     * How many rows go below hunger now: air while vanilla shows it (head underwater, or air not
-     * full) and mount health's rows while riding. 0 with Air Bubbles/Mount HP on Above.
-     */
-    public static int rowsBelowHunger() {
-        Minecraft minecraft = Minecraft.getInstance();
-        if (ClientConfig.AIR_POSITION.get() != AirPosition.BELOW || !(minecraft.getCameraEntity() instanceof Player player)) {
-            return 0;
-        }
-        int rows = 0;
-        // As in ForgeGui.renderAir.
-        if (player.isEyeInFluidType(ForgeMod.WATER_TYPE.get()) || player.getAirSupply() < 300) {
-            rows++;
-        }
-        LivingEntity mount = mountWithHealth(player);
-        if (mount != null) {
-            rows += vehicleRows(mount);
-        }
-        return rows;
     }
 
     /**

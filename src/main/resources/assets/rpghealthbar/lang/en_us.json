@@ -44,7 +44,7 @@
   "rpghealthbar.config.airPosition.tooltip.above.name": "Above",
   "rpghealthbar.config.airPosition.tooltip.above": "stacked above the hunger icons or bar, like vanilla.",
   "rpghealthbar.config.airPosition.tooltip.below.name": "Below",
-  "rpghealthbar.config.airPosition.tooltip.below": "stacked under the hunger icons or bar, which move up to make room while they show. Useful when health or mana sit above hunger.",
+  "rpghealthbar.config.airPosition.tooltip.below": "stacked under the hunger icons or bar. Useful when health or mana sit above hunger.",
   "rpghealthbar.config.armorMode": "Armor",
   "rpghealthbar.config.hungerMode": "Hunger",
   "rpghealthbar.config.mode.bar": "Bar",

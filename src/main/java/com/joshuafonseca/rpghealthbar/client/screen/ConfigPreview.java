@@ -132,8 +132,7 @@ final class ConfigPreview {
     }
 
     private static Layout layout() {
-        // The preview always shows one row of air bubbles.
-        HudLayer.Frame frame = HudLayer.Frame.compute(WIDTH, VIRTUAL_HEIGHT, ClientConfig.AIR_POSITION.get() == AirPosition.BELOW ? 1 : 0);
+        HudLayer.Frame frame = HudLayer.Frame.compute(WIDTH, VIRTUAL_HEIGHT);
         HudPosition.Bounds hunger = frame.pieceBounds().get(HudPiece.HUNGER);
         int airTop = ClientConfig.AIR_POSITION.get() == AirPosition.BELOW && hunger != null
                 ? hunger.bottom() + 1

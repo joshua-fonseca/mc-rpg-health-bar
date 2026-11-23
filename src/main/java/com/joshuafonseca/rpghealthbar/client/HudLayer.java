@@ -76,16 +76,8 @@ public class HudLayer implements IGuiOverlay {
             current = null;
         }
 
-        /**
-         * The frame for the current settings, with the mana bars {@link ManaBars} shows, and room
-         * under hunger for the air and mount health rows shown there now.
-         */
+        /** The frame for the current settings, with the mana bars {@link ManaBars} shows. */
         public static Frame compute(int screenWidth, int screenHeight) {
-            return compute(screenWidth, screenHeight, HudPositionMover.rowsBelowHunger());
-        }
-
-        /** @param rowsBelowHunger how many rows of air and mount health go between hunger and the health bar */
-        public static Frame compute(int screenWidth, int screenHeight, int rowsBelowHunger) {
             HalfBarMode armorMode = ClientConfig.ARMOR_MODE.get();
             HalfBarMode hungerMode = ClientConfig.HUNGER_MODE.get();
             boolean showArmor = armorMode == HalfBarMode.BAR;
@@ -94,8 +86,7 @@ public class HudLayer implements IGuiOverlay {
             boolean vanillaHunger = hungerMode == HalfBarMode.VANILLA;
 
             HudLayout layout = HudLayout.compute(screenWidth, screenHeight, showArmor || showHunger, vanillaArmor || vanillaHunger, ManaBars.count(),
-                    BarWidths.width(HudPiece.HEALTH),
-                    hungerMode == HalfBarMode.HIDDEN ? 0 : rowsBelowHunger * HudPositionMover.ROW_HEIGHT);
+                    BarWidths.width(HudPiece.HEALTH));
             Map<HudPiece, HudPosition.Bounds> pieceBounds = pieceBounds(screenHeight, layout, armorMode, hungerMode);
             HudPosition.Pieces pieces = HudPosition.pieces(screenWidth, screenHeight, pieceBounds);
             HudPosition.Bounds bounds = HudPosition.union(HudPosition.placed(pieceBounds, pieces::get).values());
