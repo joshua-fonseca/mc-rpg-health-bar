@@ -22,9 +22,13 @@ My original plan was to only replace the vanilla hearts with an RPG-style health
 
 ![Poisoned health bar and green hunger bar from the Hunger effect](https://raw.githubusercontent.com/joshua-fonseca/mc-rpg-health-bar/main/docs/images/status-colors.png)
 
-#### Half-size health and mana bars
+#### Confluence: Otherworld's mana bar
 
-![Half-size health and mana bars above the hotbar](https://raw.githubusercontent.com/joshua-fonseca/mc-rpg-health-bar/main/docs/images/half-bars.png)
+![Confluence's mana in its own darker blue bar under the health bar, with armor and hunger as bars](https://raw.githubusercontent.com/joshua-fonseca/mc-rpg-health-bar/main/docs/images/confluence-mana.png)
+
+#### No mana mod? No mana bar
+
+![Without a mana mod: just the health bar, with the vanilla armor and hunger icons](https://raw.githubusercontent.com/joshua-fonseca/mc-rpg-health-bar/main/docs/images/no-mana.png)
 
 #### AppleSkin: saturation and food preview
 
@@ -67,9 +71,19 @@ My original plan was to only replace the vanilla hearts with an RPG-style health
 
 ![Choosing a spell in Iron's spell wheel shows the mana it costs on the mana bar, then casting it uses that mana](https://raw.githubusercontent.com/joshua-fonseca/mc-rpg-health-bar/main/docs/images/spell-cast.gif)
 
+## Settings
+
 #### The config screen
 
 ![The config screen: options in sections on the right, and the preview of the HUD on the left](https://raw.githubusercontent.com/joshua-fonseca/mc-rpg-health-bar/main/docs/images/config.png)
+
+#### Advanced mode: the width options open the HUD Editor
+
+![The config screen in Advanced mode: the width options are Edit in HUD Editor buttons, and the preview shows the resized bars](https://raw.githubusercontent.com/joshua-fonseca/mc-rpg-health-bar/main/docs/images/advanced-settings.png)
+
+#### Advanced mode: resizing bars in the HUD Editor
+
+![The HUD Editor in Advanced mode: the health bar shortened from its right end, the mana bar from its left, and the XP bar made longer](https://raw.githubusercontent.com/joshua-fonseca/mc-rpg-health-bar/main/docs/images/resize-bars.png)
 
 #### Moving the whole HUD
 

@@ -41,9 +41,13 @@ A highly customizable, client-side GUI mod. Replaces the vanilla hearts with an 
 
 ![Poisoned health bar and green hunger bar from the Hunger effect](docs/images/status-colors.png)
 
-#### Half-size health and mana bars
+#### Confluence: Otherworld's mana bar
 
-![Half-size health and mana bars above the hotbar](docs/images/half-bars.png)
+![Confluence's mana in its own darker blue bar under the health bar, with armor and hunger as bars](docs/images/confluence-mana.png)
+
+#### No mana mod? No mana bar
+
+![Without a mana mod: just the health bar, with the vanilla armor and hunger icons](docs/images/no-mana.png)
 
 #### AppleSkin: saturation and food preview
 
@@ -83,6 +87,14 @@ Defaults are in bold:
 #### The config screen
 
 ![The config screen: options in sections on the right, and the preview of the HUD on the left](docs/images/config.png)
+
+#### Advanced mode: the width options open the HUD Editor
+
+![The config screen in Advanced mode: the width options are Edit in HUD Editor buttons, and the preview shows the resized bars](docs/images/advanced-settings.png)
+
+#### Advanced mode: resizing bars in the HUD Editor
+
+![The HUD Editor in Advanced mode: the health bar shortened from its right end, the mana bar from its left, and the XP bar made longer](docs/images/resize-bars.png)
 
 #### Moving the whole HUD
 
