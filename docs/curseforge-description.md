@@ -8,23 +8,9 @@ My original plan was to only replace the vanilla hearts with an RPG-style health
 
 - **Health bar** that goes beyond the vanilla max of 20 for mods that increase max health (`32/40`).
 - **Absorption** fills the health bar in yellow, and the text shows it separately (`15.5+4/20`) or added in (`19.5/20`).
-- **Mana bar support:** an overhaul of the mana bars from Iron's Spells 'n Spellbooks and Confluence: Otherworld, in the same style as the health bar.
 - **Status colors:** the health bar changes when poisoned, withered or frozen. The hunger bar changes with the Hunger effect. On 1.21.1, heart colors added by other mods are followed too.
 - **Armor and hunger** can be the vanilla icons (default), thin bars, or hidden.
 - **AppleSkin support:** saturation is outlined in yellow on the hunger bar, and held food's value flashes on it, like AppleSkin's preview on the icons.
-
-#### Customization:
-
-- **Half-size bars:** health and mana can each be full or half width, and moved individually.
-- **Advanced edit mode:** set the health, mana and XP bars to any width by dragging their ends in the HUD Editor. The XP bar resizes a cell at a time, built from vanilla's own cells.
-- **XP bar:** put the level number in the center or at either end, or hide the XP bar entirely (the jump bar still shows while riding).
-- **Move the HUD** by dragging it: can either move the whole set, including the XP bar and level, or each piece (armor, hunger, health, each mana bar, XP bar) on its own. It stays in place when you change the window size or GUI scale.
-- **Item name height:** set how high the held item's name sits, with a preview that moves as you change it. It starts at vanilla's height, which leaves room for mods that add hotbars.
-- **Air bubbles and mount health** can sit above hunger, like vanilla, or below it, for layouts with health or mana above hunger. Below, hunger and armor move up to make room while they show, one row per row of bubbles or hearts.
-- **Text position:** the numbers on the health and mana bars can sit on the left, right or center, or be turned off.
-- **On/off switch:** turn the whole mod off for a fully vanilla HUD, and back on, without losing your settings.
-- **Live preview:** the config screen can show the HUD beside the options, drawn as your settings would, so you see each change without leaving the screen.
-- **Everything in game:** changes show on the HUD as you make them, no restart. Save Settings keeps them, and leaving without saving asks first.
 
 #### Armor and hunger as bars, with absorption
 
@@ -41,6 +27,20 @@ My original plan was to only replace the vanilla hearts with an RPG-style health
 #### AppleSkin: saturation and food preview
 
 ![With AppleSkin: saturation outlined in yellow on the hunger bar, and the hunger and saturation the held bread would restore flashing after it, then filling when it's eaten](https://raw.githubusercontent.com/joshua-fonseca/mc-rpg-health-bar/main/docs/images/appleskin.gif)
+
+#### Customization:
+
+- **Move the HUD** by dragging it: can either move the whole set, including the XP bar and level, or each piece (armor, hunger, health, each mana bar, XP bar) on its own. It stays in place when you change the window size or GUI scale.
+- **Half-size bars:** health and mana can each be full or half width, and moved individually.
+    - **Advanced edit mode:** For users who want even more customization, you can set the health, mana and XP bars to any width by dragging their ends in the HUD Editor.
+- **XP bar:** put the level number in the center or at either end, or hide the XP bar entirely.
+- **Item name height:** set how high the held item's name sits, with a preview that moves as you change it. It starts at vanilla's height, which leaves room for mods that add hotbars.
+- **Air bubbles and mount health** can sit above hunger, like vanilla, or below it, for layouts with health or mana above hunger.
+- **Text position:** the numbers on the health and mana bars can sit on the left, right or center, or be turned off.
+- **On/off switch:** turn the whole mod off for a fully vanilla HUD, and back on, without losing your settings.
+- **Live preview:** the config screen can show the HUD beside the options, drawn as your settings would, so you see each change without leaving the screen.
+- **Everything in game:** changes show on the HUD as you make them, no restart. Save Settings keeps them, and leaving without saving asks first.
+
 
 ## Compatibility
 
@@ -64,33 +64,6 @@ My original plan was to only replace the vanilla hearts with an RPG-style health
 #### Iron's Spells: what spell cost preview looks like
 
 ![Choosing a spell in Iron's spell wheel shows the mana it costs on the mana bar, then casting it uses that mana](https://raw.githubusercontent.com/joshua-fonseca/mc-rpg-health-bar/main/docs/images/spell-cast.gif)
-
-## Settings
-
-Open them from **Mods → RPG Health Bar → Config** (the Mods button is also in the pause menu). Hover over any option to see what each value does. Changes show on the HUD right away: **Save Settings** keeps them. **Back to Mods** (or Esc) asks whether to save them if you changed anything.
-
-Defaults are in bold:
-
-| Category | Option | Values |
-|---|---|---|
-|  | Mod State | **Enabled**, Disabled (a fully vanilla HUD; your settings are kept) |
-|  | Edit mode (top right) | **Simple** (preset widths), Advanced (the health, mana and XP bars' widths are set by dragging their ends in the HUD Editor, and the width options become Edit in HUD Editor buttons) |
-| **Armor + Hunger** | Armor | **Default** (armor icons, or another mod's armor display), Bar, Hidden |
-|  | Hunger | **Default** (hunger icons, or another mod's hunger display), Bar, Hidden |
-|  | Air Bubbles/Mount HP | **Above** hunger, Below it |
-| **Health** | Health Units | **HP** (20 for a full vanilla bar), Hearts (10) |
-|  | Absorption | **Separate** (`16+4/20`), Combined (`20/20`) |
-|  | HP Text | **Left**, Right, Center, Off |
-|  | Health Bar Width | **Full**, Half |
-| **Mana** (only with Iron's Spells or Confluence installed) | Iron's Mana Text | **Left**, Right, Center, Off |
-|  | Iron's Mana Bar Width | **Full**, Half |
-|  | Confluence Mana Text (only with Confluence) | **Left**, Right, Center, Off |
-|  | Confluence Mana Bar Width (only with Confluence) | **Full**, Half |
-| **XP Bar** | XP Bar | **Shown**, Hidden (no XP bar or level; the jump bar still shows while riding) |
-|  | Level Text | **Center**, Left, Right |
-|  | XP Bar Width (Advanced only) | Edit in HUD Editor: the XP bar is resized a cell at a time, its fill stretched over its length (**18 cells**, like vanilla) |
-| **Positioning** | Item Name... | Height of the held item's name: **Vanilla** (0), or pixels up (+) or down (-), down to right above the hotbar |
-|  | HUD Editor... | Drag the whole HUD (**Moving: All**) or a single piece (**Moving: One**); the arrow keys nudge it. In Advanced edit mode, drag a bar's ends to resize it. **Above the hotbar**, Reset puts it back |
 
 #### The config screen
 
