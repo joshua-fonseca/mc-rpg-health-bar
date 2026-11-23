@@ -134,14 +134,22 @@ dependencies {
 
     // Confluence: Otherworld is read by reflection, so it's not compiled against. `-PwithConfluence`
     // adds it and the libraries it needs to the dev client; `-PconfluenceRuntimeVersion=40G2vna4` runs 1.2.9 (see gradle.properties).
-    // It also needs PortLib (MesdagPortLib), which is only on CurseForge: download it and pass
+    // It also needs PortLib (MesdagPortLib), only on CurseForge: download a version that
+    // the Confluence version works with (1.3.0 for 1.2.11; 1.2.9 needs a 1.2.x of at least 1.2.8, and 1.3.2
+    // dropped methods both use) and pass
     // `-PportlibJar=/path/to/portlib.jar`.
     if (project.hasProperty('withConfluence')) {
         modLocalRuntime("maven.modrinth:confluence:${project.findProperty('confluenceRuntimeVersion') ?: confluence_version}") { transitive = false }
         modLocalRuntime("top.theillusivec4.curios:curios-forge:${confluence_curios_version}") { transitive = false }
         modLocalRuntime("software.bernie.geckolib:geckolib-forge-1.20.1:${confluence_geckolib_version}") { transitive = false }
         if (project.hasProperty('portlibJar')) {
-            modLocalRuntime files(project.property('portlibJar'))
+            // Copied into a local Maven repository, so it's remapped for the dev client like the others.
+            File repo = layout.buildDirectory.dir('portlib-repo').get().asFile
+            File jar = new File(repo, 'local/portlib/1/portlib-1.jar')
+            jar.parentFile.mkdirs()
+            java.nio.file.Files.copy(file(project.property('portlibJar')).toPath(), jar.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING)
+            repositories { maven { url = repo; metadataSources { artifact() } } }
+            modLocalRuntime("local:portlib:1") { transitive = false }
         }
     }
 }
