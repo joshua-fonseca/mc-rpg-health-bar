@@ -37,6 +37,8 @@ public final class HudRenderer {
     /** Absorption grows in from the left when gained, rather than appearing at once. */
     private static final BarGrow ABSORPTION_GROW = new BarGrow();
     private static final BarTrail ABSORPTION_TRAIL = new BarTrail(500);
+    /** Space between the health text and the absorption at the bar's right end, with Separate v2. */
+    private static final int ABSORPTION_TEXT_GAP = 4;
     /** At or below this much health (plus absorption), the bar pulses as a warning, like vanilla's shaking hearts. */
     private static final float LOW_HEALTH = 4.0F;
     private static final long LOW_HEALTH_PULSE_MILLIS = 900;
@@ -168,7 +170,15 @@ public final class HudRenderer {
 
         BarText text = ClientConfig.healthText();
         if (text != BarText.OFF) {
-            BarRenderer.drawLabel(graphics, font, x, y, width, HudLayout.MAIN_BAR_HEIGHT, healthText(health, absorption, maxHealth), text);
+            String label = healthText(health, absorption, maxHealth);
+            if (absorption > 0 && ClientConfig.ABSORPTION_DISPLAY.get() == AbsorptionDisplay.SEPARATE_RIGHT) {
+                // The absorption at the right end, and the health text kept clear of it.
+                String extra = "+" + NumberText.formatQuarters(ClientConfig.HEALTH_UNIT.get().fromHp(absorption));
+                BarRenderer.drawLabel(graphics, font, x, y, width, HudLayout.MAIN_BAR_HEIGHT, extra, BarText.RIGHT);
+                BarRenderer.drawLabel(graphics, font, x, y, width, HudLayout.MAIN_BAR_HEIGHT, label, text, font.width(extra) + ABSORPTION_TEXT_GAP);
+            } else {
+                BarRenderer.drawLabel(graphics, font, x, y, width, HudLayout.MAIN_BAR_HEIGHT, label, text);
+            }
         }
     }
 
@@ -215,11 +225,11 @@ public final class HudRenderer {
         return 0.5F - 0.5F * Mth.cos((float) (Util.getMillis() % periodMillis) / periodMillis * Mth.TWO_PI);
     }
 
-    /** E.g. "16+4/20", "20/20" with absorption combined, or "8+2/10" in hearts; rounded to 0.25. */
+    /** E.g. "16+4/20", "20/20" with absorption combined, "16/20" with it at the right end, or "8+2/10" in hearts; rounded to 0.25. */
     private static String healthText(float health, float absorption, float maxHealth) {
         HealthUnit unit = ClientConfig.HEALTH_UNIT.get();
         String max = NumberText.formatQuarters(unit.fromHp(maxHealth));
-        if (absorption <= 0) {
+        if (absorption <= 0 || ClientConfig.ABSORPTION_DISPLAY.get() == AbsorptionDisplay.SEPARATE_RIGHT) {
             return NumberText.formatQuarters(unit.fromHp(health)) + "/" + max;
         }
         if (ClientConfig.ABSORPTION_DISPLAY.get() == AbsorptionDisplay.COMBINED) {

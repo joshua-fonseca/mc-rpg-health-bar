@@ -2,6 +2,7 @@
 
 ## 2.0.1 (2026-11-23)
 
+- New **Separate v2** option for **Absorption**: the health text shows just your health (`16/20`), and the absorption shows as `+4` at the right end of the health bar.
 - With **Air Bubbles/Mount HP** on **Below**, armor and hunger no longer move up while air bubbles or mount health show, so they stay where you put them.
 
 ## 2.0.0 (2026-11-22)

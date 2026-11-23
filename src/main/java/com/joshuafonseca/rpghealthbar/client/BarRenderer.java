@@ -198,11 +198,17 @@ public final class BarRenderer {
 
     /** Text on the bar, vertically centered, on the side (or in the middle) the setting says. */
     public static void drawLabel(GuiGraphics graphics, Font font, int x, int y, int width, int height, String text, BarText position) {
+        drawLabel(graphics, font, x, y, width, height, text, position, 0);
+    }
+
+    /** As above, keeping clear of the last {@code reservedRight} pixels, where another label goes. */
+    public static void drawLabel(GuiGraphics graphics, Font font, int x, int y, int width, int height, String text, BarText position, int reservedRight) {
         // Digits are 7px tall; the shadow adds 1px below and doesn't count toward centering.
         int textY = y + Math.floorDiv(height - 7, 2);
+        int right = x + width - TEXT_PADDING - reservedRight;
         int textX = switch (position) {
-            case RIGHT -> x + width - TEXT_PADDING - font.width(text);
-            case CENTER -> x + (width - font.width(text)) / 2;
+            case RIGHT -> right - font.width(text);
+            case CENTER -> Math.min(x + (width - font.width(text)) / 2, right - font.width(text));
             default -> x + TEXT_PADDING;
         };
         graphics.drawString(font, text, textX, textY, TEXT_COLOR, true);

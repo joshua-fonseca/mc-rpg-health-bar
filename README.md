@@ -13,7 +13,7 @@ A highly customizable, client-side GUI mod. Replaces the vanilla hearts with an 
 ## Features
 
 - **Health bar** the width of the hotbar, with your current and max health on it (`15.5/20`). It goes beyond the vanilla max of 20 for mods that add hearts to the player (`32/40`), following your real max health.
-- **Absorption** fills the bar in gold, and the text shows it separately (`15.5+4/20`) or added in (`19.5/20`).
+- **Absorption** fills the bar in gold, and the text shows it separately (`15.5+4/20`), added in (`19.5/20`), or as `+4` at the bar's right end.
 - **Mana bar support:** an overhaul of the mana bars from Iron's Spells 'n Spellbooks and Confluence: Otherworld, in the same style as the health bar, replacing their own.
 - **Status colors:** like the vanilla hearts, the health bar turns green-yellow when poisoned, black when withered and light blue when frozen, and the hunger bar turns green with the Hunger effect. On 1.21.1, heart colors added by other mods are followed too.
 - **Armor and hunger** as the vanilla icons (default), thin bars, or hidden.
@@ -71,7 +71,7 @@ Defaults are in bold:
 |  | Hunger | **Default** (hunger icons, or another mod's hunger display), Bar, Hidden |
 |  | Air Bubbles/Mount HP | **Above** hunger, Below it |
 | **Health** | Health Units | **HP** (20 for a full vanilla bar), Hearts (10) |
-|  | Absorption | **Separate** (`16+4/20`), Combined (`20/20`) |
+|  | Absorption | **Separate** (`16+4/20`), Combined (`20/20`), Separate v2 (`16/20`, with `+4` at the bar's right end) |
 |  | HP Text | **Left**, Right, Center, Off |
 |  | Health Bar Width | **Full**, Half |
 | **Mana** (only with Iron's Spells or Confluence installed) | Iron's Mana Text (only with Iron's Spells) | **Left**, Right, Center, Off |

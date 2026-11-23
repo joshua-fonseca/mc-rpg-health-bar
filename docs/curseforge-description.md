@@ -7,7 +7,7 @@ My original plan was to only replace the vanilla hearts with an RPG-style health
 ## Features
 
 *   **Health bar** that goes beyond the vanilla max of 20 for mods that increase max health (`32/40`).
-*   **Absorption** fills the health bar in yellow, and the text shows it separately (`15.5+4/20`) or added in (`19.5/20`).
+*   **Absorption** fills the health bar in yellow, and the text shows it separately (`15.5+4/20`), added in (`19.5/20`), or as `+4` at the bar's right end.
 *   **Mana bar support:** Supports mana bars from Iron's Spells 'n Spellbooks and/or Confluence: Otherworld, in the same style as the health bar.
 *   **Status colors:** the health bar changes when poisoned, withered or frozen. The hunger bar changes with the Hunger effect. On 1.21.1, heart colors added by other mods are followed too.
 *   **Armor and hunger** can be the vanilla icons (default), thin bars, or hidden.
