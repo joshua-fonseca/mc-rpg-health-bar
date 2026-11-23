@@ -15,7 +15,7 @@ updateJSONURL="https://raw.githubusercontent.com/joshua-fonseca/mc-rpg-health-ba
 logoFile="rpghealthbar.png"
 logoBlur=false
 description='''
-Replaces the vanilla hearts with an RPG-style health bar, with optional mana bars for supported mods: Iron's Spells 'n Spellbooks and Confluence: Otherworld.
+Replaces the vanilla hearts with an RPG-style health bar, with optional mana bars for mods that support it.
 '''
 # Client-only mod: servers don't need it, and clients can join servers without it.
 displayTest="IGNORE_ALL_VERSION"
