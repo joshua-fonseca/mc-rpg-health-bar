@@ -3,7 +3,7 @@
 ## 2.0.0 (2026-11-22)
 
 - New **Edit mode** button at the top right of the config screen: **Simple** (default) gives you the standard full and half width configurations like before, but wow the new **Advanced** option lets you set the health, mana and XP bars to any width by dragging their sides.
-- There is now options for the XP bar: disable the XP bar and/or level number, and change the level placement on the bar.
+- There is now options for the XP bar: disable the XP bar and level number, and change the level placement on the bar.
 - **Move HUD...** is now renamed as **HUD Editor...**.
 - **Confluence: Otherworld support** (Confluence 1.1.4+ on 1.21.1, 1.2.9+ on 1.20.1): its mana gets its own darker blue bar.
   - With Iron's Spells too, Confluence's bar sits below Iron's. In the HUD Editor each mana bar can be moved on its own. On 1.21.1, if the server has Confluence's convertIronsSpellMana on, Iron's spells use Confluence's mana, so only Confluence's bar shows, with the spell cost preview on it.
