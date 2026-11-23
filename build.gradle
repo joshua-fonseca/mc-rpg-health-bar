@@ -14,7 +14,8 @@ tasks.named('wrapper', Wrapper).configure {
     distributionType = Wrapper.DistributionType.BIN
 }
 
-version = mod_version
+// The version, Minecraft version and loader are part of the jar name, e.g. rpghealthbar-v2.0.1-1.21.1-neoforge.jar.
+version = "v${mod_version}-${minecraft_version}-neoforge"
 group = mod_group_id
 
 sourceSets.main.resources {
