@@ -10,8 +10,9 @@ import net.minecraft.world.entity.PlayerRideableJumping;
 
 /**
  * Draws the XP bar, and the jump bar that replaces it while riding, at any number of cells, from
- * vanilla's own texture so texture packs still apply. Vanilla's bar is two halves, each a 1px border
- * then nine 10px cells; a longer or shorter bar has the same halves with more or fewer cells, so 18
+ * vanilla's own texture so texture packs still apply. Vanilla's bar is a 1px rounded end, nine cells
+ * (9px, with a 1px divider between each), a 2px center piece, nine more cells and the other end. A
+ * longer or shorter bar has the same ends and center with more or fewer cells on each side, so 18
  * cells is exactly vanilla's. The fill is stretched over the whole length.
  * <p>
  * On 1.20.1 the bars are rows of vanilla's HUD icons texture, each 182x5.
@@ -25,9 +26,16 @@ public final class XpBarRenderer {
     private static final int JUMP_BACKGROUND = 84;
     private static final int JUMP_PROGRESS = 89;
     private static final int HEIGHT = 5;
-    /** Where the texture's right half starts, and how many cells each half has. */
-    private static final int HALF = 91;
-    private static final int HALF_CELLS = 9;
+    /** Where the bar's pieces are in its row: the center and its width, the right side's first cell and divider, and the right end. */
+    private static final int CENTER = 90;
+    private static final int CENTER_WIDTH = 2;
+    private static final int RIGHT_CELL = 92;
+    private static final int RIGHT_DIVIDER = 101;
+    private static final int RIGHT_END = 181;
+    private static final int CELL_BODY = 9;
+    /** Each side has nine cells and eight dividers; more are repeated from them. */
+    private static final int SIDE_CELLS = 9;
+    private static final int SIDE_DIVIDERS = 8;
 
     private XpBarRenderer() {
     }
@@ -85,20 +93,32 @@ public final class XpBarRenderer {
         RenderSystem.enableBlend();
     }
 
-    /** The bar's halves with {@code cells} cells between them, cut off {@code visible} pixels in. */
+    /**
+     * The left end, the left side's cells, the center, the right side's cells and the right end, cut
+     * off {@code visible} pixels in. Each side's cells count out from the center, so with nine on
+     * each side every column is vanilla's own.
+     */
     private static void drawCells(GuiGraphics graphics, int row, int x, int y, int cells, int visible) {
+        int step = BarWidths.XP_CELL_WIDTH;
         int leftCells = (cells + 1) / 2;
-        int drawn = drawHalf(graphics, row, x, y, 0, leftCells, 0, visible);
-        drawHalf(graphics, row, x, y, HALF, cells - leftCells, drawn, visible);
-    }
-
-    /** One half: its border, then its cells, repeating the texture's nine when there are more. */
-    private static int drawHalf(GuiGraphics graphics, int row, int x, int y, int u, int cells, int at, int visible) {
-        at = drawColumns(graphics, row, x, y, u, 1, at, visible);
-        for (int i = 0; i < cells; i++) {
-            at = drawColumns(graphics, row, x, y, u + 1 + (i % HALF_CELLS) * BarWidths.XP_CELL_WIDTH, BarWidths.XP_CELL_WIDTH, at, visible);
+        int rightCells = cells - leftCells;
+        int at = drawColumns(graphics, row, x, y, 0, 1, 0, visible);
+        for (int i = 0; i < leftCells; i++) {
+            // The i-th cell from the left end is the (leftCells - 1 - i)-th from the center.
+            int fromCenter = leftCells - 1 - i;
+            at = drawColumns(graphics, row, x, y, CENTER - step + 1 - (fromCenter % SIDE_CELLS) * step, CELL_BODY, at, visible);
+            if (fromCenter > 0) {
+                at = drawColumns(graphics, row, x, y, CENTER - step - ((fromCenter - 1) % SIDE_DIVIDERS) * step, 1, at, visible);
+            }
         }
-        return at;
+        at = drawColumns(graphics, row, x, y, CENTER, CENTER_WIDTH, at, visible);
+        for (int i = 0; i < rightCells; i++) {
+            if (i > 0) {
+                at = drawColumns(graphics, row, x, y, RIGHT_DIVIDER + ((i - 1) % SIDE_DIVIDERS) * step, 1, at, visible);
+            }
+            at = drawColumns(graphics, row, x, y, RIGHT_CELL + (i % SIDE_CELLS) * step, CELL_BODY, at, visible);
+        }
+        drawColumns(graphics, row, x, y, RIGHT_END, 1, at, visible);
     }
 
     private static int drawColumns(GuiGraphics graphics, int row, int x, int y, int u, int width, int at, int visible) {
