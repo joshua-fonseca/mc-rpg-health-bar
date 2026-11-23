@@ -17,8 +17,8 @@ import net.neoforged.neoforge.common.ModConfigSpec;
  * Dragging a bar's left end also moves where it starts ({@link #left}). That's kept with the width,
  * not in the bar's position, so with the preset back (Simple mode) the bar is where it was.
  * <p>
- * The XP bar is measured in cells, like vanilla's: two halves, each a 1px border and 10px cells
- * (9px plus a 1px divider). Vanilla's 18 cells make it 182px, as wide as the hotbar.
+ * The XP bar is measured in cells, like vanilla's: 10px cells (9px plus a 1px divider) between a
+ * 1px rounded end on each side. Vanilla's 18 cells make it 182px, as wide as the hotbar.
  */
 public final class BarWidths {
     /** The narrowest the health and mana bars can be made. */

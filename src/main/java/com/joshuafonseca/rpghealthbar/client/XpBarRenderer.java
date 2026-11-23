@@ -10,8 +10,9 @@ import net.minecraft.world.entity.PlayerRideableJumping;
 
 /**
  * Draws the XP bar, and the jump bar that replaces it while riding, at any number of cells, from
- * vanilla's own sprites so texture packs still apply. Vanilla's bar is two halves, each a 1px border
- * then nine 10px cells; a longer or shorter bar has the same halves with more or fewer cells, so 18
+ * vanilla's own sprites so texture packs still apply. Vanilla's bar is a 1px rounded end, nine cells
+ * (9px, with a 1px divider between each), a 2px center piece, nine more cells and the other end. A
+ * longer or shorter bar has the same ends and center with more or fewer cells on each side, so 18
  * cells is exactly vanilla's. The fill is stretched over the whole length.
  */
 public final class XpBarRenderer {
@@ -23,9 +24,16 @@ public final class XpBarRenderer {
     /** The sprites' size, in the 182x5 pixels vanilla draws them at. */
     private static final int SPRITE_WIDTH = 182;
     private static final int HEIGHT = 5;
-    /** Where the sprite's right half starts, and how many cells each half has. */
-    private static final int HALF = 91;
-    private static final int HALF_CELLS = 9;
+    /** Where the sprite's pieces are: the center and its width, the right side's first cell and divider, and the right end. */
+    private static final int CENTER = 90;
+    private static final int CENTER_WIDTH = 2;
+    private static final int RIGHT_CELL = 92;
+    private static final int RIGHT_DIVIDER = 101;
+    private static final int RIGHT_END = SPRITE_WIDTH - 1;
+    private static final int CELL_BODY = 9;
+    /** Each side has nine cells and eight dividers; more are repeated from them. */
+    private static final int SIDE_CELLS = 9;
+    private static final int SIDE_DIVIDERS = 8;
 
     private XpBarRenderer() {
     }
@@ -83,20 +91,32 @@ public final class XpBarRenderer {
         RenderSystem.disableBlend();
     }
 
-    /** The sprite's halves with {@code cells} cells between them, cut off {@code visible} pixels in. */
+    /**
+     * The left end, the left side's cells, the center, the right side's cells and the right end, cut
+     * off {@code visible} pixels in. Each side's cells count out from the center, so with nine on
+     * each side every column is vanilla's own.
+     */
     private static void drawCells(GuiGraphics graphics, ResourceLocation sprite, int x, int y, int cells, int visible) {
+        int step = BarWidths.XP_CELL_WIDTH;
         int leftCells = (cells + 1) / 2;
-        int drawn = drawHalf(graphics, sprite, x, y, 0, leftCells, 0, visible);
-        drawHalf(graphics, sprite, x, y, HALF, cells - leftCells, drawn, visible);
-    }
-
-    /** One half: its border, then its cells, repeating the sprite's nine when there are more. */
-    private static int drawHalf(GuiGraphics graphics, ResourceLocation sprite, int x, int y, int spriteX, int cells, int at, int visible) {
-        at = drawColumns(graphics, sprite, x, y, spriteX, 1, at, visible);
-        for (int i = 0; i < cells; i++) {
-            at = drawColumns(graphics, sprite, x, y, spriteX + 1 + (i % HALF_CELLS) * BarWidths.XP_CELL_WIDTH, BarWidths.XP_CELL_WIDTH, at, visible);
+        int rightCells = cells - leftCells;
+        int at = drawColumns(graphics, sprite, x, y, 0, 1, 0, visible);
+        for (int i = 0; i < leftCells; i++) {
+            // The i-th cell from the left end is the (leftCells - 1 - i)-th from the center.
+            int fromCenter = leftCells - 1 - i;
+            at = drawColumns(graphics, sprite, x, y, CENTER - step + 1 - (fromCenter % SIDE_CELLS) * step, CELL_BODY, at, visible);
+            if (fromCenter > 0) {
+                at = drawColumns(graphics, sprite, x, y, CENTER - step - ((fromCenter - 1) % SIDE_DIVIDERS) * step, 1, at, visible);
+            }
         }
-        return at;
+        at = drawColumns(graphics, sprite, x, y, CENTER, CENTER_WIDTH, at, visible);
+        for (int i = 0; i < rightCells; i++) {
+            if (i > 0) {
+                at = drawColumns(graphics, sprite, x, y, RIGHT_DIVIDER + ((i - 1) % SIDE_DIVIDERS) * step, 1, at, visible);
+            }
+            at = drawColumns(graphics, sprite, x, y, RIGHT_CELL + (i % SIDE_CELLS) * step, CELL_BODY, at, visible);
+        }
+        drawColumns(graphics, sprite, x, y, RIGHT_END, 1, at, visible);
     }
 
     private static int drawColumns(GuiGraphics graphics, ResourceLocation sprite, int x, int y, int spriteX, int width, int at, int visible) {
