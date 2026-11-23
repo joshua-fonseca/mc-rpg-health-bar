@@ -2,26 +2,17 @@
 
 ## 2.0.0 (2026-11-22)
 
-- New **Edit mode** button at the top right of the config screen: **Simple** (default) keeps the Full and Half width presets; **Advanced** lets you set the health, mana and XP bars to any width by dragging their ends in the HUD Editor, where the cursor turns into a resize arrow over them. In Advanced, the width options become **Edit in HUD Editor** buttons, and the XP section gets an XP Bar Width one.
-  - The XP bar resizes a cell at a time, built from vanilla's own cells (so texture packs still apply), and its fill and the jump bar stretch over the new length.
-  - A bar not resized yet keeps its preset, and the HUD Editor's Reset puts the widths back too. Back in Simple mode, a bar whose left end was dragged is where it was before.
-- New **XP Bar** option in the XP Bar section: **Shown** (default) or **Hidden**, which hides the XP bar and its level. The jump bar still shows while riding.
-- **Move HUD...** is now the **HUD Editor...**.
-- While riding a mount whose health shows (like a horse), the hunger bar is hidden, as vanilla hides the hunger icons for the mount's hearts.
-- With **Air Bubbles/Mount HP** on **Below**, the armor and hunger row moves up to make room while air bubbles or mount health show, a row for each, instead of the rows covering the health bar.
-- New **XP Bar** section in the config screen, with **Level Text**: the level's number in the **Center** of the XP bar (default), or at its **Left** or **Right** end.
+- New **Edit mode** button at the top right of the config screen: **Simple** (default) gives you the standard full and half width configurations like before, but wow the new **Advanced** option lets you set the health, mana and XP bars to any width by dragging their sides.
+- There is now options for the XP bar: disable the XP bar and/or level number, and change the level placement on the bar.
+- **Move HUD...** is now renamed as **HUD Editor...**.
 - **Confluence: Otherworld support** (Confluence 1.1.4+ on 1.21.1, 1.2.9+ on 1.20.1): its mana gets its own darker blue bar.
   - With Iron's Spells too, Confluence's bar sits below Iron's. In the HUD Editor each mana bar can be moved on its own. On 1.21.1, if the server has Confluence's convertIronsSpellMana on, Iron's spells use Confluence's mana, so only Confluence's bar shows, with the spell cost preview on it.
   - Confluence's own mana display is hidden, except in soul mode, where it shows soul. Its own health display is hidden too, and its armor and hunger displays are hidden unless Armor or Hunger is on Default.
   - Confluence's bar has its own **Confluence Mana Text** and **Confluence Mana Bar Width** options, listed only with Confluence; Iron's are now **Iron's Mana Text** and **Iron's Mana Bar Width**.
-  - The Mana header says which mana mods were found, and Compatibility notes flag a Confluence older than 1.1.4. With both mods on 1.21.1, a note explains that two mana bars mean Confluence's unified mana (convertIronsSpellMana) is off.
-  - With Armor or Hunger on Default, Confluence's own armor and hunger icons show there and move with the HUD in Move HUD, like vanilla's.
-- Half-width health and mana bars no longer share a row: they stack like full ones.
-- Armor and Hunger's **Vanilla** option is now **Default**: whatever the game normally shows there, the vanilla icons or another mod's display that replaces them, like Confluence's. Your setting is kept.
-- New **Compatibility notes** at the top of the config screen: click the **+** or its label to see them. They list a supported mod installed at a version that's too old, or one that couldn't be read, or say that all is well. The number of notes shows beside the label: red when any is a problem, white when they're just good to know.
-- New **Reset to Defaults** button beside Save Settings. After asking first, it puts every setting back to its default, including the HUD position and the item name height. Whether the preview is shown is kept.
-- Losing health or absorption flashes what's left white, fading quickly back to its color, while the lost section shows and fades as before.
-- Absorption above your max health now shows in layers, each as much as your max health: the current layer in bright gold, with a darker full one behind it while there's more. When the front layer runs out, the one behind takes its place, so every point lost shows. Before, anything over max health ran off the end of the bar.
+- New **Compatibility notes** which flags if a mod is at a version that's too old, or one that couldn't be read, or say that all is well. 
+- New **Reset to Defaults** button beside Save Settings.
+- Absorption above your max health now is displayed as multiple bars similar to fighting games. Before, anything over max health ran off the end of the bar.
+- Other small QoL things, either to match vanilla behavior, or make things visually/flow better.
 
 ## 1.4.0 (2026-11-03)
 
