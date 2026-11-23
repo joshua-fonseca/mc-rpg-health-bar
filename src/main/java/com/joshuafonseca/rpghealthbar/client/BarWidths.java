@@ -33,6 +33,19 @@ public final class BarWidths {
         public static final Size PRESET = new Size(0, 0);
     }
 
+    /**
+     * Where each resizable bar's size is stored: its custom width (cells for the XP bar), how far
+     * left its left end was dragged, and its Simple mode preset (none for the XP bar).
+     */
+    private record Settings(ModConfigSpec.IntValue width, ModConfigSpec.IntValue left, @Nullable ModConfigSpec.EnumValue<BarSize> preset) {
+    }
+
+    private static final Map<HudPiece, Settings> SETTINGS = new EnumMap<>(Map.of(
+            HudPiece.HEALTH, new Settings(ClientConfig.HEALTH_WIDTH, ClientConfig.HEALTH_LEFT, ClientConfig.HEALTH_SIZE),
+            HudPiece.MANA, new Settings(ClientConfig.MANA_WIDTH, ClientConfig.MANA_LEFT, ClientConfig.MANA_SIZE),
+            HudPiece.CONFLUENCE_MANA, new Settings(ClientConfig.CONFLUENCE_MANA_WIDTH, ClientConfig.CONFLUENCE_MANA_LEFT, ClientConfig.CONFLUENCE_MANA_SIZE),
+            HudPiece.XP, new Settings(ClientConfig.XP_CELLS, ClientConfig.XP_LEFT, null)));
+
     /** The sizes while the HUD Editor is open, so the HUD follows the drag; null otherwise. */
     @Nullable
     private static Map<HudPiece, Size> preview;
@@ -42,7 +55,7 @@ public final class BarWidths {
 
     /** The pieces whose ends can be dragged in Advanced mode. */
     public static boolean resizable(HudPiece piece) {
-        return piece == HudPiece.HEALTH || piece == HudPiece.MANA || piece == HudPiece.CONFLUENCE_MANA || piece == HudPiece.XP;
+        return SETTINGS.containsKey(piece);
     }
 
     public static boolean advanced() {
@@ -92,18 +105,15 @@ public final class BarWidths {
         if (preview != null) {
             return preview.getOrDefault(piece, Size.PRESET);
         }
-        ModConfigSpec.IntValue width = widthConfig(piece);
-        ModConfigSpec.IntValue left = leftConfig(piece);
-        return width == null || left == null ? Size.PRESET : new Size(width.get(), left.get());
+        Settings settings = SETTINGS.get(piece);
+        return settings == null ? Size.PRESET : new Size(settings.width().get(), settings.left().get());
     }
 
     /** The stored sizes, for the HUD Editor to start from. */
     public static Map<HudPiece, Size> saved() {
         Map<HudPiece, Size> sizes = new EnumMap<>(HudPiece.class);
-        for (HudPiece piece : HudPiece.values()) {
-            if (resizable(piece)) {
-                sizes.put(piece, size(piece));
-            }
+        for (HudPiece piece : SETTINGS.keySet()) {
+            sizes.put(piece, size(piece));
         }
         return sizes;
     }
@@ -115,42 +125,15 @@ public final class BarWidths {
     /** Stores the sizes; written to the file with the positions. */
     public static void save(Map<HudPiece, Size> sizes) {
         sizes.forEach((piece, size) -> {
-            ModConfigSpec.IntValue width = widthConfig(piece);
-            ModConfigSpec.IntValue left = leftConfig(piece);
-            if (width != null && left != null) {
-                width.set(size.width());
-                left.set(size.left());
+            Settings settings = SETTINGS.get(piece);
+            if (settings != null) {
+                settings.width().set(size.width());
+                settings.left().set(size.left());
             }
         });
     }
 
     private static BarSize preset(HudPiece piece) {
-        return switch (piece) {
-            case MANA -> ClientConfig.MANA_SIZE.get();
-            case CONFLUENCE_MANA -> ClientConfig.CONFLUENCE_MANA_SIZE.get();
-            default -> ClientConfig.HEALTH_SIZE.get();
-        };
-    }
-
-    @Nullable
-    private static ModConfigSpec.IntValue leftConfig(HudPiece piece) {
-        return switch (piece) {
-            case HEALTH -> ClientConfig.HEALTH_LEFT;
-            case MANA -> ClientConfig.MANA_LEFT;
-            case CONFLUENCE_MANA -> ClientConfig.CONFLUENCE_MANA_LEFT;
-            case XP -> ClientConfig.XP_LEFT;
-            default -> null;
-        };
-    }
-
-    @Nullable
-    private static ModConfigSpec.IntValue widthConfig(HudPiece piece) {
-        return switch (piece) {
-            case HEALTH -> ClientConfig.HEALTH_WIDTH;
-            case MANA -> ClientConfig.MANA_WIDTH;
-            case CONFLUENCE_MANA -> ClientConfig.CONFLUENCE_MANA_WIDTH;
-            case XP -> ClientConfig.XP_CELLS;
-            default -> null;
-        };
+        return SETTINGS.get(piece).preset().get();
     }
 }

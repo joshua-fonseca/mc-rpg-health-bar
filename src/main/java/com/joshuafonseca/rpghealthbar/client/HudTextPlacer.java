@@ -78,9 +78,7 @@ public final class HudTextPlacer {
     private record View(boolean barsShown, boolean xpRowShown, boolean creative, int rowsHeight) {
         static View current() {
             Minecraft minecraft = Minecraft.getInstance();
-            // Creative has neither the bars nor the XP bar, and XP Bar can hide it; the jump bar shows while riding.
-            boolean xpRowShown = minecraft.player != null && minecraft.gameMode != null
-                    && ((minecraft.gameMode.hasExperience() && ClientConfig.XP_BAR_SHOWN.get()) || minecraft.player.jumpableVehicle() != null);
+            boolean xpRowShown = XpBarRenderer.xpBarShown(minecraft) || XpBarRenderer.jumpBarShown(minecraft);
             boolean creative = minecraft.gameMode != null && !minecraft.gameMode.canHurtPlayer();
             return new View(HudLayer.isVisible(minecraft), xpRowShown, creative, HudTextPlacer.rowsHeight());
         }
@@ -129,12 +127,12 @@ public final class HudTextPlacer {
         boolean grew = true;
         while (grew) {
             grew = false;
-            for (Map.Entry<HudPiece, HudPosition.Bounds> entry : frame.pieceBounds().entrySet()) {
+            for (Map.Entry<HudPiece, HudPosition.Bounds> entry : frame.placedBounds().entrySet()) {
                 boolean shown = entry.getKey() == HudPiece.XP ? xpRowShown : barsShown;
                 if (!shown) {
                     continue;
                 }
-                HudPosition.Bounds box = entry.getValue().offset(frame.pieceOffset(entry.getKey()));
+                HudPosition.Bounds box = entry.getValue();
                 if (entry.getKey() == HudPiece.HUNGER) {
                     // With air and mount health below hunger, they're part of it here.
                     box = new HudPosition.Bounds(box.left(), box.top(), box.right(), box.bottom() + HudPositionMover.belowHeight());

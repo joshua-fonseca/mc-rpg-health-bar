@@ -284,14 +284,18 @@ public class RpgConfigScreen extends Screen {
      */
     private WidgetRow widthOption(String key, @Nullable ModConfigSpec.EnumValue<BarSize> preset) {
         if (preset == null || BarWidths.advanced()) {
-            Component name = Component.translatable("rpghealthbar.config." + key);
-            return new WidgetRow(name.copy().append(":"),
+            return new WidgetRow(label(key),
                     Button.builder(Component.translatable("rpghealthbar.config.editInHudEditor"), button -> this.minecraft.setScreen(new HudEditScreen(this)))
                             .size(VALUE_WIDTH, BUTTON_HEIGHT)
                             .tooltip(Tooltip.create(Component.translatable("rpghealthbar.config.editInHudEditor.tooltip")))
                             .build());
         }
         return option(key, BarSize.values(), preset, BarSize::displayName, "full", "half");
+    }
+
+    /** An option's name with a colon, as written left of its button. */
+    private static Component label(String key) {
+        return Component.translatable("rpghealthbar.config." + key).append(":");
     }
 
     /** A "Name: [value]" row, whose button cycles through the values and saves each change. */
@@ -308,7 +312,7 @@ public class RpgConfigScreen extends Screen {
                                         String... tooltipValues) {
         Component name = Component.translatable("rpghealthbar.config." + key);
         Tooltip tooltip = tooltip(key, tooltipValues);
-        return new WidgetRow(name.copy().append(":"), CycleButton.builder(displayName)
+        return new WidgetRow(label(key), CycleButton.builder(displayName)
                 .withValues(values)
                 .withInitialValue(current)
                 .withTooltip(value -> tooltip)

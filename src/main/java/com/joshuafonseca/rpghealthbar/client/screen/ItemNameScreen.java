@@ -72,7 +72,7 @@ public class ItemNameScreen extends Screen {
         super.render(graphics, mouseX, mouseY, partialTick);
         HudLayer.Frame frame = HudLayer.Frame.compute(this.width, this.height);
 
-        HudPreview.drawIfHidden(graphics, this.minecraft, frame, frame.pieces(), true);
+        HudPreview.drawIfHidden(graphics, this.minecraft, frame, true);
 
         Component name = Component.translatable("rpghealthbar.itemName.sample");
         if (this.minecraft.player != null) {

@@ -159,8 +159,7 @@ public class HudEditScreen extends Screen {
                 this.font.width(Component.translatable("rpghealthbar.edit.hint.resize")))) / 2;
         HudPosition.Bounds controls = new HudPosition.Bounds(this.width / 2 - halfWidth, y, this.width / 2 + halfWidth, y + controlsHeight());
         int area = 0;
-        for (Map.Entry<HudPiece, HudPosition.Bounds> entry : frame.pieceBounds().entrySet()) {
-            HudPosition.Bounds box = entry.getValue().offset(frame.pieceOffset(entry.getKey()));
+        for (HudPosition.Bounds box : frame.placedBounds().values()) {
             int w = Math.min(box.right(), controls.right()) - Math.max(box.left(), controls.left());
             int h = Math.min(box.bottom(), controls.bottom()) - Math.max(box.top(), controls.top());
             if (w > 0 && h > 0) {
@@ -187,11 +186,7 @@ public class HudEditScreen extends Screen {
 
     /** Moves every piece by the same amount, as far as keeps them all on screen. */
     private void moveAll(HudPosition.Pieces from, HudPosition.Offset delta) {
-        HudPosition.Bounds bounds = null;
-        for (Map.Entry<HudPiece, HudPosition.Bounds> entry : frame().pieceBounds().entrySet()) {
-            HudPosition.Bounds moved = entry.getValue().offset(from.get(entry.getKey()));
-            bounds = bounds == null ? moved : bounds.union(moved);
-        }
+        HudPosition.Bounds bounds = HudPosition.union(HudPosition.placed(frame().pieceBounds(), from::get).values());
         setPieces(from.shiftedBy(HudPosition.clamp(delta, this.width, this.height, bounds)));
     }
 
@@ -244,7 +239,7 @@ public class HudEditScreen extends Screen {
         super.render(graphics, mouseX, mouseY, partialTick);
         HudLayer.Frame frame = frame();
 
-        HudPreview.drawIfHidden(graphics, this.minecraft, frame, pieces, false);
+        HudPreview.drawIfHidden(graphics, this.minecraft, frame, false);
 
         graphics.drawCenteredString(this.font, this.title, this.width / 2, controlsTop, 0xFFFFFF);
         Edge hoveredEdge = resizing == null && !dragging && getChildAt(mouseX, mouseY).isEmpty() ? edgeAt(mouseX, mouseY) : null;
@@ -292,11 +287,11 @@ public class HudEditScreen extends Screen {
             return null;
         }
         HudLayer.Frame frame = frame();
-        for (Map.Entry<HudPiece, HudPosition.Bounds> entry : frame.pieceBounds().entrySet()) {
+        for (Map.Entry<HudPiece, HudPosition.Bounds> entry : frame.placedBounds().entrySet()) {
             if (!BarWidths.resizable(entry.getKey())) {
                 continue;
             }
-            HudPosition.Bounds box = entry.getValue().offset(frame.pieceOffset(entry.getKey()));
+            HudPosition.Bounds box = entry.getValue();
             if (mouseY < box.top() - EDGE_MARGIN || mouseY >= box.bottom() + EDGE_MARGIN) {
                 continue;
             }
@@ -343,9 +338,9 @@ public class HudEditScreen extends Screen {
      * it doesn't get in the way of lining things up.
      */
     private static void highlight(GuiGraphics graphics, HudLayer.Frame frame, @Nullable HudPiece only, int color) {
-        for (Map.Entry<HudPiece, HudPosition.Bounds> entry : frame.pieceBounds().entrySet()) {
+        for (Map.Entry<HudPiece, HudPosition.Bounds> entry : frame.placedBounds().entrySet()) {
             if (only == null || entry.getKey() == only) {
-                HudPosition.Bounds box = entry.getValue().offset(frame.pieceOffset(entry.getKey()));
+                HudPosition.Bounds box = entry.getValue();
                 graphics.fill(box.left(), box.top(), box.right(), box.bottom(), color);
             }
         }
@@ -363,7 +358,7 @@ public class HudEditScreen extends Screen {
         if (edge != null) {
             HudLayer.Frame frame = frame();
             resizing = edge;
-            resizeStartBox = frame.pieceBounds().get(edge.piece()).offset(frame.pieceOffset(edge.piece()));
+            resizeStartBox = frame.placed(edge.piece());
             resizeStartWidth = resizeStartBox.width();
             resizeStartLeft = BarWidths.left(edge.piece());
             grabX = mouseX;
@@ -395,8 +390,8 @@ public class HudEditScreen extends Screen {
     private HudPiece pieceAt(double mouseX, double mouseY) {
         HudLayer.Frame frame = frame();
         HudPiece near = null;
-        for (Map.Entry<HudPiece, HudPosition.Bounds> entry : frame.pieceBounds().entrySet()) {
-            HudPosition.Bounds bounds = entry.getValue().offset(frame.pieceOffset(entry.getKey()));
+        for (Map.Entry<HudPiece, HudPosition.Bounds> entry : frame.placedBounds().entrySet()) {
+            HudPosition.Bounds bounds = entry.getValue();
             if (bounds.contains(mouseX, mouseY)) {
                 return entry.getKey();
             }

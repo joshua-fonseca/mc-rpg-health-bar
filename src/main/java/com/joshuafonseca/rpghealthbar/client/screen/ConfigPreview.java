@@ -34,15 +34,12 @@ final class ConfigPreview {
     private static final ResourceLocation FOOD_EMPTY = ResourceLocation.withDefaultNamespace("hud/food_empty");
     private static final ResourceLocation AIR = ResourceLocation.withDefaultNamespace("hud/air");
     private static final ResourceLocation AIR_BURSTING = ResourceLocation.withDefaultNamespace("hud/air_bursting");
-    private static final ResourceLocation XP_BACKGROUND = ResourceLocation.withDefaultNamespace("hud/experience_bar_background");
-    private static final ResourceLocation XP_PROGRESS = ResourceLocation.withDefaultNamespace("hud/experience_bar_progress");
 
     /** A virtual screen the HUD is laid out on; only its height matters, as the HUD sits at the bottom. */
     private static final int VIRTUAL_HEIGHT = 200;
     private static final int ICON = HudLayout.ICON_ROW_HEIGHT;
     private static final int ICON_SPACING = 8;
-    /** Vanilla's rows are 9px icons plus a 1px gap. */
-    private static final int ROW_HEIGHT = 10;
+    private static final int ROW_HEIGHT = HudPositionMover.ROW_HEIGHT;
     private static final int LEVEL_COLOR = 0x80FF20;
 
     /** Health a bit down with some absorption, and mana partly used, so the text and fills show. */
@@ -112,7 +109,7 @@ final class ConfigPreview {
             return;
         }
         HudPosition.Bounds xp = frame.pieceBounds().get(HudPiece.XP);
-        XpBarRenderer.draw(graphics, xp.left(), xp.top(), BarWidths.xpCells(), XP_BACKGROUND, XP_PROGRESS, XP_PROGRESS_FRACTION);
+        XpBarRenderer.drawXp(graphics, xp.left(), xp.top(), BarWidths.xpCells(), XP_PROGRESS_FRACTION);
         // Outlined like vanilla's, and centered on the bar like the mod draws it.
         int levelX = HudPositionMover.levelX(xp, font.width(LEVEL));
         int levelY = xp.top() - 1;

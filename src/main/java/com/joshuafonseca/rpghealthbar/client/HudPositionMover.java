@@ -6,6 +6,7 @@ import com.joshuafonseca.rpghealthbar.config.AirPosition;
 import com.joshuafonseca.rpghealthbar.config.ClientConfig;
 import com.joshuafonseca.rpghealthbar.config.HudPiece;
 import java.util.Map;
+import javax.annotation.Nullable;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
@@ -157,20 +158,30 @@ public final class HudPositionMover {
         if (player.isEyeInFluid(FluidTags.WATER) || Math.min(player.getAirSupply(), player.getMaxAirSupply()) < player.getMaxAirSupply()) {
             rows++;
         }
-        if (player.getVehicle() instanceof LivingEntity vehicle && vehicle.showVehicleHealth()) {
-            rows += vehicleRows();
+        LivingEntity mount = mountWithHealth(player);
+        if (mount != null) {
+            rows += vehicleRows(mount);
         }
         return rows;
     }
 
+    /** The mount the player rides, if vanilla shows its health (in hunger's place); null otherwise. */
+    @Nullable
+    public static LivingEntity mountWithHealth(Player player) {
+        return player.getVehicle() instanceof LivingEntity vehicle && vehicle.showVehicleHealth() ? vehicle : null;
+    }
+
     /** Rows of mount health vanilla draws: 10 hearts a row, up to 30 hearts (as in Gui.getVehicleMaxHearts). */
+    private static int vehicleRows(LivingEntity mount) {
+        int hearts = Math.min((int) (mount.getMaxHealth() + 0.5F) / 2, 30);
+        return Math.max(1, (hearts + 9) / 10);
+    }
+
+    /** {@link #vehicleRows(LivingEntity)} for the local player's mount; 1 if there's none. */
     private static int vehicleRows() {
-        Minecraft minecraft = Minecraft.getInstance();
-        if (minecraft.player != null && minecraft.player.getVehicle() instanceof LivingEntity vehicle && vehicle.showVehicleHealth()) {
-            int hearts = Math.min((int) (vehicle.getMaxHealth() + 0.5F) / 2, 30);
-            return Math.max(1, (hearts + 9) / 10);
-        }
-        return 1;
+        Player player = Minecraft.getInstance().player;
+        LivingEntity mount = player == null ? null : mountWithHealth(player);
+        return mount == null ? 1 : vehicleRows(mount);
     }
 
     public static void onPost(RenderGuiLayerEvent.Post event) {

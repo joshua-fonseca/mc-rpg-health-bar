@@ -1,5 +1,6 @@
 package com.joshuafonseca.rpghealthbar.client;
 
+import com.joshuafonseca.rpghealthbar.config.ClientConfig;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -29,12 +30,31 @@ public final class XpBarRenderer {
     private XpBarRenderer() {
     }
 
+    /**
+     * Whether the XP bar shows: with XP (not in creative), not riding something that jumps (its jump
+     * bar takes the XP bar's place), and with XP Bar on Shown.
+     */
+    public static boolean xpBarShown(Minecraft minecraft) {
+        return minecraft.player != null && minecraft.gameMode != null && minecraft.gameMode.hasExperience()
+                && minecraft.player.jumpableVehicle() == null && ClientConfig.XP_BAR_SHOWN.get();
+    }
+
+    /** Whether the jump bar shows: riding something that jumps, like a horse. */
+    public static boolean jumpBarShown(Minecraft minecraft) {
+        return minecraft.player != null && minecraft.player.jumpableVehicle() != null;
+    }
+
     /** The XP bar as vanilla shows it (only with XP to gain), with its top-left at {@code (x, y)}. */
     public static void renderXp(GuiGraphics graphics, int x, int y, int cells) {
         LocalPlayer player = Minecraft.getInstance().player;
         if (player != null && player.getXpNeededForNextLevel() > 0) {
-            draw(graphics, x, y, cells, XP_BACKGROUND, XP_PROGRESS, player.experienceProgress);
+            drawXp(graphics, x, y, cells, player.experienceProgress);
         }
+    }
+
+    /** The XP bar filled to {@code fraction}. */
+    public static void drawXp(GuiGraphics graphics, int x, int y, int cells, float fraction) {
+        draw(graphics, x, y, cells, XP_BACKGROUND, XP_PROGRESS, fraction);
     }
 
     /** The jump bar, charging or cooling down, like vanilla's. */
@@ -51,7 +71,7 @@ public final class XpBarRenderer {
     }
 
     /** The background, then the fill over {@code fraction} of it. */
-    public static void draw(GuiGraphics graphics, int x, int y, int cells, ResourceLocation background, ResourceLocation fill, float fraction) {
+    private static void draw(GuiGraphics graphics, int x, int y, int cells, ResourceLocation background, ResourceLocation fill, float fraction) {
         int width = BarWidths.xpWidth(cells);
         RenderSystem.enableBlend();
         drawCells(graphics, background, x, y, cells, width);

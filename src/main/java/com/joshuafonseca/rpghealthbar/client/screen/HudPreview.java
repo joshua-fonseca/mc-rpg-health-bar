@@ -23,14 +23,14 @@ final class HudPreview {
     private HudPreview() {
     }
 
-    static void drawIfHidden(GuiGraphics graphics, Minecraft minecraft, HudLayer.Frame frame, HudPosition.Pieces pieces, boolean hotbar) {
+    static void drawIfHidden(GuiGraphics graphics, Minecraft minecraft, HudLayer.Frame frame, boolean hotbar) {
         boolean inWorld = minecraft.level != null;
         if (inWorld && HudLayer.isVisible(minecraft)) {
             return;
         }
-        HudRenderer.render(graphics, minecraft.font, frame.layout(), HudValues.placeholder(), frame.showArmor(), frame.showHunger(), pieces, false);
+        HudRenderer.render(graphics, minecraft.font, frame.layout(), HudValues.placeholder(), frame.showArmor(), frame.showHunger(), frame.pieces(), false);
         if (!inWorld && ClientConfig.XP_BAR_SHOWN.get()) {
-            HudPosition.Bounds xp = frame.pieceBounds().get(HudPiece.XP).offset(pieces.get(HudPiece.XP));
+            HudPosition.Bounds xp = frame.placed(HudPiece.XP);
             graphics.fill(xp.left(), xp.top(), xp.right(), xp.bottom(), XP_BAR_COLOR);
             if (hotbar) {
                 int left = graphics.guiWidth() / 2 - HOTBAR_WIDTH / 2;

@@ -15,8 +15,6 @@ import com.joshuafonseca.rpghealthbar.config.HudPiece;
 import com.mojang.logging.LogUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.world.entity.PlayerRideableJumping;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.EventPriority;
@@ -116,13 +114,7 @@ public class RpgHealthBar {
     /** The XP bar, or the jump bar while riding, with the cells set in the HUD Editor; shown when vanilla's would be. */
     private static void drawXpBar(GuiGraphics graphics, boolean jump) {
         Minecraft minecraft = Minecraft.getInstance();
-        LocalPlayer player = minecraft.player;
-        if (player == null || minecraft.gameMode == null) {
-            return;
-        }
-        PlayerRideableJumping rideable = player.jumpableVehicle();
-        boolean shown = jump ? rideable != null : rideable == null && minecraft.gameMode.hasExperience();
-        if (!shown) {
+        if (!(jump ? XpBarRenderer.jumpBarShown(minecraft) : XpBarRenderer.xpBarShown(minecraft))) {
             return;
         }
         HudLayer.Frame frame = HudLayer.Frame.current(graphics.guiWidth(), graphics.guiHeight());
@@ -130,7 +122,7 @@ public class RpgHealthBar {
         graphics.pose().pushPose();
         HudPosition.moveTo(graphics.pose(), frame.pieceOffset(HudPiece.XP));
         if (jump) {
-            XpBarRenderer.renderJump(graphics, xp.left(), xp.top(), BarWidths.xpCells(), rideable);
+            XpBarRenderer.renderJump(graphics, xp.left(), xp.top(), BarWidths.xpCells(), minecraft.player.jumpableVehicle());
         } else {
             XpBarRenderer.renderXp(graphics, xp.left(), xp.top(), BarWidths.xpCells());
         }

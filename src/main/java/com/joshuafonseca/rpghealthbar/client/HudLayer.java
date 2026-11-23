@@ -12,7 +12,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.LayeredDraw;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 
 /** Draws the whole bar group. */
@@ -35,7 +34,7 @@ public class HudLayer implements LayeredDraw.Layer {
         // Each piece is shifted on its own by HudRenderer; this only undoes other mods' shifts.
         HudPosition.moveTo(graphics.pose(), HudPosition.Offset.ZERO);
         // Riding a mount whose health vanilla shows, its hearts take hunger's place, as in vanilla.
-        boolean mounted = player.getVehicle() instanceof LivingEntity vehicle && vehicle.showVehicleHealth();
+        boolean mounted = HudPositionMover.mountWithHealth(player) != null;
         HudRenderer.render(graphics, minecraft.font, frame.layout(), values, frame.showArmor(), frame.showHunger() && !mounted,
                 frame.pieces(), true);
         graphics.pose().popPose();
@@ -99,12 +98,18 @@ public class HudLayer implements LayeredDraw.Layer {
                     hungerMode == HalfBarMode.HIDDEN ? 0 : rowsBelowHunger * HudPositionMover.ROW_HEIGHT);
             Map<HudPiece, HudPosition.Bounds> pieceBounds = pieceBounds(screenHeight, layout, armorMode, hungerMode);
             HudPosition.Pieces pieces = HudPosition.pieces(screenWidth, screenHeight, pieceBounds);
-            HudPosition.Bounds bounds = null;
-            for (Map.Entry<HudPiece, HudPosition.Bounds> entry : pieceBounds.entrySet()) {
-                HudPosition.Bounds moved = entry.getValue().offset(pieces.get(entry.getKey()));
-                bounds = bounds == null ? moved : bounds.union(moved);
-            }
+            HudPosition.Bounds bounds = HudPosition.union(HudPosition.placed(pieceBounds, pieces::get).values());
             return new Frame(layout, bounds, pieces, pieceBounds, showArmor, showHunger, vanillaArmor, vanillaHunger);
+        }
+
+        /** Each shown piece where it's drawn: its default box moved by its shift. */
+        public Map<HudPiece, HudPosition.Bounds> placedBounds() {
+            return HudPosition.placed(pieceBounds, pieces::get);
+        }
+
+        /** A shown piece where it's drawn. */
+        public HudPosition.Bounds placed(HudPiece piece) {
+            return pieceBounds.get(piece).offset(pieces.get(piece));
         }
 
         /** Where a piece is drawn, as a shift from its default position. */
