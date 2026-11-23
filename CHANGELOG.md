@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 2.0.0 (2026-11-22)
 
 - New **Edit mode** button at the top right of the config screen: **Simple** (default) keeps the Full and Half width presets; **Advanced** lets you set the health, mana and XP bars to any width by dragging their ends in the HUD Editor, where the cursor turns into a resize arrow over them. In Advanced, the width options become **Edit in HUD Editor** buttons, and the XP section gets an XP Bar Width one.
   - The XP bar resizes a cell at a time, built from vanilla's own cells (so texture packs still apply), and its fill and the jump bar stretch over the new length.
