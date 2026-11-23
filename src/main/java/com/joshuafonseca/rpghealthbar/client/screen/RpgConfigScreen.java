@@ -274,7 +274,7 @@ public class RpgConfigScreen extends Screen {
                         .build(),
                 Button.builder(Component.translatable("rpghealthbar.config.moveHud"), button -> this.minecraft.setScreen(new HudEditScreen(this)))
                         .size(0, BUTTON_HEIGHT)
-                        .tooltip(tooltip("moveHud"))
+                        .tooltip(Tooltip.create(hudEditorTooltip()))
                         .build()));
     }
 
@@ -287,10 +287,30 @@ public class RpgConfigScreen extends Screen {
             return new WidgetRow(label(key),
                     Button.builder(Component.translatable("rpghealthbar.config.editInHudEditor"), button -> this.minecraft.setScreen(new HudEditScreen(this)))
                             .size(VALUE_WIDTH, BUTTON_HEIGHT)
-                            .tooltip(Tooltip.create(Component.translatable("rpghealthbar.config.editInHudEditor.tooltip")))
+                            .tooltip(Tooltip.create(advancedWidthTooltip(key)))
                             .build());
         }
         return option(key, BarSize.values(), preset, BarSize::displayName, "full", "half");
+    }
+
+    /**
+     * A width's tooltip in Advanced mode: "Advanced Mode:" in cyan, what the width is, and how to
+     * change it in the HUD Editor.
+     */
+    private static Component advancedWidthTooltip(String key) {
+        return Component.translatable("rpghealthbar.config.advancedModeTitle").withStyle(ChatFormatting.AQUA)
+                .append(" ").append(Component.translatable("rpghealthbar.config." + key + ".tooltip").withStyle(ChatFormatting.WHITE))
+                .append(" ").append(Component.translatable("rpghealthbar.config.editInHudEditor.tooltip").withStyle(ChatFormatting.WHITE));
+    }
+
+    /** The HUD Editor button's tooltip; in Advanced mode, with how to resize the bars ("advanced mode" in cyan). */
+    private static Component hudEditorTooltip() {
+        MutableComponent text = Component.translatable("rpghealthbar.config.moveHud.tooltip");
+        if (BarWidths.advanced()) {
+            Component mode = Component.translatable("rpghealthbar.config.advancedMode").withStyle(ChatFormatting.AQUA);
+            text.append("\n\n").append(Component.translatable("rpghealthbar.config.moveHud.tooltip.advanced", mode));
+        }
+        return text;
     }
 
     /** An option's name with a colon, as written left of its button. */
