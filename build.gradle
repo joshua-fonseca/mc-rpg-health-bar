@@ -14,8 +14,8 @@ tasks.named('wrapper', Wrapper).configure {
     distributionType = Wrapper.DistributionType.BIN
 }
 
-// The Minecraft version is part of the jar name, e.g. rpghealthbar-1.3.1+1.20.1.jar.
-version = "${mod_version}+${minecraft_version}"
+// The version, Minecraft version and loader are part of the jar name, e.g. rpghealthbar-v2.0.1-1.20.1-forge.jar.
+version = "v${mod_version}-${minecraft_version}-forge"
 group = mod_group_id
 
 sourceSets.main.resources {
