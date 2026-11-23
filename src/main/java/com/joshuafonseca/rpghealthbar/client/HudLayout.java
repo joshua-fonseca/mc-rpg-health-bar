@@ -34,21 +34,19 @@ public record HudLayout(int x, int top, int iconRowY, int halfBarY, int healthY,
      * The armor/hunger row holds our half bars and/or the vanilla icons, side by side. With any
      * vanilla icons in it, it's as tall as the icons and the bars are centered vertically in it;
      * with only bars it's as thin as the bars; with neither it's removed and the group shrinks.
-     * Rows drawn below hunger (air, mount health) get room between it and the health bar.
      *
      * @param hasBars  whether armor or hunger is shown as a bar
      * @param hasIcons whether armor or hunger is shown as vanilla icons
      * @param manaBars how many mana bars are drawn: 0 to 2, see {@link com.joshuafonseca.rpghealthbar.compat.ManaBars}
-     * @param belowHunger height of the rows drawn below hunger, 0 when they go above it
      */
     public static HudLayout compute(int screenWidth, int screenHeight, boolean hasBars, boolean hasIcons, int manaBars,
-                                    int healthWidth, int belowHunger) {
+                                    int healthWidth) {
         int x = screenWidth / 2 - WIDTH / 2;
         int bottom = screenHeight - BOTTOM_MARGIN;
         int manaY = bottom - manaBars * (MAIN_BAR_HEIGHT + ROW_GAP) + ROW_GAP;
         int healthY = manaBars > 0 ? manaY - ROW_GAP - MAIN_BAR_HEIGHT : bottom - MAIN_BAR_HEIGHT;
         int rowHeight = hasIcons ? ICON_ROW_HEIGHT : hasBars ? HALF_BAR_HEIGHT : 0;
-        int iconRowY = healthY - ROW_GAP - belowHunger - rowHeight;
+        int iconRowY = healthY - ROW_GAP - rowHeight;
         int halfBarY = iconRowY + (rowHeight - HALF_BAR_HEIGHT) / 2;
         int top = rowHeight > 0 ? iconRowY : healthY;
         return new HudLayout(x, top, iconRowY, halfBarY, healthY, healthWidth, manaY, manaBars);
