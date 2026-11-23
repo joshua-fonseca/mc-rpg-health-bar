@@ -1,6 +1,6 @@
 ![The HUD with vanilla armor and hunger icons](https://raw.githubusercontent.com/joshua-fonseca/mc-rpg-health-bar/main/docs/images/hud-vanilla-icons.png)
 
-My original plan was to only replace the vanilla hearts with an RPG-style health bar and add a similar mana bar when Iron's Spells 'n Spellbooks is installed, but now this has turned into a full-blown GUI customization mod, supporting BOTH Iron's and Confluence, with the goal of looking not too far from Vanilla.
+My original plan was to only replace the vanilla hearts with an RPG-style health bar and add a similar mana bar when Iron's Spells 'n Spellbooks is installed, but now this has turned into a full-blown GUI customization mod, optionally supporting BOTH Iron's and Confluence, with the goal of looking not too far from Vanilla.
 
 ***
 
