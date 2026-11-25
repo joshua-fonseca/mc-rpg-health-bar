@@ -1,5 +1,6 @@
 package com.joshuafonseca.rpghealthbar.compat;
 
+import com.joshuafonseca.rpghealthbar.client.NumberText;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -27,7 +28,7 @@ public final class CompatNotes {
     }
 
     private static final List<Requirement> REQUIREMENTS = List.of(
-            new Requirement(IronsSpellsCompat.MODID, "Iron's Spells", "3.4.0"),
+            new Requirement(IronsSpellsCompat.MODID, "Iron's", "3.4.0"),
             new Requirement(AppleSkinCompat.MODID, "AppleSkin", "3.0.4"),
             // The first version whose mana is a decimal, as read now.
             new Requirement(ConfluenceCompat.MODID, "Confluence", "1.1.4"));
@@ -47,7 +48,7 @@ public final class CompatNotes {
         }
         if (!noted.contains(IronsSpellsCompat.MODID) && installedVersion(IronsSpellsCompat.MODID).isPresent()) {
             if (!IronsSpellsCompat.isAvailable()) {
-                notes.add(new Note(Component.translatable("rpghealthbar.config.compat.failed", "Iron's Spells"), true));
+                notes.add(new Note(Component.translatable("rpghealthbar.config.compat.failed", "Iron's"), true));
             } else if (!IronsSpellsCompat.isWheelAvailable()) {
                 notes.add(new Note(Component.translatable("rpghealthbar.config.compat.wheelFailed"), true));
             }
@@ -61,11 +62,17 @@ public final class CompatNotes {
             }
         }
         if (!noted.contains(ArsNouveauCompat.MODID) && installedVersion(ArsNouveauCompat.MODID).isPresent() && !ArsNouveauCompat.isWorking()) {
-            notes.add(new Note(Component.translatable("rpghealthbar.config.compat.failed", "Ars Nouveau"), true));
+            notes.add(new Note(Component.translatable("rpghealthbar.config.compat.failed", "Ars"), true));
         }
         // Not a problem: with both mods, say what two mana bars mean and how to get one.
         if (IronsSpellsCompat.isAvailable() && ConfluenceCompat.isAvailable()) {
             notes.add(new Note(Component.translatable("rpghealthbar.config.compat.unifiedMana"), false));
+        }
+        // Confluence adds Ars Nouveau's max mana (above Ars's starting max) to its own even with
+        // convertArsNouveauMana off; counted before Ars sets it, that's -50, and Confluence's max goes below 0.
+        Mana confluence = ArsNouveauCompat.isAvailable() ? ConfluenceCompat.read(0) : null;
+        if (confluence != null && confluence.max() < 0) {
+            notes.add(new Note(Component.translatable("rpghealthbar.config.compat.arsNegativeMana", NumberText.format(confluence.max())), true));
         }
         // Not a problem: Confluence (1.1.4+, NeoForge only) can take over Ars Nouveau's mana; until
         // its convertArsNouveauMana is on, say how to get one bar.

@@ -78,8 +78,8 @@ Defaults are in bold:
 |  | Iron's Mana Bar Width (only with Iron's Spells) | **Full**, Half |
 |  | Confluence Mana Text (only with Confluence) | **Left**, Right, Center, Off |
 |  | Confluence Mana Bar Width (only with Confluence) | **Full**, Half |
-|  | Ars Nouveau Mana Text (only with Ars Nouveau) | **Left**, Right, Center, Off |
-|  | Ars Nouveau Mana Bar Width (only with Ars Nouveau) | **Full**, Half |
+|  | Ars Mana Text (only with Ars Nouveau) | **Left**, Right, Center, Off |
+|  | Ars Mana Bar Width (only with Ars Nouveau) | **Full**, Half |
 | **XP Bar** | XP Bar | **Shown**, Hidden (no XP bar or level; the jump bar still shows while riding) |
 |  | Level Text | **Center**, Left, Right |
 |  | XP Bar Width (Advanced only) | Edit in HUD Editor: the XP bar is resized a cell at a time, its fill stretched over its length (**18 cells**, like vanilla) |
