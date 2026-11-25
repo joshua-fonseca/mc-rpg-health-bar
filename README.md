@@ -154,6 +154,9 @@ Requires Java 17. The differences from the 1.21.1 version are listed below.
 ./gradlew runClient -PwithIronsSpells -PwithIronsLib -PironsRuntime=io.redspace:irons_spellbooks:1.20.1-3.16.3 \
     -Pirons_lib_version=1.20.1-2.3.0 -Pcurios_version=5.14.1+1.20.1 -Pgeckolib_version=4.8.2
 ./gradlew runClient -PwithConfluence -PportlibJar=/path/to/MesdagPortLib.jar  # plus Confluence: Otherworld (needs PortLib, from CurseForge)
+# Confluence 1.2.11's bundled ParticleStorm 1.5.0 can crash while resources load on several threads
+# ("DescriptionMaterial.list is null"); loading them on one thread avoids it:
+JAVA_TOOL_OPTIONS=-Dmax.bg.threads=1 ./gradlew runClient -PwithConfluence -PportlibJar=/path/to/MesdagPortLib.jar
 ./gradlew runClient -PwithArsNouveau   # plus Ars Nouveau and its dependencies
 ```
 
