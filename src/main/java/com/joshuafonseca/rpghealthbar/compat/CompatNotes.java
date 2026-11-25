@@ -64,8 +64,9 @@ public final class CompatNotes {
         if (!noted.contains(ArsNouveauCompat.MODID) && installedVersion(ArsNouveauCompat.MODID).isPresent() && !ArsNouveauCompat.isWorking()) {
             notes.add(new Note(Component.translatable("rpghealthbar.config.compat.failed", "Ars"), true));
         }
-        // Not a problem: with both mods, say what two mana bars mean and how to get one.
-        if (IronsSpellsCompat.isAvailable() && ConfluenceCompat.isAvailable()) {
+        // Not a problem: with both mods' bars shown, say what two mana bars mean and how to get one.
+        // With convertIronsSpellMana on, Iron's bar is already gone.
+        if (ConfluenceCompat.isAvailable() && ManaSource.IRONS.shown()) {
             notes.add(new Note(Component.translatable("rpghealthbar.config.compat.unifiedMana"), false));
         }
         // Confluence adds Ars Nouveau's max mana (above Ars's starting max) to its own even with
