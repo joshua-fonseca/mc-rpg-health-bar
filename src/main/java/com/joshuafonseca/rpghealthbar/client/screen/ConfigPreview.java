@@ -10,7 +10,6 @@ import com.joshuafonseca.rpghealthbar.client.HudValues;
 import com.joshuafonseca.rpghealthbar.client.StatusColors;
 import com.joshuafonseca.rpghealthbar.client.XpBarOverlay;
 import com.joshuafonseca.rpghealthbar.client.XpBarRenderer;
-import com.joshuafonseca.rpghealthbar.compat.IronsSpellsCompat;
 import com.joshuafonseca.rpghealthbar.compat.ManaSource;
 import com.joshuafonseca.rpghealthbar.config.AirPosition;
 import com.joshuafonseca.rpghealthbar.config.ClientConfig;
