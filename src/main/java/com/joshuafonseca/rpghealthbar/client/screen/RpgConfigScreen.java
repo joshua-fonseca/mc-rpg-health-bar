@@ -218,7 +218,7 @@ public class RpgConfigScreen extends Screen {
         // Compatibility notes: a + button and its label open them; a supported mod that's too
         // old, or that couldn't be read, is listed, otherwise a line says all is well.
         List<CompatNotes.Note> notes = CompatNotes.notes();
-        list.addEntry(new CompatRow(notes.size(), CompatNotes.anyProblem(notes), this.compatOpen, () -> {
+        list.addEntry(new CompatRow(notes.size(), this.compatOpen, () -> {
             this.compatOpen = !this.compatOpen;
             rebuildOptions();
         }));
@@ -701,8 +701,7 @@ public class RpgConfigScreen extends Screen {
 
     /**
      * The compatibility notes' row: a + button (− while they're open) and the label beside it, both
-     * of which open and close them. How many notes there are follows the label: red when any is a
-     * problem, white otherwise.
+     * of which open and close them. How many notes there are follows the label, in white.
      */
     private static class CompatRow extends Row {
         private final Button button;
@@ -711,12 +710,12 @@ public class RpgConfigScreen extends Screen {
         private int labelLeft;
         private int labelTop;
 
-        CompatRow(int count, boolean problem, boolean open, Runnable toggle) {
+        CompatRow(int count, boolean open, Runnable toggle) {
             this.toggle = toggle;
             this.button = Button.builder(Component.literal(open ? "-" : "+"), b -> toggle.run()).size(BUTTON_HEIGHT, BUTTON_HEIGHT).build();
             MutableComponent label = Component.translatable("rpghealthbar.config.compat").copy();
             if (count > 0) {
-                label.append(Component.literal(" (" + count + ")").withColor(problem ? COMPAT_PROBLEM_COLOR : COMPAT_INFO_COLOR));
+                label.append(" (" + count + ")");
             }
             this.label = label;
         }
