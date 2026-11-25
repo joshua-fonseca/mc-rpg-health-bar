@@ -58,7 +58,6 @@ Selecting a spell via spell wheel, the mana bar blinks according to how much man
 
 ![Choosing a spell in Iron's spell wheel shows the mana it costs on the mana bar, then casting it uses that mana](https://raw.githubusercontent.com/joshua-fonseca/mc-rpg-health-bar/main/docs/images/spell-cast.gif)
 
-
 #### Compatibility for those using multiple magic mods together and want unified mana 
 
 | Magic mods              | 1.21.1 (NeoForge)                                                 | 1.20.1 (Forge) |
