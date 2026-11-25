@@ -32,8 +32,8 @@ public final class CompatNotes {
     }
 
     private static final List<Requirement> REQUIREMENTS = List.of(
-            new Requirement(IronsSpellsCompat.MODID, "Iron's Spells", "1.1.5", null),
-            new Requirement(IronsSpellsCompat.MODID, "Iron's Spells", "3.1.4", "rpghealthbar.config.compat.feature.spellCost"),
+            new Requirement(IronsSpellsCompat.MODID, "Iron's", "1.1.5", null),
+            new Requirement(IronsSpellsCompat.MODID, "Iron's", "3.1.4", "rpghealthbar.config.compat.feature.spellCost"),
             new Requirement(AppleSkinCompat.MODID, "AppleSkin", "2.5.0", null));
 
     private CompatNotes() {
@@ -56,7 +56,7 @@ public final class CompatNotes {
         }
         if (!noted.contains(IronsSpellsCompat.MODID) && installedVersion(IronsSpellsCompat.MODID).isPresent()) {
             if (!IronsSpellsCompat.isAvailable()) {
-                notes.add(new Note(Component.translatable("rpghealthbar.config.compat.failed", "Iron's Spells"), true));
+                notes.add(new Note(Component.translatable("rpghealthbar.config.compat.failed", "Iron's"), true));
             } else if (!IronsSpellsCompat.isWheelAvailable()) {
                 notes.add(new Note(Component.translatable("rpghealthbar.config.compat.wheelFailed"), true));
             }
@@ -68,7 +68,7 @@ public final class CompatNotes {
             notes.add(new Note(Component.translatable("rpghealthbar.config.compat.failed", "Confluence"), true));
         }
         if (installedVersion(ArsNouveauCompat.MODID).isPresent() && !ArsNouveauCompat.isWorking()) {
-            notes.add(new Note(Component.translatable("rpghealthbar.config.compat.failed", "Ars Nouveau"), true));
+            notes.add(new Note(Component.translatable("rpghealthbar.config.compat.failed", "Ars"), true));
         }
         // Not a problem either: Ars Nouveau and Iron's Spells never share mana, so both bars show.
         if (IronsSpellsCompat.isAvailable() && ArsNouveauCompat.isAvailable()) {

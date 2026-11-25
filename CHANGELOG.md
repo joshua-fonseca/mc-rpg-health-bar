@@ -2,7 +2,7 @@
 
 ## Unreleased
 
-- **Ars Nouveau support** (5.8.2+ on 1.21.1, 4.2.4+ on 1.20.1): its mana gets its own purple bar, like Ars's own, below the other mana bars, with its own **Ars Nouveau Mana Text** and **Ars Nouveau Mana Bar Width** options. Ars's own mana bar is hidden.
+- **Ars Nouveau support** (5.8.2+ on 1.21.1, 4.2.4+ on 1.20.1): its mana gets its own purple bar, like Ars's own, below the other mana bars, with its own **Ars Mana Text** and **Ars Mana Bar Width** options. Ars's own mana bar is hidden.
   - Ars Nouveau and Iron's Spells don't share mana, even with both installed, so each keeps its own bar; the Compatibility notes say so.
   - On 1.21.1, if the server has Confluence's convertArsNouveauMana on, Ars's spells use Confluence's mana, so only Confluence's bar shows.
 

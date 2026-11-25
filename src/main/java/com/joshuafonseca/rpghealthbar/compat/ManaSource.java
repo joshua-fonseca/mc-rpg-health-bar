@@ -206,7 +206,7 @@ public enum ManaSource {
         return costColor;
     }
 
-    /** The mod's name, as in "(Iron's Spells + Confluence detected)". */
+    /** The mod's name, as in "(Iron's + Confluence detected)". */
     public Component displayName() {
         return Component.translatable("rpghealthbar.config.manaMod." + nameKey);
     }

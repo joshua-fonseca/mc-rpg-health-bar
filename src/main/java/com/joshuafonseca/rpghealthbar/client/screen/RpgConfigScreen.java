@@ -338,7 +338,7 @@ public class RpgConfigScreen extends Screen {
         return edited;
     }
 
-    /** "(Iron's Spells + Confluence detected)", or that none was. */
+    /** "(Iron's + Confluence detected)", or that none was. */
     private static Component manaDetected(List<ManaSource> found) {
         if (found.isEmpty()) {
             return Component.translatable("rpghealthbar.config.manaNotDetected");
