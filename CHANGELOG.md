@@ -2,17 +2,15 @@
 
 ## 2.1.0 (2026-11-25)
 
-- **Ars Nouveau support** (5.8.2+ on 1.21.1, 4.2.4+ on 1.20.1): its mana gets its own purple bar, like Ars's own, below the other mana bars, with its own **Ars Mana Text** and **Ars Mana Bar Width** options. Ars's own mana bar is hidden.
-  - Bubbles rise through the bar, like on Ars's own; **Ars Mana Bubbles** turns them off.
-  - Like Ars's own bar, the bar flashes a spell's cost in red when it fails for lack of mana (fading out a little faster than Ars's), and shows mana reserved by Ars add-ons as a dark section at its right end.
+- **Ars Nouveau support** (5.8.2+ on 1.21.1, 4.2.4+ on 1.20.1): its mana gets its own purple bar, like Ars's own.
+  - Like Ars's own bar, the bar flashes a spell's cost in red when it fails for lack of mana and shows mana reserved by Ars add-ons too.
   - Ars Nouveau and Iron's Spells don't share mana, even with both installed, so each keeps its own bar; the Compatibility notes say so.
   - On 1.21.1, if the server has Confluence's convertArsNouveauMana on, Ars's spells use Confluence's mana, so only Confluence's bar shows.
-  - On 1.21.1, the Compatibility notes flag Confluence's max mana going negative with Ars installed (a Confluence bug).
-- **Compatibility notes** are shorter and easier to read:
-  - On 1.21.1, one note lists the mana mods that can share one bar through Confluence's own options (convertIronsSpellMana, convertArsNouveauMana), a line each, while their bars are still separate.
-  - New: one note lists the mana mods without a built-in option to share mana (e.g. Iron's and Ars), a line each: each keeps its own bar, and compatibility mods that merge them aren't accounted for.
-  - The notes are evenly spaced whether the preview is on or off, mod names in the notes and tooltips are shown in their mana bar's color, and the number of notes stays white.
-- Mod names are shortened in the config screen and its tooltips: Iron's, Confluence, Ars.
+- A few new Compatibility notes
+  - On 1.21.1, one note says how Iron's or Ars can share Confluence's mana bar (convertIronsSpellMana, convertArsNouveauMana), shown only while their bars are still separate.
+  - On 1.21.1, a note flags Confluence's max mana going negative with Ars installed (a Confluence bug).
+  - One note lists the mana mods that don't have options for unified mana (e.g. Iron's and Ars), a line each; compatibility mods that merge them aren't accounted for.
+  - The notes are evenly spaced whether the preview is on or off, and mod names in the notes and tooltips use their mana bar's color.
 
 ## 2.0.1 (2026-11-23)
 
