@@ -26,6 +26,8 @@ public final class ArsNouveauCompat {
     private static final String CLIENT_INFO = "com.hollingsworth.arsnouveau.client.ClientInfo";
     /** How long Ars's red flash lasts, in ticks, from the moment a spell fails: ClientInfo.redOverlayTicks starts here. */
     private static final float RED_TICKS = 35.0F;
+    /** Ours fades out a little faster than Ars's, over this many ticks from the moment the spell fails. */
+    private static final float RED_FADE_TICKS = 24.0F;
 
     private static final boolean INSTALLED = ModList.get().isLoaded(MODID);
     private static boolean available = INSTALLED;
@@ -75,7 +77,7 @@ public final class ArsNouveauCompat {
             int ticks = redTicks == null || redMana == null ? 0 : redTicks.getInt(null);
             float failedCost = ticks > 0 ? redMana.getFloat(null) : 0;
             return new Mana((float) Math.floor(((Number) currentMana.invoke(cap)).doubleValue()), ((Number) maxMana.invoke(cap)).floatValue(), 0,
-                    reserved, failedCost, Math.min(1, ticks / RED_TICKS));
+                    reserved, failedCost, Math.max(0, Math.min(1, 1 - (RED_TICKS - ticks) / RED_FADE_TICKS)));
         } catch (ReflectiveOperationException | RuntimeException | LinkageError e) {
             disable("read mana", e);
             return null;

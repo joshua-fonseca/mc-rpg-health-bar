@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- The Ars bar's red flash after a failed cast fades out a little faster: over 1.2 seconds instead of Ars's 1.75.
+
 ## 2.1.0 (2026-11-25)
 
 - **Ars Nouveau support** (5.8.2+ on 1.21.1, 4.2.4+ on 1.20.1): its mana gets its own purple bar, like Ars's own, below the other mana bars, with its own **Ars Mana Text** and **Ars Mana Bar Width** options. Ars's own mana bar is hidden.
