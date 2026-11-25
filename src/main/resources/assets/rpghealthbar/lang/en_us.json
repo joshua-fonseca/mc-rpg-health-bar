@@ -32,6 +32,7 @@
   "rpghealthbar.config.compat.failed": "%s support is off: this version couldn't be read",
   "rpghealthbar.config.compat.wheelFailed": "Spell cost preview is off: this Iron's Spells version couldn't be read",
   "rpghealthbar.config.compat.unifiedMana": "Seeing two mana bars? Confluence's unified mana is off, so Iron's Spells and Confluence each keep their own. For one shared bar, turn on convertIronsSpellMana in config/confluence-common.toml (on a server, in the server's config).",
+  "rpghealthbar.config.compat.arsUnifiedMana": "Confluence has built-in Ars Nouveau compatibility (Confluence 1.1.4+). For one shared bar, turn on convertArsNouveauMana in config/confluence-common.toml (on a server, in the server's config): Ars Nouveau's spells then use Confluence's mana.",
   "rpghealthbar.config.compat.arsSeparateMana": "Ars Nouveau and Iron's Spells each keep their own mana, even with both installed, so each has its own bar.",
   "rpghealthbar.config.preview": "Preview",
   "rpghealthbar.config.preview.on": "Preview: On",

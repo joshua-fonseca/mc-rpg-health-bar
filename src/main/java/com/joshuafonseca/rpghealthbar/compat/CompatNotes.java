@@ -67,6 +67,11 @@ public final class CompatNotes {
         if (IronsSpellsCompat.isAvailable() && ConfluenceCompat.isAvailable()) {
             notes.add(new Note(Component.translatable("rpghealthbar.config.compat.unifiedMana"), false));
         }
+        // Not a problem: Confluence (1.1.4+, NeoForge only) can take over Ars Nouveau's mana; until
+        // its convertArsNouveauMana is on, say how to get one bar.
+        if (ConfluenceCompat.isAvailable() && ManaSource.ARS.shown()) {
+            notes.add(new Note(Component.translatable("rpghealthbar.config.compat.arsUnifiedMana"), false));
+        }
         // Not a problem either: Ars Nouveau and Iron's Spells never share mana, so both bars show.
         if (IronsSpellsCompat.isAvailable() && ArsNouveauCompat.isAvailable()) {
             notes.add(new Note(Component.translatable("rpghealthbar.config.compat.arsSeparateMana"), false));
