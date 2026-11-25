@@ -193,7 +193,9 @@ public class RpgConfigScreen extends Screen {
             if (i > 0) {
                 y += BETWEEN_NOTES;
             }
-            for (FormattedCharSequence line : this.font.split(ManaSource.colorNames(notes.get(i)), list.getRowWidth() - NOTE_INDENT)) {
+            // Mod names are colored, except in a problem note, which stays all red.
+            Component text = colors.get(i) == COMPAT_PROBLEM_COLOR ? notes.get(i) : ManaSource.colorNames(notes.get(i));
+            for (FormattedCharSequence line : this.font.split(text, list.getRowWidth() - NOTE_INDENT)) {
                 lines.add(new NoteLine(line, y, colors.get(i)));
                 y += this.font.lineHeight;
             }
@@ -319,7 +321,7 @@ public class RpgConfigScreen extends Screen {
 
     /** An option's name with a colon, as written left of its button. */
     private static Component label(String key) {
-        return ManaSource.colorNames(Component.translatable("rpghealthbar.config." + key).append(":"));
+        return Component.translatable("rpghealthbar.config." + key).append(":");
     }
 
     /** A "Name: [value]" row, whose button cycles through the values and saves each change. */
@@ -369,13 +371,13 @@ public class RpgConfigScreen extends Screen {
     /** "(Iron's + Confluence detected)", or that none was. */
     private static Component manaDetected(List<ManaSource> found) {
         if (found.isEmpty()) {
-            return ManaSource.colorNames(Component.translatable("rpghealthbar.config.manaNotDetected"));
+            return Component.translatable("rpghealthbar.config.manaNotDetected");
         }
         MutableComponent names = found.get(0).displayName().copy();
         for (ManaSource source : found.subList(1, found.size())) {
             names.append(" + ").append(source.displayName());
         }
-        return ManaSource.colorNames(Component.translatable("rpghealthbar.config.manaDetected", names));
+        return Component.translatable("rpghealthbar.config.manaDetected", names);
     }
 
     /** @param legacyShown the setting from before {@code value}, or null; it's turned back on with any choice */
