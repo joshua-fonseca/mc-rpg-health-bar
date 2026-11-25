@@ -1,19 +1,21 @@
 {
   "homepage": "https://www.curseforge.com/minecraft/mc-mods/rpg-health-bar",
   "1.21.1": {
+    "2.1.0": "Ars Nouveau mana support, with its bubbles, failed-cast flash and reserved mana, plus Compatibility notes for mana mod pairs.",
     "2.0.1": "New Separate v2 absorption option, with the absorption at the health bar's right end. With Air Bubbles/Mount HP on Below, armor and hunger no longer move up while air or mount rows show.",
     "2.0.0": "Advanced edit mode to resize the health, mana and XP bars in the HUD Editor, an XP Bar section with Level Text, and Confluence: Otherworld mana support.",
     "1.4.0": "Redesigned config screen with a live HUD preview, a Mod State on/off switch, air bubble/mount position, and text position options."
   },
   "1.20.1": {
+    "2.1.0": "Ars Nouveau mana support, with its bubbles, failed-cast flash and reserved mana, plus Compatibility notes for mana mod pairs.",
     "2.0.1": "New Separate v2 absorption option, with the absorption at the health bar's right end. With Air Bubbles/Mount HP on Below, armor and hunger no longer move up while air or mount rows show.",
     "2.0.0": "Advanced edit mode to resize the health, mana and XP bars in the HUD Editor, an XP Bar section with Level Text, and Confluence: Otherworld mana support.",
     "1.4.0": "Redesigned config screen with a live HUD preview, a Mod State on/off switch, air bubble/mount position, and text position options."
   },
   "promos": {
-    "1.21.1-latest": "2.0.1",
-    "1.21.1-recommended": "2.0.1",
-    "1.20.1-latest": "2.0.1",
-    "1.20.1-recommended": "2.0.1"
+    "1.21.1-latest": "2.1.0",
+    "1.21.1-recommended": "2.1.0",
+    "1.20.1-latest": "2.1.0",
+    "1.20.1-recommended": "2.1.0"
   }
 }

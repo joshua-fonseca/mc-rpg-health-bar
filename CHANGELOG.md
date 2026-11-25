@@ -1,12 +1,16 @@
 # Changelog
 
-## Unreleased
+## 2.1.0 (2026-11-25)
 
 - **Ars Nouveau support** (5.8.2+ on 1.21.1, 4.2.4+ on 1.20.1): its mana gets its own purple bar, like Ars's own, below the other mana bars, with its own **Ars Mana Text** and **Ars Mana Bar Width** options. Ars's own mana bar is hidden.
   - Bubbles rise through the bar, like on Ars's own; **Ars Mana Bubbles** turns them off.
   - Like Ars's own bar, the bar flashes a spell's cost in red when it fails for lack of mana, and shows mana reserved by Ars add-ons as a dark section at its right end.
   - Ars Nouveau and Iron's Spells don't share mana, even with both installed, so each keeps its own bar; the Compatibility notes say so.
   - On 1.21.1, if the server has Confluence's convertArsNouveauMana on, Ars's spells use Confluence's mana, so only Confluence's bar shows.
+  - On 1.21.1, the Compatibility notes point out Confluence's built-in Ars compatibility, and flag Confluence's max mana going negative with Ars installed (a Confluence bug).
+- New **Compatibility notes** for two mana mods without a built-in option to share mana (e.g. Iron's and Ars): each keeps its own bar, and compatibility mods that merge them aren't accounted for.
+- On 1.21.1, the "Seeing two mana bars?" note for Iron's and Confluence no longer shows when Confluence's convertIronsSpellMana is on, since there's only one bar then.
+- Mod names are shortened in the config screen and its tooltips: Iron's, Confluence, Ars.
 
 ## 2.0.1 (2026-11-23)
 
