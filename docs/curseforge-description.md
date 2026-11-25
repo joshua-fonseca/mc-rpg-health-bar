@@ -61,11 +61,11 @@ Selecting a spell via spell wheel, the mana bar blinks according to how much man
 
 #### Compatibility for those using multiple magic mods together and want unified mana 
 
-| Magic mods              | 1.21.1                                                            | 1.20.1      |
-| ----------------------- | ----------------------------------------------------------------- | ----------- |
-| **Iron's + Confluence** | Supported. Turn on `convertIronsSpellMana` in Confluence's config | Unsupported |
-| **Iron's + Ars**        | Unsupported                                                       | Unsupported |
-| **Confluence + Ars**    | Supported. Turn on `convertArsNouveauMana` in Confluence's config | Unsupported |
+| Magic mods              | 1.21.1 (NeoForge)                                                 | 1.20.1 (Forge) |
+| ----------------------- | ----------------------------------------------------------------- | -------------- |
+| **Iron's + Confluence** | Supported. Turn on `convertIronsSpellMana` in Confluence's config | Unsupported    |
+| **Iron's + Ars**        | Unsupported                                                       | Unsupported    |
+| **Confluence + Ars**    | Supported. Turn on `convertArsNouveauMana` in Confluence's config | Unsupported    |
 
 Note: compatibility mods may exist to have unified mana, but there are too many variations of them, so RPG Health Bar will not support them. I have also not tested more than two magic mods at a time.
 
