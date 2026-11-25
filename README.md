@@ -122,9 +122,9 @@ Settings are stored in `config/rpghealthbar-client.toml`.
 |---|---|---|---|
 | **Mod loader** | | NeoForge 21.1.1+ | Forge 47.0.0+ |
 | **Iron's Spells 'n Spellbooks** (optional) | Blue | 3.4.0+ | 1.1.5+ (spell cost preview: 3.1.4+) |
-| **AppleSkin** (optional) | | 3.0.4+ | 2.5.0+ |
 | **Confluence: Otherworld** (optional) | Dark blue | 1.1.4+ | 1.2.9+ |
 | **Ars Nouveau** (optional) | Purple | 5.8.2+ | 4.2.4+ |
+| **AppleSkin** (optional) | | 3.0.4+ | 2.5.0+ |
 | **Double Hotbar** (optional) | | Any ([Double Hotbar NeoForge](https://www.curseforge.com/projects/1563792), unofficial port by \_retrospective\_) | 1.3.2.1+ ([Double Hotbar](https://www.curseforge.com/minecraft/mc-mods/double-hotbar) by sidezbros) |
 
 - Client-side only: servers don't need it, and it works on servers that don't have it.
