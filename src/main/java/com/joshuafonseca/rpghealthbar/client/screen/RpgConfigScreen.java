@@ -243,6 +243,10 @@ public class RpgConfigScreen extends Screen {
         for (ManaSource source : manaMods) {
             list.addEntry(textOption(source.textKey(), source.text(), source.textValue(), source.legacyTextShown()));
             list.addEntry(widthOption(source.sizeKey(), source.size()));
+            if (source.bubblesValue() != null) {
+                list.addEntry(option("arsManaBubbles", new Boolean[]{true, false}, source.bubblesValue(),
+                        on -> Component.translatable("rpghealthbar.config.arsManaBubbles." + (on ? "on" : "off")), "on", "off"));
+            }
         }
 
         list.addEntry(new Header(Component.translatable("rpghealthbar.config.section.xp"), null, NOTE_COLOR));
@@ -341,6 +345,9 @@ public class RpgConfigScreen extends Screen {
                 edited.add(source.legacyTextShown());
             }
             edited.add(source.size());
+            if (source.bubblesValue() != null) {
+                edited.add(source.bubblesValue());
+            }
         }
         edited.addAll(List.of(ClientConfig.LEVEL_TEXT, ClientConfig.EDIT_MODE, ClientConfig.XP_BAR_SHOWN));
         return edited;

@@ -129,6 +129,12 @@ public enum ManaSource {
         public boolean hidesOwnDisplay(ResourceLocation layer) {
             return layer.equals(ArsNouveauCompat.MANA_LAYER);
         }
+
+        /** Ars's own bar is animated with rising bubbles. */
+        @Override
+        public ModConfigSpec.BooleanValue bubblesValue() {
+            return ClientConfig.ARS_MANA_BUBBLES;
+        }
     };
 
     private final HudPiece piece;
@@ -203,6 +209,18 @@ public enum ManaSource {
 
     /** Whether to hide the GUI layer {@code layer}, the mod's own mana display, while this mod's on. */
     public abstract boolean hidesOwnDisplay(ResourceLocation layer);
+
+    /** Its setting for bubbles rising through the fill, like on the mod's own bar, or null if it has none. */
+    @Nullable
+    public ModConfigSpec.BooleanValue bubblesValue() {
+        return null;
+    }
+
+    /** Whether bubbles rise through its fill. */
+    public boolean bubbles() {
+        ModConfigSpec.BooleanValue value = bubblesValue();
+        return value != null && value.get();
+    }
 
     /** Where its numbers go. */
     public BarText text() {

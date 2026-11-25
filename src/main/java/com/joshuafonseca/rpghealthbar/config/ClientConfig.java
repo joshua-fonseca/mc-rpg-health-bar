@@ -104,6 +104,11 @@ public final class ClientConfig {
             .translation("rpghealthbar.config.arsManaSize")
             .defineEnum("arsManaSize", BarSize.FULL);
 
+    public static final ModConfigSpec.BooleanValue ARS_MANA_BUBBLES = BUILDER
+            .comment("Whether bubbles rise through Ars's mana bar, like on Ars's own bar.")
+            .translation("rpghealthbar.config.arsManaBubbles")
+            .define("arsManaBubbles", true);
+
     public static final ModConfigSpec.EnumValue<EditMode> EDIT_MODE = BUILDER
             .comment("SIMPLE: the bars' widths are the presets above (healthSize, manaSize, confluenceManaSize, arsManaSize). ADVANCED: the widths below, set by dragging the bars' ends in Config → HUD Editor.")
             .translation("rpghealthbar.config.editMode")

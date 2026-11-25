@@ -339,7 +339,7 @@ public final class BarRenderer {
     }
 
     /** Blends two opaque colors. */
-    private static int mix(int from, int to, float amount) {
+    static int mix(int from, int to, float amount) {
         int r = Math.round(Mth.lerp(amount, (from >> 16) & 0xFF, (to >> 16) & 0xFF));
         int g = Math.round(Mth.lerp(amount, (from >> 8) & 0xFF, (to >> 8) & 0xFF));
         int b = Math.round(Mth.lerp(amount, from & 0xFF, to & 0xFF));
