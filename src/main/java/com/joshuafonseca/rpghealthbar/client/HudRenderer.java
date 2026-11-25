@@ -34,6 +34,15 @@ public final class HudRenderer {
     private static final int RESERVED_MANA_COLOR = 0xFF101010;
     /** The cost of a spell that just failed for lack of mana, flashed like on Ars's own bar. */
     private static final int FAILED_COST_COLOR = 0xFFFF2020;
+    /** Bubbles rising through a fill (Ars Nouveau), one row per step like Ars's own bar's animation. */
+    private static final long BUBBLE_STEP_MILLIS = 150;
+    /** One bubble per this many columns, each starting at its own time. */
+    private static final int BUBBLE_SPACING = 8;
+    /** Steps between one bubble's start and the next in the same place: rising takes as many steps as the fill has rows. */
+    private static final int BUBBLE_CYCLE = 13;
+    /** How far a bubble is mixed toward white, and how opaque it is. */
+    private static final float BUBBLE_WHITE = 0.55F;
+    private static final int BUBBLE_ALPHA = 0xB0;
     private static final BarTrail HEALTH_TRAIL = new BarTrail();
     /** Absorption grows in from the left when gained, rather than appearing at once. */
     private static final BarGrow ABSORPTION_GROW = new BarGrow();
@@ -219,6 +228,35 @@ public final class HudRenderer {
         BarRenderer.drawHighlightColumns(graphics, x, y, width, HudLayout.MAIN_BAR_HEIGHT, true, from, alphas);
     }
 
+    /**
+     * Light pixels rising from the bottom row of the fill to the top, then gone, like the bubbles on
+     * Ars Nouveau's own bar. Each one has its own place and start time, kept off the white tip.
+     */
+    private static void renderBubbles(GuiGraphics graphics, int x, int y, int body, int color) {
+        if (body <= 0) {
+            return;
+        }
+        int rows = HudLayout.MAIN_BAR_HEIGHT - 2;
+        long step = Util.getMillis() / BUBBLE_STEP_MILLIS;
+        int bubble = (BUBBLE_ALPHA << 24) | (BarRenderer.mix(color, 0xFFFFFFFF, BUBBLE_WHITE) & 0xFFFFFF);
+        graphics.drawManaged(() -> {
+            for (int slot = 0; slot * BUBBLE_SPACING < body; slot++) {
+                int hash = slot * 0x9E3779B1;
+                int column = slot * BUBBLE_SPACING + Math.floorMod(hash >>> 8, BUBBLE_SPACING - 2);
+                int age = (int) Math.floorMod(step + (hash >>> 16), BUBBLE_CYCLE);
+                if (column >= body || age >= rows) {
+                    continue;
+                }
+                int row = rows - 1 - age;
+                // Two pixels wide near the bottom, one as it nears the top; it drifts a pixel sideways on the way.
+                int left = x + 1 + column + (age >= 2 && (hash & 1) == 0 ? 1 : 0);
+                int pixels = age < 2 && column + 1 < body ? 2 : 1;
+                int top = y + 1 + row;
+                graphics.fill(left, top, Math.min(left + pixels, x + 1 + body), top + 1, bubble);
+            }
+        });
+    }
+
     /** 0 to 1 and back, smoothly, once per period. */
     private static float pulse(long periodMillis) {
         return 0.5F - 0.5F * Mth.cos((float) (Util.getMillis() % periodMillis) / periodMillis * Mth.TWO_PI);
@@ -253,6 +291,9 @@ public final class HudRenderer {
             float reserved = values.reserved();
             float scale = maxMana * (1 + reserved);
             BarRenderer.drawFill(graphics, x, y, width, HudLayout.MAIN_BAR_HEIGHT, true, mana / scale, color, true);
+            if (source.bubbles()) {
+                renderBubbles(graphics, x, y, BarRenderer.columns(width, true, mana / scale) - 1, color);
+            }
             if (live) {
                 float trail = MANA_TRAILS.computeIfAbsent(source, s -> new BarTrail()).update(mana);
                 BarRenderer.drawSection(graphics, x, y, width, HudLayout.MAIN_BAR_HEIGHT, true, mana / scale, trail / scale, source.lostColor(), false, 1.0F);
