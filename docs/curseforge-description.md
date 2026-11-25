@@ -59,6 +59,16 @@ My original plan was to only replace the vanilla hearts with an RPG-style health
 **So, what are we looking at, exactly?**
 Selecting a spell via spell wheel, the mana bar blinks according to how much mana that spell costs.
 
+#### Compatibility for those using multiple magic mods together and want unified mana 
+
+|                | **Iron's**                                                                                         | **Confluence**                                                                                     | **Ars**                                                                                            |
+| -------------- | -------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| **Iron's**     | —                                                                                                  | Supported on 1.21.1: turn on `convertIronsSpellMana` in Confluence's config. Unsupported on 1.20.1 | Unsupported*                                                                                       |
+| **Confluence** | Supported on 1.21.1: turn on `convertIronsSpellMana` in Confluence's config. Unsupported on 1.20.1 | —                                                                                                  | Supported on 1.21.1: turn on `convertArsNouveauMana` in Confluence's config. Unsupported on 1.20.1 |
+| **Ars**        | Unsupported*                                                                                       | Supported on 1.21.1: turn on `convertArsNouveauMana` in Confluence's config. Unsupported on 1.20.1 | —                                                                                                  |
+
+\* means I'm aware of a compatibility mod but RPG Health Bar does not support them
+
 ## Settings
 
 #### Customization:
