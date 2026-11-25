@@ -66,21 +66,29 @@ public final class CompatNotes {
         if (!noted.contains(ArsNouveauCompat.MODID) && installedVersion(ArsNouveauCompat.MODID).isPresent() && !ArsNouveauCompat.isWorking()) {
             notes.add(new Note(Component.translatable("rpghealthbar.config.compat.failed", "Ars"), true));
         }
-        // Not a problem: with both mods' bars shown, say what two mana bars mean and how to get one.
-        // With convertIronsSpellMana on, Iron's bar is already gone.
-        if (ConfluenceCompat.isAvailable() && ManaSource.IRONS.shown()) {
-            notes.add(new Note(Component.translatable("rpghealthbar.config.compat.unifiedMana"), false));
-        }
         // Confluence adds Ars Nouveau's max mana (above Ars's starting max) to its own even with
         // convertArsNouveauMana off; counted before Ars sets it, that's -50, and Confluence's max goes below 0.
         Mana confluence = ArsNouveauCompat.isAvailable() ? ConfluenceCompat.read(0) : null;
         if (confluence != null && confluence.max() < 0) {
             notes.add(new Note(Component.translatable("rpghealthbar.config.compat.arsNegativeMana", NumberText.format(confluence.max())), true));
         }
-        // Not a problem: Confluence (1.1.4+, NeoForge only) can take over Ars Nouveau's mana; until
-        // its convertArsNouveauMana is on, say how to get one bar.
+        // Not a problem: Confluence (NeoForge) has its own options to take over Iron's and Ars's mana.
+        // One note gives a line for each pair whose bars are still separate, then where the options are.
+        MutableComponent canShare = Component.empty();
+        int options = 0;
+        if (ConfluenceCompat.isAvailable() && ManaSource.IRONS.shown()) {
+            options++;
+            canShare.append(Component.translatable("rpghealthbar.config.compat.canShareMana",
+                    ManaSource.IRONS.displayName(), ManaSource.CONFLUENCE.displayName(), "convertIronsSpellMana")).append("\n");
+        }
         if (ConfluenceCompat.isAvailable() && ManaSource.ARS.shown()) {
-            notes.add(new Note(Component.translatable("rpghealthbar.config.compat.arsUnifiedMana"), false));
+            options++;
+            canShare.append(Component.translatable("rpghealthbar.config.compat.canShareMana",
+                    ManaSource.CONFLUENCE.displayName(), ManaSource.ARS.displayName(), "convertArsNouveauMana")).append("\n");
+        }
+        if (options > 0) {
+            notes.add(new Note(canShare.append(Component.translatable(options > 1
+                    ? "rpghealthbar.config.compat.canShareManaWhereBoth" : "rpghealthbar.config.compat.canShareManaWhere")), false));
         }
         // Not a problem either: two mana mods with no option of their own to share mana each keep
         // their own bar. Compatibility mods that merge them aren't accounted for, so say so.
