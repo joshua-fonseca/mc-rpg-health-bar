@@ -67,7 +67,7 @@ Selecting a spell via spell wheel, the mana bar blinks according to how much man
 | **Iron's + Ars**        | Unsupported                                                       | Unsupported    |
 | **Confluence + Ars**    | Supported. Turn on `convertArsNouveauMana` in Confluence's config | Unsupported    |
 
-Note: compatibility mods may exist to have unified mana, but there are too many variations of them, so RPG Health Bar will not support them. I have also not tested more than two magic mods at a time.
+Note: compatibility mods may exist to have unified mana, but there are too many variations of them, so RPG Health Bar will not support them. Magic mods are only tested in pairs, so using more than two at a time may behave unexpectedly.
 
 ## Settings
 
