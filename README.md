@@ -118,14 +118,14 @@ Settings are stored in `config/rpghealthbar-client.toml`.
 
 ## Compatibility
 
-| | 1.21.1 (NeoForge) | 1.20.1 (Forge) |
-|---|---|---|
-| **Mod loader** | NeoForge 21.1.1+ | Forge 47.0.0+ |
-| **Iron's Spells 'n Spellbooks** (optional) | 3.4.0+ | 1.1.5+ (spell cost preview: 3.1.4+) |
-| **AppleSkin** (optional) | 3.0.4+ | 2.5.0+ |
-| **Confluence: Otherworld** (optional) | 1.1.4+ | 1.2.9+ |
-| **Ars Nouveau** (optional) | 5.8.2+ | 4.2.4+ |
-| **Double Hotbar** (optional) | Any ([Double Hotbar NeoForge](https://www.curseforge.com/projects/1563792), unofficial port by \_retrospective\_) | 1.3.2.1+ ([Double Hotbar](https://www.curseforge.com/minecraft/mc-mods/double-hotbar) by sidezbros) |
+| | 1.21.1 (NeoForge) | 1.20.1 (Forge) | Mana bar color |
+|---|---|---|---|
+| **Mod loader** | NeoForge 21.1.1+ | Forge 47.0.0+ | |
+| **Iron's Spells 'n Spellbooks** (optional) | 3.4.0+ | 1.1.5+ (spell cost preview: 3.1.4+) | Blue |
+| **AppleSkin** (optional) | 3.0.4+ | 2.5.0+ | |
+| **Confluence: Otherworld** (optional) | 1.1.4+ | 1.2.9+ | Dark blue |
+| **Ars Nouveau** (optional) | 5.8.2+ | 4.2.4+ | Purple |
+| **Double Hotbar** (optional) | Any ([Double Hotbar NeoForge](https://www.curseforge.com/projects/1563792), unofficial port by \_retrospective\_) | 1.3.2.1+ ([Double Hotbar](https://www.curseforge.com/minecraft/mc-mods/double-hotbar) by sidezbros) | |
 
 - Client-side only: servers don't need it, and it works on servers that don't have it.
 - [Iron's Spells 'n Spellbooks](https://www.curseforge.com/projects/855414) by Iron431 and Lab3: optional. When it's installed you get the mana bar and the spell cost preview, and Iron's own mana bar is hidden.
