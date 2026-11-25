@@ -33,7 +33,7 @@
   "rpghealthbar.config.compat.feature.spellCost": "the spell cost preview",
   "rpghealthbar.config.compat.failed": "%s support is off: this version couldn't be read",
   "rpghealthbar.config.compat.wheelFailed": "Spell cost preview is off: this Iron's version couldn't be read",
-  "rpghealthbar.config.compat.arsSeparateMana": "Ars and Iron's each keep their own mana, even with both installed, so each has its own bar.",
+  "rpghealthbar.config.compat.noUnifiedMana": "%s and %s don't include options for unified mana, so each keeps its own bar. Compatibility mods that merge them exist, but RPG Health Bar doesn't account for them, and with one installed the mana bars may behave unexpectedly.",
   "rpghealthbar.config.preview": "Preview",
   "rpghealthbar.config.preview.on": "Preview: On",
   "rpghealthbar.config.preview.off": "Preview: Off",
