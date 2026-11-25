@@ -91,6 +91,38 @@ public enum ManaSource {
             return layer.equals(ConfluenceCompat.MANA_LAYER) && available()
                     && !ConfluenceCompat.isSoulMode(Minecraft.getInstance().player);
         }
+    },
+    /** Ars Nouveau, below the others: purple like its own bar. Its mana is separate from Iron's, even with both installed. */
+    ARS(HudPiece.ARS_MANA, "ars", 0xFFA048E0, 0xFF40205C, 0xFF40205C,
+            "arsManaText", ClientConfig.ARS_MANA_TEXT, null, "arsManaSize", ClientConfig.ARS_MANA_SIZE,
+            ClientConfig.ARS_MANA_WIDTH, ClientConfig.ARS_MANA_LEFT) {
+        @Override
+        public boolean available() {
+            return ArsNouveauCompat.isAvailable();
+        }
+
+        /** Hidden when Confluence's convertArsNouveauMana makes Ars's spells use Confluence's mana. */
+        @Override
+        public boolean shown() {
+            return available() && !(ConfluenceCompat.isAvailable() && ConfluenceCompat.convertsArsMana());
+        }
+
+        @Nullable
+        @Override
+        protected Mana readShown(Player player) {
+            return ArsNouveauCompat.read(player);
+        }
+
+        /** Ars Nouveau starts players at 100 mana. */
+        @Override
+        public Mana placeholder(float percent) {
+            return new Mana(percent, 100, 0);
+        }
+
+        @Override
+        public boolean hidesOwnDisplay(ResourceLocation layer) {
+            return layer.equals(ArsNouveauCompat.MANA_LAYER);
+        }
     };
 
     private final HudPiece piece;

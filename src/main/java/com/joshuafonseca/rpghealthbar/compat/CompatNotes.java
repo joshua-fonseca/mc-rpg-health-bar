@@ -60,9 +60,16 @@ public final class CompatNotes {
                 notes.add(new Note(Component.translatable("rpghealthbar.config.compat.failed", "Confluence"), true));
             }
         }
+        if (!noted.contains(ArsNouveauCompat.MODID) && installedVersion(ArsNouveauCompat.MODID).isPresent() && !ArsNouveauCompat.isWorking()) {
+            notes.add(new Note(Component.translatable("rpghealthbar.config.compat.failed", "Ars Nouveau"), true));
+        }
         // Not a problem: with both mods, say what two mana bars mean and how to get one.
         if (IronsSpellsCompat.isAvailable() && ConfluenceCompat.isAvailable()) {
             notes.add(new Note(Component.translatable("rpghealthbar.config.compat.unifiedMana"), false));
+        }
+        // Not a problem either: Ars Nouveau and Iron's Spells never share mana, so both bars show.
+        if (IronsSpellsCompat.isAvailable() && ArsNouveauCompat.isAvailable()) {
+            notes.add(new Note(Component.translatable("rpghealthbar.config.compat.arsSeparateMana"), false));
         }
         return notes;
     }

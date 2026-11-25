@@ -121,6 +121,16 @@ dependencies {
         localRuntime("squeek.appleskin:appleskin-neoforge:${project.findProperty('appleskinRuntimeVersion') ?: appleskin_version}") { transitive = false }
     }
 
+    // Ars Nouveau is read by reflection too. `-PwithArsNouveau` adds it and the libraries it needs to
+    // the dev client; `-ParsNouveauRuntimeVersion=c8Ssk6O6` runs 5.8.2, the oldest on Modrinth for 1.21.1.
+    if (project.hasProperty('withArsNouveau')) {
+        localRuntime("maven.modrinth:ars-nouveau:${project.findProperty('arsNouveauRuntimeVersion') ?: ars_nouveau_version}") { transitive = false }
+        if (!project.hasProperty('withIronsSpells') && !project.hasProperty('withConfluence')) {
+            localRuntime("top.theillusivec4.curios:curios-neoforge:${curios_version}") { transitive = false }
+            localRuntime("software.bernie.geckolib:geckolib-neoforge-1.21.1:${geckolib_version}") { transitive = false }
+        }
+    }
+
     // Confluence: Otherworld is read by reflection, so it's not compiled against. `-PwithConfluence`
     // adds it and the libraries it needs to the dev client; `-PconfluenceRuntimeVersion=1.1.4` runs another version.
     if (project.hasProperty('withConfluence')) {

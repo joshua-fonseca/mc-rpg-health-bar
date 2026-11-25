@@ -1,6 +1,6 @@
 ![The HUD with vanilla armor and hunger icons](https://raw.githubusercontent.com/joshua-fonseca/mc-rpg-health-bar/main/docs/images/hud-vanilla-icons.png)
 
-My original plan was to only replace the vanilla hearts with an RPG-style health bar and add a similar mana bar when Iron's Spells 'n Spellbooks is installed, but now this has turned into a full-blown GUI customization mod, optionally supporting BOTH Iron's and Confluence, with the goal of looking not too far from Vanilla.
+My original plan was to only replace the vanilla hearts with an RPG-style health bar and add a similar mana bar when Iron's Spells 'n Spellbooks is installed, but now this has turned into a full-blown GUI customization mod, optionally supporting Iron's, Confluence and Ars Nouveau, with the goal of looking not too far from Vanilla.
 
 ***
 
@@ -8,7 +8,7 @@ My original plan was to only replace the vanilla hearts with an RPG-style health
 
 *   **Health bar** that goes beyond the vanilla max of 20 for mods that increase max health (`32/40`).
 *   **Absorption** fills the health bar in yellow, and the text shows it separately (`15.5+4/20`), added in (`19.5/20`), or as `+4` at the bar's right end.
-*   **Mana bar support:** Supports mana bars from Iron's Spells 'n Spellbooks and/or Confluence: Otherworld, in the same style as the health bar.
+*   **Mana bar support:** Supports mana bars from Iron's Spells 'n Spellbooks, Confluence: Otherworld and/or Ars Nouveau, in the same style as the health bar.
 *   **Status colors:** the health bar changes when poisoned, withered or frozen. The hunger bar changes with the Hunger effect. On 1.21.1, heart colors added by other mods are followed too.
 *   **Armor and hunger** can be the vanilla icons (default), thin bars, or hidden.
 *   **AppleSkin support:** saturation is outlined in yellow on the hunger bar, and held food's value flashes on it, like AppleSkin's preview on the icons.
@@ -55,12 +55,14 @@ My original plan was to only replace the vanilla hearts with an RPG-style health
 | <strong>Iron's Spells 'n Spellbooks</strong> | 3.4.0+                                                                                                                                                           | 1.1.5+ (spell cost preview: 3.1.4+)                                                                                                           |
 | <strong>AppleSkin</strong>                   | 3.0.4+                                                                                                                                                           | 2.5.0+                                                                                                                                        |
 | <strong>Confluence: Otherworld</strong>      | 1.1.4+                                                                                                                                                           | 1.2.9+                                                                                                                                        |
+| <strong>Ars Nouveau</strong>                 | 5.8.2+                                                                                                                                                           | 4.2.4+                                                                                                                                        |
 | <strong>Double Hotbar</strong>               | Any (<a href="https://www.curseforge.com/projects/1563792" target="_blank" rel="nofollow">Double Hotbar NeoForge</a>, unofficial port by <em>retrospective</em>) | 1.3.2.1+ (<a href="https://www.curseforge.com/minecraft/mc-mods/double-hotbar" target="_blank" rel="nofollow">Double Hotbar</a> by sidezbros) |
 
 *   **Client-side only:** servers don't need it, and it works on servers that don't have it.
 *   **[Iron's Spells 'n Spellbooks](https://www.curseforge.com/projects/855414) by Iron431 and Lab3:** optional. When it's installed you get the mana bar and the spell cost preview, and Iron's own mana bar is hidden.
 *   **[AppleSkin](https://www.curseforge.com/minecraft/mc-mods/appleskin) by squeek502:** optional. When it's installed, saturation is outlined in yellow on the hunger bar and held food's value flashes on it; with the vanilla hunger icons, AppleSkin's own overlays move with them.
 *   **[Confluence: Otherworld](https://www.curseforge.com/minecraft/mc-mods/confluence):** optional. When it's installed its mana gets its own darker blue bar, below Iron's when both are installed; with Confluence's convertIronsSpellMana on (1.21.1 only: Confluence's Forge build doesn't use it), Iron's spells use Confluence's mana, so only that bar shows, with the spell cost preview. Confluence's own health and mana displays are hidden while this mod is on (in soul mode its soul display stays); with Armor or Hunger on Default, Confluence's own armor and hunger displays show, if they're on in its config. They move with the HUD, like vanilla's. On 1.20.1, Confluence needs a PortLib version that matches it; see Confluence's page.
+*   **[Ars Nouveau](https://www.curseforge.com/minecraft/mc-mods/ars-nouveau) by baileyholl:** optional. When it's installed, Ars Nouveau's mana gets its own purple bar, like its own, below the other mana bars, and Ars's own mana bar is hidden. Ars Nouveau and Iron's Spells don't share mana, even with both installed, so each keeps its own bar. With Confluence's convertArsNouveauMana on (1.21.1 only), Ars's spells use Confluence's mana, so Ars's bar isn't shown.
 *   **Double Hotbar:** compatible with [Double Hotbar](https://www.curseforge.com/minecraft/mc-mods/double-hotbar) by sidezbros on 1.20.1, and its unofficial NeoForge port, [Double Hotbar NeoForge](https://www.curseforge.com/projects/1563792) by \_retrospective\_, on 1.21.1. Open the **HUD Editor…** and drag the HUD up above the second hotbar once; the bars, XP bar and level move together and stay there, and the item name stays above them.
 *   Works with other mods that draw near the hotbar the same way: drag the HUD, or just the pieces in the way, clear of them.
 *   Air bubbles and mount health stay vanilla, stacked above hunger or below it.
