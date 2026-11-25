@@ -26,7 +26,7 @@ public final class ArsNouveauCompat {
     /** How long Ars's red flash lasts, in ticks, from the moment a spell fails: ClientInfo.redOverlayTicks starts here. */
     private static final float RED_TICKS = 35.0F;
     /** Ours fades out a little faster than Ars's, over this many ticks from the moment the spell fails. */
-    private static final float RED_FADE_TICKS = 24.0F;
+    private static final float RED_FADE_TICKS = 20.0F;
 
     private static final boolean INSTALLED = ModList.get().isLoaded(MODID);
     private static boolean available = INSTALLED;
