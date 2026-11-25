@@ -266,7 +266,7 @@ public enum ManaSource {
 
     /**
      * {@code text} with each mana mod's name in its {@link #textColor}, wherever it appears
-     * (labels, tooltips, notes), keeping the rest of the text's styles.
+     * (tooltips, Compatibility notes), keeping the rest of the text's styles.
      */
     public static Component colorNames(Component text) {
         Map<String, Integer> colors = new HashMap<>();
