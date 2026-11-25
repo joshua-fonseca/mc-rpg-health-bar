@@ -8,7 +8,7 @@ import com.joshuafonseca.rpghealthbar.client.XpBarOverlay;
 import com.joshuafonseca.rpghealthbar.client.XpBarRenderer;
 import com.joshuafonseca.rpghealthbar.client.screen.RpgConfigScreen;
 import com.joshuafonseca.rpghealthbar.compat.ConfluenceCompat;
-import com.joshuafonseca.rpghealthbar.compat.IronsSpellsCompat;
+import com.joshuafonseca.rpghealthbar.compat.ManaSource;
 import com.joshuafonseca.rpghealthbar.config.ClientConfig;
 import com.joshuafonseca.rpghealthbar.config.HalfBarMode;
 import com.joshuafonseca.rpghealthbar.config.HudPiece;
@@ -106,10 +106,8 @@ final class ClientSetup {
                 || id.equals(ConfluenceCompat.HEALTH_LAYER)
                 || (id.equals(ConfluenceCompat.ARMOR_LAYER) && armorReplaced)
                 || (id.equals(ConfluenceCompat.FOOD_LAYER) && hungerReplaced)
-                || id.equals(IronsSpellsCompat.MANA_OVERLAY)
-                // Our bar shows its mana; in soul mode its display shows soul instead, so it's kept.
-                || (id.equals(ConfluenceCompat.MANA_LAYER) && ConfluenceCompat.isAvailable()
-                        && !ConfluenceCompat.isSoulMode(Minecraft.getInstance().player))
+                // The mana mods' own displays, which our bars replace.
+                || ManaSource.hidesAnyOwnDisplay(id)
                 || (id.equals(VanillaGuiOverlay.ARMOR_LEVEL.id()) && armorReplaced)
                 || (id.equals(VanillaGuiOverlay.FOOD_LEVEL.id()) && hungerReplaced)) {
             event.setCanceled(true);

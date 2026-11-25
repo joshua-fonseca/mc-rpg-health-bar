@@ -11,7 +11,7 @@ import com.joshuafonseca.rpghealthbar.client.StatusColors;
 import com.joshuafonseca.rpghealthbar.client.XpBarOverlay;
 import com.joshuafonseca.rpghealthbar.client.XpBarRenderer;
 import com.joshuafonseca.rpghealthbar.compat.IronsSpellsCompat;
-import com.joshuafonseca.rpghealthbar.compat.ManaBars;
+import com.joshuafonseca.rpghealthbar.compat.ManaSource;
 import com.joshuafonseca.rpghealthbar.config.AirPosition;
 import com.joshuafonseca.rpghealthbar.config.ClientConfig;
 import com.joshuafonseca.rpghealthbar.config.HudPiece;
@@ -85,7 +85,7 @@ final class ConfigPreview {
         graphics.pose().scale(scale, scale, 1);
         graphics.pose().translate(-(preview.left() + preview.right()) / 2.0F, -(preview.top() + preview.bottom()) / 2.0F, 0);
 
-        HudValues values = new HudValues(HEALTH, 20, ABSORPTION, ARMOR, FOOD, 0, null, ManaBars.placeholderIrons(60), ManaBars.placeholderConfluence(60),
+        HudValues values = new HudValues(HEALTH, 20, ABSORPTION, ARMOR, FOOD, 0, null, ManaSource.placeholders(60),
                 StatusColors.HEALTH, StatusColors.HUNGER, false);
         HudRenderer.render(graphics, font, layout, values, frame.showArmor(), frame.showHunger(), HudPosition.Pieces.NONE, false);
 
