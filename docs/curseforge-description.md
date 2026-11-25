@@ -61,13 +61,13 @@ Selecting a spell via spell wheel, the mana bar blinks according to how much man
 
 #### Compatibility for those using multiple magic mods together and want unified mana 
 
-|                | **Iron's**                                                                                         | **Confluence**                                                                                     | **Ars**                                                                                            |
-| -------------- | -------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
-| **Iron's**     | —                                                                                                  | Supported on 1.21.1: turn on `convertIronsSpellMana` in Confluence's config. Unsupported on 1.20.1 | Unsupported*                                                                                       |
-| **Confluence** | Supported on 1.21.1: turn on `convertIronsSpellMana` in Confluence's config. Unsupported on 1.20.1 | —                                                                                                  | Supported on 1.21.1: turn on `convertArsNouveauMana` in Confluence's config. Unsupported on 1.20.1 |
-| **Ars**        | Unsupported*                                                                                       | Supported on 1.21.1: turn on `convertArsNouveauMana` in Confluence's config. Unsupported on 1.20.1 | —                                                                                                  |
+|                | **Iron's**                                                                                       | **Confluence**                                                                                   | **Ars**                                                                                          |
+| -------------- | ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------ |
+| **Iron's**     | —                                                                                                | 1.21.1: Supported. Turn on `convertIronsSpellMana` in Confluence's config<br>1.20.1: Unsupported | Unsupported                                                                                      |
+| **Confluence** | 1.21.1: Supported. Turn on `convertIronsSpellMana` in Confluence's config<br>1.20.1: Unsupported | —                                                                                                | 1.21.1: Supported. Turn on `convertArsNouveauMana` in Confluence's config<br>1.20.1: Unsupported |
+| **Ars**        | Unsupported                                                                                      | 1.21.1: Supported. Turn on `convertArsNouveauMana` in Confluence's config<br>1.20.1: Unsupported | —                                                                                                |
 
-\* means I'm aware of a compatibility mod but RPG Health Bar does not support them
+Note: compatibility mods may exist to have unified mana but RPG Health Bar does not support them
 
 ## Settings
 
