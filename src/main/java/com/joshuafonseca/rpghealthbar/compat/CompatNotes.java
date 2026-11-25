@@ -74,14 +74,15 @@ public final class CompatNotes {
         }
         // Not a problem: Confluence (NeoForge) has its own options to take over Iron's and Ars's mana.
         // One note gives a line for each pair whose bars are still separate, then where the options are.
+        // A setting that can't be read is left out: it may already be on.
         MutableComponent canShare = Component.empty();
         int options = 0;
-        if (ConfluenceCompat.isAvailable() && ManaSource.IRONS.shown()) {
+        if (ConfluenceCompat.readsConvertsIronsMana() && ManaSource.IRONS.shown()) {
             options++;
             canShare.append(Component.translatable("rpghealthbar.config.compat.canShareMana",
                     ManaSource.IRONS.displayName(), ManaSource.CONFLUENCE.displayName(), "convertIronsSpellMana")).append("\n");
         }
-        if (ConfluenceCompat.isAvailable() && ManaSource.ARS.shown()) {
+        if (ConfluenceCompat.readsConvertsArsMana() && ManaSource.ARS.shown()) {
             options++;
             canShare.append(Component.translatable("rpghealthbar.config.compat.canShareMana",
                     ManaSource.CONFLUENCE.displayName(), ManaSource.ARS.displayName(), "convertArsNouveauMana")).append("\n");

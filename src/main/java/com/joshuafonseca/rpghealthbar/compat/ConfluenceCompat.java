@@ -88,6 +88,21 @@ public final class ConfluenceCompat {
     }
 
     /**
+     * Whether convertIronsSpellMana can be read. If not, it's treated as off, so the notes don't
+     * suggest turning it on: it may already be.
+     */
+    public static boolean readsConvertsIronsMana() {
+        convertsIronsMana();
+        return isAvailable() && convertsIronsMana != null;
+    }
+
+    /** Whether convertArsNouveauMana can be read; see {@link #readsConvertsIronsMana}. */
+    public static boolean readsConvertsArsMana() {
+        convertsArsMana();
+        return isAvailable() && convertsArsMana != null;
+    }
+
+    /**
      * Whether the server has Confluence's convertArsNouveauMana on: Ars Nouveau's spells then use
      * Confluence's mana (Ars's max mana adds to Confluence's), and Confluence hides Ars's mana bar.
      */
