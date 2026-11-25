@@ -1,6 +1,7 @@
 package com.joshuafonseca.rpghealthbar.compat;
 
 import com.joshuafonseca.rpghealthbar.RpgHealthBar;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import javax.annotation.Nullable;
 import net.minecraft.resources.ResourceLocation;
@@ -22,6 +23,9 @@ public final class ArsNouveauCompat {
 
     private static final String CAPABILITIES = "com.hollingsworth.arsnouveau.setup.registry.CapabilityRegistry";
     private static final String MANA_CAP = "com.hollingsworth.arsnouveau.api.mana.IManaCap";
+    private static final String CLIENT_INFO = "com.hollingsworth.arsnouveau.client.ClientInfo";
+    /** How long Ars's red flash lasts, in ticks, from the moment a spell fails: ClientInfo.redOverlayTicks starts here. */
+    private static final float RED_TICKS = 35.0F;
 
     private static final boolean INSTALLED = ModList.get().isLoaded(MODID);
     private static boolean available = INSTALLED;
@@ -32,6 +36,13 @@ public final class ArsNouveauCompat {
     private static Method currentMana;
     @Nullable
     private static Method maxMana;
+    /** What Ars's own bar draws besides the mana, from its client state; optional, so missing ones are just skipped. */
+    @Nullable
+    private static Field reservedMana;
+    @Nullable
+    private static Field redTicks;
+    @Nullable
+    private static Field redMana;
 
     private ArsNouveauCompat() {
     }
@@ -60,7 +71,11 @@ public final class ArsNouveauCompat {
             if (cap == null) {
                 return null;
             }
-            return new Mana((float) Math.floor(((Number) currentMana.invoke(cap)).doubleValue()), ((Number) maxMana.invoke(cap)).floatValue(), 0);
+            float reserved = reservedMana == null ? 0 : Math.max(0, reservedMana.getFloat(null));
+            int ticks = redTicks == null || redMana == null ? 0 : redTicks.getInt(null);
+            float failedCost = ticks > 0 ? redMana.getFloat(null) : 0;
+            return new Mana((float) Math.floor(((Number) currentMana.invoke(cap)).doubleValue()), ((Number) maxMana.invoke(cap)).floatValue(), 0,
+                    reserved, failedCost, Math.min(1, ticks / RED_TICKS));
         } catch (ReflectiveOperationException | RuntimeException | LinkageError e) {
             disable("read mana", e);
             return null;
@@ -84,6 +99,19 @@ public final class ArsNouveauCompat {
             maxMana = cap.getMethod("getMaxMana");
         } catch (ReflectiveOperationException | RuntimeException | LinkageError e) {
             disable("find its mana", e);
+            return;
+        }
+        reservedMana = optionalField("reservedOverlayMana");
+        redTicks = optionalField("redOverlayTicks");
+        redMana = optionalField("redOverlayMana");
+    }
+
+    @Nullable
+    private static Field optionalField(String name) {
+        try {
+            return Class.forName(CLIENT_INFO).getField(name);
+        } catch (ReflectiveOperationException | RuntimeException | LinkageError e) {
+            return null;
         }
     }
 
