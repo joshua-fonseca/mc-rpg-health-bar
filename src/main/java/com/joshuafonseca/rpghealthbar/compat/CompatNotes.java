@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.neoforged.fml.ModList;
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 
@@ -83,14 +84,19 @@ public final class CompatNotes {
         }
         // Not a problem either: two mana mods with no option of their own to share mana each keep
         // their own bar. Compatibility mods that merge them aren't accounted for, so say so.
+        // One note lists every such pair, a line each, then says it once.
         List<ManaSource> manaMods = Arrays.stream(ManaSource.values()).filter(ManaSource::available).toList();
+        MutableComponent pairs = Component.empty();
         for (int i = 0; i < manaMods.size(); i++) {
             for (int j = i + 1; j < manaMods.size(); j++) {
                 if (!ManaSource.canUnify(manaMods.get(i), manaMods.get(j))) {
-                    notes.add(new Note(Component.translatable("rpghealthbar.config.compat.noUnifiedMana",
-                            manaMods.get(i).displayName(), manaMods.get(j).displayName()), false));
+                    pairs.append(Component.translatable("rpghealthbar.config.compat.noUnifiedMana",
+                            manaMods.get(i).displayName(), manaMods.get(j).displayName())).append("\n");
                 }
             }
+        }
+        if (!pairs.getSiblings().isEmpty()) {
+            notes.add(new Note(pairs.append(Component.translatable("rpghealthbar.config.compat.noUnifiedManaMods")), false));
         }
         return notes;
     }

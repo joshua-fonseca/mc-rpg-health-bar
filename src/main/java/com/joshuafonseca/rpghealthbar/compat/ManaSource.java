@@ -6,11 +6,17 @@ import com.joshuafonseca.rpghealthbar.config.ClientConfig;
 import com.joshuafonseca.rpghealthbar.config.HudPiece;
 import java.util.Arrays;
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.common.ModConfigSpec;
@@ -137,6 +143,9 @@ public enum ManaSource {
         }
     };
 
+    /** How far a name's color is lightened from its bar color toward white. */
+    private static final float NAME_LIGHTEN = 0.35F;
+
     private final HudPiece piece;
     private final String nameKey;
     private final int color;
@@ -241,6 +250,46 @@ public enum ManaSource {
 
     public int costColor() {
         return costColor;
+    }
+
+    /** Its name in the config screen's text: its bar color, lightened to read well on the dark background. */
+    public int textColor() {
+        int r = (this.color >> 16) & 0xFF;
+        int g = (this.color >> 8) & 0xFF;
+        int b = this.color & 0xFF;
+        return (lighten(r) << 16) | (lighten(g) << 8) | lighten(b);
+    }
+
+    private static int lighten(int channel) {
+        return Math.round(channel + (255 - channel) * NAME_LIGHTEN);
+    }
+
+    /**
+     * {@code text} with each mana mod's name in its {@link #textColor}, wherever it appears
+     * (labels, tooltips, notes), keeping the rest of the text's styles.
+     */
+    public static Component colorNames(Component text) {
+        Map<String, Integer> colors = new HashMap<>();
+        StringBuilder names = new StringBuilder();
+        for (ManaSource source : values()) {
+            String name = source.displayName().getString();
+            colors.put(name, source.textColor());
+            names.append(names.isEmpty() ? "" : "|").append(Pattern.quote(name));
+        }
+        Pattern pattern = Pattern.compile("\\b(" + names + ")\\b");
+        MutableComponent out = Component.empty();
+        text.visit((style, part) -> {
+            Matcher matcher = pattern.matcher(part);
+            int last = 0;
+            while (matcher.find()) {
+                out.append(Component.literal(part.substring(last, matcher.start())).withStyle(style));
+                out.append(Component.literal(matcher.group()).withStyle(style.withColor(colors.get(matcher.group()))));
+                last = matcher.end();
+            }
+            out.append(Component.literal(part.substring(last)).withStyle(style));
+            return Optional.empty();
+        }, Style.EMPTY);
+        return out;
     }
 
     /** The mod's name, as in "(Iron's + Confluence detected)". */

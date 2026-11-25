@@ -97,6 +97,8 @@ public class RpgConfigScreen extends Screen {
     private static final int COMPAT_GAP = 6;
     /** How far the notes are indented: under the label, past the + button. */
     private static final int NOTE_INDENT = BUTTON_HEIGHT + COMPAT_GAP;
+    /** Space between one compatibility note and the next. */
+    private static final int BETWEEN_NOTES = 6;
 
     /** The settings this screen changes, put back by Back. Item Name and HUD Editor save on their own pages. */
     private static final List<ModConfigSpec.ConfigValue<?>> EDITED = edited();
@@ -178,12 +180,27 @@ public class RpgConfigScreen extends Screen {
         }
     }
 
-    /** A note, wrapped to the list's width; a long one goes on over as many rows as it needs. */
-    private void addNote(OptionList list, Component note, int color) {
-        List<FormattedCharSequence> lines = this.font.split(note, list.getRowWidth() - NOTE_INDENT);
-        int rows = Math.max(1, Mth.positiveCeilDiv(NoteRow.LONG_TOP + lines.size() * this.font.lineHeight, ROW_HEIGHT));
+    /**
+     * The notes, each wrapped to the list's width, laid out one after another with the same gap
+     * between them, then split over as many rows as they need. Laying them out together keeps the
+     * gaps even at any width, instead of each note rounding up to whole rows.
+     */
+    private void addNotes(OptionList list, List<Component> notes, List<Integer> colors) {
+        List<NoteLine> lines = new ArrayList<>();
+        // The first line sits where a one-line note centered in a row would.
+        int y = (BUTTON_HEIGHT - this.font.lineHeight) / 2 + 1;
+        for (int i = 0; i < notes.size(); i++) {
+            if (i > 0) {
+                y += BETWEEN_NOTES;
+            }
+            for (FormattedCharSequence line : this.font.split(ManaSource.colorNames(notes.get(i)), list.getRowWidth() - NOTE_INDENT)) {
+                lines.add(new NoteLine(line, y, colors.get(i)));
+                y += this.font.lineHeight;
+            }
+        }
+        int rows = Math.max(1, Mth.positiveCeilDiv(y + NoteRow.BOTTOM, ROW_HEIGHT));
         for (int row = 0; row < rows; row++) {
-            list.addEntry(new NoteRow(lines, row, color));
+            list.addEntry(new NoteRow(lines, row));
         }
     }
 
@@ -204,12 +221,17 @@ public class RpgConfigScreen extends Screen {
             rebuildOptions();
         }));
         if (this.compatOpen) {
+            List<Component> texts = new ArrayList<>();
+            List<Integer> colors = new ArrayList<>();
             if (!CompatNotes.anyProblem(notes)) {
-                addNote(list, Component.translatable("rpghealthbar.config.compat.none"), COMPAT_OK_COLOR);
+                texts.add(Component.translatable("rpghealthbar.config.compat.none"));
+                colors.add(COMPAT_OK_COLOR);
             }
             for (CompatNotes.Note note : notes) {
-                addNote(list, note.text(), note.problem() ? COMPAT_PROBLEM_COLOR : COMPAT_INFO_COLOR);
+                texts.add(note.text());
+                colors.add(note.problem() ? COMPAT_PROBLEM_COLOR : COMPAT_INFO_COLOR);
             }
+            addNotes(list, texts, colors);
         }
         this.notesRowWidth = list.getRowWidth();
 
@@ -306,7 +328,7 @@ public class RpgConfigScreen extends Screen {
 
     /** An option's name with a colon, as written left of its button. */
     private static Component label(String key) {
-        return Component.translatable("rpghealthbar.config." + key).append(":");
+        return ManaSource.colorNames(Component.translatable("rpghealthbar.config." + key).append(":"));
     }
 
     /** A "Name: [value]" row, whose button cycles through the values and saves each change. */
@@ -356,13 +378,13 @@ public class RpgConfigScreen extends Screen {
     /** "(Iron's + Confluence detected)", or that none was. */
     private static Component manaDetected(List<ManaSource> found) {
         if (found.isEmpty()) {
-            return Component.translatable("rpghealthbar.config.manaNotDetected");
+            return ManaSource.colorNames(Component.translatable("rpghealthbar.config.manaNotDetected"));
         }
         MutableComponent names = found.get(0).displayName().copy();
         for (ManaSource source : found.subList(1, found.size())) {
             names.append(" + ").append(source.displayName());
         }
-        return Component.translatable("rpghealthbar.config.manaDetected", names);
+        return ManaSource.colorNames(Component.translatable("rpghealthbar.config.manaDetected", names));
     }
 
     /** @param legacyShown the setting from before {@code value}, or null; it's turned back on with any choice */
@@ -390,7 +412,7 @@ public class RpgConfigScreen extends Screen {
             }
             text.append(Component.literal(": ").withStyle(ChatFormatting.GOLD)).append(Component.translatable(valueKey));
         }
-        return Tooltip.create(text);
+        return Tooltip.create(ManaSource.colorNames(text));
     }
 
     @Override
@@ -733,35 +755,30 @@ public class RpgConfigScreen extends Screen {
         }
     }
 
-    /** One compatibility note, under the notes' label, wrapped onto a second line if it's long. */
-    /**
-     * One row of a note. A note that fits a row is centered in it; a longer one goes on over the
-     * next rows with even line spacing, each row drawing the lines that start in it.
-     */
-    private static class NoteRow extends Row {
-        /** Where a note longer than one row starts, from the top of its first row. */
-        static final int LONG_TOP = 2;
-        private final List<FormattedCharSequence> lines;
-        private final int row;
-        private final int color;
+    /** One wrapped line of a note, {@code y} from the top of the notes' first row. */
+    private record NoteLine(FormattedCharSequence text, int y, int color) {
+    }
 
-        NoteRow(List<FormattedCharSequence> lines, int row, int color) {
+    /** One row of the notes, drawing the lines that start in it. */
+    private static class NoteRow extends Row {
+        /** Space kept under the last note before the next row. */
+        static final int BOTTOM = 2;
+        private final List<NoteLine> lines;
+        private final int row;
+
+        NoteRow(List<NoteLine> lines, int row) {
             this.lines = lines;
             this.row = row;
-            this.color = color;
         }
 
         @Override
         public void render(GuiGraphics graphics, int index, int top, int left, int width, int height, int mouseX, int mouseY,
                            boolean hovering, float partialTick) {
             Font font = Minecraft.getInstance().font;
-            int textHeight = this.lines.size() * font.lineHeight;
-            int start = textHeight <= BUTTON_HEIGHT ? (BUTTON_HEIGHT - textHeight) / 2 + 1 : LONG_TOP;
             int rowTop = this.row * ROW_HEIGHT;
-            for (int i = 0; i < this.lines.size(); i++) {
-                int y = start + i * font.lineHeight;
-                if (y >= rowTop && y < rowTop + ROW_HEIGHT) {
-                    graphics.drawString(font, this.lines.get(i), left + NOTE_INDENT, top - rowTop + y, this.color);
+            for (NoteLine line : this.lines) {
+                if (line.y() >= rowTop && line.y() < rowTop + ROW_HEIGHT) {
+                    graphics.drawString(font, line.text(), left + NOTE_INDENT, top - rowTop + line.y(), line.color());
                 }
             }
         }
