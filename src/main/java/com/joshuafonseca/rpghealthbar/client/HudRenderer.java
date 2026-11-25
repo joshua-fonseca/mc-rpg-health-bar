@@ -30,6 +30,10 @@ public final class HudRenderer {
     private static final long FOOD_PREVIEW_FLASH_MILLIS = 1600;
     /** A spell's cost blinks between the mana color and its cost color, once per period. */
     private static final long COST_PULSE_MILLIS = 800;
+    /** Ars Nouveau's reserved mana, a dark section at the bar's right end like on Ars's own bar. */
+    private static final int RESERVED_MANA_COLOR = 0xFF101010;
+    /** The cost of a spell that just failed for lack of mana, flashed like on Ars's own bar. */
+    private static final int FAILED_COST_COLOR = 0xFFFF2020;
     private static final BarTrail HEALTH_TRAIL = new BarTrail();
     /** Absorption grows in from the left when gained, rather than appearing at once. */
     private static final BarGrow ABSORPTION_GROW = new BarGrow();
@@ -245,15 +249,26 @@ public final class HudRenderer {
         int x = layout.x();
         BarRenderer.drawTrack(graphics, x, y, width, HudLayout.MAIN_BAR_HEIGHT, true);
         if (maxMana > 0) {
-            BarRenderer.drawFill(graphics, x, y, width, HudLayout.MAIN_BAR_HEIGHT, true, mana / maxMana, color, true);
+            // With reserved mana (Ars Nouveau), the bar also holds it at its right end, so the rest is scaled to fit.
+            float reserved = values.reserved();
+            float scale = maxMana * (1 + reserved);
+            BarRenderer.drawFill(graphics, x, y, width, HudLayout.MAIN_BAR_HEIGHT, true, mana / scale, color, true);
             if (live) {
                 float trail = MANA_TRAILS.computeIfAbsent(source, s -> new BarTrail()).update(mana);
-                BarRenderer.drawSection(graphics, x, y, width, HudLayout.MAIN_BAR_HEIGHT, true, mana / maxMana, trail / maxMana, source.lostColor(), false, 1.0F);
+                BarRenderer.drawSection(graphics, x, y, width, HudLayout.MAIN_BAR_HEIGHT, true, mana / scale, trail / scale, source.lostColor(), false, 1.0F);
+            }
+            if (reserved > 0) {
+                // As on Ars's bar: the reserved share of max mana, dark, over the bar's right end.
+                BarRenderer.drawSection(graphics, x, y, width, HudLayout.MAIN_BAR_HEIGHT, true, Math.max(0, 1 - reserved), 1, RESERVED_MANA_COLOR, false, 1.0F);
             }
             float cost = values.hoveredCost();
             if (cost > 0) {
                 // The mana the hovered spell would use, pulsing between normal and dark blue.
-                BarRenderer.drawSection(graphics, x, y, width, HudLayout.MAIN_BAR_HEIGHT, true, (mana - cost) / maxMana, mana / maxMana, source.costColor(), true, pulse(COST_PULSE_MILLIS));
+                BarRenderer.drawSection(graphics, x, y, width, HudLayout.MAIN_BAR_HEIGHT, true, (mana - cost) / scale, mana / scale, source.costColor(), true, pulse(COST_PULSE_MILLIS));
+            }
+            if (values.failedCost() > 0 && values.failedAlpha() > 0) {
+                // A spell just failed for lack of mana (Ars Nouveau): its cost flashes red from the left end, fading out, as on Ars's bar.
+                BarRenderer.drawSection(graphics, x, y, width, HudLayout.MAIN_BAR_HEIGHT, true, 0, Math.min(1, values.failedCost() / maxMana), FAILED_COST_COLOR, false, values.failedAlpha());
             }
         }
         if (text != BarText.OFF) {
