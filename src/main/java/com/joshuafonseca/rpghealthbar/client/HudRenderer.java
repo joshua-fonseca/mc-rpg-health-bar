@@ -13,6 +13,7 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.util.Mth;
 import java.util.EnumMap;
+import java.util.List;
 import java.util.Map;
 
 /** Draws the bar group at a layout. Used by the HUD layer and the position editor's preview. */
@@ -67,12 +68,16 @@ public final class HudRenderer {
             inPiece(graphics, pieces, HudPiece.HUNGER, () -> renderHunger(graphics, layout, values));
         }
         inPiece(graphics, pieces, HudPiece.HEALTH, () -> renderHealth(graphics, font, layout, values, live));
-        // The mana bars stack in ManaSource's order, each in the next row.
-        int row = 0;
-        for (Map.Entry<ManaSource, Mana> entry : values.mana().entrySet()) {
-            ManaSource source = entry.getKey();
-            int y = layout.manaY(row++);
-            inPiece(graphics, pieces, source.piece(), () -> renderMana(graphics, font, layout, y, source, entry.getValue(), live));
+        // Each mana bar in its own row from the layout, so one whose mana couldn't be read leaves
+        // its row empty instead of the bars below moving up out of their pieces' places.
+        List<ManaSource> manaBars = ManaSource.shownBars();
+        for (int row = 0; row < manaBars.size(); row++) {
+            ManaSource source = manaBars.get(row);
+            Mana mana = values.mana().get(source);
+            if (mana != null) {
+                int y = layout.manaY(row);
+                inPiece(graphics, pieces, source.piece(), () -> renderMana(graphics, font, layout, y, source, mana, live));
+            }
         }
     }
 
