@@ -2,6 +2,7 @@ package com.joshuafonseca.rpghealthbar.compat;
 
 import com.joshuafonseca.rpghealthbar.client.NumberText;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -80,9 +81,16 @@ public final class CompatNotes {
         if (ConfluenceCompat.isAvailable() && ManaSource.ARS.shown()) {
             notes.add(new Note(Component.translatable("rpghealthbar.config.compat.arsUnifiedMana"), false));
         }
-        // Not a problem either: Ars Nouveau and Iron's Spells never share mana, so both bars show.
-        if (IronsSpellsCompat.isAvailable() && ArsNouveauCompat.isAvailable()) {
-            notes.add(new Note(Component.translatable("rpghealthbar.config.compat.arsSeparateMana"), false));
+        // Not a problem either: two mana mods with no option of their own to share mana each keep
+        // their own bar. Compatibility mods that merge them aren't accounted for, so say so.
+        List<ManaSource> manaMods = Arrays.stream(ManaSource.values()).filter(ManaSource::available).toList();
+        for (int i = 0; i < manaMods.size(); i++) {
+            for (int j = i + 1; j < manaMods.size(); j++) {
+                if (!ManaSource.canUnify(manaMods.get(i), manaMods.get(j))) {
+                    notes.add(new Note(Component.translatable("rpghealthbar.config.compat.noUnifiedMana",
+                            manaMods.get(i).displayName(), manaMods.get(j).displayName()), false));
+                }
+            }
         }
         return notes;
     }

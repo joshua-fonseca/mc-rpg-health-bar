@@ -79,6 +79,12 @@ public enum ManaSource {
             return ConfluenceCompat.read(ironsConverted() ? IronsSpellsCompat.hoveredCost(player) : 0);
         }
 
+        /** Its convertIronsSpellMana and convertArsNouveauMana (1.1.4+). */
+        @Override
+        protected boolean hasUnifiedManaOption(ManaSource other) {
+            return other == IRONS || other == ARS;
+        }
+
         /** Confluence starts players at 20 mana. */
         @Override
         public Mana placeholder(float percent) {
@@ -181,6 +187,19 @@ public enum ManaSource {
 
     /** A bar {@code percent} full, for previews when there's no player to read from. */
     public abstract Mana placeholder(float percent);
+
+    /**
+     * Whether this mod has its own option to share mana with {@code other}. Compatibility mods
+     * that do it aren't counted: this mod doesn't account for them.
+     */
+    protected boolean hasUnifiedManaOption(ManaSource other) {
+        return false;
+    }
+
+    /** Whether either mod has its own option to share mana with the other. */
+    public static boolean canUnify(ManaSource a, ManaSource b) {
+        return a.hasUnifiedManaOption(b) || b.hasUnifiedManaOption(a);
+    }
 
     /** Whether to hide the GUI layer {@code layer}, the mod's own mana display, while this mod's on. */
     public abstract boolean hidesOwnDisplay(ResourceLocation layer);

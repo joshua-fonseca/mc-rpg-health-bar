@@ -34,7 +34,7 @@
   "rpghealthbar.config.compat.unifiedMana": "Seeing two mana bars with Iron's and Confluence? Confluence's unified mana is off, so Iron's and Confluence each keep their own. For one shared bar, turn on convertIronsSpellMana in config/confluence-common.toml (on a server, in the server's config).",
   "rpghealthbar.config.compat.arsUnifiedMana": "Confluence has built-in Ars compatibility (Confluence 1.1.4+). For one shared bar, turn on convertArsNouveauMana in config/confluence-common.toml (on a server, in the server's config): Ars's spells then use Confluence's mana.",
   "rpghealthbar.config.compat.arsNegativeMana": "Confluence's max mana is %s: a Confluence bug with Ars installed. Confluence adds Ars's max mana to its own (even with convertArsNouveauMana off) and counted it before Ars had set it.",
-  "rpghealthbar.config.compat.arsSeparateMana": "Ars and Iron's each keep their own mana, even with both installed, so each has its own bar.",
+  "rpghealthbar.config.compat.noUnifiedMana": "%s and %s don't include options for unified mana, so each keeps its own bar. Compatibility mods that merge them exist, but RPG Health Bar doesn't account for them, and with one installed the mana bars may behave unexpectedly.",
   "rpghealthbar.config.preview": "Preview",
   "rpghealthbar.config.preview.on": "Preview: On",
   "rpghealthbar.config.preview.off": "Preview: Off",
