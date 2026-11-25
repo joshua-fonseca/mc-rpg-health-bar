@@ -54,10 +54,10 @@ My original plan was to only replace the vanilla hearts with an RPG-style health
 
 #### Iron's Spells: what spell cost preview looks like (honestly you aren't missing much)
 
+Selecting a spell via spell wheel, the mana bar blinks according to how much mana that spell costs.
+
 ![Choosing a spell in Iron's spell wheel shows the mana it costs on the mana bar, then casting it uses that mana](https://raw.githubusercontent.com/joshua-fonseca/mc-rpg-health-bar/main/docs/images/spell-cast.gif)
 
-**So, what are we looking at, exactly?**
-Selecting a spell via spell wheel, the mana bar blinks according to how much mana that spell costs.
 
 #### Compatibility for those using multiple magic mods together and want unified mana 
 
@@ -82,10 +82,6 @@ Note: compatibility mods may exist to have unified mana, but there are too many 
 *   **On/off switch:** turn the whole mod off for a fully vanilla HUD, and back on, without losing your settings.
 *   **Live preview:** the config screen can show the HUD beside the options, drawn as your settings would, so you see each change without leaving the screen.
 *   **Everything in game:** changes show on the HUD as you make them, no restart. Save Settings keeps them, and leaving without saving asks first.
-
-#### I will not judge you for your layouts even if it looks like this:
-
-![A chaotic layout: the health, mana and XP bars stretched and scattered across the screen at odd widths](https://raw.githubusercontent.com/joshua-fonseca/mc-rpg-health-bar/main/docs/images/layout-chaos.png)
 
 #### The config screen
 
@@ -114,3 +110,7 @@ Note: compatibility mods may exist to have unified mana, but there are too many 
 #### Example layout: health and mana in the top-left
 
 ![Another layout: health and mana in the top-left corner, armor and hunger just above the XP bar](https://raw.githubusercontent.com/joshua-fonseca/mc-rpg-health-bar/main/docs/images/layout-top-left.png)
+
+#### I will not judge you for your layouts even if it looks like this:
+
+![A chaotic layout: the health, mana and XP bars stretched and scattered across the screen at odd widths](https://raw.githubusercontent.com/joshua-fonseca/mc-rpg-health-bar/main/docs/images/layout-chaos.png)
