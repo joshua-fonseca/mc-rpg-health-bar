@@ -37,7 +37,7 @@ public record HudLayout(int x, int top, int iconRowY, int halfBarY, int healthY,
      *
      * @param hasBars  whether armor or hunger is shown as a bar
      * @param hasIcons whether armor or hunger is shown as vanilla icons
-     * @param manaBars how many mana bars are drawn: 0 to 2, see {@link com.joshuafonseca.rpghealthbar.compat.ManaBars}
+     * @param manaBars how many mana bars are drawn, see {@link com.joshuafonseca.rpghealthbar.compat.ManaSource}
      */
     public static HudLayout compute(int screenWidth, int screenHeight, boolean hasBars, boolean hasIcons, int manaBars,
                                     int healthWidth) {

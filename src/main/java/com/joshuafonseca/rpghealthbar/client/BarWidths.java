@@ -1,5 +1,6 @@
 package com.joshuafonseca.rpghealthbar.client;
 
+import com.joshuafonseca.rpghealthbar.compat.ManaSource;
 import com.joshuafonseca.rpghealthbar.config.BarSize;
 import com.joshuafonseca.rpghealthbar.config.ClientConfig;
 import com.joshuafonseca.rpghealthbar.config.EditMode;
@@ -40,11 +41,17 @@ public final class BarWidths {
     private record Settings(ModConfigSpec.IntValue width, ModConfigSpec.IntValue left, @Nullable ModConfigSpec.EnumValue<BarSize> preset) {
     }
 
-    private static final Map<HudPiece, Settings> SETTINGS = new EnumMap<>(Map.of(
-            HudPiece.HEALTH, new Settings(ClientConfig.HEALTH_WIDTH, ClientConfig.HEALTH_LEFT, ClientConfig.HEALTH_SIZE),
-            HudPiece.MANA, new Settings(ClientConfig.MANA_WIDTH, ClientConfig.MANA_LEFT, ClientConfig.MANA_SIZE),
-            HudPiece.CONFLUENCE_MANA, new Settings(ClientConfig.CONFLUENCE_MANA_WIDTH, ClientConfig.CONFLUENCE_MANA_LEFT, ClientConfig.CONFLUENCE_MANA_SIZE),
-            HudPiece.XP, new Settings(ClientConfig.XP_CELLS, ClientConfig.XP_LEFT, null)));
+    private static final Map<HudPiece, Settings> SETTINGS = settings();
+
+    private static Map<HudPiece, Settings> settings() {
+        Map<HudPiece, Settings> settings = new EnumMap<>(HudPiece.class);
+        settings.put(HudPiece.HEALTH, new Settings(ClientConfig.HEALTH_WIDTH, ClientConfig.HEALTH_LEFT, ClientConfig.HEALTH_SIZE));
+        for (ManaSource source : ManaSource.values()) {
+            settings.put(source.piece(), new Settings(source.width(), source.left(), source.size()));
+        }
+        settings.put(HudPiece.XP, new Settings(ClientConfig.XP_CELLS, ClientConfig.XP_LEFT, null));
+        return settings;
+    }
 
     /** The sizes while the HUD Editor is open, so the HUD follows the drag; null otherwise. */
     @Nullable

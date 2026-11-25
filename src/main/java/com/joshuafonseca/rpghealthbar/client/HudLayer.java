@@ -1,10 +1,11 @@
 package com.joshuafonseca.rpghealthbar.client;
 
-import com.joshuafonseca.rpghealthbar.compat.ManaBars;
+import com.joshuafonseca.rpghealthbar.compat.ManaSource;
 import com.joshuafonseca.rpghealthbar.config.ClientConfig;
 import com.joshuafonseca.rpghealthbar.config.HalfBarMode;
 import com.joshuafonseca.rpghealthbar.config.HudPiece;
 import java.util.EnumMap;
+import java.util.List;
 import java.util.Map;
 import javax.annotation.Nullable;
 import net.minecraft.client.DeltaTracker;
@@ -76,7 +77,7 @@ public class HudLayer implements LayeredDraw.Layer {
             current = null;
         }
 
-        /** The frame for the current settings, with the mana bars {@link ManaBars} shows. */
+        /** The frame for the current settings, with the mana bars {@link ManaSource} shows. */
         public static Frame compute(int screenWidth, int screenHeight) {
             HalfBarMode armorMode = ClientConfig.ARMOR_MODE.get();
             HalfBarMode hungerMode = ClientConfig.HUNGER_MODE.get();
@@ -85,7 +86,7 @@ public class HudLayer implements LayeredDraw.Layer {
             boolean vanillaArmor = armorMode == HalfBarMode.VANILLA;
             boolean vanillaHunger = hungerMode == HalfBarMode.VANILLA;
 
-            HudLayout layout = HudLayout.compute(screenWidth, screenHeight, showArmor || showHunger, vanillaArmor || vanillaHunger, ManaBars.count(),
+            HudLayout layout = HudLayout.compute(screenWidth, screenHeight, showArmor || showHunger, vanillaArmor || vanillaHunger, ManaSource.shownBars().size(),
                     BarWidths.width(HudPiece.HEALTH));
             Map<HudPiece, HudPosition.Bounds> pieceBounds = pieceBounds(screenHeight, layout, armorMode, hungerMode);
             HudPosition.Pieces pieces = HudPosition.pieces(screenWidth, screenHeight, pieceBounds);
@@ -127,12 +128,10 @@ public class HudLayer implements LayeredDraw.Layer {
             }
             int healthLeft = left - BarWidths.left(HudPiece.HEALTH);
             bounds.put(HudPiece.HEALTH, new HudPosition.Bounds(healthLeft, layout.healthY(), healthLeft + layout.healthWidth(), layout.healthY() + HudLayout.MAIN_BAR_HEIGHT));
-            int manaRow = 0;
-            if (ManaBars.showIrons()) {
-                bounds.put(HudPiece.MANA, manaBounds(layout, manaRow++, HudPiece.MANA));
-            }
-            if (ManaBars.showConfluence()) {
-                bounds.put(HudPiece.CONFLUENCE_MANA, manaBounds(layout, manaRow, HudPiece.CONFLUENCE_MANA));
+            List<ManaSource> manaBars = ManaSource.shownBars();
+            for (int row = 0; row < manaBars.size(); row++) {
+                HudPiece piece = manaBars.get(row).piece();
+                bounds.put(piece, manaBounds(layout, row, piece));
             }
             bounds.put(HudPiece.XP, HudPosition.xpBar(screenHeight, layout));
             return bounds;

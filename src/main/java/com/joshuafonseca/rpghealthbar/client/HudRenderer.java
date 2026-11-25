@@ -2,6 +2,7 @@ package com.joshuafonseca.rpghealthbar.client;
 
 import com.joshuafonseca.rpghealthbar.compat.AppleSkinCompat;
 import com.joshuafonseca.rpghealthbar.compat.Mana;
+import com.joshuafonseca.rpghealthbar.compat.ManaSource;
 import com.joshuafonseca.rpghealthbar.config.AbsorptionDisplay;
 import com.joshuafonseca.rpghealthbar.config.BarText;
 import com.joshuafonseca.rpghealthbar.config.ClientConfig;
@@ -11,6 +12,8 @@ import net.minecraft.Util;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.util.Mth;
+import java.util.EnumMap;
+import java.util.Map;
 
 /** Draws the bar group at a layout. Used by the HUD layer and the position editor's preview. */
 public final class HudRenderer {
@@ -19,19 +22,12 @@ public final class HudRenderer {
     private static final int ABSORPTION_BACK_COLOR = 0xFFA27E18;
     /** What's left of the fill flashes this right after a drop, fading back to its color. */
     private static final int FLASH_COLOR = 0xFFFFFFFF;
-    private static final int MANA_COLOR = 0xFF2C88D0;
-    /** Confluence's mana bar: a darker, purplish blue like its mana stars, so it stands apart from Iron's. */
-    private static final int CONFLUENCE_MANA_COLOR = 0xFF3A50B8;
-    private static final int CONFLUENCE_MANA_DARK_COLOR = 0xFF1A2456;
     private static final int ARMOR_COLOR = 0xFFB0B0B0;
     /** Saturation is outlined on the hunger bar in this color, like AppleSkin's outlines on the food icons. */
     private static final int SATURATION_COLOR = 0xFFF0D030;
     /** With food held, what eating it would add flashes on the hunger bar, as fast as AppleSkin's preview on the icons. */
     private static final long FOOD_PREVIEW_FLASH_MILLIS = 1600;
-    /** The section just lost, shown briefly before it shrinks away. */
-    private static final int MANA_LOST_COLOR = 0xFF143C64;
-    /** The hovered spell's cost blinks between the mana color and this, once per period. */
-    private static final int MANA_COST_COLOR = 0xFF143C64;
+    /** A spell's cost blinks between the mana color and its cost color, once per period. */
     private static final long COST_PULSE_MILLIS = 800;
     private static final BarTrail HEALTH_TRAIL = new BarTrail();
     /** Absorption grows in from the left when gained, rather than appearing at once. */
@@ -47,8 +43,7 @@ public final class HudRenderer {
     private static final long REGEN_SWEEP_MILLIS = 1500;
     private static final int REGEN_BAND_WIDTH = 24;
     private static final float REGEN_BAND_ALPHA = 0.4F;
-    private static final BarTrail MANA_TRAIL = new BarTrail();
-    private static final BarTrail CONFLUENCE_MANA_TRAIL = new BarTrail();
+    private static final Map<ManaSource, BarTrail> MANA_TRAILS = new EnumMap<>(ManaSource.class);
     /** Vanilla's HUD shows at most 20 armor points and 20 food points. */
     private static final float MAX_ARMOR = 20.0F;
     private static final float MAX_FOOD = 20.0F;
@@ -72,17 +67,12 @@ public final class HudRenderer {
             inPiece(graphics, pieces, HudPiece.HUNGER, () -> renderHunger(graphics, layout, values));
         }
         inPiece(graphics, pieces, HudPiece.HEALTH, () -> renderHealth(graphics, font, layout, values, live));
-        // Confluence's bar goes in the row under Iron's, or the first when it's the only one.
-        int confluenceRow = 0;
-        if (values.ironsMana() != null) {
-            confluenceRow = 1;
-            inPiece(graphics, pieces, HudPiece.MANA, () -> renderMana(graphics, font, layout, layout.manaY(0), BarWidths.width(HudPiece.MANA),
-                    ClientConfig.manaText(), values.ironsMana(), MANA_COLOR, MANA_LOST_COLOR, MANA_COST_COLOR, MANA_TRAIL, live));
-        }
-        if (values.confluenceMana() != null) {
-            int row = confluenceRow;
-            inPiece(graphics, pieces, HudPiece.CONFLUENCE_MANA, () -> renderMana(graphics, font, layout, layout.manaY(row),
-                    BarWidths.width(HudPiece.CONFLUENCE_MANA), ClientConfig.CONFLUENCE_MANA_TEXT.get(), values.confluenceMana(), CONFLUENCE_MANA_COLOR, CONFLUENCE_MANA_DARK_COLOR, CONFLUENCE_MANA_DARK_COLOR, CONFLUENCE_MANA_TRAIL, live));
+        // The mana bars stack in ManaSource's order, each in the next row.
+        int row = 0;
+        for (Map.Entry<ManaSource, Mana> entry : values.mana().entrySet()) {
+            ManaSource source = entry.getKey();
+            int y = layout.manaY(row++);
+            inPiece(graphics, pieces, source.piece(), () -> renderMana(graphics, font, layout, y, source, entry.getValue(), live));
         }
     }
 
@@ -239,8 +229,11 @@ public final class HudRenderer {
     }
 
     /** One mana bar, at row top {@code y}; Iron's and Confluence's differ in colors and their own settings. */
-    private static void renderMana(GuiGraphics graphics, Font font, HudLayout layout, int y, int width, BarText text, Mana values,
-                                   int color, int lostColor, int costColor, BarTrail manaTrail, boolean live) {
+    /** One mana bar, at row top {@code y}, in its mod's colors and with its own settings. */
+    private static void renderMana(GuiGraphics graphics, Font font, HudLayout layout, int y, ManaSource source, Mana values, boolean live) {
+        int width = BarWidths.width(source.piece());
+        BarText text = source.text();
+        int color = source.color();
         float mana = values.current();
         float maxMana = values.max();
 
@@ -249,13 +242,13 @@ public final class HudRenderer {
         if (maxMana > 0) {
             BarRenderer.drawFill(graphics, x, y, width, HudLayout.MAIN_BAR_HEIGHT, true, mana / maxMana, color, true);
             if (live) {
-                float trail = manaTrail.update(mana);
-                BarRenderer.drawSection(graphics, x, y, width, HudLayout.MAIN_BAR_HEIGHT, true, mana / maxMana, trail / maxMana, lostColor, false, 1.0F);
+                float trail = MANA_TRAILS.computeIfAbsent(source, s -> new BarTrail()).update(mana);
+                BarRenderer.drawSection(graphics, x, y, width, HudLayout.MAIN_BAR_HEIGHT, true, mana / maxMana, trail / maxMana, source.lostColor(), false, 1.0F);
             }
             float cost = values.hoveredCost();
             if (cost > 0) {
                 // The mana the hovered spell would use, pulsing between normal and dark blue.
-                BarRenderer.drawSection(graphics, x, y, width, HudLayout.MAIN_BAR_HEIGHT, true, (mana - cost) / maxMana, mana / maxMana, costColor, true, pulse(COST_PULSE_MILLIS));
+                BarRenderer.drawSection(graphics, x, y, width, HudLayout.MAIN_BAR_HEIGHT, true, (mana - cost) / maxMana, mana / maxMana, source.costColor(), true, pulse(COST_PULSE_MILLIS));
             }
         }
         if (text != BarText.OFF) {

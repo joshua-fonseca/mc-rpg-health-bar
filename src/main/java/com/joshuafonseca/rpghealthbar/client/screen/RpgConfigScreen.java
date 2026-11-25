@@ -3,8 +3,7 @@ package com.joshuafonseca.rpghealthbar.client.screen;
 import com.joshuafonseca.rpghealthbar.client.BarWidths;
 import com.joshuafonseca.rpghealthbar.compat.AppleSkinCompat;
 import com.joshuafonseca.rpghealthbar.compat.CompatNotes;
-import com.joshuafonseca.rpghealthbar.compat.ConfluenceCompat;
-import com.joshuafonseca.rpghealthbar.compat.IronsSpellsCompat;
+import com.joshuafonseca.rpghealthbar.compat.ManaSource;
 import com.joshuafonseca.rpghealthbar.config.AbsorptionDisplay;
 import com.joshuafonseca.rpghealthbar.config.AirPosition;
 import com.joshuafonseca.rpghealthbar.config.BarSize;
@@ -14,6 +13,8 @@ import com.joshuafonseca.rpghealthbar.config.EditMode;
 import com.joshuafonseca.rpghealthbar.config.HalfBarMode;
 import com.joshuafonseca.rpghealthbar.config.HealthUnit;
 import com.joshuafonseca.rpghealthbar.config.LevelText;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -98,11 +99,7 @@ public class RpgConfigScreen extends Screen {
     private static final int NOTE_INDENT = BUTTON_HEIGHT + COMPAT_GAP;
 
     /** The settings this screen changes, put back by Back. Item Name and HUD Editor save on their own pages. */
-    private static final List<ModConfigSpec.ConfigValue<?>> EDITED = List.of(ClientConfig.ENABLED, ClientConfig.ARMOR_MODE,
-            ClientConfig.HUNGER_MODE, ClientConfig.AIR_POSITION, ClientConfig.HEALTH_UNIT, ClientConfig.ABSORPTION_DISPLAY,
-            ClientConfig.HEALTH_TEXT, ClientConfig.SHOW_HEALTH_TEXT, ClientConfig.HEALTH_SIZE, ClientConfig.MANA_TEXT, ClientConfig.SHOW_MANA_TEXT,
-            ClientConfig.MANA_SIZE, ClientConfig.CONFLUENCE_MANA_TEXT, ClientConfig.CONFLUENCE_MANA_SIZE, ClientConfig.LEVEL_TEXT, ClientConfig.EDIT_MODE,
-            ClientConfig.XP_BAR_SHOWN);
+    private static final List<ModConfigSpec.ConfigValue<?>> EDITED = edited();
 
     private final Screen parent;
     private final Map<ModConfigSpec.ConfigValue<?>, Object> opened = new HashMap<>();
@@ -240,20 +237,12 @@ public class RpgConfigScreen extends Screen {
         list.addEntry(textOption("healthText", ClientConfig.healthText(), ClientConfig.HEALTH_TEXT, ClientConfig.SHOW_HEALTH_TEXT));
         list.addEntry(widthOption("healthSize", ClientConfig.HEALTH_SIZE));
 
-        // The mana options only do something with a mana mod, so without one they can't be changed.
-        boolean irons = IronsSpellsCompat.isAvailable();
-        boolean confluence = ConfluenceCompat.isAvailable();
-        String detected = irons && confluence ? "ironsAndConfluenceDetected" : irons ? "ironsDetected" : confluence ? "confluenceDetected" : "ironsNotDetected";
-        list.addEntry(new Header(Component.translatable("rpghealthbar.config.section.mana"),
-                Component.translatable("rpghealthbar.config." + detected), IRONS_NOTE_COLOR));
-        // Each mod's options are listed only with that mod.
-        if (irons) {
-            list.addEntry(textOption("manaText", ClientConfig.manaText(), ClientConfig.MANA_TEXT, ClientConfig.SHOW_MANA_TEXT));
-            list.addEntry(widthOption("manaSize", ClientConfig.MANA_SIZE));
-        }
-        if (confluence) {
-            list.addEntry(option("confluenceManaText", BarText.values(), ClientConfig.CONFLUENCE_MANA_TEXT, BarText::displayName, "left", "right", "center", "off"));
-            list.addEntry(widthOption("confluenceManaSize", ClientConfig.CONFLUENCE_MANA_SIZE));
+        // The header names the mana mods found; each one's options are listed only with that mod.
+        List<ManaSource> manaMods = Arrays.stream(ManaSource.values()).filter(ManaSource::available).toList();
+        list.addEntry(new Header(Component.translatable("rpghealthbar.config.section.mana"), manaDetected(manaMods), IRONS_NOTE_COLOR));
+        for (ManaSource source : manaMods) {
+            list.addEntry(textOption(source.textKey(), source.text(), source.textValue(), source.legacyTextShown()));
+            list.addEntry(widthOption(source.sizeKey(), source.size()));
         }
 
         list.addEntry(new Header(Component.translatable("rpghealthbar.config.section.xp"), null, NOTE_COLOR));
@@ -342,10 +331,38 @@ public class RpgConfigScreen extends Screen {
      * Where a bar's numbers go. Setting it also clears the Off saved before this option existed
      * ({@code legacyShown}), so the choice takes effect.
      */
-    private static WidgetRow textOption(String key, BarText current, ModConfigSpec.EnumValue<BarText> value, ModConfigSpec.BooleanValue legacyShown) {
+    private static List<ModConfigSpec.ConfigValue<?>> edited() {
+        List<ModConfigSpec.ConfigValue<?>> edited = new ArrayList<>(List.of(ClientConfig.ENABLED, ClientConfig.ARMOR_MODE,
+                ClientConfig.HUNGER_MODE, ClientConfig.AIR_POSITION, ClientConfig.HEALTH_UNIT, ClientConfig.ABSORPTION_DISPLAY,
+                ClientConfig.HEALTH_TEXT, ClientConfig.SHOW_HEALTH_TEXT, ClientConfig.HEALTH_SIZE));
+        for (ManaSource source : ManaSource.values()) {
+            edited.add(source.textValue());
+            if (source.legacyTextShown() != null) {
+                edited.add(source.legacyTextShown());
+            }
+            edited.add(source.size());
+        }
+        edited.addAll(List.of(ClientConfig.LEVEL_TEXT, ClientConfig.EDIT_MODE, ClientConfig.XP_BAR_SHOWN));
+        return edited;
+    }
+
+    /** "(Iron's Spells + Confluence detected)", or that none was. */
+    private static Component manaDetected(List<ManaSource> found) {
+        if (found.isEmpty()) {
+            return Component.translatable("rpghealthbar.config.manaNotDetected");
+        }
+        MutableComponent names = found.get(0).displayName().copy();
+        for (ManaSource source : found.subList(1, found.size())) {
+            names.append(" + ").append(source.displayName());
+        }
+        return Component.translatable("rpghealthbar.config.manaDetected", names);
+    }
+
+    /** @param legacyShown the setting from before {@code value}, or null; it's turned back on with any choice */
+    private static WidgetRow textOption(String key, BarText current, ModConfigSpec.EnumValue<BarText> value, @Nullable ModConfigSpec.BooleanValue legacyShown) {
         return option(key, BarText.values(), current, BarText::displayName, text -> {
             ClientConfig.set(value, text);
-            if (!legacyShown.get()) {
+            if (legacyShown != null && !legacyShown.get()) {
                 ClientConfig.set(legacyShown, true);
             }
         }, "left", "right", "center", "off");

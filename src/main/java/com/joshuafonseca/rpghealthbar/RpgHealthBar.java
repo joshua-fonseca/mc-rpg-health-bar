@@ -8,7 +8,7 @@ import com.joshuafonseca.rpghealthbar.client.HudPositionMover;
 import com.joshuafonseca.rpghealthbar.client.screen.RpgConfigScreen;
 import com.joshuafonseca.rpghealthbar.compat.AppleSkinCompat;
 import com.joshuafonseca.rpghealthbar.compat.ConfluenceCompat;
-import com.joshuafonseca.rpghealthbar.compat.IronsSpellsCompat;
+import com.joshuafonseca.rpghealthbar.compat.ManaSource;
 import com.joshuafonseca.rpghealthbar.config.ClientConfig;
 import com.joshuafonseca.rpghealthbar.config.HalfBarMode;
 import com.joshuafonseca.rpghealthbar.config.HudPiece;
@@ -97,10 +97,8 @@ public class RpgHealthBar {
                 || name.equals(ConfluenceCompat.HEALTH_LAYER)
                 || (name.equals(ConfluenceCompat.ARMOR_LAYER) && armorReplaced)
                 || (name.equals(ConfluenceCompat.FOOD_LAYER) && hungerReplaced)
-                || name.equals(IronsSpellsCompat.MANA_OVERLAY)
-                // Our bar shows its mana; in soul mode its display shows soul instead, so it's kept.
-                || (name.equals(ConfluenceCompat.MANA_LAYER) && ConfluenceCompat.isAvailable()
-                        && !ConfluenceCompat.isSoulMode(Minecraft.getInstance().player))
+                // The mana mods' own displays, which our bars replace.
+                || ManaSource.hidesAnyOwnDisplay(name)
                 // Its heart previews would draw over our bars.
                 || name.equals(AppleSkinCompat.HEALTH_RESTORED_LAYER)
                 // Its hunger overlays only fit the vanilla icons.
