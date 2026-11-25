@@ -4,7 +4,7 @@
 
 <img src="docs/images/icon.png" alt="RPG Health Bar icon" width="96" align="right">
 
-A highly customizable, client-side GUI mod. Replaces the vanilla hearts with an RPG-style health bar, and adds similar mana bars when [Iron's Spells 'n Spellbooks](https://modrinth.com/mod/irons-spells-n-spellbooks) or [Confluence: Otherworld](https://modrinth.com/mod/confluence) is installed.
+A highly customizable, client-side GUI mod. Replaces the vanilla hearts with an RPG-style health bar, and adds similar mana bars when [Iron's Spells 'n Spellbooks](https://modrinth.com/mod/irons-spells-n-spellbooks), [Confluence: Otherworld](https://modrinth.com/mod/confluence) or [Ars Nouveau](https://modrinth.com/mod/ars-nouveau) is installed.
 
 This is the **1.20.1 (Forge)** branch. The 1.21.1 (NeoForge) version is on [`main`](https://github.com/joshua-fonseca/mc-rpg-health-bar/tree/main).
 
@@ -16,7 +16,7 @@ This is the **1.20.1 (Forge)** branch. The 1.21.1 (NeoForge) version is on [`mai
 
 - **Health bar** the width of the hotbar, with your current and max health on it (`15.5/20`). It goes beyond the vanilla max of 20 for mods that add hearts to the player (`32/40`), following your real max health.
 - **Absorption** fills the bar in gold, and the text shows it separately (`15.5+4/20`), added in (`19.5/20`), or as `+4` at the bar's right end.
-- **Mana bar support:** an overhaul of the mana bars from Iron's Spells 'n Spellbooks and Confluence: Otherworld, in the same style as the health bar, replacing their own.
+- **Mana bar support:** an overhaul of the mana bars from Iron's Spells 'n Spellbooks, Confluence: Otherworld and Ars Nouveau, in the same style as the health bar, replacing their own.
 - **Status colors:** like the vanilla hearts, the health bar turns green-yellow when poisoned, black when withered and light blue when frozen, and the hunger bar turns green with the Hunger effect. On 1.21.1, heart colors added by other mods are followed too.
 - **Armor and hunger** as the vanilla icons (default), thin bars, or hidden.
 - **AppleSkin support:** saturation is outlined in yellow on the hunger bar, and held food's value flashes on it, like AppleSkin's preview on the icons.
@@ -76,10 +76,12 @@ Defaults are in bold:
 |  | Absorption | **Separate** (`16+4/20`), Combined (`20/20`), Separate v2 (`16/20`, with `+4` at the bar's right end) |
 |  | HP Text | **Left**, Right, Center, Off |
 |  | Health Bar Width | **Full**, Half |
-| **Mana** (only with Iron's Spells or Confluence installed) | Iron's Mana Text (only with Iron's Spells) | **Left**, Right, Center, Off |
+| **Mana** (only with Iron's Spells, Confluence or Ars Nouveau installed) | Iron's Mana Text (only with Iron's Spells) | **Left**, Right, Center, Off |
 |  | Iron's Mana Bar Width (only with Iron's Spells) | **Full**, Half |
 |  | Confluence Mana Text (only with Confluence) | **Left**, Right, Center, Off |
 |  | Confluence Mana Bar Width (only with Confluence) | **Full**, Half |
+|  | Ars Nouveau Mana Text (only with Ars Nouveau) | **Left**, Right, Center, Off |
+|  | Ars Nouveau Mana Bar Width (only with Ars Nouveau) | **Full**, Half |
 | **XP Bar** | XP Bar | **Shown**, Hidden (no XP bar or level; the jump bar still shows while riding) |
 |  | Level Text | **Center**, Left, Right |
 |  | XP Bar Width (Advanced only) | Edit in HUD Editor: the XP bar is resized a cell at a time, its fill stretched over its length (**18 cells**, like vanilla) |
@@ -124,12 +126,14 @@ Settings are stored in `config/rpghealthbar-client.toml`.
 | **Iron's Spells 'n Spellbooks** | 3.4.0+ | 1.1.5+ (spell cost preview: 3.1.4+) |
 | **AppleSkin** | 3.0.4+ | 2.5.0+ |
 | **Confluence: Otherworld** | 1.1.4+ | 1.2.9+ |
+| **Ars Nouveau** | 5.8.2+ | 4.2.4+ |
 | **Double Hotbar** | Any ([Double Hotbar NeoForge](https://www.curseforge.com/projects/1563792), unofficial port by \_retrospective\_) | 1.3.2.1+ ([Double Hotbar](https://www.curseforge.com/minecraft/mc-mods/double-hotbar) by sidezbros) |
 
 - Client-side only: servers don't need it, and it works on servers that don't have it.
 - [Iron's Spells 'n Spellbooks](https://www.curseforge.com/projects/855414) by Iron431 and Lab3: optional. When it's installed you get the mana bar and the spell cost preview, and Iron's own mana bar is hidden.
 - [AppleSkin](https://www.curseforge.com/minecraft/mc-mods/appleskin) by squeek502: optional. When it's installed, saturation is outlined in yellow on the hunger bar and held food's value flashes on it; with the vanilla hunger icons, AppleSkin's own overlays move with them.
 - [Confluence: Otherworld](https://www.curseforge.com/minecraft/mc-mods/confluence): optional. When it's installed its mana gets its own darker blue bar, below Iron's when both are installed; with Confluence's convertIronsSpellMana on (1.21.1 only: Confluence's Forge build doesn't use it), Iron's spells use Confluence's mana, so only that bar shows, with the spell cost preview. Confluence's own health and mana displays are hidden while this mod is on (in soul mode its soul display stays); with Armor or Hunger on Default, Confluence's own armor and hunger displays show, if they're on in its config. They move with the HUD, like vanilla's. On 1.20.1, Confluence needs a PortLib version that matches it; see Confluence's page.
+- [Ars Nouveau](https://www.curseforge.com/minecraft/mc-mods/ars-nouveau) by baileyholl: optional. When it's installed, Ars Nouveau's mana gets its own purple bar, like its own, below the other mana bars, and Ars's own mana bar is hidden. Ars Nouveau and Iron's Spells don't share mana, even with both installed, so each keeps its own bar. With Confluence's convertArsNouveauMana on (1.21.1 only), Ars's spells use Confluence's mana, so Ars's bar isn't shown.
 - Double Hotbar: compatible with [Double Hotbar](https://www.curseforge.com/minecraft/mc-mods/double-hotbar) by sidezbros on 1.20.1, and its unofficial NeoForge port, [Double Hotbar NeoForge](https://www.curseforge.com/projects/1563792) by \_retrospective\_, on 1.21.1. Open the **HUD Editor...** and drag the HUD up above the second hotbar once; the bars, XP bar and level move together and stay there, and the item name stays above them.
 - Works with other mods that draw near the hotbar the same way: drag the HUD, or just the pieces in the way, clear of them.
 - Air bubbles and mount health stay vanilla and stack above the bars.
@@ -150,6 +154,7 @@ Requires Java 17. The differences from the 1.21.1 version are listed below.
 ./gradlew runClient -PwithIronsSpells -PwithIronsLib -PironsRuntime=io.redspace:irons_spellbooks:1.20.1-3.16.3 \
     -Pirons_lib_version=1.20.1-2.3.0 -Pcurios_version=5.14.1+1.20.1 -Pgeckolib_version=4.8.2
 ./gradlew runClient -PwithConfluence -PportlibJar=/path/to/MesdagPortLib.jar  # plus Confluence: Otherworld (needs PortLib, from CurseForge)
+./gradlew runClient -PwithArsNouveau   # plus Ars Nouveau and its dependencies
 ```
 
 ### Differences from the 1.21.1 version

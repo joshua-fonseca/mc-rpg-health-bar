@@ -132,6 +132,16 @@ dependencies {
         modLocalRuntime("squeek.appleskin:appleskin-forge:${project.findProperty('appleskinRuntimeVersion') ?: appleskin_version}") { transitive = false }
     }
 
+    // Ars Nouveau is read by reflection too. `-PwithArsNouveau` adds it and the libraries it needs to
+    // the dev client; `-ParsNouveauRuntimeVersion=ZIvC7pei` runs 4.2.4, the oldest on Modrinth for 1.20.1.
+    if (project.hasProperty('withArsNouveau')) {
+        modLocalRuntime("maven.modrinth:ars-nouveau:${project.findProperty('arsNouveauRuntimeVersion') ?: ars_nouveau_version}") { transitive = false }
+        if (!project.hasProperty('withIronsSpells') && !project.hasProperty('withConfluence')) {
+            modLocalRuntime("top.theillusivec4.curios:curios-forge:${curios_version}") { transitive = false }
+            modLocalRuntime("software.bernie.geckolib:geckolib-forge-1.20.1:${geckolib_version}") { transitive = false }
+        }
+    }
+
     // Confluence: Otherworld is read by reflection, so it's not compiled against. `-PwithConfluence`
     // adds it and the libraries it needs to the dev client; `-PconfluenceRuntimeVersion=40G2vna4` runs 1.2.9 (see gradle.properties).
     // It also needs PortLib (MesdagPortLib), only on CurseForge: download a version that

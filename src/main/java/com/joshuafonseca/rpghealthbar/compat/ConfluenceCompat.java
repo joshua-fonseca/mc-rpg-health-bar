@@ -41,6 +41,8 @@ public final class ConfluenceCompat {
     @Nullable
     private static Method convertsIronsMana;
     @Nullable
+    private static Method convertsArsMana;
+    @Nullable
     private static Method soulMode;
     private static final Map<String, Optional<Field>> SWITCHES = new HashMap<>();
 
@@ -81,6 +83,23 @@ public final class ConfluenceCompat {
         } catch (ReflectiveOperationException | RuntimeException | LinkageError e) {
             convertsIronsMana = null;
             RpgHealthBar.LOGGER.warn("Couldn't read whether Confluence converts Iron's Spells mana; treating it as off.", e);
+            return false;
+        }
+    }
+
+    /**
+     * Whether the server has Confluence's convertArsNouveauMana on: Ars Nouveau's spells then use
+     * Confluence's mana (Ars's max mana adds to Confluence's), and Confluence hides Ars's mana bar.
+     */
+    public static boolean convertsArsMana() {
+        if (!isAvailable() || convertsArsMana == null) {
+            return false;
+        }
+        try {
+            return (Boolean) convertsArsMana.invoke(null);
+        } catch (ReflectiveOperationException | RuntimeException | LinkageError e) {
+            convertsArsMana = null;
+            RpgHealthBar.LOGGER.warn("Couldn't read whether Confluence converts Ars Nouveau mana; treating it as off.", e);
             return false;
         }
     }
@@ -152,6 +171,7 @@ public final class ConfluenceCompat {
             return;
         }
         convertsIronsMana = optionalMethod(COMPATIBILITY, "isConvertIronsSpellMana");
+        convertsArsMana = optionalMethod(COMPATIBILITY, "isConvertArsNouveauMana");
         soulMode = optionalMethod(PLAYER_UTILS, "isSoulMode", Player.class);
     }
 

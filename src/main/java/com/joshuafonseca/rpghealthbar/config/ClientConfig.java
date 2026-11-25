@@ -104,8 +104,18 @@ public final class ClientConfig {
             .translation("rpghealthbar.config.confluenceManaSize")
             .defineEnum("confluenceManaSize", BarSize.FULL);
 
+    public static final ForgeConfigSpec.EnumValue<BarText> ARS_MANA_TEXT = BUILDER
+            .comment("Where the numbers go on Ars Nouveau's mana bar: LEFT, RIGHT, CENTER or OFF.")
+            .translation("rpghealthbar.config.arsManaText")
+            .defineEnum("arsManaText", BarText.LEFT);
+
+    public static final ForgeConfigSpec.EnumValue<BarSize> ARS_MANA_SIZE = BUILDER
+            .comment("Width of Ars Nouveau's mana bar: FULL (as wide as the hotbar) or HALF (like the armor and hunger bars).")
+            .translation("rpghealthbar.config.arsManaSize")
+            .defineEnum("arsManaSize", BarSize.FULL);
+
     public static final ForgeConfigSpec.EnumValue<EditMode> EDIT_MODE = BUILDER
-            .comment("SIMPLE: the bars' widths are the presets above (healthSize, manaSize, confluenceManaSize). ADVANCED: the widths below, set by dragging the bars' ends in Config → HUD Editor.")
+            .comment("SIMPLE: the bars' widths are the presets above (healthSize, manaSize, confluenceManaSize, arsManaSize). ADVANCED: the widths below, set by dragging the bars' ends in Config → HUD Editor.")
             .translation("rpghealthbar.config.editMode")
             .defineEnum("editMode", EditMode.SIMPLE);
 
@@ -124,6 +134,11 @@ public final class ClientConfig {
             .comment("Advanced only: width of Confluence: Otherworld's mana bar in GUI pixels; 0 uses confluenceManaSize.")
             .translation("rpghealthbar.config.confluenceManaWidth")
             .defineInRange("confluenceManaWidth", 0, 0, 10000);
+
+    public static final ForgeConfigSpec.IntValue ARS_MANA_WIDTH = BUILDER
+            .comment("Advanced only: width of Ars Nouveau's mana bar in GUI pixels; 0 uses arsManaSize.")
+            .translation("rpghealthbar.config.arsManaWidth")
+            .defineInRange("arsManaWidth", 0, 0, 10000);
 
     public static final ForgeConfigSpec.IntValue XP_CELLS = BUILDER
             .comment("Advanced only: how many cells long the XP bar is (vanilla's has 18); 0 keeps vanilla's.")
@@ -146,6 +161,11 @@ public final class ClientConfig {
             .comment("Advanced only: how far left of its usual spot Confluence: Otherworld's mana bar starts, from dragging its left end in the HUD Editor.")
             .translation("rpghealthbar.config.confluenceManaLeft")
             .defineInRange("confluenceManaLeft", 0, -10000, 10000);
+
+    public static final ForgeConfigSpec.IntValue ARS_MANA_LEFT = BUILDER
+            .comment("Advanced only: how far left of its usual spot Ars Nouveau's mana bar starts, from dragging its left end in the HUD Editor.")
+            .translation("rpghealthbar.config.arsManaLeft")
+            .defineInRange("arsManaLeft", 0, -10000, 10000);
 
     public static final ForgeConfigSpec.IntValue XP_LEFT = BUILDER
             .comment("Advanced only: how far left of its usual spot the XP bar starts, from dragging its left end in the HUD Editor.")
