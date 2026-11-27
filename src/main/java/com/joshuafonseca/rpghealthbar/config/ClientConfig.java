@@ -45,7 +45,7 @@ public final class ClientConfig {
             .defineEnum("healthUnit", HealthUnit.HP);
 
     public static final ModConfigSpec.EnumValue<AbsorptionDisplay> ABSORPTION_DISPLAY = BUILDER
-            .comment("How absorption is written on the health bar: SEPARATE (16+4/20), COMBINED (20/20) or SEPARATE_RIGHT (16/20, with +4 at the bar's right end).")
+            .comment("How absorption is written on the health bar: SEPARATE (16+4/20), COMBINED (20/20) or SEPARATE_RIGHT (16/20, with (+4) at the bar's right end).")
             .translation("rpghealthbar.config.absorptionDisplay")
             .defineEnum("absorptionDisplay", AbsorptionDisplay.SEPARATE);
 

@@ -9,7 +9,7 @@ public enum AbsorptionDisplay {
     SEPARATE,
     /** Health and absorption added together: 20/20. */
     COMBINED,
-    /** Health alone (16/20), with the absorption (+4) at the bar's right end. */
+    /** Health alone (16/20), with the absorption, (+4), at the bar's right end. */
     SEPARATE_RIGHT;
 
     public Component displayName() {

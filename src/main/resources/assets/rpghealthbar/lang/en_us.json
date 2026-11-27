@@ -156,7 +156,7 @@
   "rpghealthbar.config.absorptionDisplay.tooltip.combined.name": "Combined",
   "rpghealthbar.config.absorptionDisplay.tooltip.combined": "added together: 20/20.",
   "rpghealthbar.config.absorptionDisplay.tooltip.separate_right.name": "Separate v2",
-  "rpghealthbar.config.absorptionDisplay.tooltip.separate_right": "health alone, 16/20, with the absorption, +4, at the bar's right end.",
+  "rpghealthbar.config.absorptionDisplay.tooltip.separate_right": "health alone, 16/20, with the absorption, (+4), at the bar's right end.",
   "rpghealthbar.config.healthText": "HP Text",
   "rpghealthbar.config.healthText.tooltip": "Where the numbers (e.g. 16+4/20) go on the health bar.",
   "rpghealthbar.config.healthText.tooltip.left.name": "Left",
