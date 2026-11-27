@@ -4,6 +4,7 @@ import com.joshuafonseca.rpghealthbar.client.BarWidths;
 import com.joshuafonseca.rpghealthbar.client.HudLayer;
 import com.joshuafonseca.rpghealthbar.client.HudPosition;
 import com.joshuafonseca.rpghealthbar.client.HudPositionMover;
+import com.joshuafonseca.rpghealthbar.client.MountHealthLayer;
 import com.joshuafonseca.rpghealthbar.config.HudPiece;
 import com.joshuafonseca.rpghealthbar.config.ThirstMode;
 import java.util.ArrayList;
@@ -324,7 +325,8 @@ public class HudEditScreen extends Screen {
         if (mountView) {
             if (!mountShown) {
                 HudPosition.Bounds mount = frame.placed(HudPiece.MOUNT);
-                ConfigPreview.drawMountHealth(graphics, mount.right(), mount.top());
+                // A full row of hearts.
+                MountHealthLayer.drawHearts(graphics, mount.right(), mount.top(), 10, 20);
             }
         } else if (mountShown) {
             // Riding, the game draws no hunger or thirst icons.

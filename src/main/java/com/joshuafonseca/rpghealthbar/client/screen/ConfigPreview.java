@@ -43,17 +43,12 @@ final class ConfigPreview {
     private static final int AIR_V = 18;
     private static final int AIR_U = 16;
     private static final int AIR_BURSTING_U = 25;
-    private static final int HEART_V = 9;
-    private static final int MOUNT_CONTAINER_U = 52;
-    private static final int MOUNT_FULL_U = 88;
     /** Vanilla's hotbar in {@link #WIDGETS}, with the selected slot's frame in the row under it. */
     private static final ResourceLocation WIDGETS = new ResourceLocation("textures/gui/widgets.png");
-    private static final int HOTBAR_WIDTH = 182;
-    private static final int HOTBAR_HEIGHT = 22;
     private static final int SELECTION_V = 22;
     private static final int SELECTION_WIDTH = 24;
     private static final int SELECTION_HEIGHT = 22;
-    private static final int HOTBAR_LEFT = WIDTH / 2 - HOTBAR_WIDTH / 2;
+    private static final int HOTBAR_LEFT = WIDTH / 2 - HudLayout.WIDTH / 2;
 
     /**
      * A virtual screen the HUD is laid out on; only its height matters, as the HUD sits at the bottom.
@@ -117,9 +112,9 @@ final class ConfigPreview {
         graphics.pose().translate(-((preview.left() + preview.right()) / 2), -((preview.top() + preview.bottom()) / 2), 0);
 
         // The empty hotbar with its first slot selected, so the HUD is seen where it sits around it.
-        graphics.blit(WIDGETS, HOTBAR_LEFT, VIRTUAL_HEIGHT - HOTBAR_HEIGHT, 0, 0, HOTBAR_WIDTH, HOTBAR_HEIGHT);
+        graphics.blit(WIDGETS, HOTBAR_LEFT, VIRTUAL_HEIGHT - HudLayout.HOTBAR_HEIGHT, 0, 0, HudLayout.WIDTH, HudLayout.HOTBAR_HEIGHT);
         // As in vanilla, the frame sits a pixel above and to the left of the first slot.
-        graphics.blit(WIDGETS, HOTBAR_LEFT - 1, VIRTUAL_HEIGHT - HOTBAR_HEIGHT - 1, 0, SELECTION_V, SELECTION_WIDTH, SELECTION_HEIGHT);
+        graphics.blit(WIDGETS, HOTBAR_LEFT - 1, VIRTUAL_HEIGHT - HudLayout.HOTBAR_HEIGHT - 1, 0, SELECTION_V, SELECTION_WIDTH, SELECTION_HEIGHT);
 
         HudValues values = new HudValues(HEALTH, 20, ABSORPTION, ARMOR, FOOD, 0, null, ManaSource.placeholders(60),
                 new ThirstCompat.Thirst(THIRST, 0, 20), StatusColors.HEALTH, StatusColors.HUNGER, StatusColors.THIRST, false);
@@ -182,15 +177,6 @@ final class ConfigPreview {
             if (points <= THIRST) {
                 graphics.blit(ThirstCompat.ICONS, x, box.top(), points < THIRST ? 32 : 16, 0, ICON, ICON, THIRST_ICONS_WIDTH, ICON);
             }
-        }
-    }
-
-    /** A sample row of mount health ending at {@code right}. */
-    static void drawMountHealth(GuiGraphics graphics, int right, int top) {
-        for (int i = 0; i < 10; i++) {
-            int x = right - i * ICON_SPACING - ICON;
-            graphics.blit(ICONS, x, top, MOUNT_CONTAINER_U, HEART_V, ICON, ICON);
-            graphics.blit(ICONS, x, top, MOUNT_FULL_U, HEART_V, ICON, ICON);
         }
     }
 

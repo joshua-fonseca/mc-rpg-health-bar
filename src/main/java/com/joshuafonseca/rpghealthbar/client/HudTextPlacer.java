@@ -19,8 +19,6 @@ import net.minecraftforge.client.gui.overlay.ForgeGui;
  * and the text is placed absolutely, so the two moves don't add up.
  */
 public final class HudTextPlacer {
-    private static final int HOTBAR_WIDTH = 182;
-    private static final int HOTBAR_HEIGHT = 22;
     /**
      * A piece whose bottom is closer than this above the current top leaves no room for the item
      * name (9px plus a 1px gap) below it, so it counts as stacked.
@@ -104,7 +102,7 @@ public final class HudTextPlacer {
 
     /** The Item Name Height that puts the name right above the hotbar, for the preview's tips. */
     public static int previewAboveHotbarOffset(int screenHeight, HudLayer.Frame frame) {
-        return previewView(screenHeight, frame).vanillaNameTop(screenHeight) + TEXT_ROOM - (screenHeight - HOTBAR_HEIGHT);
+        return previewView(screenHeight, frame).vanillaNameTop(screenHeight) + TEXT_ROOM - (screenHeight - HudLayout.HOTBAR_HEIGHT);
     }
 
     private static View previewView(int screenHeight, HudLayer.Frame frame) {
@@ -120,13 +118,13 @@ public final class HudTextPlacer {
      * @param offset the Item Name Height setting
      */
     private static int nameTop(int screenWidth, int screenHeight, HudLayer.Frame frame, int raise, int offset, View view) {
-        int hotbarLeft = screenWidth / 2 - HOTBAR_WIDTH / 2;
-        int hotbarRight = hotbarLeft + HOTBAR_WIDTH;
+        int hotbarLeft = screenWidth / 2 - HudLayout.WIDTH / 2;
+        int hotbarRight = hotbarLeft + HudLayout.WIDTH;
         boolean barsShown = view.barsShown();
         boolean xpRowShown = view.xpRowShown();
         int vanillaTop = view.vanillaNameTop(screenHeight) - raise - offset;
         // Measured as the bottom of the space the name needs; never inside the hotbar.
-        int top = Math.min(vanillaTop + TEXT_ROOM, screenHeight - HOTBAR_HEIGHT);
+        int top = Math.min(vanillaTop + TEXT_ROOM, screenHeight - HudLayout.HOTBAR_HEIGHT);
         boolean stacked = false;
         boolean grew = true;
         List<HudPosition.Bounds> boxes = new ArrayList<>();

@@ -6,9 +6,10 @@ import com.joshuafonseca.rpghealthbar.config.BarSize;
  * Positions of the bars in GUI-scaled pixels, at their default spot above the hotbar. Shared by
  * the HUD and the position editor.
  */
-public record HudLayout(int x, int top, int iconRowY, int halfBarY, int healthY, int healthWidth, int manaY, int manaBars, int thirstY, int rowsTop) {
+public record HudLayout(int x, int top, int iconRowY, int halfBarY, int healthY, int healthWidth, int manaY, int thirstY, int rowsTop) {
     /** Same width as the hotbar. */
     public static final int WIDTH = 182;
+    public static final int HOTBAR_HEIGHT = 22;
     /** Health and mana bars: just tall enough for their 7px text. */
     public static final int MAIN_BAR_HEIGHT = 7;
     /** Armor and hunger bars: thin lines. */
@@ -21,7 +22,7 @@ public record HudLayout(int x, int top, int iconRowY, int halfBarY, int healthY,
     public static final int ICON_ROW_HEIGHT = 9;
     /** Ten 9px icons, 8px apart. */
     public static final int ICON_ROW_WIDTH = 81;
-    /** The vertical hunger and thirst bars are, unless resized, one and a half times as tall as the hotbar (22px). */
+    /** The vertical hunger and thirst bars are, unless resized, one and a half times as tall as the hotbar ({@link #HOTBAR_HEIGHT}). */
     public static final int VERTICAL_BAR_HEIGHT = 33;
     /** The first vertical bar is this far from what's beside it, as the offhand slot is from the hotbar. */
     private static final int BESIDE_GAP = 7;
@@ -60,7 +61,7 @@ public record HudLayout(int x, int top, int iconRowY, int halfBarY, int healthY,
         int rowsTop = rowHeight > 0 ? iconRowY : healthY;
         int thirstY = rowsTop - ROW_GAP - thirstHeight;
         int top = thirstHeight > 0 ? thirstY : rowsTop;
-        return new HudLayout(x, top, iconRowY, halfBarY, healthY, healthWidth, manaY, manaBars, thirstY, rowsTop);
+        return new HudLayout(x, top, iconRowY, halfBarY, healthY, healthWidth, manaY, thirstY, rowsTop);
     }
 
     /**

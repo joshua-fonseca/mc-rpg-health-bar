@@ -334,7 +334,6 @@ public final class HudRenderer {
         return NumberText.formatQuarters(unit.fromHp(health)) + "+" + NumberText.formatQuarters(unit.fromHp(absorption)) + "/" + max;
     }
 
-    /** One mana bar, at row top {@code y}; Iron's and Confluence's differ in colors and their own settings. */
     /** One mana bar, at row top {@code y}, in its mod's colors and with its own settings. */
     private static void renderMana(GuiGraphics graphics, Font font, HudLayout layout, int y, ManaSource source, Mana values, boolean live) {
         int width = BarWidths.width(source.piece());

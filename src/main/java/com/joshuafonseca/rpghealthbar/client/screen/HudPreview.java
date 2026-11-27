@@ -1,6 +1,7 @@
 package com.joshuafonseca.rpghealthbar.client.screen;
 
 import com.joshuafonseca.rpghealthbar.client.HudLayer;
+import com.joshuafonseca.rpghealthbar.client.HudLayout;
 import com.joshuafonseca.rpghealthbar.client.HudPosition;
 import com.joshuafonseca.rpghealthbar.client.HudRenderer;
 import com.joshuafonseca.rpghealthbar.client.HudValues;
@@ -17,8 +18,6 @@ import net.minecraft.client.gui.GuiGraphics;
 final class HudPreview {
     private static final int XP_BAR_COLOR = 0xFF80FF20;
     private static final int HOTBAR_COLOR = 0xFF2A2A2A;
-    private static final int HOTBAR_WIDTH = 182;
-    private static final int HOTBAR_HEIGHT = 22;
 
     private HudPreview() {
     }
@@ -33,8 +32,8 @@ final class HudPreview {
             HudPosition.Bounds xp = frame.placed(HudPiece.XP);
             graphics.fill(xp.left(), xp.top(), xp.right(), xp.bottom(), XP_BAR_COLOR);
             if (hotbar) {
-                int left = graphics.guiWidth() / 2 - HOTBAR_WIDTH / 2;
-                graphics.fill(left, graphics.guiHeight() - HOTBAR_HEIGHT, left + HOTBAR_WIDTH, graphics.guiHeight(), HOTBAR_COLOR);
+                int left = graphics.guiWidth() / 2 - HudLayout.WIDTH / 2;
+                graphics.fill(left, graphics.guiHeight() - HudLayout.HOTBAR_HEIGHT, left + HudLayout.WIDTH, graphics.guiHeight(), HOTBAR_COLOR);
             }
         }
     }

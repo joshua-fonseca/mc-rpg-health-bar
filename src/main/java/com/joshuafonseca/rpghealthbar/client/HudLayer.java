@@ -63,12 +63,11 @@ public class HudLayer implements IGuiOverlay {
     /**
      * Layout, display settings and position for the current frame.
      *
-     * @param bounds      the box around every shown piece, where it's drawn
      * @param pieces      each piece's shift from its default position
      * @param pieceBounds each shown piece at its default position, without any shift; mount health
      *                    and the air bubbles are always among them
      */
-    public record Frame(HudLayout layout, HudPosition.Bounds bounds, HudPosition.Pieces pieces,
+    public record Frame(HudLayout layout, HudPosition.Pieces pieces,
                         Map<HudPiece, HudPosition.Bounds> pieceBounds,
                         boolean showArmor, boolean showHunger, boolean vanillaArmor, boolean vanillaHunger,
                         ThirstMode thirst) {
@@ -131,8 +130,7 @@ public class HudLayer implements IGuiOverlay {
             Map<HudPiece, HudPosition.Bounds> pieceBounds = pieceBounds(screenWidth, screenHeight, layout, armorMode, hungerMode, thirst, thirstRow,
                     fullThirstHeight);
             HudPosition.Pieces pieces = HudPosition.pieces(screenWidth, screenHeight, pieceBounds, airDefault(pieceBounds));
-            HudPosition.Bounds bounds = HudPosition.union(HudPosition.placed(pieceBounds, pieces::get).values());
-            return new Frame(layout, bounds, pieces, pieceBounds, showArmor, showHunger, vanillaArmor, vanillaHunger, thirst);
+            return new Frame(layout, pieces, pieceBounds, showArmor, showHunger, vanillaArmor, vanillaHunger, thirst);
         }
 
         /**
@@ -174,6 +172,11 @@ public class HudLayer implements IGuiOverlay {
         /** Each shown piece where it's drawn: its default box moved by its shift. */
         public Map<HudPiece, HudPosition.Bounds> placedBounds() {
             return HudPosition.placed(pieceBounds, pieces::get);
+        }
+
+        /** The box around every shown piece, where it's drawn. */
+        public HudPosition.Bounds bounds() {
+            return HudPosition.union(placedBounds().values());
         }
 
         /** A shown piece where it's drawn. */
