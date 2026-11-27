@@ -238,6 +238,11 @@ public final class ClientConfig {
     private static final Map<HudPiece, ForgeConfigSpec.IntValue> PIECE_OFFSETS_X = new EnumMap<>(HudPiece.class);
     private static final Map<HudPiece, ForgeConfigSpec.IntValue> PIECE_OFFSETS_Y = new EnumMap<>(HudPiece.class);
 
+    public static final ForgeConfigSpec.BooleanValue AIR_DETACHED = BUILDER
+            .comment("Layout 2: whether the air bubbles and mount health rows have been moved on their own. Otherwise they follow hunger, or the health bar without horizontal hunger.")
+            .translation("rpghealthbar.config.airDetached")
+            .define("airDetached", false);
+
     static {
         for (HudPiece piece : HudPiece.values()) {
             PIECE_ANCHORS.put(piece, BUILDER
@@ -291,6 +296,16 @@ public final class ClientConfig {
         queue(PIECE_ANCHORS.get(piece), anchor);
         queue(PIECE_OFFSETS_X.get(piece), x);
         queue(PIECE_OFFSETS_Y.get(piece), y);
+    }
+
+    /** Whether the air rows have been moved on their own, including a change not written yet. */
+    public static boolean airDetached() {
+        return read(AIR_DETACHED);
+    }
+
+    /** Saved with the positions, by {@link #savePositions}. */
+    public static void setAirDetached(boolean detached) {
+        queue(AIR_DETACHED, detached);
     }
 
     /** Marks the positions as layout 2; they're written to the file over the next few ticks. */

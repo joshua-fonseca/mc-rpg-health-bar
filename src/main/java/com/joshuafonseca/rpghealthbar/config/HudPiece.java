@@ -2,7 +2,7 @@ package com.joshuafonseca.rpghealthbar.config;
 
 /**
  * The parts of the HUD that can be moved on their own in HUD Editor. The vanilla elements move with
- * the piece they belong to: the level and jump meter with XP, air bubbles and mount health with hunger.
+ * the piece they belong to: the level and jump meter with XP.
  */
 public enum HudPiece {
     ARMOR("armor"),
@@ -13,6 +13,11 @@ public enum HudPiece {
     THIRST("thirst"),
     /** The upright thirst bar, beside the hotbar by default; placed apart from {@link #THIRST}. */
     THIRST_VERTICAL("thirstVertical"),
+    /**
+     * The air bubbles and mount health rows. They follow hunger (or, without a horizontal hunger bar
+     * or icons, the health bar) until moved on their own.
+     */
+    AIR("air"),
     HEALTH("health"),
     /** Iron's Spells' mana bar. */
     MANA("mana"),

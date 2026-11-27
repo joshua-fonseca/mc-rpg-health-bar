@@ -50,9 +50,14 @@ public final class HudPosition {
         }
     }
 
-    /** Each piece's shift from its default spot. */
-    public record Pieces(Map<HudPiece, Offset> offsets) {
-        public static final Pieces NONE = new Pieces(Map.of());
+    /**
+     * Each piece's shift from its default spot.
+     *
+     * @param airDetached whether {@link HudPiece#AIR} has been moved on its own; until then it
+     *                    follows another piece
+     */
+    public record Pieces(Map<HudPiece, Offset> offsets, boolean airDetached) {
+        public static final Pieces NONE = new Pieces(Map.of(), false);
 
         public Offset get(HudPiece piece) {
             return offsets.getOrDefault(piece, Offset.ZERO);
@@ -62,7 +67,13 @@ public final class HudPosition {
             Map<HudPiece, Offset> copy = new EnumMap<>(HudPiece.class);
             copy.putAll(offsets);
             copy.put(piece, offset);
-            return new Pieces(copy);
+            return new Pieces(copy, airDetached);
+        }
+
+        /** A piece dragged or nudged on its own: moving the air rows stops them following. */
+        public Pieces movedAlone(HudPiece piece, Offset offset) {
+            Pieces moved = with(piece, offset);
+            return piece == HudPiece.AIR && !offset.equals(get(piece)) ? new Pieces(moved.offsets, true) : moved;
         }
 
         /** Every piece, shown or not, moved by the same amount. */
@@ -71,7 +82,7 @@ public final class HudPosition {
             for (HudPiece piece : HudPiece.values()) {
                 moved.put(piece, get(piece).plus(delta));
             }
-            return new Pieces(moved);
+            return new Pieces(moved, airDetached);
         }
     }
 
@@ -168,7 +179,7 @@ public final class HudPosition {
         for (Map.Entry<HudPiece, Bounds> entry : shown.entrySet()) {
             shifts.put(entry.getKey(), clamp(shifts.get(entry.getKey()), screenWidth, screenHeight, entry.getValue()));
         }
-        return new Pieces(shifts);
+        return new Pieces(shifts, ClientConfig.airDetached());
     }
 
     /**
@@ -184,6 +195,7 @@ public final class HudPosition {
             Offset stored = pieces.get(piece).minus(anchorShift(anchor, screenWidth, screenHeight));
             ClientConfig.setPiecePosition(piece, anchor, stored.x(), stored.y());
         }
+        ClientConfig.setAirDetached(pieces.airDetached());
         ClientConfig.savePositions();
     }
 
@@ -217,6 +229,10 @@ public final class HudPosition {
      */
     private static Map<HudPiece, HudAnchor> anchors(Pieces pieces, int screenWidth, int screenHeight, Map<HudPiece, Bounds> shown) {
         Map<HudPiece, Bounds> placed = placed(shown, pieces::get);
+        if (!pieces.airDetached()) {
+            // Following another piece, it has no position of its own to keep together with others.
+            placed.remove(HudPiece.AIR);
+        }
         List<HudPiece> keys = new ArrayList<>(placed.keySet());
         List<Bounds> boxes = new ArrayList<>(placed.values());
         int[] group = new int[keys.size()];
@@ -255,6 +271,11 @@ public final class HudPosition {
         return anchors;
     }
 
+    /** Pieces layout 1 didn't have, which don't count as part of its set. */
+    private static boolean newerThanLayoutOne(HudPiece piece) {
+        return piece.isUpright() || piece == HudPiece.THIRST || piece == HudPiece.AIR;
+    }
+
     /**
      * Layout 1 had no thirst row: it goes above the set, as in the default layout, or below the set
      * if the set is too near the top of the screen for that.
@@ -265,7 +286,7 @@ public final class HudPosition {
             return;
         }
         Map<HudPiece, Bounds> set = new EnumMap<>(shown);
-        set.keySet().removeIf(piece -> piece.isUpright() || piece == HudPiece.THIRST);
+        set.keySet().removeIf(HudPosition::newerThanLayoutOne);
         int below = union(placed(set, shifts::get).values()).bottom() + HudLayout.ROW_GAP;
         Offset shift = shifts.get(HudPiece.THIRST);
         shifts.put(HudPiece.THIRST, new Offset(shift.x(), below - thirst.top()));
@@ -278,7 +299,7 @@ public final class HudPosition {
     private static Offset legacySetOffset(int screenWidth, int screenHeight, Map<HudPiece, Bounds> shown) {
         Map<HudPiece, Bounds> set = new EnumMap<>(shown);
         // Newer than this layout: counting them would move everything else.
-        set.keySet().removeIf(piece -> piece.isUpright() || piece == HudPiece.THIRST);
+        set.keySet().removeIf(HudPosition::newerThanLayoutOne);
         Bounds bounds = union(placed(set, HudPosition::storedOffset).values());
         HudAnchor anchor = ClientConfig.ANCHOR.get();
         int left = anchor.x(screenWidth) - anchor.x(bounds.width()) + ClientConfig.OFFSET_X.get();

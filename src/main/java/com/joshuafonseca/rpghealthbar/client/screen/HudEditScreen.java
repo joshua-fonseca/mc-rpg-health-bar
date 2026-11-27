@@ -3,6 +3,7 @@ package com.joshuafonseca.rpghealthbar.client.screen;
 import com.joshuafonseca.rpghealthbar.client.BarWidths;
 import com.joshuafonseca.rpghealthbar.client.HudLayer;
 import com.joshuafonseca.rpghealthbar.client.HudPosition;
+import com.joshuafonseca.rpghealthbar.client.HudPositionMover;
 import com.joshuafonseca.rpghealthbar.config.HudPiece;
 import java.util.ArrayList;
 import java.util.EnumMap;
@@ -183,14 +184,16 @@ public class HudEditScreen extends Screen {
         for (Map.Entry<HudPiece, HudPosition.Bounds> entry : frame().pieceBounds().entrySet()) {
             clamped = clamped.with(entry.getKey(), HudPosition.clamp(requested.get(entry.getKey()), this.width, this.height, entry.getValue()));
         }
-        pieces = clamped;
+        HudPosition.setPreview(clamped);
+        // With the air rows where they follow, if they haven't been moved on their own.
+        pieces = frame().pieces();
         HudPosition.setPreview(pieces);
         placeControls();
     }
 
     /** Moves every piece by the same amount, as far as keeps them all on screen. */
     private void moveAll(HudPosition.Pieces from, HudPosition.Offset delta) {
-        HudPosition.Bounds bounds = HudPosition.union(HudPosition.placed(frame().pieceBounds(), from::get).values());
+        HudPosition.Bounds bounds = HudPosition.union(HudPosition.placed(HudLayer.Frame.setBounds(frame().pieceBounds(), from), from::get).values());
         setPieces(from.shiftedBy(HudPosition.clamp(delta, this.width, this.height, bounds)));
     }
 
@@ -240,6 +243,11 @@ public class HudEditScreen extends Screen {
         HudLayer.Frame frame = frame();
 
         HudPreview.drawIfHidden(graphics, this.minecraft, frame, false);
+        // Sample bubbles where the air rows go, while the game isn't showing any.
+        if (!HudPositionMover.stackedRowsShown(this.minecraft)) {
+            HudPosition.Bounds air = frame.placed(HudPiece.AIR);
+            ConfigPreview.drawAir(graphics, air.right(), air.top());
+        }
 
         graphics.drawCenteredString(this.font, this.title, this.width / 2, controlsTop, 0xFFFFFF);
         Edge hoveredEdge = resizing == null && !dragging && getChildAt(mouseX, mouseY).isEmpty() ? edgeAt(mouseX, mouseY) : null;
@@ -437,7 +445,7 @@ public class HudEditScreen extends Screen {
             if (mode == Mode.ALL) {
                 moveAll(grabbedPieces, moved);
             } else if (selected != null) {
-                setPieces(pieces.with(selected, moved));
+                setPieces(pieces.movedAlone(selected, moved));
             }
             return true;
         }
@@ -470,7 +478,7 @@ public class HudEditScreen extends Screen {
             if (mode == Mode.ALL) {
                 moveAll(pieces, nudge);
             } else if (selected != null) {
-                setPieces(pieces.with(selected, pieces.get(selected).plus(nudge)));
+                setPieces(pieces.movedAlone(selected, pieces.get(selected).plus(nudge)));
             }
             return true;
         }

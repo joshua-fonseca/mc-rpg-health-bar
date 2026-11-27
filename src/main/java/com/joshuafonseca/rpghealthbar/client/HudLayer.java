@@ -2,6 +2,7 @@ package com.joshuafonseca.rpghealthbar.client;
 
 import com.joshuafonseca.rpghealthbar.compat.ManaSource;
 import com.joshuafonseca.rpghealthbar.compat.ThirstCompat;
+import com.joshuafonseca.rpghealthbar.config.AirPosition;
 import com.joshuafonseca.rpghealthbar.config.ClientConfig;
 import com.joshuafonseca.rpghealthbar.config.HalfBarMode;
 import com.joshuafonseca.rpghealthbar.config.HudPiece;
@@ -117,8 +118,57 @@ public class HudLayer implements IGuiOverlay {
                     BarWidths.width(HudPiece.HEALTH), thirstHeight);
             Map<HudPiece, HudPosition.Bounds> pieceBounds = pieceBounds(screenWidth, screenHeight, layout, armorMode, hungerMode, thirst, thirstRow);
             HudPosition.Pieces pieces = HudPosition.pieces(screenWidth, screenHeight, pieceBounds);
-            HudPosition.Bounds bounds = HudPosition.union(HudPosition.placed(pieceBounds, pieces::get).values());
+            if (!pieces.airDetached()) {
+                HudPosition.Offset follow = pieces.get(airFollows(pieceBounds)).plus(new HudPosition.Offset(0, airAttachedDrop(layout, pieceBounds)));
+                pieces = pieces.with(HudPiece.AIR, HudPosition.clamp(follow, screenWidth, screenHeight, pieceBounds.get(HudPiece.AIR)));
+            }
+            HudPosition.Bounds bounds = HudPosition.union(HudPosition.placed(setBounds(pieceBounds, pieces), pieces::get).values());
             return new Frame(layout, bounds, pieces, pieceBounds, showArmor, showHunger, vanillaArmor, vanillaHunger, thirst);
+        }
+
+        /** The piece the air rows follow until moved on their own: hunger, or health without it. */
+        private static HudPiece airFollows(Map<HudPiece, HudPosition.Bounds> pieceBounds) {
+            return pieceBounds.containsKey(HudPiece.HUNGER) ? HudPiece.HUNGER : HudPiece.HEALTH;
+        }
+
+        /**
+         * From the air piece's own default spot to where its first row goes while it follows another
+         * piece: above everything stacked there, or under hunger with Air Position on Below.
+         */
+        private static int airAttachedDrop(HudLayout layout, Map<HudPiece, HudPosition.Bounds> pieceBounds) {
+            HudPosition.Bounds hunger = pieceBounds.get(HudPiece.HUNGER);
+            int top = ClientConfig.AIR_POSITION.get() == AirPosition.BELOW && hunger != null
+                    ? hunger.bottom() + 1
+                    : layout.top() - HudPositionMover.ROW_HEIGHT;
+            return top - pieceBounds.get(HudPiece.AIR).top();
+        }
+
+        public HudPiece airFollows() {
+            return airFollows(pieceBounds);
+        }
+
+        /** The air rows' first row where it is by default, following another piece. */
+        public HudPosition.Bounds defaultAir() {
+            return pieceBounds.get(HudPiece.AIR).offset(new HudPosition.Offset(0, airAttachedDrop(layout, pieceBounds)));
+        }
+
+        /**
+         * How far the air and mount health rows are shifted from where vanilla stacks them, while
+         * they follow another piece. Following the health bar, they're also kept on screen.
+         */
+        public HudPosition.Offset airFollowOffset() {
+            HudPiece follow = airFollows();
+            return follow == HudPiece.HUNGER ? pieces.get(follow)
+                    : pieces.get(HudPiece.AIR).minus(new HudPosition.Offset(0, airAttachedDrop(layout, pieceBounds)));
+        }
+
+        /** The pieces that make up the set, moved as one: air rows following another piece aren't one. */
+        public static Map<HudPiece, HudPosition.Bounds> setBounds(Map<HudPiece, HudPosition.Bounds> pieceBounds, HudPosition.Pieces pieces) {
+            Map<HudPiece, HudPosition.Bounds> set = new EnumMap<>(pieceBounds);
+            if (!pieces.airDetached()) {
+                set.remove(HudPiece.AIR);
+            }
+            return set;
         }
 
         /** The piece our thirst bar is drawn in, or null with no thirst bar of ours. */
@@ -177,6 +227,10 @@ public class HudLayer implements IGuiOverlay {
             if (thirst == ThirstMode.VERTICAL) {
                 bounds.put(HudPiece.THIRST_VERTICAL, uprightBounds(screenWidth, screenHeight, HudPiece.THIRST_VERTICAL, upright));
             }
+            // Above the rows by default, but not the thirst row, which comes and goes: once moved on
+            // their own, the air rows stay put.
+            int airTop = layout.rowsTop() - HudPositionMover.ROW_HEIGHT;
+            bounds.put(HudPiece.AIR, new HudPosition.Bounds(right - HudLayout.ICON_ROW_WIDTH, airTop, right, airTop + HudLayout.ICON_ROW_HEIGHT));
             int healthLeft = left - BarWidths.left(HudPiece.HEALTH);
             bounds.put(HudPiece.HEALTH, new HudPosition.Bounds(healthLeft, layout.healthY(), healthLeft + layout.healthWidth(), layout.healthY() + HudLayout.MAIN_BAR_HEIGHT));
             List<ManaSource> manaBars = ManaSource.shownBars();

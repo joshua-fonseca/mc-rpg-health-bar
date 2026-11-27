@@ -135,6 +135,15 @@ public final class HudTextPlacer {
                     continue;
                 }
                 HudPosition.Bounds box = entry.getValue();
+                if (entry.getKey() == HudPiece.AIR) {
+                    // Following another piece, its rows count as rows stacked above the bars (or
+                    // under hunger). Moved on its own, it takes room only while rows are drawn.
+                    int height = HudPositionMover.detachedHeight();
+                    if (!frame.pieces().airDetached() || height == 0) {
+                        continue;
+                    }
+                    box = new HudPosition.Bounds(box.left(), box.top() - height + HudPositionMover.ROW_HEIGHT, box.right(), box.bottom());
+                }
                 if (entry.getKey() == HudPiece.HUNGER) {
                     // With air and mount health below hunger, they're part of it here.
                     box = new HudPosition.Bounds(box.left(), box.top(), box.right(), box.bottom() + HudPositionMover.belowHeight());

@@ -12,10 +12,10 @@ import com.joshuafonseca.rpghealthbar.client.XpBarOverlay;
 import com.joshuafonseca.rpghealthbar.client.XpBarRenderer;
 import com.joshuafonseca.rpghealthbar.compat.ManaSource;
 import com.joshuafonseca.rpghealthbar.compat.ThirstCompat;
-import com.joshuafonseca.rpghealthbar.config.AirPosition;
 import com.joshuafonseca.rpghealthbar.config.ClientConfig;
 import com.joshuafonseca.rpghealthbar.config.HudPiece;
 import com.joshuafonseca.rpghealthbar.config.ThirstMode;
+import java.util.Map;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
@@ -50,7 +50,6 @@ final class ConfigPreview {
     private static final int VIRTUAL_HEIGHT = 10000;
     private static final int ICON = HudLayout.ICON_ROW_HEIGHT;
     private static final int ICON_SPACING = 8;
-    private static final int ROW_HEIGHT = HudPositionMover.ROW_HEIGHT;
 
     /** Health a bit down with some absorption, and mana partly used, so the text and fills show. */
     private static final float HEALTH = 15;
@@ -127,10 +126,8 @@ final class ConfigPreview {
                 }
             }
         }
-        // Right-aligned like the hunger icons, the last one bursting.
-        for (int i = 0; i < AIR_BUBBLES; i++) {
-            graphics.blit(ICONS, WIDTH - i * ICON_SPACING - ICON, preview.airTop(), i == AIR_BUBBLES - 1 ? AIR_BURSTING_U : AIR_U, AIR_V, ICON, ICON);
-        }
+        HudPosition.Bounds air = frame.defaultAir();
+        drawAir(graphics, air.right(), air.top());
 
         if (!ClientConfig.XP_BAR_SHOWN.get()) {
             graphics.pose().popPose();
@@ -142,30 +139,36 @@ final class ConfigPreview {
         graphics.pose().popPose();
     }
 
-    /**
-     * The HUD laid out on the virtual screen, and the air bubbles' row: stacked above everything
-     * (Above, or with no hunger to go under), or right under hunger (Below).
-     */
-    private record Layout(HudLayer.Frame frame, int airTop, int left, int top, int right, int bottom) {
+    /** Sample air bubbles in a row ending at {@code right}. */
+    static void drawAir(GuiGraphics graphics, int right, int top) {
+        // Right-aligned like the hunger icons, the last one bursting.
+        for (int i = 0; i < AIR_BUBBLES; i++) {
+            graphics.blit(ICONS, right - i * ICON_SPACING - ICON, top, i == AIR_BUBBLES - 1 ? AIR_BURSTING_U : AIR_U, AIR_V, ICON, ICON);
+        }
+    }
+
+    /** The HUD laid out on the virtual screen, and the box around everything in it. */
+    private record Layout(HudLayer.Frame frame, int left, int top, int right, int bottom) {
     }
 
     private static Layout layout() {
         HudLayer.Frame frame = HudLayer.Frame.preview(WIDTH, VIRTUAL_HEIGHT);
-        HudPosition.Bounds hunger = frame.pieceBounds().get(HudPiece.HUNGER);
-        int airTop = ClientConfig.AIR_POSITION.get() == AirPosition.BELOW && hunger != null
-                ? hunger.bottom() + 1
-                : frame.layout().top() - ROW_HEIGHT;
         // The pieces at their default spots, ignoring where they've been moved.
+        HudPosition.Bounds air = frame.defaultAir();
         int left = 0;
-        int top = airTop;
+        int top = air.top();
         int right = WIDTH;
-        int bottom = 0;
-        for (HudPosition.Bounds piece : frame.pieceBounds().values()) {
+        int bottom = air.bottom();
+        for (Map.Entry<HudPiece, HudPosition.Bounds> entry : frame.pieceBounds().entrySet()) {
+            if (entry.getKey() == HudPiece.AIR) {
+                continue;
+            }
+            HudPosition.Bounds piece = entry.getValue();
             left = Math.min(left, piece.left());
             top = Math.min(top, piece.top());
             right = Math.max(right, piece.right());
             bottom = Math.max(bottom, piece.bottom());
         }
-        return new Layout(frame, airTop, left, top, right, bottom);
+        return new Layout(frame, left, top, right, bottom);
     }
 }

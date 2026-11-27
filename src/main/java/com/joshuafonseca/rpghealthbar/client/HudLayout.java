@@ -6,7 +6,7 @@ import com.joshuafonseca.rpghealthbar.config.BarSize;
  * Positions of the bars in GUI-scaled pixels, at their default spot above the hotbar. Shared by
  * the HUD and the position editor.
  */
-public record HudLayout(int x, int top, int iconRowY, int halfBarY, int healthY, int healthWidth, int manaY, int manaBars, int thirstY) {
+public record HudLayout(int x, int top, int iconRowY, int halfBarY, int healthY, int healthWidth, int manaY, int manaBars, int thirstY, int rowsTop) {
     /** Same width as the hotbar. */
     public static final int WIDTH = 182;
     /** Health and mana bars: just tall enough for their 7px text. */
@@ -60,7 +60,7 @@ public record HudLayout(int x, int top, int iconRowY, int halfBarY, int healthY,
         int rowsTop = rowHeight > 0 ? iconRowY : healthY;
         int thirstY = rowsTop - ROW_GAP - thirstHeight;
         int top = thirstHeight > 0 ? thirstY : rowsTop;
-        return new HudLayout(x, top, iconRowY, halfBarY, healthY, healthWidth, manaY, manaBars, thirstY);
+        return new HudLayout(x, top, iconRowY, halfBarY, healthY, healthWidth, manaY, manaBars, thirstY, rowsTop);
     }
 
     /**
