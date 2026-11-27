@@ -22,7 +22,8 @@ import net.minecraft.resources.ResourceLocation;
 
 /**
  * The HUD as the config screen's settings would draw it, at its default spot, with sample values:
- * the bars or vanilla icons, a row of air bubbles where they'd go, and the XP bar with its level.
+ * the bars or vanilla icons, a row of air bubbles where they'd go, the XP bar with its level, and
+ * a stand-in for the hotbar.
  * Drawn every frame from the current settings, so it follows each click.
  */
 final class ConfigPreview {
@@ -42,6 +43,14 @@ final class ConfigPreview {
     private static final int AIR_V = 18;
     private static final int AIR_U = 16;
     private static final int AIR_BURSTING_U = 25;
+    /** Vanilla's hotbar in {@link #WIDGETS}, with the selected slot's frame in the row under it. */
+    private static final ResourceLocation WIDGETS = new ResourceLocation("textures/gui/widgets.png");
+    private static final int HOTBAR_WIDTH = 182;
+    private static final int HOTBAR_HEIGHT = 22;
+    private static final int SELECTION_V = 22;
+    private static final int SELECTION_WIDTH = 24;
+    private static final int SELECTION_HEIGHT = 22;
+    private static final int HOTBAR_LEFT = WIDTH / 2 - HOTBAR_WIDTH / 2;
 
     /**
      * A virtual screen the HUD is laid out on; only its height matters, as the HUD sits at the bottom.
@@ -89,6 +98,11 @@ final class ConfigPreview {
         graphics.pose().scale(scale, scale, 1);
         // Whole pixels: on a half pixel, the vanilla icons pick up the texture rows beside them.
         graphics.pose().translate(-((preview.left() + preview.right()) / 2), -((preview.top() + preview.bottom()) / 2), 0);
+
+        // The empty hotbar with its first slot selected, so the HUD is seen where it sits around it.
+        graphics.blit(WIDGETS, HOTBAR_LEFT, VIRTUAL_HEIGHT - HOTBAR_HEIGHT, 0, 0, HOTBAR_WIDTH, HOTBAR_HEIGHT);
+        // As in vanilla, the frame sits a pixel above and to the left of the first slot.
+        graphics.blit(WIDGETS, HOTBAR_LEFT - 1, VIRTUAL_HEIGHT - HOTBAR_HEIGHT - 1, 0, SELECTION_V, SELECTION_WIDTH, SELECTION_HEIGHT);
 
         HudValues values = new HudValues(HEALTH, 20, ABSORPTION, ARMOR, FOOD, 0, null, ManaSource.placeholders(60),
                 new ThirstCompat.Thirst(THIRST, 0, 20), StatusColors.HEALTH, StatusColors.HUNGER, StatusColors.THIRST, false);
@@ -155,10 +169,10 @@ final class ConfigPreview {
         HudLayer.Frame frame = HudLayer.Frame.preview(WIDTH, VIRTUAL_HEIGHT);
         // The pieces at their default spots, ignoring where they've been moved.
         HudPosition.Bounds air = frame.defaultAir();
-        int left = 0;
+        int left = HOTBAR_LEFT - 1;
         int top = air.top();
         int right = WIDTH;
-        int bottom = air.bottom();
+        int bottom = VIRTUAL_HEIGHT;
         for (Map.Entry<HudPiece, HudPosition.Bounds> entry : frame.pieceBounds().entrySet()) {
             if (entry.getKey() == HudPiece.AIR) {
                 continue;
