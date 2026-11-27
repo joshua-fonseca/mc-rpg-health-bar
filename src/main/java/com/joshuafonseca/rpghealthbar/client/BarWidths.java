@@ -11,9 +11,9 @@ import javax.annotation.Nullable;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
 /**
- * How wide the health, mana and XP bars are. In Simple edit mode, the presets (full or half); in
- * Advanced, the widths set by dragging the bars' ends in the HUD Editor, where a bar not resized yet
- * keeps its preset.
+ * How wide the health, mana and XP bars are, and how tall the upright hunger and thirst bars. In
+ * Simple edit mode, the presets (full or half; upright bars have one height); in Advanced, the sizes
+ * set by dragging the bars' ends in the HUD Editor, where a bar not resized yet keeps its preset.
  * <p>
  * Dragging a bar's left end also moves where it starts ({@link #left}). That's kept with the width,
  * not in the bar's position, so with the preset back (Simple mode) the bar is where it was.
@@ -28,17 +28,23 @@ public final class BarWidths {
     public static final int VANILLA_XP_CELLS = 18;
     /** One cell in each half. */
     public static final int MIN_XP_CELLS = 2;
+    /** The shortest the upright bars can be made. */
+    public static final int MIN_HEIGHT = 10;
 
-    /** A bar's custom width (cells for the XP bar; 0 for the preset) and how far left its left end was dragged. */
+    /**
+     * A bar's custom width (cells for the XP bar, the height for an upright bar; 0 for the preset)
+     * and how far left its left end was dragged.
+     */
     public record Size(int width, int left) {
         public static final Size PRESET = new Size(0, 0);
     }
 
     /**
-     * Where each resizable bar's size is stored: its custom width (cells for the XP bar), how far
-     * left its left end was dragged, and its Simple mode preset (none for the XP bar).
+     * Where each resizable bar's size is stored: its custom width (cells for the XP bar, the height
+     * for an upright bar), how far left its left end was dragged (not for upright bars), and its
+     * Simple mode preset (none for the XP bar and upright bars).
      */
-    private record Settings(ModConfigSpec.IntValue width, ModConfigSpec.IntValue left, @Nullable ModConfigSpec.EnumValue<BarSize> preset) {
+    private record Settings(ModConfigSpec.IntValue width, @Nullable ModConfigSpec.IntValue left, @Nullable ModConfigSpec.EnumValue<BarSize> preset) {
     }
 
     private static final Map<HudPiece, Settings> SETTINGS = settings();
@@ -50,6 +56,8 @@ public final class BarWidths {
             settings.put(source.piece(), new Settings(source.width(), source.left(), source.size()));
         }
         settings.put(HudPiece.XP, new Settings(ClientConfig.XP_CELLS, ClientConfig.XP_LEFT, null));
+        settings.put(HudPiece.HUNGER_VERTICAL, new Settings(ClientConfig.HUNGER_VERTICAL_HEIGHT, null, null));
+        settings.put(HudPiece.THIRST_VERTICAL, new Settings(ClientConfig.THIRST_VERTICAL_HEIGHT, null, null));
         return settings;
     }
 
@@ -76,6 +84,12 @@ public final class BarWidths {
         }
         int custom = advanced() ? custom(piece) : 0;
         return custom > 0 ? custom : HudLayout.width(preset(piece));
+    }
+
+    /** An upright bar's height in GUI pixels. */
+    public static int height(HudPiece piece) {
+        int custom = advanced() ? custom(piece) : 0;
+        return custom > 0 ? custom : HudLayout.VERTICAL_BAR_HEIGHT;
     }
 
     /** How many cells long the XP bar is. */
@@ -113,7 +127,10 @@ public final class BarWidths {
             return preview.getOrDefault(piece, Size.PRESET);
         }
         Settings settings = SETTINGS.get(piece);
-        return settings == null ? Size.PRESET : new Size(settings.width().get(), settings.left().get());
+        if (settings == null) {
+            return Size.PRESET;
+        }
+        return new Size(settings.width().get(), settings.left() == null ? 0 : settings.left().get());
     }
 
     /** The stored sizes, for the HUD Editor to start from. */
@@ -135,7 +152,9 @@ public final class BarWidths {
             Settings settings = SETTINGS.get(piece);
             if (settings != null) {
                 settings.width().set(size.width());
-                settings.left().set(size.left());
+                if (settings.left() != null) {
+                    settings.left().set(size.left());
+                }
             }
         });
     }

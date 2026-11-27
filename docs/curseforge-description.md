@@ -75,7 +75,7 @@ Note: compatibility mods may exist to have unified mana, but there are too many 
 #### Customization:
 
 *   **Move the HUD** by dragging it: can either move the whole set, including the XP bar and level, or each piece (armor, hunger, thirst, health, each mana bar, XP bar) on its own. It stays in place when you change the window size or GUI scale.
-*   **Advanced edit mode:** For users who want even more customization, you can set the health, mana and XP bars to any width by dragging their ends in the HUD Editor.
+*   **Advanced edit mode:** For users who want even more customization, you can set the health, mana and XP bars to any width, and vertical hunger and thirst bars to any height, by dragging their ends in the HUD Editor.
 *   **XP bar:** put the level number in the center or at either end, or hide the XP bar entirely.
 *   **Item name height:** set how high the held item's name sits, with a preview that moves as you change it. It starts at vanilla's height, which leaves room for mods that add hotbars.
 *   **Air bubbles and mount health** can sit above hunger, like vanilla, or below it, for layouts with health or mana above hunger.

@@ -158,10 +158,10 @@ public class HudLayer implements LayeredDraw.Layer {
             // Upright bars, side by side from the hotbar outward: hunger, then thirst.
             int upright = 0;
             if (hungerMode == HalfBarMode.VERTICAL) {
-                bounds.put(HudPiece.HUNGER_VERTICAL, uprightBounds(screenWidth, screenHeight, upright++));
+                bounds.put(HudPiece.HUNGER_VERTICAL, uprightBounds(screenWidth, screenHeight, HudPiece.HUNGER_VERTICAL, upright++));
             }
             if (thirst == ThirstMode.VERTICAL) {
-                bounds.put(HudPiece.THIRST_VERTICAL, uprightBounds(screenWidth, screenHeight, upright));
+                bounds.put(HudPiece.THIRST_VERTICAL, uprightBounds(screenWidth, screenHeight, HudPiece.THIRST_VERTICAL, upright));
             }
             int healthLeft = left - BarWidths.left(HudPiece.HEALTH);
             bounds.put(HudPiece.HEALTH, new HudPosition.Bounds(healthLeft, layout.healthY(), healthLeft + layout.healthWidth(), layout.healthY() + HudLayout.MAIN_BAR_HEIGHT));
@@ -175,13 +175,15 @@ public class HudLayer implements LayeredDraw.Layer {
         }
 
         /** The {@code index}th upright bar's default box, counting from the hotbar. */
-        private static HudPosition.Bounds uprightBounds(int screenWidth, int screenHeight, int index) {
+        private static HudPosition.Bounds uprightBounds(int screenWidth, int screenHeight, HudPiece piece, int index) {
             // By the player's settings rather than what's on screen, so the bars don't jump around.
             Options options = Minecraft.getInstance().options;
             boolean leftHanded = options.mainHand().get() == HumanoidArm.LEFT;
             int left = HudLayout.verticalBarX(screenWidth, leftHanded,
                     !leftHanded && options.attackIndicator().get() == AttackIndicatorStatus.HOTBAR, index);
-            return new HudPosition.Bounds(left, screenHeight - HudLayout.VERTICAL_BAR_HEIGHT, left + HudLayout.MAIN_BAR_HEIGHT, screenHeight);
+            // A height set on a taller screen is cut to fit this one.
+            int height = Math.min(BarWidths.height(piece), screenHeight);
+            return new HudPosition.Bounds(left, screenHeight - height, left + HudLayout.MAIN_BAR_HEIGHT, screenHeight);
         }
 
         private static HudPosition.Bounds manaBounds(HudLayout layout, int row, HudPiece piece) {

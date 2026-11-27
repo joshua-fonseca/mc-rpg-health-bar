@@ -21,7 +21,7 @@ public record HudLayout(int x, int top, int iconRowY, int halfBarY, int healthY,
     public static final int ICON_ROW_HEIGHT = 9;
     /** Ten 9px icons, 8px apart. */
     public static final int ICON_ROW_WIDTH = 81;
-    /** The vertical hunger and thirst bars are one and a half times as tall as the hotbar (22px). */
+    /** The vertical hunger and thirst bars are, unless resized, one and a half times as tall as the hotbar (22px). */
     public static final int VERTICAL_BAR_HEIGHT = 33;
     /** The first vertical bar is this far from what's beside it, as the offhand slot is from the hotbar. */
     private static final int BESIDE_GAP = 7;

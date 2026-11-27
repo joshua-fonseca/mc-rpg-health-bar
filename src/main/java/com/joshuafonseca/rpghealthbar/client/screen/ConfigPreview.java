@@ -37,8 +37,11 @@ final class ConfigPreview {
     private static final ResourceLocation AIR = ResourceLocation.withDefaultNamespace("hud/air");
     private static final ResourceLocation AIR_BURSTING = ResourceLocation.withDefaultNamespace("hud/air_bursting");
 
-    /** A virtual screen the HUD is laid out on; only its height matters, as the HUD sits at the bottom. */
-    private static final int VIRTUAL_HEIGHT = 200;
+    /**
+     * A virtual screen the HUD is laid out on; only its height matters, as the HUD sits at the bottom.
+     * Tall enough that no upright bar is cut to fit it.
+     */
+    private static final int VIRTUAL_HEIGHT = 10000;
     private static final int ICON = HudLayout.ICON_ROW_HEIGHT;
     private static final int ICON_SPACING = 8;
     private static final int ROW_HEIGHT = HudPositionMover.ROW_HEIGHT;

@@ -3,6 +3,7 @@
 ## 2.2.0 (unreleased)
 
 - New **Vertical** choice for **Hunger**: an upright bar to the right of the hotbar, with AppleSkin's saturation outline and food preview. With thirst vertical too, hunger is nearest the hotbar.
+- In **Advanced** edit mode, vertical hunger and thirst bars can be made taller or shorter by dragging their top in the HUD Editor.
 - **Thirst Was Taken 2 support** (1.1.0+ on 1.21.1, 1.5.0+ on 1.20.1), with a new **Thirst** option:
   - **Default**: its droplet icons, in a row above hunger that moves with the HUD.
   - **Bar**: a blue half-width bar above the hunger bar.

@@ -254,9 +254,22 @@ public class RpgConfigScreen extends Screen {
                 survivalDetected(), NOTE_COLOR));
         // Each click cycles Vanilla → Bar → Hidden.
         list.addEntry(option("armorMode", new HalfBarMode[] {HalfBarMode.VANILLA, HalfBarMode.BAR, HalfBarMode.HIDDEN}, ClientConfig.ARMOR_MODE, HalfBarMode::displayName, "vanilla", "bar", "hidden"));
-        list.addEntry(option("hungerMode", HalfBarMode.values(), ClientConfig.HUNGER_MODE, HalfBarMode::displayName, "vanilla", "bar", "vertical", "hidden"));
+        // An upright bar's height row comes and goes with the mode, so changing it refills the rows.
+        list.addEntry(option("hungerMode", HalfBarMode.values(), ClientConfig.HUNGER_MODE.get(), HalfBarMode::displayName, mode -> {
+            ClientConfig.set(ClientConfig.HUNGER_MODE, mode);
+            refresh();
+        }, "vanilla", "bar", "vertical", "hidden"));
+        if (BarWidths.advanced() && ClientConfig.HUNGER_MODE.get() == HalfBarMode.VERTICAL) {
+            list.addEntry(heightRow("hungerHeight"));
+        }
         if (ThirstCompat.isAvailable()) {
-            list.addEntry(option("thirstMode", ThirstMode.values(), ClientConfig.THIRST_MODE, ThirstMode::displayName, "vanilla", "bar", "vertical", "hidden"));
+            list.addEntry(option("thirstMode", ThirstMode.values(), ClientConfig.THIRST_MODE.get(), ThirstMode::displayName, mode -> {
+                ClientConfig.set(ClientConfig.THIRST_MODE, mode);
+                refresh();
+            }, "vanilla", "bar", "vertical", "hidden"));
+            if (BarWidths.advanced() && ClientConfig.THIRST_MODE.get() == ThirstMode.VERTICAL) {
+                list.addEntry(heightRow("thirstHeight"));
+            }
         }
         list.addEntry(option("airPosition", AirPosition.values(), ClientConfig.AIR_POSITION, AirPosition::displayName, "above", "below"));
 
@@ -304,23 +317,32 @@ public class RpgConfigScreen extends Screen {
      */
     private WidgetRow widthOption(String key, @Nullable ModConfigSpec.EnumValue<BarSize> preset) {
         if (preset == null || BarWidths.advanced()) {
-            return new WidgetRow(label(key),
-                    Button.builder(Component.translatable("rpghealthbar.config.editInHudEditor"), button -> this.minecraft.setScreen(new HudEditScreen(this)))
-                            .size(VALUE_WIDTH, BUTTON_HEIGHT)
-                            .tooltip(Tooltip.create(advancedWidthTooltip(key)))
-                            .build());
+            return editorRow(key, "rpghealthbar.config.editInHudEditor.tooltip");
         }
         return option(key, BarSize.values(), preset, BarSize::displayName, "full", "half");
     }
 
+    /** Advanced mode only: an upright bar's height, changed in the HUD Editor. */
+    private WidgetRow heightRow(String key) {
+        return editorRow(key, "rpghealthbar.config.editInHudEditor.tooltip.height");
+    }
+
+    private WidgetRow editorRow(String key, String howKey) {
+        return new WidgetRow(label(key),
+                Button.builder(Component.translatable("rpghealthbar.config.editInHudEditor"), button -> this.minecraft.setScreen(new HudEditScreen(this)))
+                        .size(VALUE_WIDTH, BUTTON_HEIGHT)
+                        .tooltip(Tooltip.create(advancedTooltip(key, howKey)))
+                        .build());
+    }
+
     /**
-     * A width's tooltip in Advanced mode: "Advanced Mode:" in cyan, what the width is, and how to
+     * A size's tooltip in Advanced mode: "Advanced Mode:" in cyan, what the size is, and how to
      * change it in the HUD Editor.
      */
-    private static Component advancedWidthTooltip(String key) {
+    private static Component advancedTooltip(String key, String howKey) {
         return Component.translatable("rpghealthbar.config.advancedModeTitle").withStyle(ChatFormatting.AQUA)
                 .append(" ").append(Component.translatable("rpghealthbar.config." + key + ".tooltip").withStyle(ChatFormatting.WHITE))
-                .append(" ").append(Component.translatable("rpghealthbar.config.editInHudEditor.tooltip").withStyle(ChatFormatting.WHITE));
+                .append(" ").append(Component.translatable(howKey).withStyle(ChatFormatting.WHITE));
     }
 
     /** The HUD Editor button's tooltip; in Advanced mode, with how to resize the bars ("advanced mode" in cyan). */
