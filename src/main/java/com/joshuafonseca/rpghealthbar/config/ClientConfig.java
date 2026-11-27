@@ -16,6 +16,15 @@ public final class ClientConfig {
      * lets each reload finish first.
      */
     private static final Map<ForgeConfigSpec.ConfigValue<?>, Object> PENDING = new LinkedHashMap<>();
+    /**
+     * What each value changed since the file last settled should be. Changes made at once, like Reset
+     * to Defaults, can still be undone by such a reload; once the writes stop, any that were are
+     * written again.
+     */
+    private static final Map<ForgeConfigSpec.ConfigValue<?>, Object> EXPECTED = new LinkedHashMap<>();
+    /** How many client ticks after the last write the reloads are taken to be done. */
+    private static final int SETTLE_TICKS = 20;
+    private static int ticksToSettle;
 
     private static final ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
 
@@ -319,6 +328,7 @@ public final class ClientConfig {
      */
     public static void resetToDefaults() {
         PENDING.clear();
+        EXPECTED.clear();
         resetToDefaults(SPEC.getValues());
     }
 
@@ -333,26 +343,45 @@ public final class ClientConfig {
     }
 
     private static <T> void setDefault(ForgeConfigSpec.ConfigValue<T> value) {
-        value.set(value.getDefault());
+        set(value, value.getDefault());
     }
 
     /** Updates a value; Forge writes the config file on every change. */
     public static <T> void set(ForgeConfigSpec.ConfigValue<T> value, T newValue) {
-        value.set(newValue);
+        // A change still waiting to be written would overwrite this newer one.
+        PENDING.remove(value);
+        write(value, newValue);
     }
 
-    /** Writes one waiting position value; called every client tick. */
+    /**
+     * Writes one waiting value, or once the writes have settled, queues again any change a reload
+     * undid; called every client tick.
+     */
     public static void writePending() {
         Iterator<Map.Entry<ForgeConfigSpec.ConfigValue<?>, Object>> it = PENDING.entrySet().iterator();
         if (it.hasNext()) {
             Map.Entry<ForgeConfigSpec.ConfigValue<?>, Object> entry = it.next();
             it.remove();
             write(entry.getKey(), entry.getValue());
+        } else if (!EXPECTED.isEmpty() && --ticksToSettle <= 0) {
+            queueUndone();
+            if (PENDING.isEmpty()) {
+                EXPECTED.clear();
+            }
         }
+    }
+
+    private static void queueUndone() {
+        EXPECTED.forEach((value, expected) -> {
+            if (!value.get().equals(expected)) {
+                PENDING.putIfAbsent(value, expected);
+            }
+        });
     }
 
     /** Writes every waiting value at once, when the game closes. */
     public static void writeAllPending() {
+        queueUndone();
         while (!PENDING.isEmpty()) {
             writePending();
         }
@@ -375,5 +404,7 @@ public final class ClientConfig {
     @SuppressWarnings("unchecked")
     private static <T> void write(ForgeConfigSpec.ConfigValue<T> value, Object newValue) {
         value.set((T) newValue);
+        EXPECTED.put(value, newValue);
+        ticksToSettle = SETTLE_TICKS;
     }
 }

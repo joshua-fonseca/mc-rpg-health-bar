@@ -522,7 +522,8 @@ public class RpgConfigScreen extends Screen {
             if (reset) {
                 ClientConfig.resetToDefaults();
                 for (ForgeConfigSpec.ConfigValue<?> value : EDITED) {
-                    this.opened.put(value, value.get());
+                    // Not read back: a reload may briefly undo a reset value before it's written again.
+                    this.opened.put(value, value.getDefault());
                 }
             }
             // Coming back rebuilds the options, showing their new values.
