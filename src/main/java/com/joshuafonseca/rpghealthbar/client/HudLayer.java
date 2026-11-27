@@ -93,7 +93,10 @@ public class HudLayer implements LayeredDraw.Layer {
             return compute(screenWidth, screenHeight, thirstRow);
         }
 
-        /** The frame for the config screen's preview, which shows every row the settings ask for. */
+        /**
+         * The frame with every row the settings ask for, shown right now or not: for the config
+         * screen's preview, and for moving and saving the HUD as a whole.
+         */
         public static Frame preview(int screenWidth, int screenHeight) {
             return compute(screenWidth, screenHeight, true);
         }

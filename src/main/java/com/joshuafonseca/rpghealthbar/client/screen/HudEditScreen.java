@@ -180,6 +180,14 @@ public class HudEditScreen extends Screen {
         return HudLayer.Frame.compute(this.width, this.height);
     }
 
+    /**
+     * Every piece the settings ask for, at its default spot, including a thirst row not shown right
+     * now (while riding): it still moves with the set, so it needs room and a shared anchor.
+     */
+    private Map<HudPiece, HudPosition.Bounds> allPieceBounds() {
+        return HudLayer.Frame.preview(this.width, this.height).pieceBounds();
+    }
+
     /** Shows the pieces where they'd be saved, each kept on screen. */
     private void setPieces(HudPosition.Pieces requested) {
         HudPosition.Pieces clamped = requested;
@@ -195,7 +203,7 @@ public class HudEditScreen extends Screen {
 
     /** Moves every piece by the same amount, as far as keeps them all on screen. */
     private void moveAll(HudPosition.Pieces from, HudPosition.Offset delta) {
-        HudPosition.Bounds bounds = HudPosition.union(HudPosition.placed(HudLayer.Frame.setBounds(frame().pieceBounds(), from), from::get).values());
+        HudPosition.Bounds bounds = HudPosition.union(HudPosition.placed(HudLayer.Frame.setBounds(allPieceBounds(), from), from::get).values());
         setPieces(from.shiftedBy(HudPosition.clamp(delta, this.width, this.height, bounds)));
     }
 
@@ -210,7 +218,7 @@ public class HudEditScreen extends Screen {
 
     private void save() {
         BarWidths.save(sizes);
-        HudPosition.save(pieces, this.width, this.height, frame().pieceBounds(), wasReset);
+        HudPosition.save(pieces, this.width, this.height, allPieceBounds(), wasReset);
         close();
     }
 
