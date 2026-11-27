@@ -68,6 +68,11 @@ public final class HudPositionMover {
         return drawnRows;
     }
 
+    /** Counts rows drawn away from the stack above the bars, for {@link #drawnRows}. */
+    static void addDrawnRows(HudPosition.Bounds area) {
+        drawnRows.add(area);
+    }
+
     /** Called as the GUI starts drawing. */
     public static void newFrame() {
         drawnRows.clear();

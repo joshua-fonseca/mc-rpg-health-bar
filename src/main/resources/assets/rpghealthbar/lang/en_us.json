@@ -50,7 +50,7 @@
   "rpghealthbar.config.airPosition.tooltip.above.name": "Above",
   "rpghealthbar.config.airPosition.tooltip.above": "bubbles above the hunger icons or bar; rows stack upward, like vanilla.",
   "rpghealthbar.config.airPosition.tooltip.below.name": "Below",
-  "rpghealthbar.config.airPosition.tooltip.below": "bubbles under the hunger icons or bar; rows stack downward. Useful when health or mana sit above hunger.",
+  "rpghealthbar.config.airPosition.tooltip.below": "bubbles under the hunger icons or bar; mount health's rows add on underneath. Useful when health or mana sit above hunger.",
   "rpghealthbar.config.armorMode": "Armor",
   "rpghealthbar.config.hungerMode": "Hunger",
   "rpghealthbar.config.thirstMode": "Thirst",

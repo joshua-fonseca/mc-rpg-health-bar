@@ -65,7 +65,7 @@ public final class ClientConfig {
             .defineEnum("thirstMode", ThirstMode.VANILLA);
 
     public static final ForgeConfigSpec.EnumValue<AirPosition> AIR_POSITION = BUILDER
-            .comment("ABOVE: the air bubbles start above hunger and mount health rows stack upward, like vanilla. BELOW: the air bubbles start under hunger and the rows stack downward.")
+            .comment("ABOVE: the air bubbles start above hunger and mount health rows stack upward, like vanilla. BELOW: the air bubbles start under hunger and the rows stack downward, the first ten hearts on top.")
             .translation("rpghealthbar.config.airPosition")
             .defineEnum("airPosition", AirPosition.ABOVE);
 

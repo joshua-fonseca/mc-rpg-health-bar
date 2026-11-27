@@ -4,6 +4,7 @@ import com.joshuafonseca.rpghealthbar.client.BarWidths;
 import com.joshuafonseca.rpghealthbar.client.HudLayer;
 import com.joshuafonseca.rpghealthbar.client.HudPosition;
 import com.joshuafonseca.rpghealthbar.client.HudPositionMover;
+import com.joshuafonseca.rpghealthbar.client.MountHealthLayer;
 import com.joshuafonseca.rpghealthbar.client.XpBarOverlay;
 import com.joshuafonseca.rpghealthbar.client.XpBarRenderer;
 import com.joshuafonseca.rpghealthbar.client.screen.RpgConfigScreen;
@@ -74,6 +75,8 @@ final class ClientSetup {
         // Directly after the hearts, so vanilla overlays drawn later (armor, food, air, mount health)
         // see the leftHeight/rightHeight we reserve and stack above our bars.
         event.registerAbove(VanillaGuiOverlay.PLAYER_HEALTH.id(), "hud", new HudLayer());
+        // Where vanilla's mount health is, before the air bubbles.
+        event.registerAbove(VanillaGuiOverlay.MOUNT_HEALTH.id(), "mount_health", new MountHealthLayer());
         // Vanilla draws the level above the XP bar in the same overlay; ours centers it on the bar.
         event.registerAbove(VanillaGuiOverlay.EXPERIENCE_BAR.id(), "experience_bar", new XpBarOverlay());
     }
@@ -137,6 +140,8 @@ final class ClientSetup {
                 || ManaSource.hidesAnyOwnDisplay(id)
                 || (id.equals(VanillaGuiOverlay.ARMOR_LEVEL.id()) && armorReplaced)
                 || (id.equals(VanillaGuiOverlay.FOOD_LEVEL.id()) && hungerReplaced)
+                // Its rows only stack upward; ours, drawn instead, stack downward.
+                || (id.equals(VanillaGuiOverlay.MOUNT_HEALTH.id()) && MountHealthLayer.replacesVanilla())
                 || hiddenByEditorView(id)) {
             event.setCanceled(true);
         }
