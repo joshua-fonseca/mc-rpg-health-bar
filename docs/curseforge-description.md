@@ -12,7 +12,7 @@ My original plan was to only replace the vanilla hearts with an RPG-style health
 *   **Absorption** fills the health bar in yellow, and the text shows it separately (`15.5+4/20`), added in (`19.5/20`), or as `+4` at the bar's right end.
 *   **Mana bar support:** Supports appropriately colored mana bars (depends on magic mod) in the same style as the health bar.
 *   **Status colors:** the health bar changes when poisoned, withered or frozen. The hunger bar changes with the Hunger effect. On 1.21.1, heart colors added by other mods are followed too.
-*   **Armor and hunger** can be the vanilla icons (default), thin bars, or hidden.
+*   **Armor and hunger** can be the vanilla icons (default), thin bars, or hidden. Hunger can also be an upright bar beside the hotbar.
 *   **AppleSkin support:** saturation is outlined in yellow on the hunger bar, and held food's value flashes on it, like AppleSkin's preview on the icons.
 *   **Thirst Was Taken 2 support:** thirst as its droplet icons (default), a blue bar above hunger, an upright bar beside the hotbar, or hidden.
 *   **Heavy customization:** move individual pieces of the HUD wherever you like, and more, explained further down this page.

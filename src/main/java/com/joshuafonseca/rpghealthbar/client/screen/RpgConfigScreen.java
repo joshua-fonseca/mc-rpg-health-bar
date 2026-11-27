@@ -253,8 +253,8 @@ public class RpgConfigScreen extends Screen {
         list.addEntry(new Header(Component.translatable("rpghealthbar.config.section.armorHunger"),
                 survivalDetected(), NOTE_COLOR));
         // Each click cycles Vanilla → Bar → Hidden.
-        list.addEntry(option("armorMode", HalfBarMode.values(), ClientConfig.ARMOR_MODE, HalfBarMode::displayName, "vanilla", "bar", "hidden"));
-        list.addEntry(option("hungerMode", HalfBarMode.values(), ClientConfig.HUNGER_MODE, HalfBarMode::displayName, "vanilla", "bar", "hidden"));
+        list.addEntry(option("armorMode", new HalfBarMode[] {HalfBarMode.VANILLA, HalfBarMode.BAR, HalfBarMode.HIDDEN}, ClientConfig.ARMOR_MODE, HalfBarMode::displayName, "vanilla", "bar", "hidden"));
+        list.addEntry(option("hungerMode", HalfBarMode.values(), ClientConfig.HUNGER_MODE, HalfBarMode::displayName, "vanilla", "bar", "vertical", "hidden"));
         if (ThirstCompat.isAvailable()) {
             list.addEntry(option("thirstMode", ThirstMode.values(), ClientConfig.THIRST_MODE, ThirstMode::displayName, "vanilla", "bar", "vertical", "hidden"));
         }

@@ -7,6 +7,8 @@ package com.joshuafonseca.rpghealthbar.config;
 public enum HudPiece {
     ARMOR("armor"),
     HUNGER("hunger"),
+    /** The upright hunger bar, beside the hotbar by default; placed apart from {@link #HUNGER}. */
+    HUNGER_VERTICAL("hungerVertical"),
     /** Thirst Was Taken 2's thirst, as its icons or our half bar, above hunger by default. */
     THIRST("thirst"),
     /** The upright thirst bar, beside the hotbar by default; placed apart from {@link #THIRST}. */
@@ -24,6 +26,11 @@ public enum HudPiece {
 
     HudPiece(String key) {
         this.key = key;
+    }
+
+    /** An upright bar, which stands beside the hotbar, apart from the rest of the HUD. */
+    public boolean isUpright() {
+        return this == HUNGER_VERTICAL || this == THIRST_VERTICAL;
     }
 
     /** Used in the config file's key names. */

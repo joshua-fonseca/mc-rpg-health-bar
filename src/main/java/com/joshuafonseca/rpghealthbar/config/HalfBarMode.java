@@ -11,6 +11,8 @@ public enum HalfBarMode {
     VANILLA,
     /** Our half-width bar, in the row above the health bar. */
     BAR,
+    /** Our upright bar beside the hotbar. Hunger only. */
+    VERTICAL,
     /** Not shown at all. */
     HIDDEN;
 

@@ -41,7 +41,7 @@ public class HudLayer implements LayeredDraw.Layer {
         HudPosition.moveTo(graphics.pose(), HudPosition.Offset.ZERO);
         // Riding a mount whose health vanilla shows, its hearts take hunger's place, as in vanilla.
         boolean mounted = HudPositionMover.mountWithHealth(player) != null;
-        HudRenderer.render(graphics, minecraft.font, frame, values, frame.showHunger() && !mounted, frame.pieces(), true);
+        HudRenderer.render(graphics, minecraft.font, frame, values, mounted, frame.pieces(), true);
         graphics.pose().popPose();
     }
 
@@ -154,14 +154,14 @@ public class HudLayer implements LayeredDraw.Layer {
                 bounds.put(HudPiece.THIRST, new HudPosition.Bounds(right - HudLayout.ICON_ROW_WIDTH, layout.thirstY(), right, layout.thirstY() + HudLayout.ICON_ROW_HEIGHT));
             } else if (thirst == ThirstMode.BAR) {
                 bounds.put(HudPiece.THIRST, new HudPosition.Bounds(layout.hungerX(), layout.thirstY(), right, layout.thirstY() + HudLayout.HALF_BAR_HEIGHT));
-            } else if (thirst == ThirstMode.VERTICAL) {
-                // By the player's settings rather than what's on screen, so the bar doesn't jump around.
-                Options options = Minecraft.getInstance().options;
-                boolean leftHanded = options.mainHand().get() == HumanoidArm.LEFT;
-                int barLeft = HudLayout.verticalBarX(screenWidth, leftHanded,
-                        !leftHanded && options.attackIndicator().get() == AttackIndicatorStatus.HOTBAR);
-                bounds.put(HudPiece.THIRST_VERTICAL, new HudPosition.Bounds(barLeft, screenHeight - HudLayout.VERTICAL_BAR_HEIGHT,
-                        barLeft + HudLayout.MAIN_BAR_HEIGHT, screenHeight));
+            }
+            // Upright bars, side by side from the hotbar outward: hunger, then thirst.
+            int upright = 0;
+            if (hungerMode == HalfBarMode.VERTICAL) {
+                bounds.put(HudPiece.HUNGER_VERTICAL, uprightBounds(screenWidth, screenHeight, upright++));
+            }
+            if (thirst == ThirstMode.VERTICAL) {
+                bounds.put(HudPiece.THIRST_VERTICAL, uprightBounds(screenWidth, screenHeight, upright));
             }
             int healthLeft = left - BarWidths.left(HudPiece.HEALTH);
             bounds.put(HudPiece.HEALTH, new HudPosition.Bounds(healthLeft, layout.healthY(), healthLeft + layout.healthWidth(), layout.healthY() + HudLayout.MAIN_BAR_HEIGHT));
@@ -172,6 +172,16 @@ public class HudLayer implements LayeredDraw.Layer {
             }
             bounds.put(HudPiece.XP, HudPosition.xpBar(screenHeight, layout));
             return bounds;
+        }
+
+        /** The {@code index}th upright bar's default box, counting from the hotbar. */
+        private static HudPosition.Bounds uprightBounds(int screenWidth, int screenHeight, int index) {
+            // By the player's settings rather than what's on screen, so the bars don't jump around.
+            Options options = Minecraft.getInstance().options;
+            boolean leftHanded = options.mainHand().get() == HumanoidArm.LEFT;
+            int left = HudLayout.verticalBarX(screenWidth, leftHanded,
+                    !leftHanded && options.attackIndicator().get() == AttackIndicatorStatus.HOTBAR, index);
+            return new HudPosition.Bounds(left, screenHeight - HudLayout.VERTICAL_BAR_HEIGHT, left + HudLayout.MAIN_BAR_HEIGHT, screenHeight);
         }
 
         private static HudPosition.Bounds manaBounds(HudLayout layout, int row, HudPiece piece) {

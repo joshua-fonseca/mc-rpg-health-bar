@@ -85,7 +85,7 @@ final class ConfigPreview {
 
         HudValues values = new HudValues(HEALTH, 20, ABSORPTION, ARMOR, FOOD, 0, null, ManaSource.placeholders(60),
                 new ThirstCompat.Thirst(THIRST, 0, 20), StatusColors.HEALTH, StatusColors.HUNGER, StatusColors.THIRST, false);
-        HudRenderer.render(graphics, font, frame, values, frame.showHunger(), HudPosition.Pieces.NONE, false);
+        HudRenderer.render(graphics, font, frame, values, false, HudPosition.Pieces.NONE, false);
 
         HudPosition.Bounds armor = frame.pieceBounds().get(HudPiece.ARMOR);
         if (frame.vanillaArmor() && armor != null) {
