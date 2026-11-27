@@ -1,10 +1,5 @@
 # Changelog
 
-## Unreleased
-
-- **Separate v2** absorption now writes the amount in parentheses: `(+4)`.
-- Fixed: the config screen's options no longer shift sideways when a setting changes the preview's width.
-
 ## 2.2.0 (2026-11-27)
 
 - **Thirst Was Taken 2 support** (1.1.0+ on 1.21.1, 1.5.0+ on 1.20.1), with a new **Thirst** option:
@@ -18,7 +13,8 @@
 - **Air bubbles** and **mount health** now have places of their own and can each be dragged in the HUD Editor; they no longer move with hunger. A HUD you've already moved keeps them where they were.
   - The new **Mount View** button shows the HUD as it is while riding, so mount health can be dragged.
   - **Air Bubbles/Mount HP** sets where the bubbles start (above or under hunger) until you move them, and whether mount health's extra rows are added above or below. With **Below**, the first ten hearts are now the top row.
-- The config screen's preview shows a hotbar under the HUD, and is centered in the space beside the options.
+- The config screen's preview shows a hotbar under the HUD, and is centered in the space beside the options, which stay put as the preview changes width.
+- **Separate v2** absorption now writes the amount in parentheses: `(+4)`.
 - Fixed: resizing the bars or the window kept every size's bar image in memory until the game closed.
 - Fixed: if a future version of Iron's Spells or Ars Nouveau can't be read, its own mana bar now shows again instead of no mana bar at all.
 - Fixed: **Reset** in the HUD Editor didn't fully reset a piece that wasn't shown at the time, which could then move away from its default spot when the window size changed.
