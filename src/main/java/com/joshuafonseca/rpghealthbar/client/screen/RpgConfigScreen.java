@@ -466,8 +466,8 @@ public class RpgConfigScreen extends Screen {
         if (this.editModeButton != null) {
             this.editModeButton.setPosition(this.width - EDIT_MODE_MARGIN - this.editModeButton.getWidth(), (this.layout.getHeaderHeight() - BUTTON_HEIGHT) / 2);
         }
-        // The preview goes left of the list, scaled down to fit the room there; the two are
-        // centered together, the preview taking only the width it needs.
+        // The preview goes left of the list, scaled down to fit the room there. The list is placed
+        // as if the two were centered together, the preview taking only the width it needs.
         int listWidth = PREVIEW_ROW_WIDTH + LIST_SIDE * 2;
         int room = this.width - listWidth - PREVIEW_GAP - PREVIEW_MARGIN * 2;
         float scale = Math.min(1.0F, Math.min((float) room / ConfigPreview.width(), (float) this.layout.getContentHeight() / ConfigPreview.height()));
@@ -476,11 +476,13 @@ public class RpgConfigScreen extends Screen {
             this.previewScale = scale;
             int previewWidth = Math.round(ConfigPreview.width() * scale);
             int left = (this.width - previewWidth - PREVIEW_GAP - listWidth) / 2;
-            this.previewX = left + previewWidth / 2;
+            int listX = left + previewWidth + PREVIEW_GAP;
+            // In the middle of the space beside the rows, not up against them.
+            this.previewX = (listX + LIST_SIDE) / 2;
             this.previewY = this.layout.getHeaderHeight() + this.layout.getContentHeight() / 2;
             this.list.rowWidth = PREVIEW_ROW_WIDTH;
             this.list.updateSizeAndPosition(listWidth, this.layout.getContentHeight(), this.layout.getHeaderHeight());
-            this.list.setX(left + previewWidth + PREVIEW_GAP);
+            this.list.setX(listX);
         } else {
             this.previewScale = 0;
             this.list.rowWidth = ROW_WIDTH;
