@@ -92,6 +92,11 @@ final class ConfigPreview {
         return HudLayer.Frame.uprightLeft(WIDTH, last) + HudLayout.MAIN_BAR_HEIGHT - (HOTBAR_LEFT - 1);
     }
 
+    /** The preview's width with nothing beside or past the hotbar, which decides whether there's room for it. */
+    static int leastWidth() {
+        return WIDTH - (HOTBAR_LEFT - 1);
+    }
+
     /** Draws the preview centered on {@code (centerX, centerY)}, scaled by {@code scale}; nothing while the mod is off. */
     static void draw(GuiGraphics graphics, Font font, int centerX, int centerY, float scale) {
         if (!ClientConfig.ENABLED.get()) {
