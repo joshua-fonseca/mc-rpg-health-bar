@@ -82,8 +82,22 @@ public class HudLayer implements IGuiOverlay {
             current = null;
         }
 
-        /** The frame for the current settings, with the mana bars {@link ManaSource} shows. */
+        /**
+         * The frame for the current settings, with the mana bars {@link ManaSource} shows. With the
+         * real HUD drawn, there's only a thirst row while the player's thirst is shown.
+         */
         public static Frame compute(int screenWidth, int screenHeight) {
+            Minecraft minecraft = Minecraft.getInstance();
+            boolean thirstRow = !(isVisible(minecraft) && minecraft.getCameraEntity() instanceof Player player) || ThirstCompat.isShown(player);
+            return compute(screenWidth, screenHeight, thirstRow);
+        }
+
+        /** The frame for the config screen's preview, which shows every row the settings ask for. */
+        public static Frame preview(int screenWidth, int screenHeight) {
+            return compute(screenWidth, screenHeight, true);
+        }
+
+        private static Frame compute(int screenWidth, int screenHeight, boolean thirstRow) {
             HalfBarMode armorMode = ClientConfig.ARMOR_MODE.get();
             HalfBarMode hungerMode = ClientConfig.HUNGER_MODE.get();
             boolean showArmor = armorMode == HalfBarMode.BAR;
@@ -93,7 +107,7 @@ public class HudLayer implements IGuiOverlay {
 
             // Hidden without Thirst Was Taken 2.
             ThirstMode thirst = ThirstCompat.isAvailable() ? ClientConfig.THIRST_MODE.get() : ThirstMode.HIDDEN;
-            int thirstHeight = switch (thirst) {
+            int thirstHeight = !thirstRow ? 0 : switch (thirst) {
                 case VANILLA -> HudLayout.ICON_ROW_HEIGHT;
                 case BAR -> HudLayout.HALF_BAR_HEIGHT;
                 case VERTICAL, HIDDEN -> 0;
@@ -101,7 +115,7 @@ public class HudLayer implements IGuiOverlay {
 
             HudLayout layout = HudLayout.compute(screenWidth, screenHeight, showArmor || showHunger, vanillaArmor || vanillaHunger, ManaSource.shownBars().size(),
                     BarWidths.width(HudPiece.HEALTH), thirstHeight);
-            Map<HudPiece, HudPosition.Bounds> pieceBounds = pieceBounds(screenWidth, screenHeight, layout, armorMode, hungerMode, thirst);
+            Map<HudPiece, HudPosition.Bounds> pieceBounds = pieceBounds(screenWidth, screenHeight, layout, armorMode, hungerMode, thirst, thirstRow);
             HudPosition.Pieces pieces = HudPosition.pieces(screenWidth, screenHeight, pieceBounds);
             HudPosition.Bounds bounds = HudPosition.union(HudPosition.placed(pieceBounds, pieces::get).values());
             return new Frame(layout, bounds, pieces, pieceBounds, showArmor, showHunger, vanillaArmor, vanillaHunger, thirst);
@@ -134,7 +148,7 @@ public class HudLayer implements IGuiOverlay {
 
         /** Each shown piece at its default position. Health and XP are always shown; each mana bar is its own piece. */
         private static Map<HudPiece, HudPosition.Bounds> pieceBounds(int screenWidth, int screenHeight, HudLayout layout, HalfBarMode armorMode,
-                                                                    HalfBarMode hungerMode, ThirstMode thirst) {
+                                                                    HalfBarMode hungerMode, ThirstMode thirst, boolean thirstRow) {
             Map<HudPiece, HudPosition.Bounds> bounds = new EnumMap<>(HudPiece.class);
             int left = layout.x();
             int right = left + HudLayout.WIDTH;
@@ -150,9 +164,9 @@ public class HudLayer implements IGuiOverlay {
             } else if (hungerMode == HalfBarMode.BAR) {
                 bounds.put(HudPiece.HUNGER, new HudPosition.Bounds(layout.hungerX(), layout.halfBarY(), right, barBottom));
             }
-            if (thirst == ThirstMode.VANILLA) {
+            if (thirstRow && thirst == ThirstMode.VANILLA) {
                 bounds.put(HudPiece.THIRST, new HudPosition.Bounds(right - HudLayout.ICON_ROW_WIDTH, layout.thirstY(), right, layout.thirstY() + HudLayout.ICON_ROW_HEIGHT));
-            } else if (thirst == ThirstMode.BAR) {
+            } else if (thirstRow && thirst == ThirstMode.BAR) {
                 bounds.put(HudPiece.THIRST, new HudPosition.Bounds(layout.hungerX(), layout.thirstY(), right, layout.thirstY() + HudLayout.HALF_BAR_HEIGHT));
             }
             // Upright bars, side by side from the hotbar outward: hunger, then thirst.

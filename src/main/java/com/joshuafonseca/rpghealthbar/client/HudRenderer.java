@@ -96,7 +96,7 @@ public final class HudRenderer {
                     (length, thickness) -> renderHungerBar(graphics, 0, 0, length, thickness, true, values)));
         }
         HudPiece thirstBar = frame.thirstBar();
-        if (thirstBar != null && values.thirst() != null) {
+        if (thirstBar != null && frame.pieceBounds().containsKey(thirstBar) && values.thirst() != null) {
             HudPosition.Bounds box = frame.pieceBounds().get(thirstBar);
             inPiece(graphics, pieces, thirstBar, () -> renderThirst(graphics, box, thirstBar == HudPiece.THIRST_VERTICAL, values));
         }
