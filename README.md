@@ -69,10 +69,11 @@ Defaults are in bold:
 | Category | Option | Values |
 |---|---|---|
 |  | Mod State | **Enabled**, Disabled (a fully vanilla HUD; your settings are kept) |
-|  | Edit mode (top right) | **Simple** (preset widths), Advanced (the health, mana and XP bars' widths are set by dragging their ends in the HUD Editor, and the width options become Edit in HUD Editor buttons) |
+|  | Edit mode (top right) | **Simple** (preset widths), Advanced (the health, mana and XP bars' widths and the vertical bars' heights are set by dragging their ends in the HUD Editor, and the width options become Edit in HUD Editor buttons) |
 | **Armor + Hunger** | Armor | **Default** (armor icons, or another mod's armor display), Bar, Hidden |
 |  | Hunger | **Default** (hunger icons, or another mod's hunger display), Bar, Vertical (an upright bar beside the hotbar), Hidden |
 |  | Thirst (only with Thirst Was Taken 2) | **Default** (its droplet icons, above hunger), Bar (above the hunger bar), Vertical (an upright bar beside the hotbar), Hidden |
+|  | Hunger / Thirst Bar Height (Advanced only, for a Vertical bar) | Edit in HUD Editor: drag the top of the bar (**33**, one and a half times the hotbar's height) |
 |  | Air Bubbles/Mount HP | **Above** hunger, Below it |
 | **Health** | Health Units | **HP** (20 for a full vanilla bar), Hearts (10) |
 |  | Absorption | **Separate** (`16+4/20`), Combined (`20/20`), Separate v2 (`16/20`, with `+4` at the bar's right end) |
@@ -89,7 +90,7 @@ Defaults are in bold:
 |  | Level Text | **Center**, Left, Right |
 |  | XP Bar Width (Advanced only) | Edit in HUD Editor: the XP bar is resized a cell at a time, its fill stretched over its length (**18 cells**, like vanilla) |
 | **Positioning** | Item Name... | Height of the held item's name: **Vanilla** (0), or pixels up (+) or down (-), down to right above the hotbar |
-|  | HUD Editor... | Drag the whole HUD (**Moving: All**) or a single piece (**Moving: One**); the arrow keys nudge it. In Advanced edit mode, drag a bar's ends to resize it. **Above the hotbar**, Reset puts it back |
+|  | HUD Editor... | Drag the whole HUD (**Moving: All**) or a single piece (**Moving: One**); the arrow keys nudge it. In Advanced edit mode, drag a bar's ends (a vertical bar's top) to resize it. **Above the hotbar**, Reset puts it back |
 
 #### The config screen
 

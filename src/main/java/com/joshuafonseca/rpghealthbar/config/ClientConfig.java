@@ -125,7 +125,7 @@ public final class ClientConfig {
             .define("arsManaBubbles", true);
 
     public static final ForgeConfigSpec.EnumValue<EditMode> EDIT_MODE = BUILDER
-            .comment("SIMPLE: the bars' widths are the presets above (healthSize, manaSize, confluenceManaSize, arsManaSize). ADVANCED: the widths below, set by dragging the bars' ends in Config → HUD Editor.")
+            .comment("SIMPLE: the bars' widths are the presets above (healthSize, manaSize, confluenceManaSize, arsManaSize). ADVANCED: the widths and heights below, set by dragging the bars' ends in Config → HUD Editor.")
             .translation("rpghealthbar.config.editMode")
             .defineEnum("editMode", EditMode.SIMPLE);
 
@@ -181,6 +181,16 @@ public final class ClientConfig {
             .comment("Advanced only: how far left of its usual spot the XP bar starts, from dragging its left end in the HUD Editor.")
             .translation("rpghealthbar.config.xpLeft")
             .defineInRange("xpLeft", 0, -10000, 10000);
+
+    public static final ForgeConfigSpec.IntValue HUNGER_VERTICAL_HEIGHT = BUILDER
+            .comment("Advanced only: height of the vertical hunger bar in GUI pixels; 0 keeps the usual 33.")
+            .translation("rpghealthbar.config.hungerVerticalHeight")
+            .defineInRange("hungerVerticalHeight", 0, 0, 10000);
+
+    public static final ForgeConfigSpec.IntValue THIRST_VERTICAL_HEIGHT = BUILDER
+            .comment("Advanced only: height of the vertical thirst bar in GUI pixels; 0 keeps the usual 33.")
+            .translation("rpghealthbar.config.thirstVerticalHeight")
+            .defineInRange("thirstVerticalHeight", 0, 0, 10000);
 
     public static final int ITEM_NAME_OFFSET_MIN = -50;
     public static final int ITEM_NAME_OFFSET_MAX = 100;

@@ -23,7 +23,8 @@ import org.lwjgl.glfw.GLFW;
 /**
  * The HUD Editor. Drag the whole HUD set, or one piece of it, to a new position, then Save (or Esc)
  * or Cancel. In Advanced edit mode, dragging either end of the health, mana or XP bar resizes it
- * (the XP bar a cell at a time). In a world the real HUD follows the drag; from the title screen a
+ * (the XP bar a cell at a time), and dragging the top of an upright hunger or thirst bar changes its
+ * height. In a world the real HUD follows the drag; from the title screen a
  * preview is drawn instead.
  */
 public class HudEditScreen extends Screen {
@@ -36,8 +37,9 @@ public class HudEditScreen extends Screen {
     private static final int LINE_HEIGHT = 10;
     /** A bar's end can be grabbed this far either side of it. */
     private static final int EDGE_MARGIN = 2;
-    /** The system's left-right resize cursor, shown over a bar's end; made the first time it's needed. */
-    private static long resizeCursor;
+    /** The system's resize cursors, shown over a bar's end; each made the first time it's needed. */
+    private static long widthCursor;
+    private static long heightCursor;
     private static final int CONTROLS_MARGIN = 8;
     /** Pieces can be grabbed this far outside their edges, so the thin bars are easy to pick up. */
     private static final int GRAB_MARGIN = 2;
@@ -74,17 +76,19 @@ public class HudEditScreen extends Screen {
     /** The bars' sizes being edited, shown on the HUD as they change. */
     @Nullable
     private Map<HudPiece, BarWidths.Size> sizes;
-    /** The bar end being dragged, and the bar's width and box when it was grabbed. */
+    /** The bar end being dragged, and the bar's width (or height) and box when it was grabbed. */
     @Nullable
     private Edge resizing;
     private int resizeStartWidth;
+    private int resizeStartHeight;
     /** How far left the bar's left end had been dragged when it was grabbed. */
     private int resizeStartLeft;
     @Nullable
     private HudPosition.Bounds resizeStartBox;
-    private boolean resizeCursorShown;
+    /** The resize cursor being shown, or 0 for the normal one. */
+    private long shownCursor;
 
-    /** One end of a resizable bar. */
+    /** One end of a resizable bar; for an upright bar, its top, and {@code left} is false. */
     private record Edge(HudPiece piece, boolean left) {
     }
 
@@ -218,7 +222,7 @@ public class HudEditScreen extends Screen {
     public void removed() {
         HudPosition.setPreview(null);
         BarWidths.setPreview(null);
-        showResizeCursor(false);
+        showResizeCursor(null);
     }
 
     @Override
@@ -239,7 +243,7 @@ public class HudEditScreen extends Screen {
 
         graphics.drawCenteredString(this.font, this.title, this.width / 2, controlsTop, 0xFFFFFF);
         Edge hoveredEdge = resizing == null && !dragging && getChildAt(mouseX, mouseY).isEmpty() ? edgeAt(mouseX, mouseY) : null;
-        showResizeCursor(resizing != null || hoveredEdge != null);
+        showResizeCursor(resizing != null ? resizing : hoveredEdge);
         if (resizing != null) {
             highlight(graphics, frame, resizing.piece(), GRABBED_HIGHLIGHT);
         } else if (hoveredEdge != null) {
@@ -264,16 +268,24 @@ public class HudEditScreen extends Screen {
         }
     }
 
-    /** Switches between the left-right resize cursor and the normal one. */
-    private void showResizeCursor(boolean show) {
-        if (show == resizeCursorShown) {
-            return;
+    /** Shows the resize cursor for the bar end, left-right or up-down, or the normal one for null. */
+    private void showResizeCursor(@Nullable Edge edge) {
+        long cursor = 0;
+        if (edge != null && edge.piece().isUpright()) {
+            if (heightCursor == 0) {
+                heightCursor = GLFW.glfwCreateStandardCursor(GLFW.GLFW_VRESIZE_CURSOR);
+            }
+            cursor = heightCursor;
+        } else if (edge != null) {
+            if (widthCursor == 0) {
+                widthCursor = GLFW.glfwCreateStandardCursor(GLFW.GLFW_HRESIZE_CURSOR);
+            }
+            cursor = widthCursor;
         }
-        if (show && resizeCursor == 0) {
-            resizeCursor = GLFW.glfwCreateStandardCursor(GLFW.GLFW_HRESIZE_CURSOR);
+        if (cursor != shownCursor) {
+            GLFW.glfwSetCursor(this.minecraft.getWindow().getWindow(), cursor);
+            shownCursor = cursor;
         }
-        GLFW.glfwSetCursor(this.minecraft.getWindow().getWindow(), show ? resizeCursor : 0L);
-        resizeCursorShown = show;
     }
 
     /** In Advanced mode, the end of a resizable bar under the cursor. */
@@ -288,6 +300,12 @@ public class HudEditScreen extends Screen {
                 continue;
             }
             HudPosition.Bounds box = entry.getValue();
+            if (entry.getKey().isUpright()) {
+                if (mouseX >= box.left() && mouseX < box.right() && Math.abs(mouseY - box.top()) <= EDGE_MARGIN) {
+                    return new Edge(entry.getKey(), false);
+                }
+                continue;
+            }
             if (mouseY < box.top() - EDGE_MARGIN || mouseY >= box.bottom() + EDGE_MARGIN) {
                 continue;
             }
@@ -303,10 +321,18 @@ public class HudEditScreen extends Screen {
 
     /**
      * Resizes the grabbed bar to follow the cursor: the dragged end moves, the other stays put. Kept
-     * between its narrowest and the screen's edge; the XP bar snaps to whole cells.
+     * between its smallest and the screen's edge; the XP bar snaps to whole cells.
      */
-    private void resize(double mouseX) {
+    private void resize(double mouseX, double mouseY) {
         HudPiece piece = resizing.piece();
+        if (piece.isUpright()) {
+            // Its bottom stays put.
+            int height = Mth.clamp(resizeStartHeight - (int) Math.round(mouseY - grabY),
+                    BarWidths.MIN_HEIGHT, Math.max(BarWidths.MIN_HEIGHT, resizeStartBox.bottom()));
+            sizes.put(piece, new BarWidths.Size(height, 0));
+            setPieces(pieces);
+            return;
+        }
         int moved = (int) Math.round(mouseX - grabX);
         int wanted = resizeStartWidth + (resizing.left() ? -moved : moved);
         int room = resizing.left() ? resizeStartBox.right() : this.width - resizeStartBox.left();
@@ -356,8 +382,10 @@ public class HudEditScreen extends Screen {
             resizing = edge;
             resizeStartBox = frame.placed(edge.piece());
             resizeStartWidth = resizeStartBox.width();
+            resizeStartHeight = resizeStartBox.height();
             resizeStartLeft = BarWidths.left(edge.piece());
             grabX = mouseX;
+            grabY = mouseY;
             return true;
         }
         if (mode == Mode.ALL) {
@@ -401,7 +429,7 @@ public class HudEditScreen extends Screen {
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
         if (resizing != null) {
-            resize(mouseX);
+            resize(mouseX, mouseY);
             return true;
         }
         if (dragging) {
