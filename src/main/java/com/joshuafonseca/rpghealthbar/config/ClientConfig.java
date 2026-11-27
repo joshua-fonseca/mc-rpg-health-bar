@@ -228,6 +228,11 @@ public final class ClientConfig {
     private static final Map<HudPiece, ModConfigSpec.IntValue> PIECE_OFFSETS_X = new EnumMap<>(HudPiece.class);
     private static final Map<HudPiece, ModConfigSpec.IntValue> PIECE_OFFSETS_Y = new EnumMap<>(HudPiece.class);
 
+    public static final ModConfigSpec.BooleanValue AIR_DETACHED = BUILDER
+            .comment("Layout 2: whether the air bubbles and mount health rows have been moved on their own. Otherwise they follow hunger, or the health bar without horizontal hunger.")
+            .translation("rpghealthbar.config.airDetached")
+            .define("airDetached", false);
+
     static {
         for (HudPiece piece : HudPiece.values()) {
             PIECE_ANCHORS.put(piece, BUILDER
@@ -277,6 +282,11 @@ public final class ClientConfig {
         PIECE_ANCHORS.get(piece).set(anchor);
         PIECE_OFFSETS_X.get(piece).set(x);
         PIECE_OFFSETS_Y.get(piece).set(y);
+    }
+
+    /** Saved with the positions, by {@link #savePositions}. */
+    public static void setAirDetached(boolean detached) {
+        AIR_DETACHED.set(detached);
     }
 
     /** Marks the positions as layout 2 and writes the config file. */

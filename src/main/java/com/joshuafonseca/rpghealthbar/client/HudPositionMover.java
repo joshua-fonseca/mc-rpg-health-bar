@@ -13,6 +13,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.FluidTags;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.client.event.RenderGuiLayerEvent;
@@ -29,10 +30,11 @@ public final class HudPositionMover {
             Map.entry(VanillaGuiLayers.EXPERIENCE_LEVEL, HudPiece.XP),
             Map.entry(VanillaGuiLayers.JUMP_METER, HudPiece.XP),
             Map.entry(VanillaGuiLayers.ARMOR_LEVEL, HudPiece.ARMOR),
-            // Vanilla stacks air and mount health (which replaces food while riding) on the food side.
+            // Vanilla stacks air and mount health (which replaces food while riding) on the food side;
+            // they're placed by the air piece, below.
             Map.entry(VanillaGuiLayers.FOOD_LEVEL, HudPiece.HUNGER),
-            Map.entry(VanillaGuiLayers.AIR_LEVEL, HudPiece.HUNGER),
-            Map.entry(VanillaGuiLayers.VEHICLE_HEALTH, HudPiece.HUNGER),
+            Map.entry(VanillaGuiLayers.AIR_LEVEL, HudPiece.AIR),
+            Map.entry(VanillaGuiLayers.VEHICLE_HEALTH, HudPiece.AIR),
             // AppleSkin draws over the food icons, at the spot vanilla's Gui.rightHeight gives it.
             Map.entry(AppleSkinCompat.SATURATION_LAYER, HudPiece.HUNGER),
             Map.entry(AppleSkinCompat.HUNGER_RESTORED_LAYER, HudPiece.HUNGER),
@@ -54,6 +56,10 @@ public final class HudPositionMover {
     public static final int ROW_HEIGHT = 10;
     /** Height of the air and mount health rows already drawn below hunger this frame. */
     private static int belowHeight;
+    /** Height of the air and mount health rows drawn this frame at the spot they were moved to. */
+    private static int detachedHeight;
+    /** Whether the row being drawn is one of those. */
+    private static boolean drawingDetached;
     /** Gui.rightHeight before a row drawn below hunger, or -1; put back after it, see {@link #onPost}. */
     private static int rightHeightBefore = -1;
 
@@ -68,8 +74,14 @@ public final class HudPositionMover {
         return belowHeight;
     }
 
+    /** How tall the air and mount health rows moved on their own are this frame; 0 if none are drawn. */
+    public static int detachedHeight() {
+        return detachedHeight;
+    }
+
     /** Called as the GUI starts drawing. */
     public static void newFrame() {
+        detachedHeight = 0;
         belowHeight = 0;
     }
 
@@ -104,7 +116,9 @@ public final class HudPositionMover {
             return;
         }
         graphics.pose().pushPose();
-        HudPosition.moveTo(graphics.pose(), frame.pieceOffset(piece));
+        boolean airRows = piece == HudPiece.AIR;
+        boolean detached = airRows && frame.pieces().airDetached();
+        HudPosition.moveTo(graphics.pose(), airRows && !detached ? frame.airFollowOffset() : frame.pieceOffset(piece));
         if (event.getName().equals(VanillaGuiLayers.EXPERIENCE_LEVEL)) {
             // Vanilla draws the level above the XP bar; center it on the bar instead, and put it at
             // the end the Level Text setting asks for.
@@ -117,11 +131,13 @@ public final class HudPositionMover {
             }
             graphics.pose().translate(levelX, LEVEL_DROP, 0);
         }
-        boolean stackedRow = name.equals(VanillaGuiLayers.AIR_LEVEL) || name.equals(VanillaGuiLayers.VEHICLE_HEALTH);
-        if (stackedRow && ClientConfig.AIR_POSITION.get() == AirPosition.BELOW) {
+        int rows = name.equals(VanillaGuiLayers.VEHICLE_HEALTH) ? vehicleRows() : 1;
+        if (detached) {
+            placeDetached(graphics, frame, rows);
+        } else if (airRows && ClientConfig.AIR_POSITION.get() == AirPosition.BELOW) {
             HudPosition.Bounds hunger = frame.pieceBounds().get(HudPiece.HUNGER);
             if (hunger != null) {
-                placeBelow(graphics, hunger, name.equals(VanillaGuiLayers.VEHICLE_HEALTH) ? vehicleRows() : 1);
+                placeBelow(graphics, hunger, rows);
             }
         }
         pushed = true;
@@ -182,6 +198,31 @@ public final class HudPositionMover {
         rightHeightBefore = gui.rightHeight;
     }
 
+    /**
+     * Moves a row (or mount health's rows) from where vanilla stacks it to the air piece: the first
+     * drawn at its spot and the rest upward from it, as in vanilla, but no higher than the screen's
+     * top.
+     */
+    private static void placeDetached(GuiGraphics graphics, HudLayer.Frame frame, int rows) {
+        Gui gui = Minecraft.getInstance().gui;
+        int vanillaFirstRow = graphics.guiHeight() - gui.rightHeight;
+        HudPosition.Offset offset = frame.pieceOffset(HudPiece.AIR);
+        int firstRow = frame.pieceBounds().get(HudPiece.AIR).top() - detachedHeight;
+        // The pose is already shifted by the offset.
+        firstRow = Math.max(firstRow, (rows - 1) * ROW_HEIGHT - offset.y());
+        graphics.pose().translate(0, firstRow - vanillaFirstRow, 0);
+        rightHeightBefore = gui.rightHeight;
+        drawingDetached = true;
+    }
+
+    /** Whether the game is drawing air bubbles or mount health right now. */
+    public static boolean stackedRowsShown(Minecraft minecraft) {
+        if (!HudLayer.isVisible(minecraft) || !(minecraft.getCameraEntity() instanceof Player player)) {
+            return false;
+        }
+        return mountWithHealth(player) != null || player.isEyeInFluid(FluidTags.WATER) || player.getAirSupply() < player.getMaxAirSupply();
+    }
+
     /** The mount the player rides, if vanilla shows its health (in hunger's place); null otherwise. */
     @Nullable
     public static LivingEntity mountWithHealth(Player player) {
@@ -203,10 +244,16 @@ public final class HudPositionMover {
 
     public static void onPost(RenderGuiLayerEvent.Post event) {
         if (rightHeightBefore >= 0) {
-            // Rows drawn below hunger take no room above it, so rows stacked above (other mods') and
-            // the held item's name don't leave a gap for them.
+            // Rows drawn below hunger, or elsewhere, take no room above it, so rows stacked above
+            // (other mods') and the held item's name don't leave a gap for them.
             Gui gui = Minecraft.getInstance().gui;
-            belowHeight += gui.rightHeight - rightHeightBefore;
+            int height = gui.rightHeight - rightHeightBefore;
+            if (drawingDetached) {
+                detachedHeight += height;
+                drawingDetached = false;
+            } else {
+                belowHeight += height;
+            }
             gui.rightHeight = rightHeightBefore;
             rightHeightBefore = -1;
         }
