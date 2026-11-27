@@ -21,8 +21,10 @@ public record HudLayout(int x, int top, int iconRowY, int halfBarY, int healthY,
     public static final int ICON_ROW_HEIGHT = 9;
     /** Ten 9px icons, 8px apart. */
     public static final int ICON_ROW_WIDTH = 81;
-    /** The vertical thirst bar is twice as tall as the hotbar (22px). */
-    public static final int VERTICAL_BAR_HEIGHT = 44;
+    /** The vertical thirst bar is one and a half times as tall as the hotbar (22px). */
+    public static final int VERTICAL_BAR_HEIGHT = 33;
+    /** The vertical thirst bar is this far from what's beside it, as the offhand slot is from the hotbar. */
+    private static final int BESIDE_GAP = 7;
     /** A left-handed player's offhand slot reaches this far right of the hotbar. */
     private static final int OFFHAND_SLOT_WIDTH = 29;
     /** The hotbar attack indicator, right of a right-handed player's hotbar, ends this far from it. */
@@ -63,15 +65,15 @@ public record HudLayout(int x, int top, int iconRowY, int halfBarY, int healthY,
 
     /**
      * The vertical thirst bar's left edge: right of the hotbar, or of what vanilla draws on that
-     * side, with the same gap as between the health bar and the XP bar. Its bottom edge is the
-     * screen's, like the hotbar's.
+     * side, as far from it as the offhand slot is from the hotbar. Its bottom edge is the screen's,
+     * like the hotbar's.
      *
      * @param offhandSlot     whether the offhand slot goes on the right, as for a left-handed player
      * @param attackIndicator whether the hotbar attack indicator goes on the right
      */
     public static int verticalBarX(int screenWidth, boolean offhandSlot, boolean attackIndicator) {
         int beside = offhandSlot ? OFFHAND_SLOT_WIDTH : attackIndicator ? ATTACK_INDICATOR_END : 0;
-        return screenWidth / 2 + WIDTH / 2 + beside + ROW_GAP;
+        return screenWidth / 2 + WIDTH / 2 + beside + BESIDE_GAP;
     }
 
     /** Full or half width: as wide as the hotbar, or as the armor and hunger bars. */

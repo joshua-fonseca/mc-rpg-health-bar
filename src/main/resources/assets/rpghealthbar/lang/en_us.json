@@ -130,7 +130,7 @@
   "rpghealthbar.config.thirstMode.tooltip.bar.name": "Bar",
   "rpghealthbar.config.thirstMode.tooltip.bar": "a blue bar, half the width of the health bar, above the hunger bar.",
   "rpghealthbar.config.thirstMode.tooltip.vertical.name": "Vertical",
-  "rpghealthbar.config.thirstMode.tooltip.vertical": "an upright blue bar beside the hotbar, twice as tall as it.",
+  "rpghealthbar.config.thirstMode.tooltip.vertical": "an upright blue bar beside the hotbar, one and a half times as tall as it.",
   "rpghealthbar.config.thirstMode.tooltip.hidden.name": "Hidden",
   "rpghealthbar.config.thirstMode.tooltip.hidden": "thirst isn't shown.",
   "rpghealthbar.config.healthUnit.tooltip.hp.name": "HP",

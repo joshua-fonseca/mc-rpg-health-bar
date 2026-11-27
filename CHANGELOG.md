@@ -5,7 +5,7 @@
 - **Thirst Was Taken 2 support** (1.1.0+ on 1.21.1, 1.5.0+ on 1.20.1), with a new **Thirst** option:
   - **Default**: its droplet icons, in a row above hunger that moves with the HUD.
   - **Bar**: a blue half-width bar above the hunger bar.
-  - **Vertical**: an upright blue bar to the right of the hotbar, twice as tall as it.
+  - **Vertical**: an upright blue bar to the right of the hotbar, one and a half times as tall as it.
   - **Hidden**.
   - Like its own bar, the bar recolors with Parched and Upset Stomach, outlines quenched with AppleSkin, and isn't shown while riding. Thirst can be moved on its own in the HUD Editor.
 
