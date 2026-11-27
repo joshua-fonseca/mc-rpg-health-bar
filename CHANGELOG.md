@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- **Separate v2** absorption now writes the amount in parentheses: `(+4)`.
+- Fixed: the config screen's options no longer shift sideways when a setting changes the preview's width.
+
 ## 2.2.0 (2026-11-27)
 
 - **Thirst Was Taken 2 support** (1.1.0+ on 1.21.1, 1.5.0+ on 1.20.1), with a new **Thirst** option:

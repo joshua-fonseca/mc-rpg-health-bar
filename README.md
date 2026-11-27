@@ -15,7 +15,7 @@ This is the **1.20.1 (Forge)** branch. The 1.21.1 (NeoForge) version is on [`mai
 ## Features
 
 - **Health bar** the width of the hotbar, with your current and max health on it (`15.5/20`). It goes beyond the vanilla max of 20 for mods that add hearts to the player (`32/40`), following your real max health.
-- **Absorption** fills the bar in gold, and the text shows it separately (`15.5+4/20`), added in (`19.5/20`), or as `+4` at the bar's right end.
+- **Absorption** fills the bar in gold, and the text shows it separately (`15.5+4/20`), added in (`19.5/20`), or as `(+4)` at the bar's right end.
 - **Mana bar support:** an overhaul of the mana bars from Iron's Spells 'n Spellbooks, Confluence: Otherworld and Ars Nouveau, in the same style as the health bar, replacing their own.
 - **Status colors:** like the vanilla hearts, the health bar turns green-yellow when poisoned, black when withered and light blue when frozen, and the hunger bar turns green with the Hunger effect. On 1.21.1, heart colors added by other mods are followed too.
 - **Armor and hunger** as the vanilla icons (default), thin bars, or hidden. Hunger can also be an upright bar beside the hotbar.
@@ -76,7 +76,7 @@ Defaults are in bold:
 |  | Hunger / Thirst Bar Height (Advanced only, for a Vertical bar) | Edit in HUD Editor: drag the top of the bar (**33**, one and a half times the hotbar's height) |
 |  | Air Bubbles/Mount HP | **Above** (bubbles above hunger, mount health stacks upward), Below (bubbles under hunger, stacks downward) |
 | **Health** | Health Units | **HP** (20 for a full vanilla bar), Hearts (10) |
-|  | Absorption | **Separate** (`16+4/20`), Combined (`20/20`), Separate v2 (`16/20`, with `+4` at the bar's right end) |
+|  | Absorption | **Separate** (`16+4/20`), Combined (`20/20`), Separate v2 (`16/20`, with `(+4)` at the bar's right end) |
 |  | HP Text | **Left**, Right, Center, Off |
 |  | Health Bar Width | **Full**, Half |
 | **Mana** (only with Iron's Spells, Confluence or Ars Nouveau installed) | Iron's Mana Text (only with Iron's Spells) | **Left**, Right, Center, Off |

@@ -240,7 +240,7 @@ public final class HudRenderer {
             String label = healthText(health, absorption, maxHealth);
             if (absorption > 0 && ClientConfig.ABSORPTION_DISPLAY.get() == AbsorptionDisplay.SEPARATE_RIGHT) {
                 // The absorption at the right end, and the health text kept clear of it.
-                String extra = "+" + NumberText.formatQuarters(ClientConfig.HEALTH_UNIT.get().fromHp(absorption));
+                String extra = "(+" + NumberText.formatQuarters(ClientConfig.HEALTH_UNIT.get().fromHp(absorption)) + ")";
                 BarRenderer.drawLabel(graphics, font, x, y, width, HudLayout.MAIN_BAR_HEIGHT, extra, BarText.RIGHT);
                 BarRenderer.drawLabel(graphics, font, x, y, width, HudLayout.MAIN_BAR_HEIGHT, label, text, font.width(extra) + ABSORPTION_TEXT_GAP);
             } else {
