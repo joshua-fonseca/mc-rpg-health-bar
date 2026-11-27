@@ -51,7 +51,7 @@ My original plan was to only replace the vanilla hearts with an RPG-style health
 
 *   **Client-side only:** servers don't need it, and it works on servers that don't have it.
 *   Works with other mods that draw near the hotbar the same way: drag the HUD, or just the pieces in the way, clear of them.
-*   Air bubbles and mount health stay vanilla, stacked above hunger or below it.
+*   Air bubbles and mount health stay vanilla, stacked above hunger or below it until you drag them elsewhere.
 *   **Texture packs:** armor and hunger on Default use your pack's icons, and the hotbar, XP bar, air bubbles and mount health stay vanilla, so packs restyle them. The health and mana bars, and armor and hunger as bars, are drawn by the mod and don't change with a pack.
 
 #### Iron's Spells: what spell cost preview looks like (honestly you aren't missing much)

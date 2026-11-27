@@ -140,7 +140,7 @@ Settings are stored in `config/rpghealthbar-client.toml`.
 - [Thirst Was Taken 2](https://www.curseforge.com/minecraft/mc-mods/thirst-was-taken-2) by whoisnighter: optional. When it's installed, the **Thirst** option picks how thirst shows, and its icons move with the HUD. The bar recolors with Parched and Upset Stomach, outlines quenched with AppleSkin (unless its quenched overlay is off), and isn't shown while riding. The original Thirst Was Taken is a different mod and isn't supported.
 - Double Hotbar: compatible with [Double Hotbar](https://www.curseforge.com/minecraft/mc-mods/double-hotbar) by sidezbros on 1.20.1, and its unofficial NeoForge port, [Double Hotbar NeoForge](https://www.curseforge.com/projects/1563792) by \_retrospective\_, on 1.21.1. Open the **HUD Editor...** and drag the HUD up above the second hotbar once; the bars, XP bar and level move together and stay there, and the item name stays above them.
 - Works with other mods that draw near the hotbar the same way: drag the HUD, or just the pieces in the way, clear of them.
-- Air bubbles and mount health stay vanilla and stack above the bars.
+- Air bubbles and mount health stay vanilla and stack above the bars until you drag them elsewhere.
 - **Texture packs:** armor and hunger on Default use your pack's icons, and the hotbar, XP bar, air bubbles and mount health stay vanilla, so packs restyle them. The health and mana bars, and armor and hunger as bars, are drawn by the mod and don't change with a pack.
 
 ## Development
