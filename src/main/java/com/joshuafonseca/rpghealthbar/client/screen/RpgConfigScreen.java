@@ -137,8 +137,8 @@ public class RpgConfigScreen extends Screen {
         // Rebuilt on resize and when coming back from Item Name or the HUD Editor (whose bar widths
         // the preview is sized to, and which can change the Compatibility notes); keep the scroll position.
         double scroll = this.list != null ? this.list.getScrollAmount() : 0;
-        // The preview goes left of the list, scaled down to fit the room there; the two are
-        // centered together, the preview taking only the width it needs.
+        // The preview goes left of the list, scaled down to fit the room there. The list is placed
+        // as if the two were centered together, the preview taking only the width it needs.
         int contentHeight = this.height - HEADER_HEIGHT - FOOTER_HEIGHT;
         int listWidth = PREVIEW_ROW_WIDTH + LIST_SIDE * 2;
         int room = this.width - listWidth - PREVIEW_GAP - PREVIEW_MARGIN * 2;
@@ -147,10 +147,12 @@ public class RpgConfigScreen extends Screen {
             this.previewScale = scale;
             int previewWidth = Math.round(ConfigPreview.width() * scale);
             int left = (this.width - previewWidth - PREVIEW_GAP - listWidth) / 2;
-            this.previewX = left + previewWidth / 2;
+            int listX = left + previewWidth + PREVIEW_GAP;
+            // In the middle of the space beside the rows, not up against them.
+            this.previewX = (listX + LIST_SIDE) / 2;
             this.previewY = HEADER_HEIGHT + contentHeight / 2;
             this.list = new OptionList(this.minecraft, listWidth, this.height, HEADER_HEIGHT, this.height - FOOTER_HEIGHT, PREVIEW_ROW_WIDTH);
-            this.list.setLeftPos(left + previewWidth + PREVIEW_GAP);
+            this.list.setLeftPos(listX);
         } else {
             this.previewScale = 0;
             this.list = new OptionList(this.minecraft, this.width, this.height, HEADER_HEIGHT, this.height - FOOTER_HEIGHT, ROW_WIDTH);
