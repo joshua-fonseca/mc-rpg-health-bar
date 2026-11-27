@@ -159,6 +159,7 @@ public final class HudPosition {
                 // Upright bars stand apart from the set, beside the hotbar.
                 shifts.put(piece, piece.isUpright() ? storedOffset(piece) : set.plus(storedOffset(piece)));
             }
+            keepThirstOnScreen(shifts, shown);
         } else {
             for (HudPiece piece : HudPiece.values()) {
                 shifts.put(piece, storedOffset(piece).plus(anchorShift(ClientConfig.pieceAnchor(piece), screenWidth, screenHeight)));
@@ -255,13 +256,29 @@ public final class HudPosition {
     }
 
     /**
+     * Layout 1 had no thirst row: it goes above the set, as in the default layout, or below the set
+     * if the set is too near the top of the screen for that.
+     */
+    private static void keepThirstOnScreen(Map<HudPiece, Offset> shifts, Map<HudPiece, Bounds> shown) {
+        Bounds thirst = shown.get(HudPiece.THIRST);
+        if (thirst == null || thirst.offset(shifts.get(HudPiece.THIRST)).top() >= 0) {
+            return;
+        }
+        Map<HudPiece, Bounds> set = new EnumMap<>(shown);
+        set.keySet().removeIf(piece -> piece.isUpright() || piece == HudPiece.THIRST);
+        int below = union(placed(set, shifts::get).values()).bottom() + HudLayout.ROW_GAP;
+        Offset shift = shifts.get(HudPiece.THIRST);
+        shifts.put(HudPiece.THIRST, new Offset(shift.x(), below - thirst.top()));
+    }
+
+    /**
      * Layout 1 (before 1.2.1): one anchor for the whole HUD, measured to the matching point of the
      * box around all shown pieces (each with its own shift).
      */
     private static Offset legacySetOffset(int screenWidth, int screenHeight, Map<HudPiece, Bounds> shown) {
         Map<HudPiece, Bounds> set = new EnumMap<>(shown);
-        // Newer than this layout, and apart from the set: counting it would move everything else.
-        set.keySet().removeIf(HudPiece::isUpright);
+        // Newer than this layout: counting them would move everything else.
+        set.keySet().removeIf(piece -> piece.isUpright() || piece == HudPiece.THIRST);
         Bounds bounds = union(placed(set, HudPosition::storedOffset).values());
         HudAnchor anchor = ClientConfig.ANCHOR.get();
         int left = anchor.x(screenWidth) - anchor.x(bounds.width()) + ClientConfig.OFFSET_X.get();
