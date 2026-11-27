@@ -237,13 +237,18 @@ public class HudLayer implements IGuiOverlay {
             return bounds;
         }
 
-        /** The {@code index}th upright bar's default box, counting from the hotbar. */
-        private static HudPosition.Bounds uprightBounds(int screenWidth, int screenHeight, HudPiece piece, int index) {
+        /** The {@code index}th upright bar's default left edge, counting from the hotbar. */
+        public static int uprightLeft(int screenWidth, int index) {
             // By the player's settings rather than what's on screen, so the bars don't jump around.
             Options options = Minecraft.getInstance().options;
             boolean leftHanded = options.mainHand().get() == HumanoidArm.LEFT;
-            int left = HudLayout.verticalBarX(screenWidth, leftHanded,
+            return HudLayout.verticalBarX(screenWidth, leftHanded,
                     !leftHanded && options.attackIndicator().get() == AttackIndicatorStatus.HOTBAR, index);
+        }
+
+        /** The {@code index}th upright bar's default box, counting from the hotbar. */
+        private static HudPosition.Bounds uprightBounds(int screenWidth, int screenHeight, HudPiece piece, int index) {
+            int left = uprightLeft(screenWidth, index);
             // A height set on a taller screen is cut to fit this one.
             int height = Math.min(BarWidths.height(piece), screenHeight);
             return new HudPosition.Bounds(left, screenHeight - height, left + HudLayout.MAIN_BAR_HEIGHT, screenHeight);

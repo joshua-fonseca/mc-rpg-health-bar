@@ -138,18 +138,19 @@ public class RpgConfigScreen extends Screen {
         // the preview is sized to, and which can change the Compatibility notes); keep the scroll position.
         double scroll = this.list != null ? this.list.getScrollAmount() : 0;
         // The preview goes left of the list, scaled down to fit the room there. The list is placed
-        // as if the two were centered together, the preview taking only the width it needs.
+        // as if centered together with a preview of a set width, so it stays put as settings change
+        // the preview's size.
         int contentHeight = this.height - HEADER_HEIGHT - FOOTER_HEIGHT;
         int listWidth = PREVIEW_ROW_WIDTH + LIST_SIDE * 2;
         int room = this.width - listWidth - PREVIEW_GAP - PREVIEW_MARGIN * 2;
-        float scale = Math.min(1.0F, Math.min((float) room / ConfigPreview.width(), (float) contentHeight / ConfigPreview.height()));
-        if (ClientConfig.SHOW_PREVIEW.get() && scale >= MIN_PREVIEW_SCALE) {
-            this.previewScale = scale;
-            int previewWidth = Math.round(ConfigPreview.width() * scale);
-            int left = (this.width - previewWidth - PREVIEW_GAP - listWidth) / 2;
-            int listX = left + previewWidth + PREVIEW_GAP;
+        int reserved = Math.min(room, ConfigPreview.reservedWidth());
+        if (ClientConfig.SHOW_PREVIEW.get() && reserved >= ConfigPreview.reservedWidth() * MIN_PREVIEW_SCALE) {
+            int left = (this.width - reserved - PREVIEW_GAP - listWidth) / 2;
+            int listX = left + reserved + PREVIEW_GAP;
             // In the middle of the space beside the rows, not up against them.
             this.previewX = (listX + LIST_SIDE) / 2;
+            int space = listX + LIST_SIDE - PREVIEW_MARGIN * 2;
+            this.previewScale = Math.min(1.0F, Math.min((float) space / ConfigPreview.width(), (float) contentHeight / ConfigPreview.height()));
             this.previewY = HEADER_HEIGHT + contentHeight / 2;
             this.list = new OptionList(this.minecraft, listWidth, this.height, HEADER_HEIGHT, this.height - FOOTER_HEIGHT, PREVIEW_ROW_WIDTH);
             this.list.setLeftPos(listX);
