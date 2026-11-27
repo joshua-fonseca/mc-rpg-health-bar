@@ -1,6 +1,6 @@
 # Changelog
 
-## 2.2.0 (unreleased)
+## 2.2.0 (2026-11-27)
 
 - **Thirst Was Taken 2 support** (1.1.0+ on 1.21.1, 1.5.0+ on 1.20.1), with a new **Thirst** option:
   - **Default**: its droplet icons, in a row above hunger that moves with the HUD.
