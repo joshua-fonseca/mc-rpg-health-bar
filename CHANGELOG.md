@@ -14,6 +14,7 @@
   - The new **Mount View** button shows the HUD as it is while riding, so mount health can be dragged.
   - **Air Bubbles/Mount HP** sets where the bubbles start (above or under hunger) until you move them, and whether mount health's extra rows are added above or below. With **Below**, the first ten hearts are now the top row.
 - The config screen's preview shows a hotbar under the HUD, and is centered in the space beside the options, which stay put as the preview changes width.
+- With the config screen's preview on, an option's description shows under the preview, by hovering anywhere on its row, instead of in a tooltip. With the preview off, tooltips show as before.
 - **Separate v2** absorption now writes the amount in parentheses: `(+4)`.
 - Fixed: resizing the bars or the window kept every size's bar image in memory until the game closed.
 - Fixed: if a future version of Iron's Spells or Ars Nouveau can't be read, its own mana bar now shows again instead of no mana bar at all.
