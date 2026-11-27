@@ -85,6 +85,24 @@ public final class BarRenderer {
         });
     }
 
+    /** Recolors a framed bar's border along the columns {@link #drawFill} covers for {@code fraction}. */
+    public static void drawFillBorder(GuiGraphics graphics, int x, int y, int width, int height, float fraction, int color) {
+        int filled = columns(width, true, fraction);
+        if (filled <= 0) {
+            return;
+        }
+        boolean full = filled == width - 2;
+        int right = full ? x + width - 1 : x + 1 + filled;
+        graphics.drawManaged(() -> {
+            graphics.fill(x + 1, y, right, y + 1, color);
+            graphics.fill(x + 1, y + height - 1, right, y + height, color);
+            graphics.fill(x, y + 1, x + 1, y + height - 1, color);
+            if (full) {
+                graphics.fill(right, y + 1, right + 1, y + height - 1, color);
+            }
+        });
+    }
+
     /**
      * Fills the bar from the left; {@code fraction} is clamped to 0–1. Draw it over {@link #drawTrack}
      * with the same position, size and {@code framed}.

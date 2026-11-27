@@ -141,6 +141,10 @@ public final class HudRenderer {
     private static void renderHungerBar(GuiGraphics graphics, int x, int y, int width, int height, boolean framed, HudValues values) {
         BarRenderer.drawTrack(graphics, x, y, width, height, framed);
         BarRenderer.drawFill(graphics, x, y, width, height, framed, values.food() / MAX_FOOD, values.hungerColor(), false);
+        if (framed) {
+            // Brown (or dark green with the Hunger effect) along the fill, rather than nearly black.
+            BarRenderer.drawFillBorder(graphics, x, y, width, height, values.food() / MAX_FOOD, StatusColors.lost(values.hungerColor()));
+        }
         AppleSkinCompat.HeldFood held = values.heldFood();
         float flash = held == null ? 0 : held.flashAlpha() * pulse(FOOD_PREVIEW_FLASH_MILLIS);
         if (held != null && held.food() > values.food()) {
