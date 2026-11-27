@@ -84,12 +84,12 @@ Selecting a spell via spell wheel, the mana bar blinks according to how much man
 *   **Item name height:** set how high the held item's name sits, with a preview that moves as you change it. It starts at vanilla's height, which leaves room for mods that add hotbars.
 *   **Air bubbles and mount health** can be dragged anywhere (**Mount View** in the HUD Editor shows mount health). By default the bubbles sit above hunger and mount health's rows stack upward, like vanilla; with **Below**, the bubbles start under hunger and the rows stack downward, for layouts with health or mana above hunger.
 *   **On/off switch:** turn the whole mod off for a fully vanilla HUD, and back on, without losing your settings.
-*   **Live preview:** the config screen can show the HUD beside the options, drawn as your settings would, so you see each change without leaving the screen.
+*   **Live preview:** the config screen can show the HUD beside the options, drawn as your settings would, so you see each change without leaving the screen. Hover over an option and what it does is written under the preview.
 *   **Everything in game:** changes show on the HUD as you make them, no restart. Save Settings keeps them, and leaving without saving asks first.
 
 #### The config screen
 
-![The config screen: options in sections on the right, and the preview of the HUD on the left](https://raw.githubusercontent.com/joshua-fonseca/mc-rpg-health-bar/main/docs/images/config.png)
+![The config screen: options in sections on the right, and on the left the preview of the HUD with the hovered option's description under it](https://raw.githubusercontent.com/joshua-fonseca/mc-rpg-health-bar/main/docs/images/config.png)
 
 #### Advanced mode: the width options open the HUD Editor
 

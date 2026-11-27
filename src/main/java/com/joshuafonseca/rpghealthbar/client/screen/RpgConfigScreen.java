@@ -66,6 +66,12 @@ public class RpgConfigScreen extends Screen {
     private static final int PREVIEW_GAP = 8;
     /** Smaller than this and the preview is too small to read, so it's left out. */
     private static final float MIN_PREVIEW_SCALE = 0.7F;
+    /** How much of the height beside the list is the preview's; the description is under it. */
+    private static final float PREVIEW_HEIGHT_SHARE = 0.4F;
+    /** The widest a description beside the list is wrapped, and the room above it. */
+    private static final int DESCRIPTION_MAX_WIDTH = 220;
+    private static final int DESCRIPTION_TOP = 8;
+    private static final int DESCRIPTION_BOTTOM = 4;
     private static final ResourceLocation MENU_LIST_BACKGROUND = ResourceLocation.withDefaultNamespace("textures/gui/menu_list_background.png");
     private static final ResourceLocation INWORLD_MENU_LIST_BACKGROUND = ResourceLocation.withDefaultNamespace("textures/gui/inworld_menu_list_background.png");
     private static final int ROW_HEIGHT = 24;
@@ -110,12 +116,19 @@ public class RpgConfigScreen extends Screen {
     private final HeaderAndFooterLayout layout = new HeaderAndFooterLayout(this);
     @Nullable
     private OptionList list;
-    /** The preview's scale, or 0 when there's no room for it; and where it's centered. */
+    /**
+     * The column left of the list, holding the preview and the descriptions: its width, or 0 with the
+     * preview off or no room for it, when the descriptions are tooltips. Centered at previewX.
+     */
+    private int sideWidth;
+    private int descriptionY;
+    /** The preview's scale, or 0 when it isn't drawn; and its height's middle. */
     private float previewScale;
     private int previewX;
     private int previewY;
     @Nullable
     private PreviewButton previewButton;
+    private final Tooltip editModeTooltip = tooltip("editMode", "simple", "advanced");
     /** Top right: Simple or Advanced, with "Edit mode:" to its left. */
     @Nullable
     private CycleButton<EditMode> editModeButton;
@@ -152,7 +165,6 @@ public class RpgConfigScreen extends Screen {
         this.editModeButton = addRenderableWidget(CycleButton.builder(EditMode::displayName)
                 .withValues(EditMode.values())
                 .withInitialValue(ClientConfig.EDIT_MODE.get())
-                .withTooltip(value -> tooltip("editMode", "simple", "advanced"))
                 .displayOnlyValue()
                 .create(0, 0, editModeWidth, BUTTON_HEIGHT, Component.translatable("rpghealthbar.config.editMode"), (button, value) -> {
                     // The width rows change between presets and Edit in HUD Editor buttons.
@@ -247,8 +259,8 @@ public class RpgConfigScreen extends Screen {
                 this.font.width(CommonComponents.optionNameValue(modState, enabled)), this.font.width(CommonComponents.optionNameValue(modState, disabled)));
         list.addEntry(new WidgetRow(null, CycleButton.booleanBuilder(enabled, disabled)
                 .withInitialValue(ClientConfig.ENABLED.get())
-                .withTooltip(value -> tooltip("enabled", "on", "off"))
-                .create(0, 0, toggleWidth, BUTTON_HEIGHT, modState, (button, value) -> ClientConfig.set(ClientConfig.ENABLED, value))));
+                .create(0, 0, toggleWidth, BUTTON_HEIGHT, modState, (button, value) -> ClientConfig.set(ClientConfig.ENABLED, value)))
+                .described(description("enabled", "on", "off")));
 
         list.addEntry(new Header(Component.translatable("rpghealthbar.config.section.armorHunger"),
                 survivalDetected(), NOTE_COLOR));
@@ -303,12 +315,11 @@ public class RpgConfigScreen extends Screen {
         list.addEntry(new WidgetRow(null,
                 Button.builder(Component.translatable("rpghealthbar.config.itemName"), button -> this.minecraft.setScreen(new ItemNameScreen(this)))
                         .size(0, BUTTON_HEIGHT)
-                        .tooltip(tooltip("itemName"))
                         .build(),
                 Button.builder(Component.translatable("rpghealthbar.config.moveHud"), button -> this.minecraft.setScreen(new HudEditScreen(this)))
                         .size(0, BUTTON_HEIGHT)
-                        .tooltip(Tooltip.create(hudEditorTooltip()))
-                        .build()));
+                        .build())
+                .described(description("itemName"), hudEditorTooltip()));
     }
 
     /**
@@ -331,8 +342,8 @@ public class RpgConfigScreen extends Screen {
         return new WidgetRow(label(key),
                 Button.builder(Component.translatable("rpghealthbar.config.editInHudEditor"), button -> this.minecraft.setScreen(new HudEditScreen(this)))
                         .size(VALUE_WIDTH, BUTTON_HEIGHT)
-                        .tooltip(Tooltip.create(advancedTooltip(key, howKey)))
-                        .build());
+                        .build())
+                .described(advancedTooltip(key, howKey));
     }
 
     /**
@@ -373,13 +384,12 @@ public class RpgConfigScreen extends Screen {
     private static <T> WidgetRow option(String key, T[] values, T current, Function<T, Component> displayName, Consumer<T> onChange,
                                         String... tooltipValues) {
         Component name = Component.translatable("rpghealthbar.config." + key);
-        Tooltip tooltip = tooltip(key, tooltipValues);
         return new WidgetRow(label(key), CycleButton.builder(displayName)
                 .withValues(values)
                 .withInitialValue(current)
-                .withTooltip(value -> tooltip)
                 .displayOnlyValue()
-                .create(0, 0, VALUE_WIDTH, BUTTON_HEIGHT, name, (button, newValue) -> onChange.accept(newValue)));
+                .create(0, 0, VALUE_WIDTH, BUTTON_HEIGHT, name, (button, newValue) -> onChange.accept(newValue)))
+                .described(description(key, tooltipValues));
     }
 
     private static List<ModConfigSpec.ConfigValue<?>> edited() {
@@ -442,6 +452,10 @@ public class RpgConfigScreen extends Screen {
      * The first value is the default. Also used by the Item Name and HUD Editor pages.
      */
     static Tooltip tooltip(String option, String... values) {
+        return Tooltip.create(description(option, values));
+    }
+
+    private static Component description(String option, String... values) {
         String key = "rpghealthbar.config." + option + ".tooltip";
         MutableComponent text = Component.translatable(key);
         for (int i = 0; i < values.length; i++) {
@@ -452,7 +466,7 @@ public class RpgConfigScreen extends Screen {
             }
             text.append(Component.literal(": ").withStyle(ChatFormatting.GOLD)).append(Component.translatable(valueKey));
         }
-        return Tooltip.create(ManaSource.colorNames(text));
+        return ManaSource.colorNames(text);
     }
 
     @Override
@@ -467,27 +481,30 @@ public class RpgConfigScreen extends Screen {
         if (this.editModeButton != null) {
             this.editModeButton.setPosition(this.width - EDIT_MODE_MARGIN - this.editModeButton.getWidth(), (this.layout.getHeaderHeight() - BUTTON_HEIGHT) / 2);
         }
-        // The preview goes left of the list, scaled down to fit the room there. The list is placed
-        // as if centered together with a preview of a set width, so it stays put as settings change
+        // The preview and the hovered option's description go left of the list. The list is placed
+        // as if centered together with a column of a set width, so it stays put as settings change
         // the preview's size.
         int listWidth = PREVIEW_ROW_WIDTH + LIST_SIDE * 2;
         int room = this.width - listWidth - PREVIEW_GAP - PREVIEW_MARGIN * 2;
         int reserved = Math.min(room, ConfigPreview.reservedWidth());
         this.list.screenWidth = this.width;
+        this.previewScale = 0;
         if (ClientConfig.SHOW_PREVIEW.get() && room >= ConfigPreview.leastWidth() * MIN_PREVIEW_SCALE) {
             int left = (this.width - reserved - PREVIEW_GAP - listWidth) / 2;
             int listX = left + reserved + PREVIEW_GAP;
             // In the middle of the space beside the rows, not up against them.
             this.previewX = (listX + LIST_SIDE) / 2;
-            int space = listX + LIST_SIDE - PREVIEW_MARGIN * 2;
-            this.previewScale = Math.min(1.0F, Math.min((float) space / ConfigPreview.width(),
-                    (float) this.layout.getContentHeight() / ConfigPreview.height()));
-            this.previewY = this.layout.getHeaderHeight() + this.layout.getContentHeight() / 2;
+            this.sideWidth = listX + LIST_SIDE - PREVIEW_MARGIN * 2;
+            int previewHeight = Math.round(this.layout.getContentHeight() * PREVIEW_HEIGHT_SHARE);
+            this.previewScale = Math.min(1.0F, Math.min((float) this.sideWidth / ConfigPreview.width(),
+                    (float) previewHeight / ConfigPreview.height()));
+            this.previewY = this.layout.getHeaderHeight() + previewHeight / 2;
+            this.descriptionY = this.layout.getHeaderHeight() + previewHeight + DESCRIPTION_TOP;
             this.list.rowWidth = PREVIEW_ROW_WIDTH;
             this.list.updateSizeAndPosition(listWidth, this.layout.getContentHeight(), this.layout.getHeaderHeight());
             this.list.setX(listX);
         } else {
-            this.previewScale = 0;
+            this.sideWidth = 0;
             this.list.rowWidth = ROW_WIDTH;
             this.list.updateSize(this.width, this.layout);
         }
@@ -501,6 +518,17 @@ public class RpgConfigScreen extends Screen {
 
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        boolean side = this.sideWidth > 0;
+        // Set every frame: a clicked button drops its tooltip, and the column comes and goes.
+        if (this.list != null) {
+            this.list.showTooltips(!side);
+        }
+        if (this.editModeButton != null) {
+            this.editModeButton.setTooltip(side ? null : this.editModeTooltip);
+        }
+        if (this.previewButton != null) {
+            this.previewButton.setTooltip(side ? null : this.previewButton.tooltip);
+        }
         super.render(graphics, mouseX, mouseY, partialTick);
         if (this.editModeButton != null && this.previewButton != null) {
             // Left out on a narrow window, where it would run into the title.
@@ -513,6 +541,54 @@ public class RpgConfigScreen extends Screen {
         if (this.previewScale > 0) {
             ConfigPreview.draw(graphics, this.font, this.previewX, this.previewY, this.previewScale);
         }
+        if (side) {
+            drawDescription(graphics, mouseX, mouseY);
+        }
+    }
+
+    /**
+     * What the option under the mouse, or reached with the keyboard, does, under the preview.
+     * Anywhere on an option's row counts.
+     */
+    private void drawDescription(GuiGraphics graphics, int mouseX, int mouseY) {
+        Component text = headerDescription(mouseX, mouseY);
+        if (text == null && this.list != null) {
+            text = this.list.description(mouseX, mouseY);
+        }
+        if (text == null) {
+            return;
+        }
+        int width = Math.min(this.sideWidth, DESCRIPTION_MAX_WIDTH);
+        int room = this.height - this.layout.getFooterHeight() - DESCRIPTION_BOTTOM - this.descriptionY;
+        // Shrunk until it fits above the footer.
+        float scale = 1.0F;
+        List<FormattedCharSequence> lines = this.font.split(text, width);
+        while (lines.size() * this.font.lineHeight * scale > room && scale > 0.5F) {
+            scale -= 0.05F;
+            lines = this.font.split(text, (int) (width / scale));
+        }
+        graphics.pose().pushPose();
+        graphics.pose().translate(this.previewX - width / 2, this.descriptionY, 0);
+        graphics.pose().scale(scale, scale, 1);
+        for (int i = 0; i < lines.size(); i++) {
+            graphics.drawString(this.font, lines.get(i), 0, i * this.font.lineHeight, LABEL_COLOR);
+        }
+        graphics.pose().popPose();
+    }
+
+    /** The description of the preview or Edit Mode button under the mouse or focused, or null. */
+    @Nullable
+    private Component headerDescription(int mouseX, int mouseY) {
+        boolean keyboard = this.minecraft.getLastInputType().isKeyboard();
+        if (this.previewButton != null
+                && (this.previewButton.isMouseOver(mouseX, mouseY) || keyboard && getFocused() == this.previewButton)) {
+            return Component.translatable("rpghealthbar.config.preview.tooltip." + (ClientConfig.SHOW_PREVIEW.get() ? "on" : "off"));
+        }
+        if (this.editModeButton != null
+                && (this.editModeButton.isMouseOver(mouseX, mouseY) || keyboard && getFocused() == this.editModeButton)) {
+            return description("editMode", "simple", "advanced");
+        }
+        return null;
     }
 
     /** Keeps the changes. */
@@ -604,16 +680,18 @@ public class RpgConfigScreen extends Screen {
         private static final int SLASH_SHADOW = 0xFFC80404;
         private static final int SLASH_INSET = 3;
 
+        private Tooltip tooltip;
+
         PreviewButton(OnPress onPress) {
             super(0, 0, BUTTON_HEIGHT, BUTTON_HEIGHT, Component.empty(), onPress, DEFAULT_NARRATION);
             update();
         }
 
-        /** Matches the label and tip, read by narration and shown on hover, to the setting. */
+        /** Matches the label, read by narration, and the tooltip to the setting. */
         void update() {
             String state = ClientConfig.SHOW_PREVIEW.get() ? "on" : "off";
             setMessage(Component.translatable("rpghealthbar.config.preview." + state));
-            setTooltip(Tooltip.create(Component.translatable("rpghealthbar.config.preview.tooltip." + state)));
+            this.tooltip = Tooltip.create(Component.translatable("rpghealthbar.config.preview.tooltip." + state));
         }
 
         /** The icon in place of the text. */
@@ -687,6 +765,36 @@ public class RpgConfigScreen extends Screen {
         @Override
         public int addEntry(Row row) {
             return super.addEntry(row);
+        }
+
+        /**
+         * The description of the widget under the mouse, or else of the one reached with the
+         * keyboard; null for neither.
+         */
+        @Nullable
+        Component description(int mouseX, int mouseY) {
+            if (isMouseOver(mouseX, mouseY) && getEntryAtPosition(mouseX, mouseY) instanceof WidgetRow row) {
+                for (AbstractWidget widget : row.widgets) {
+                    if (row.widgets.size() == 1 || widget.isMouseOver(mouseX, mouseY)) {
+                        return row.description(widget);
+                    }
+                }
+            }
+            if (this.minecraft.getLastInputType().isKeyboard() && this.minecraft.screen != null
+                    && this.minecraft.screen.getFocused() == this && getFocused() instanceof WidgetRow row
+                    && row.getFocused() instanceof AbstractWidget widget) {
+                return row.description(widget);
+            }
+            return null;
+        }
+
+        /** Gives every widget its description as a tooltip, or takes the tooltips away. */
+        void showTooltips(boolean shown) {
+            for (Row row : children()) {
+                if (row instanceof WidgetRow widgetRow) {
+                    widgetRow.showTooltips(shown);
+                }
+            }
         }
 
         /** Removes every row, so they can be added again with fresh values. */
@@ -845,10 +953,31 @@ public class RpgConfigScreen extends Screen {
         @Nullable
         private final Component label;
         private final List<AbstractWidget> widgets;
+        /** What each widget does, in their order, and the same as tooltips. */
+        private List<Component> descriptions = List.of();
+        private List<Tooltip> tooltips = List.of();
 
         WidgetRow(@Nullable Component label, AbstractWidget... widgets) {
             this.label = label;
             this.widgets = List.of(widgets);
+        }
+
+        WidgetRow described(Component... descriptions) {
+            this.descriptions = List.of(descriptions);
+            this.tooltips = this.descriptions.stream().map(Tooltip::create).toList();
+            return this;
+        }
+
+        void showTooltips(boolean shown) {
+            for (int i = 0; i < this.tooltips.size(); i++) {
+                this.widgets.get(i).setTooltip(shown ? this.tooltips.get(i) : null);
+            }
+        }
+
+        @Nullable
+        Component description(AbstractWidget widget) {
+            int index = this.widgets.indexOf(widget);
+            return index >= 0 && index < this.descriptions.size() ? this.descriptions.get(index) : null;
         }
 
         @Override
