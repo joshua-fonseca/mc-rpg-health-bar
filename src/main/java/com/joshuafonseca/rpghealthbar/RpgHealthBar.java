@@ -133,10 +133,9 @@ public class RpgHealthBar {
                 || ManaSource.hidesAnyOwnDisplay(name)
                 // Its heart previews would draw over our bars.
                 || name.equals(AppleSkinCompat.HEALTH_RESTORED_LAYER)
-                // Its hunger overlays only fit the vanilla icons.
-                || (AppleSkinCompat.isHungerOverlay(name) && hungerReplaced)
-                // Riding, there are no hunger icons under them, and mount health may be elsewhere.
-                || (AppleSkinCompat.isHungerOverlay(name) && ridingWithMountHealth())
+                // Its hunger overlays only fit the vanilla icons, which aren't there while riding
+                // either, and mount health may be elsewhere.
+                || (AppleSkinCompat.isHungerOverlay(name) && (hungerReplaced || ridingWithMountHealth()))
                 || (name.equals(VanillaGuiLayers.ARMOR_LEVEL) && armorReplaced)
                 || (name.equals(VanillaGuiLayers.FOOD_LEVEL) && hungerReplaced)
                 // Its rows only stack upward; ours, drawn instead, stack downward.

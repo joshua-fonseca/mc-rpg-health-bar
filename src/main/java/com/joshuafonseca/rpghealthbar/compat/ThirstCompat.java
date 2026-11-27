@@ -1,6 +1,8 @@
 package com.joshuafonseca.rpghealthbar.compat;
 
 import com.joshuafonseca.rpghealthbar.RpgHealthBar;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import javax.annotation.Nullable;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
@@ -25,6 +27,12 @@ public final class ThirstCompat {
     /** Cleared if reading the mod ever fails, e.g. a version older than its player API. */
     private static boolean available = INSTALLED;
     private static boolean checked;
+    /** The mod's config accessor and quenched overlay setting, looked up once; null if that failed. */
+    @Nullable
+    private static Method configGet;
+    @Nullable
+    private static Field quenchedOverlay;
+    private static boolean configLookedUp;
 
     private ThirstCompat() {
     }
@@ -87,9 +95,14 @@ public final class ThirstCompat {
      */
     private static boolean quenchedOverlayOn() {
         try {
-            Class<?> config = Class.forName(CONFIG);
-            Object current = config.getMethod("get").invoke(null);
-            return !"OFF".equals(String.valueOf(config.getField("appleskinQuenchedOverlay").get(current)));
+            if (!configLookedUp) {
+                configLookedUp = true;
+                Class<?> config = Class.forName(CONFIG);
+                configGet = config.getMethod("get");
+                quenchedOverlay = config.getField("appleskinQuenchedOverlay");
+            }
+            return configGet == null || quenchedOverlay == null
+                    || !"OFF".equals(String.valueOf(quenchedOverlay.get(configGet.invoke(null))));
         } catch (ReflectiveOperationException | RuntimeException | LinkageError e) {
             return true;
         }

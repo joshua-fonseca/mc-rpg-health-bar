@@ -31,6 +31,25 @@ public class MountHealthLayer implements LayeredDraw.Layer {
                 && HudPositionMover.mountRows(Minecraft.getInstance()) > 1;
     }
 
+    /**
+     * Draws {@code hearts} hearts of mount health in rows of ten, each row under the last, filled to
+     * {@code health} points, from the first row's right end and top.
+     */
+    public static void drawHearts(GuiGraphics graphics, int right, int top, int hearts, int health) {
+        RenderSystem.enableBlend();
+        for (int heart = 0; heart < hearts; heart++) {
+            int x = right - heart % HEARTS_PER_ROW * HEART_SPACING - HEART_SIZE;
+            int y = top + heart / HEARTS_PER_ROW * HudPositionMover.ROW_HEIGHT;
+            graphics.blitSprite(CONTAINER, x, y, HEART_SIZE, HEART_SIZE);
+            if (heart * 2 + 1 < health) {
+                graphics.blitSprite(FULL, x, y, HEART_SIZE, HEART_SIZE);
+            } else if (heart * 2 + 1 == health) {
+                graphics.blitSprite(HALF, x, y, HEART_SIZE, HEART_SIZE);
+            }
+        }
+        RenderSystem.disableBlend();
+    }
+
     @Override
     public void render(GuiGraphics graphics, DeltaTracker deltaTracker) {
         Minecraft minecraft = Minecraft.getInstance();
@@ -51,18 +70,7 @@ public class MountHealthLayer implements LayeredDraw.Layer {
 
         graphics.pose().pushPose();
         HudPosition.moveTo(graphics.pose(), HudPosition.Offset.ZERO);
-        RenderSystem.enableBlend();
-        for (int heart = 0; heart < hearts; heart++) {
-            int x = area.right() - heart % HEARTS_PER_ROW * HEART_SPACING - HEART_SIZE;
-            int y = area.top() + heart / HEARTS_PER_ROW * HudPositionMover.ROW_HEIGHT;
-            graphics.blitSprite(CONTAINER, x, y, HEART_SIZE, HEART_SIZE);
-            if (heart * 2 + 1 < health) {
-                graphics.blitSprite(FULL, x, y, HEART_SIZE, HEART_SIZE);
-            } else if (heart * 2 + 1 == health) {
-                graphics.blitSprite(HALF, x, y, HEART_SIZE, HEART_SIZE);
-            }
-        }
-        RenderSystem.disableBlend();
+        drawHearts(graphics, area.right(), area.top(), hearts, health);
         graphics.pose().popPose();
         HudPositionMover.addDrawnRows(area);
     }

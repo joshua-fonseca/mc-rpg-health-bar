@@ -93,9 +93,9 @@ public class RpgConfigScreen extends Screen {
     /** The compatibility notes: green when all is well, red for a problem. */
     private static final int COMPAT_OK_COLOR = 0x55FF55;
     private static final int COMPAT_PROBLEM_COLOR = 0xFF5555;
-    /** Between the notes' + button and its label, and how far the notes are indented under it. */
     /** Notes that are just good to know, and their count when none is a problem. */
     private static final int COMPAT_INFO_COLOR = 0xFFFFFF;
+    /** Between the notes' + button and its label. */
     private static final int COMPAT_GAP = 6;
     /** How far the notes are indented: under the label, past the + button. */
     private static final int NOTE_INDENT = BUTTON_HEIGHT + COMPAT_GAP;
@@ -382,10 +382,6 @@ public class RpgConfigScreen extends Screen {
                 .create(0, 0, VALUE_WIDTH, BUTTON_HEIGHT, name, (button, newValue) -> onChange.accept(newValue)));
     }
 
-    /**
-     * Where a bar's numbers go. Setting it also clears the Off saved before this option existed
-     * ({@code legacyShown}), so the choice takes effect.
-     */
     private static List<ModConfigSpec.ConfigValue<?>> edited() {
         List<ModConfigSpec.ConfigValue<?>> edited = new ArrayList<>(List.of(ClientConfig.ENABLED, ClientConfig.ARMOR_MODE,
                 ClientConfig.HUNGER_MODE, ClientConfig.THIRST_MODE, ClientConfig.AIR_POSITION, ClientConfig.HEALTH_UNIT, ClientConfig.ABSORPTION_DISPLAY,
@@ -426,7 +422,12 @@ public class RpgConfigScreen extends Screen {
         return Component.translatable("rpghealthbar.config.manaDetected", names);
     }
 
-    /** @param legacyShown the setting from before {@code value}, or null; it's turned back on with any choice */
+    /**
+     * Where a bar's numbers go. Setting it also clears the Off saved before this option existed
+     * ({@code legacyShown}), so the choice takes effect.
+     *
+     * @param legacyShown the setting from before {@code value}, or null
+     */
     private static WidgetRow textOption(String key, BarText current, ModConfigSpec.EnumValue<BarText> value, @Nullable ModConfigSpec.BooleanValue legacyShown) {
         return option(key, BarText.values(), current, BarText::displayName, text -> {
             ClientConfig.set(value, text);

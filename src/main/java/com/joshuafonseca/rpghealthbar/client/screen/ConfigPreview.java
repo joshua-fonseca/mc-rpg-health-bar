@@ -37,16 +37,12 @@ final class ConfigPreview {
     private static final ResourceLocation FOOD_EMPTY = ResourceLocation.withDefaultNamespace("hud/food_empty");
     private static final ResourceLocation AIR = ResourceLocation.withDefaultNamespace("hud/air");
     private static final ResourceLocation AIR_BURSTING = ResourceLocation.withDefaultNamespace("hud/air_bursting");
-    private static final ResourceLocation MOUNT_CONTAINER = ResourceLocation.withDefaultNamespace("hud/heart/vehicle_container");
-    private static final ResourceLocation MOUNT_FULL = ResourceLocation.withDefaultNamespace("hud/heart/vehicle_full");
     private static final ResourceLocation HOTBAR = ResourceLocation.withDefaultNamespace("hud/hotbar");
     private static final ResourceLocation HOTBAR_SELECTION = ResourceLocation.withDefaultNamespace("hud/hotbar_selection");
-    private static final int HOTBAR_WIDTH = 182;
-    private static final int HOTBAR_HEIGHT = 22;
     /** The selected slot's frame, a pixel larger than the hotbar above and to the left of the first slot. */
     private static final int SELECTION_WIDTH = 24;
     private static final int SELECTION_HEIGHT = 23;
-    private static final int HOTBAR_LEFT = WIDTH / 2 - HOTBAR_WIDTH / 2;
+    private static final int HOTBAR_LEFT = WIDTH / 2 - HudLayout.WIDTH / 2;
 
     /**
      * A virtual screen the HUD is laid out on; only its height matters, as the HUD sits at the bottom.
@@ -111,7 +107,7 @@ final class ConfigPreview {
         graphics.pose().translate(-((preview.left() + preview.right()) / 2), -((preview.top() + preview.bottom()) / 2), 0);
 
         // The empty hotbar with its first slot selected, so the HUD is seen where it sits around it.
-        graphics.blitSprite(HOTBAR, HOTBAR_LEFT, VIRTUAL_HEIGHT - HOTBAR_HEIGHT, HOTBAR_WIDTH, HOTBAR_HEIGHT);
+        graphics.blitSprite(HOTBAR, HOTBAR_LEFT, VIRTUAL_HEIGHT - HudLayout.HOTBAR_HEIGHT, HudLayout.WIDTH, HudLayout.HOTBAR_HEIGHT);
         graphics.blitSprite(HOTBAR_SELECTION, HOTBAR_LEFT - 1, VIRTUAL_HEIGHT - SELECTION_HEIGHT, SELECTION_WIDTH, SELECTION_HEIGHT);
 
         HudValues values = new HudValues(HEALTH, 20, ABSORPTION, ARMOR, FOOD, 0, null, ManaSource.placeholders(60),
@@ -178,15 +174,6 @@ final class ConfigPreview {
             if (points <= THIRST) {
                 graphics.blit(ThirstCompat.ICONS, x, box.top(), points < THIRST ? 32 : 16, 0, ICON, ICON, THIRST_ICONS_WIDTH, ICON);
             }
-        }
-    }
-
-    /** A sample row of mount health ending at {@code right}. */
-    static void drawMountHealth(GuiGraphics graphics, int right, int top) {
-        for (int i = 0; i < 10; i++) {
-            int x = right - i * ICON_SPACING - ICON;
-            graphics.blitSprite(MOUNT_CONTAINER, x, top, ICON, ICON);
-            graphics.blitSprite(MOUNT_FULL, x, top, ICON, ICON);
         }
     }
 
