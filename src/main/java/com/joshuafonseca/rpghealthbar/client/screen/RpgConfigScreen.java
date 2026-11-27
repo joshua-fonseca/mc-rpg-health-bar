@@ -144,7 +144,7 @@ public class RpgConfigScreen extends Screen {
         int listWidth = PREVIEW_ROW_WIDTH + LIST_SIDE * 2;
         int room = this.width - listWidth - PREVIEW_GAP - PREVIEW_MARGIN * 2;
         int reserved = Math.min(room, ConfigPreview.reservedWidth());
-        if (ClientConfig.SHOW_PREVIEW.get() && reserved >= ConfigPreview.reservedWidth() * MIN_PREVIEW_SCALE) {
+        if (ClientConfig.SHOW_PREVIEW.get() && room >= ConfigPreview.leastWidth() * MIN_PREVIEW_SCALE) {
             int left = (this.width - reserved - PREVIEW_GAP - listWidth) / 2;
             int listX = left + reserved + PREVIEW_GAP;
             // In the middle of the space beside the rows, not up against them.
