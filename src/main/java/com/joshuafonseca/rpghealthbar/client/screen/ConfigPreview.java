@@ -11,9 +11,11 @@ import com.joshuafonseca.rpghealthbar.client.StatusColors;
 import com.joshuafonseca.rpghealthbar.client.XpBarOverlay;
 import com.joshuafonseca.rpghealthbar.client.XpBarRenderer;
 import com.joshuafonseca.rpghealthbar.compat.ManaSource;
+import com.joshuafonseca.rpghealthbar.compat.ThirstCompat;
 import com.joshuafonseca.rpghealthbar.config.AirPosition;
 import com.joshuafonseca.rpghealthbar.config.ClientConfig;
 import com.joshuafonseca.rpghealthbar.config.HudPiece;
+import com.joshuafonseca.rpghealthbar.config.ThirstMode;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
@@ -52,6 +54,8 @@ final class ConfigPreview {
     private static final float ABSORPTION = 4;
     private static final float ARMOR = 12;
     private static final float FOOD = 17;
+    private static final int THIRST = 15;
+    private static final int THIRST_ICONS_WIDTH = 41;
     private static final int AIR_BUBBLES = 7;
     private static final float XP_PROGRESS_FRACTION = 0.6F;
     private static final int LEVEL = 12;
@@ -78,15 +82,14 @@ final class ConfigPreview {
         }
         Layout preview = layout();
         HudLayer.Frame frame = preview.frame();
-        HudLayout layout = frame.layout();
         graphics.pose().pushPose();
         graphics.pose().translate(centerX, centerY, 0);
         graphics.pose().scale(scale, scale, 1);
         graphics.pose().translate(-(preview.left() + preview.right()) / 2.0F, -(preview.top() + preview.bottom()) / 2.0F, 0);
 
         HudValues values = new HudValues(HEALTH, 20, ABSORPTION, ARMOR, FOOD, 0, null, ManaSource.placeholders(60),
-                StatusColors.HEALTH, StatusColors.HUNGER, false);
-        HudRenderer.render(graphics, font, layout, values, frame.showArmor(), frame.showHunger(), HudPosition.Pieces.NONE, false);
+                new ThirstCompat.Thirst(THIRST, 0, 20), StatusColors.HEALTH, StatusColors.HUNGER, StatusColors.THIRST, false);
+        HudRenderer.render(graphics, font, frame, values, frame.showHunger(), HudPosition.Pieces.NONE, false);
 
         HudPosition.Bounds armor = frame.pieceBounds().get(HudPiece.ARMOR);
         if (frame.vanillaArmor() && armor != null) {
@@ -105,6 +108,18 @@ final class ConfigPreview {
                 graphics.blit(ICONS, x, hunger.top(), FOOD_EMPTY_U, FOOD_V, ICON, ICON);
                 if (points <= FOOD) {
                     graphics.blit(ICONS, x, hunger.top(), points < FOOD ? FOOD_FULL_U : FOOD_HALF_U, FOOD_V, ICON, ICON);
+                }
+            }
+        }
+        HudPosition.Bounds thirst = frame.pieceBounds().get(HudPiece.THIRST);
+        if (frame.thirst() == ThirstMode.VANILLA && thirst != null) {
+            for (int i = 0; i < 10; i++) {
+                int points = i * 2 + 1;
+                int x = thirst.right() - i * ICON_SPACING - ICON;
+                // The mod's strip: the empty droplet, then fills over it, half at 16 and full at 32.
+                graphics.blit(ThirstCompat.ICONS, x, thirst.top(), 0, 0, ICON, ICON, THIRST_ICONS_WIDTH, ICON);
+                if (points <= THIRST) {
+                    graphics.blit(ThirstCompat.ICONS, x, thirst.top(), points < THIRST ? 32 : 16, 0, ICON, ICON, THIRST_ICONS_WIDTH, ICON);
                 }
             }
         }

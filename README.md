@@ -20,12 +20,13 @@ This is the **1.20.1 (Forge)** branch. The 1.21.1 (NeoForge) version is on [`mai
 - **Status colors:** like the vanilla hearts, the health bar turns green-yellow when poisoned, black when withered and light blue when frozen, and the hunger bar turns green with the Hunger effect. On 1.21.1, heart colors added by other mods are followed too.
 - **Armor and hunger** as the vanilla icons (default), thin bars, or hidden.
 - **AppleSkin support:** saturation is outlined in yellow on the hunger bar, and held food's value flashes on it, like AppleSkin's preview on the icons.
+- **Thirst Was Taken 2 support:** thirst as its droplet icons (default), a blue bar above hunger, an upright bar beside the hotbar, or hidden.
 
 <details>
 <summary><b>Customization</b> (click to expand)</summary>
 
 - **Half-size bars:** health and mana can each be full or half width.
-- **Move the HUD** by dragging it: the whole set, including the XP bar and level, or each piece (armor, hunger, health, each mana bar, XP bar) on its own. It stays in place when you change the window size or GUI scale.
+- **Move the HUD** by dragging it: the whole set, including the XP bar and level, or each piece (armor, hunger, thirst, health, each mana bar, XP bar) on its own. It stays in place when you change the window size or GUI scale.
 - **Item name height:** set how high the held item's name sits, with a preview that moves as you change it. It starts at vanilla's height, which leaves room for mods that add hotbars.
 - **Air bubbles and mount health** can sit above hunger, like vanilla, or below it, for layouts with health or mana above hunger.
 - **Text position:** the numbers on the health and mana bars can sit on the left, right or center, or be turned off.
@@ -71,6 +72,7 @@ Defaults are in bold:
 |  | Edit mode (top right) | **Simple** (preset widths), Advanced (the health, mana and XP bars' widths are set by dragging their ends in the HUD Editor, and the width options become Edit in HUD Editor buttons) |
 | **Armor + Hunger** | Armor | **Default** (armor icons, or another mod's armor display), Bar, Hidden |
 |  | Hunger | **Default** (hunger icons, or another mod's hunger display), Bar, Hidden |
+|  | Thirst (only with Thirst Was Taken 2) | **Default** (its droplet icons, above hunger), Bar (above the hunger bar), Vertical (an upright bar beside the hotbar), Hidden |
 |  | Air Bubbles/Mount HP | **Above** hunger, Below it |
 | **Health** | Health Units | **HP** (20 for a full vanilla bar), Hearts (10) |
 |  | Absorption | **Separate** (`16+4/20`), Combined (`20/20`), Separate v2 (`16/20`, with `+4` at the bar's right end) |
@@ -128,6 +130,7 @@ Settings are stored in `config/rpghealthbar-client.toml`.
 | **Confluence: Otherworld** (optional) | Dark blue | 1.1.4+ | 1.2.9+ |
 | **Ars Nouveau** (optional) | Purple | 5.8.2+ | 4.2.4+ |
 | **AppleSkin** (optional) | | 3.0.4+ | 2.5.0+ |
+| **Thirst Was Taken 2** (optional) | | 1.1.0+ | 1.5.0+ |
 | **Double Hotbar** (optional) | | Any ([Double Hotbar NeoForge](https://www.curseforge.com/projects/1563792), unofficial port by \_retrospective\_) | 1.3.2.1+ ([Double Hotbar](https://www.curseforge.com/minecraft/mc-mods/double-hotbar) by sidezbros) |
 
 - Client-side only: servers don't need it, and it works on servers that don't have it.
@@ -135,6 +138,7 @@ Settings are stored in `config/rpghealthbar-client.toml`.
 - [AppleSkin](https://www.curseforge.com/minecraft/mc-mods/appleskin) by squeek502: optional. When it's installed, saturation is outlined in yellow on the hunger bar and held food's value flashes on it; with the vanilla hunger icons, AppleSkin's own overlays move with them.
 - [Confluence: Otherworld](https://www.curseforge.com/minecraft/mc-mods/confluence): optional. When it's installed its mana gets its own darker blue bar, below Iron's when both are installed; with Confluence's convertIronsSpellMana on (1.21.1 only: Confluence's Forge build doesn't use it), Iron's spells use Confluence's mana, so only that bar shows, with the spell cost preview. Confluence's own health and mana displays are hidden while this mod is on (in soul mode its soul display stays); with Armor or Hunger on Default, Confluence's own armor and hunger displays show, if they're on in its config. They move with the HUD, like vanilla's. On 1.20.1, Confluence needs a PortLib version that matches it; see Confluence's page.
 - [Ars Nouveau](https://www.curseforge.com/minecraft/mc-mods/ars-nouveau) by baileyholl: optional. When it's installed, Ars Nouveau's mana gets its own purple bar, like its own, below the other mana bars, and Ars's own mana bar is hidden. Ars Nouveau and Iron's Spells don't share mana, even with both installed, so each keeps its own bar. With Confluence's convertArsNouveauMana on (1.21.1 only), Ars's spells use Confluence's mana, so Ars's bar isn't shown.
+- [Thirst Was Taken 2](https://www.curseforge.com/minecraft/mc-mods/thirst-was-taken-2) by whoisnighter: optional. When it's installed, the **Thirst** option picks how thirst shows, and its icons move with the HUD. The bar recolors with Parched and Upset Stomach, outlines quenched with AppleSkin (unless its quenched overlay is off), and isn't shown while riding. The original Thirst Was Taken is a different mod and isn't supported.
 - Double Hotbar: compatible with [Double Hotbar](https://www.curseforge.com/minecraft/mc-mods/double-hotbar) by sidezbros on 1.20.1, and its unofficial NeoForge port, [Double Hotbar NeoForge](https://www.curseforge.com/projects/1563792) by \_retrospective\_, on 1.21.1. Open the **HUD Editor...** and drag the HUD up above the second hotbar once; the bars, XP bar and level move together and stay there, and the item name stays above them.
 - Works with other mods that draw near the hotbar the same way: drag the HUD, or just the pieces in the way, clear of them.
 - Air bubbles and mount health stay vanilla and stack above the bars.

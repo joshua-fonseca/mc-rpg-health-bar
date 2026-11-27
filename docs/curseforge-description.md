@@ -12,6 +12,7 @@ My original plan was to only replace the vanilla hearts with an RPG-style health
 - **Status colors:** the health bar changes when poisoned, withered or frozen. The hunger bar changes with the Hunger effect. On 1.21.1, heart colors added by other mods are followed too.
 - **Armor and hunger** can be the vanilla icons (default), thin bars, or hidden.
 - **AppleSkin support:** saturation is outlined in yellow on the hunger bar, and held food's value flashes on it, like AppleSkin's preview on the icons.
+- **Thirst Was Taken 2 support:** thirst as its droplet icons (default), a blue bar above hunger, an upright bar beside the hotbar, or hidden.
 - **Heavy customization:** move individual pieces of the HUD wherever you like, and more, explained below.
 
 #### Armor and hunger as bars, with absorption
@@ -36,7 +37,7 @@ My original plan was to only replace the vanilla hearts with an RPG-style health
 
 #### Customization:
 
-- **Move the HUD** by dragging it: can either move the whole set, including the XP bar and level, or each piece (armor, hunger, health, each mana bar, XP bar) on its own. It stays in place when you change the window size or GUI scale.
+- **Move the HUD** by dragging it: can either move the whole set, including the XP bar and level, or each piece (armor, hunger, thirst, health, each mana bar, XP bar) on its own. It stays in place when you change the window size or GUI scale.
 - **Half-size bars:** health and mana can each be full or half width, and moved individually.
     - **Advanced edit mode:** For users who want even more customization, you can set the health, mana and XP bars to any width by dragging their ends in the HUD Editor.
 - **XP bar:** put the level number in the center or at either end, or hide the XP bar entirely.
@@ -56,6 +57,7 @@ My original plan was to only replace the vanilla hearts with an RPG-style health
 | **Iron's Spells 'n Spellbooks** | 3.4.0+ | 1.1.5+ (spell cost preview: 3.1.4+) |
 | **AppleSkin** | 3.0.4+ | 2.5.0+ |
 | **Confluence: Otherworld** | 1.1.4+ | 1.2.9+ |
+| **Thirst Was Taken 2** | 1.1.0+ | 1.5.0+ |
 | **Double Hotbar** | Any ([Double Hotbar NeoForge](https://www.curseforge.com/projects/1563792), unofficial port by \_retrospective\_) | 1.3.2.1+ ([Double Hotbar](https://www.curseforge.com/minecraft/mc-mods/double-hotbar) by sidezbros) |
 
 - **Client-side only:** servers don't need it, and it works on servers that don't have it.

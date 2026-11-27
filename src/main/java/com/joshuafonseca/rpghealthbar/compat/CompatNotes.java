@@ -36,7 +36,9 @@ public final class CompatNotes {
     private static final List<Requirement> REQUIREMENTS = List.of(
             new Requirement(IronsSpellsCompat.MODID, "Iron's", "1.1.5", null),
             new Requirement(IronsSpellsCompat.MODID, "Iron's", "3.1.4", "rpghealthbar.config.compat.feature.spellCost"),
-            new Requirement(AppleSkinCompat.MODID, "AppleSkin", "2.5.0", null));
+            new Requirement(AppleSkinCompat.MODID, "AppleSkin", "2.5.0", null),
+            // The first Forge build.
+            new Requirement(ThirstCompat.MODID, "Thirst Was Taken 2", "1.5.0", null));
 
     private CompatNotes() {
     }
@@ -71,6 +73,9 @@ public final class CompatNotes {
         }
         if (installedVersion(ArsNouveauCompat.MODID).isPresent() && !ArsNouveauCompat.isWorking()) {
             notes.add(new Note(Component.translatable("rpghealthbar.config.compat.failed", "Ars"), true));
+        }
+        if (!noted.contains(ThirstCompat.MODID) && installedVersion(ThirstCompat.MODID).isPresent() && !ThirstCompat.isAvailable()) {
+            notes.add(new Note(Component.translatable("rpghealthbar.config.compat.failed", "Thirst Was Taken 2"), true));
         }
         // Not a problem: two mana mods with no option of their own to share mana each keep their
         // own bar. Compatibility mods that merge them aren't accounted for, so say so.

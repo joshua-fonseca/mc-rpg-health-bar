@@ -142,6 +142,14 @@ dependencies {
         }
     }
 
+    // Thirst Was Taken 2 is optional: compiled against its first Forge version, so newer-only methods
+    // aren't used by accident. `-PwithThirst` adds it to the dev client;
+    // `-PthirstRuntimeVersion=...` runs another.
+    modCompileOnly "maven.modrinth:thirst-was-taken-2:${thirst_version}"
+    if (project.hasProperty('withThirst')) {
+        modLocalRuntime("maven.modrinth:thirst-was-taken-2:${project.findProperty('thirstRuntimeVersion') ?: thirst_runtime_version}") { transitive = false }
+    }
+
     // Confluence: Otherworld is read by reflection, so it's not compiled against. `-PwithConfluence`
     // adds it and the libraries it needs to the dev client; `-PconfluenceRuntimeVersion=40G2vna4` runs 1.2.9 (see gradle.properties).
     // It also needs PortLib (MesdagPortLib), only on CurseForge: download a version that

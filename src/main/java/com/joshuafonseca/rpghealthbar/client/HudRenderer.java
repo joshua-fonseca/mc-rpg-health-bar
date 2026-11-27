@@ -3,11 +3,13 @@ package com.joshuafonseca.rpghealthbar.client;
 import com.joshuafonseca.rpghealthbar.compat.AppleSkinCompat;
 import com.joshuafonseca.rpghealthbar.compat.Mana;
 import com.joshuafonseca.rpghealthbar.compat.ManaSource;
+import com.joshuafonseca.rpghealthbar.compat.ThirstCompat;
 import com.joshuafonseca.rpghealthbar.config.AbsorptionDisplay;
 import com.joshuafonseca.rpghealthbar.config.BarText;
 import com.joshuafonseca.rpghealthbar.config.ClientConfig;
 import com.joshuafonseca.rpghealthbar.config.HealthUnit;
 import com.joshuafonseca.rpghealthbar.config.HudPiece;
+import com.mojang.math.Axis;
 import net.minecraft.Util;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -26,6 +28,8 @@ public final class HudRenderer {
     private static final int ARMOR_COLOR = 0xFFB0B0B0;
     /** Saturation is outlined on the hunger bar in this color, like AppleSkin's outlines on the food icons. */
     private static final int SATURATION_COLOR = 0xFFF0D030;
+    /** Quenched is outlined on the thirst bar in a pale blue, as saturation is on the hunger bar. */
+    private static final int QUENCHED_COLOR = 0xFFB8F0FF;
     /** With food held, what eating it would add flashes on the hunger bar, as fast as AppleSkin's preview on the icons. */
     private static final long FOOD_PREVIEW_FLASH_MILLIS = 1600;
     /** A spell's cost blinks between the mana color and its cost color, once per period. */
@@ -71,14 +75,20 @@ public final class HudRenderer {
      *             look like a loss when switching back)
      * @param pieces each piece's shift from its place in the layout
      */
-    public static void render(GuiGraphics graphics, Font font, HudLayout layout, HudValues values, boolean showArmor, boolean showHunger,
+    public static void render(GuiGraphics graphics, Font font, HudLayer.Frame frame, HudValues values, boolean showHunger,
                               HudPosition.Pieces pieces, boolean live) {
+        HudLayout layout = frame.layout();
         // Each bar keeps its own half when the other one isn't shown as a bar.
-        if (showArmor) {
+        if (frame.showArmor()) {
             inPiece(graphics, pieces, HudPiece.ARMOR, () -> renderHalfBar(graphics, layout.x(), layout, values.armor() / MAX_ARMOR, ARMOR_COLOR));
         }
         if (showHunger) {
             inPiece(graphics, pieces, HudPiece.HUNGER, () -> renderHunger(graphics, layout, values));
+        }
+        HudPiece thirstBar = frame.thirstBar();
+        if (thirstBar != null && values.thirst() != null) {
+            HudPosition.Bounds box = frame.pieceBounds().get(thirstBar);
+            inPiece(graphics, pieces, thirstBar, () -> renderThirst(graphics, box, thirstBar == HudPiece.THIRST_VERTICAL, values));
         }
         inPiece(graphics, pieces, HudPiece.HEALTH, () -> renderHealth(graphics, font, layout, values, live));
         // Each mana bar in its own row from the layout, so one whose mana couldn't be read leaves
@@ -135,6 +145,37 @@ public final class HudRenderer {
             int color = ((int) (flash * 255) << 24) | (SATURATION_COLOR & 0xFFFFFF);
             BarRenderer.drawOutline(graphics, x, y, width, height, values.saturation() / MAX_FOOD, held.saturation() / MAX_FOOD, color, values.saturation() <= 0);
         }
+    }
+
+    /**
+     * The thirst bar in {@code box}, with quenched outlined like saturation: a thin half bar, or
+     * upright in the health bar's style, filling from the bottom.
+     */
+    private static void renderThirst(GuiGraphics graphics, HudPosition.Bounds box, boolean vertical, HudValues values) {
+        ThirstCompat.Thirst thirst = values.thirst();
+        float fraction = thirst.thirst() / thirst.max();
+        float quenched = thirst.quenched() / thirst.max();
+        if (!vertical) {
+            BarRenderer.drawTrack(graphics, box.left(), box.top(), box.width(), box.height(), false);
+            BarRenderer.drawFill(graphics, box.left(), box.top(), box.width(), box.height(), false, fraction, values.thirstColor(), false);
+            if (quenched > 0) {
+                BarRenderer.drawOutline(graphics, box.left(), box.top(), box.width(), box.height(), 0, quenched, QUENCHED_COLOR, true);
+            }
+            return;
+        }
+        // Drawn lying down from the origin, then turned a quarter so its left end is at the bottom.
+        int length = box.height();
+        int thickness = box.width();
+        graphics.pose().pushPose();
+        graphics.pose().translate(box.left(), box.bottom(), 0);
+        graphics.pose().mulPose(Axis.ZP.rotationDegrees(-90));
+        BarRenderer.drawTrack(graphics, 0, 0, length, thickness, true);
+        BarRenderer.drawFill(graphics, 0, 0, length, thickness, true, fraction, values.thirstColor(), true);
+        if (quenched > 0) {
+            // Inside the border.
+            BarRenderer.drawOutline(graphics, 1, 1, length - 2, thickness - 2, 0, quenched, QUENCHED_COLOR, true);
+        }
+        graphics.pose().popPose();
     }
 
     private static void renderHealth(GuiGraphics graphics, Font font, HudLayout layout, HudValues values, boolean live) {

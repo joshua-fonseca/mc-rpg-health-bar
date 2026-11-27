@@ -39,6 +39,11 @@ public final class ClientConfig {
             .translation("rpghealthbar.config.hungerMode")
             .defineEnum("hungerMode", HalfBarMode.VANILLA);
 
+    public static final ForgeConfigSpec.EnumValue<ThirstMode> THIRST_MODE = BUILDER
+            .comment("How Thirst Was Taken 2's thirst is shown: VANILLA (shown as Default: its droplet icons), BAR (blue bar above the hunger bar), VERTICAL (upright blue bar beside the hotbar) or HIDDEN.")
+            .translation("rpghealthbar.config.thirstMode")
+            .defineEnum("thirstMode", ThirstMode.VANILLA);
+
     public static final ForgeConfigSpec.EnumValue<AirPosition> AIR_POSITION = BUILDER
             .comment("Where the air bubbles and mount health rows go: ABOVE hunger (stacked upward, like vanilla) or BELOW it (stacked downward).")
             .translation("rpghealthbar.config.airPosition")

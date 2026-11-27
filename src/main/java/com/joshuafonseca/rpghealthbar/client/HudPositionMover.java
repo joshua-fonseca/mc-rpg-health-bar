@@ -1,9 +1,11 @@
 package com.joshuafonseca.rpghealthbar.client;
 
 import com.joshuafonseca.rpghealthbar.compat.ConfluenceCompat;
+import com.joshuafonseca.rpghealthbar.compat.ThirstCompat;
 import com.joshuafonseca.rpghealthbar.config.AirPosition;
 import com.joshuafonseca.rpghealthbar.config.ClientConfig;
 import com.joshuafonseca.rpghealthbar.config.HudPiece;
+import com.joshuafonseca.rpghealthbar.config.ThirstMode;
 import java.util.Map;
 import javax.annotation.Nullable;
 import net.minecraft.client.Minecraft;
@@ -46,6 +48,9 @@ public final class HudPositionMover {
     /** ForgeGui.rightHeight before a row drawn below hunger, or -1; put back after it, see {@link #onPost}. */
     private static int rightHeightBefore = -1;
 
+    /** ForgeGui.rightHeight before Thirst Was Taken 2's overlay on Default, or -1; see {@link #keepThirstRow}. */
+    private static int rightHeightBeforeThirst = -1;
+
     private HudPositionMover() {
     }
 
@@ -62,6 +67,12 @@ public final class HudPositionMover {
     /** Registered at high priority, after replaced overlays are cancelled and before other mods draw on them. */
     public static void onPre(RenderGuiOverlayEvent.Pre event) {
         ResourceLocation id = event.getOverlay().id();
+        if (id.equals(ThirstCompat.LAYER) && ThirstCompat.isAvailable() && ClientConfig.ENABLED.get()) {
+            if (Minecraft.getInstance().gui instanceof ForgeGui gui) {
+                moveThirstIcons(event.getGuiGraphics(), gui);
+            }
+            return;
+        }
         HudPiece piece = MOVED_OVERLAYS.get(id);
         if (piece == null || !ClientConfig.ENABLED.get()) {
             return;
@@ -78,6 +89,37 @@ public final class HudPositionMover {
             }
         }
         pushed = true;
+    }
+
+    /**
+     * Thirst Was Taken 2's droplets (Default): from where it stacks them above hunger to the thirst
+     * piece. Its overlay only runs this far on Default; otherwise it's hidden.
+     */
+    private static void moveThirstIcons(GuiGraphics graphics, ForgeGui gui) {
+        HudLayer.Frame frame = HudLayer.Frame.current(graphics.guiWidth(), graphics.guiHeight());
+        if (frame.thirst() != ThirstMode.VANILLA) {
+            return;
+        }
+        rightHeightBeforeThirst = gui.rightHeight;
+        int stackedTop = graphics.guiHeight() - rightHeightBeforeThirst;
+        graphics.pose().pushPose();
+        HudPosition.moveTo(graphics.pose(), frame.pieceOffset(HudPiece.THIRST)
+                .plus(new HudPosition.Offset(0, frame.layout().thirstY() - stackedTop)));
+        pushed = true;
+    }
+
+    /**
+     * With a thirst row in the layout, starts the rows stacked above hunger (air bubbles, other
+     * mods') above it, however far {@code rightHeight} had got before Thirst Was Taken 2's overlay.
+     * While riding a living entity thirst isn't shown, and the rows are left where they are.
+     */
+    public static void keepThirstRow(GuiGraphics graphics, ForgeGui gui, int rightHeight) {
+        HudLayer.Frame frame = HudLayer.Frame.current(graphics.guiWidth(), graphics.guiHeight());
+        Player player = Minecraft.getInstance().player;
+        boolean row = frame.thirst() == ThirstMode.VANILLA || frame.thirst() == ThirstMode.BAR;
+        if (row && player != null && !(player.getVehicle() instanceof LivingEntity)) {
+            gui.rightHeight = Math.max(rightHeight, HudLayer.vanillaRowsStart(graphics.guiHeight(), frame));
+        }
     }
 
     /**
@@ -144,6 +186,7 @@ public final class HudPositionMover {
             event.getGuiGraphics().pose().popPose();
             pushed = false;
             rightHeightBefore = -1;
+            rightHeightBeforeThirst = -1;
         }
     }
 
@@ -156,6 +199,10 @@ public final class HudPositionMover {
             gui.rightHeight = rightHeightBefore;
         }
         rightHeightBefore = -1;
+        if (rightHeightBeforeThirst >= 0 && Minecraft.getInstance().gui instanceof ForgeGui gui) {
+            keepThirstRow(event.getGuiGraphics(), gui, rightHeightBeforeThirst);
+        }
+        rightHeightBeforeThirst = -1;
         if (pushed) {
             event.getGuiGraphics().pose().popPose();
             pushed = false;

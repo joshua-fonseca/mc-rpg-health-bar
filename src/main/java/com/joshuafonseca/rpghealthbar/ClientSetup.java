@@ -9,9 +9,11 @@ import com.joshuafonseca.rpghealthbar.client.XpBarRenderer;
 import com.joshuafonseca.rpghealthbar.client.screen.RpgConfigScreen;
 import com.joshuafonseca.rpghealthbar.compat.ConfluenceCompat;
 import com.joshuafonseca.rpghealthbar.compat.ManaSource;
+import com.joshuafonseca.rpghealthbar.compat.ThirstCompat;
 import com.joshuafonseca.rpghealthbar.config.ClientConfig;
 import com.joshuafonseca.rpghealthbar.config.HalfBarMode;
 import com.joshuafonseca.rpghealthbar.config.HudPiece;
+import com.joshuafonseca.rpghealthbar.config.ThirstMode;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
@@ -19,6 +21,7 @@ import net.minecraftforge.client.ConfigScreenHandler;
 import net.minecraftforge.client.event.RegisterGuiOverlaysEvent;
 import net.minecraftforge.client.event.RenderGuiEvent;
 import net.minecraftforge.client.event.RenderGuiOverlayEvent;
+import net.minecraftforge.client.gui.overlay.ForgeGui;
 import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.GameShuttingDownEvent;
@@ -88,6 +91,15 @@ final class ClientSetup {
             return;
         }
         if (!ClientConfig.ENABLED.get()) {
+            return;
+        }
+        // Thirst Was Taken 2's droplets show only on Default; the thirst row still counts for the
+        // rows stacked above it.
+        if (id.equals(ThirstCompat.LAYER) && ThirstCompat.isAvailable() && ClientConfig.THIRST_MODE.get() != ThirstMode.VANILLA) {
+            event.setCanceled(true);
+            if (Minecraft.getInstance().gui instanceof ForgeGui gui) {
+                HudPositionMover.keepThirstRow(event.getGuiGraphics(), gui, gui.rightHeight);
+            }
             return;
         }
         // Armor and hunger on Default leave whatever the game shows: the vanilla icons, or a mod's
