@@ -69,6 +69,8 @@ public class HudEditScreen extends Screen {
     private HudPosition.Pieces grabbedPieces = HudPosition.Pieces.NONE;
     private Mode mode = Mode.ALL;
     private boolean dragging;
+    /** Whether Reset was pressed, which also resets the pieces that aren't shown. */
+    private boolean wasReset;
     /** In {@link Mode#ONE}, the piece last grabbed; the arrow keys move it. */
     @Nullable
     private HudPiece selected;
@@ -202,12 +204,13 @@ public class HudEditScreen extends Screen {
         if (BarWidths.advanced()) {
             sizes.replaceAll((piece, size) -> BarWidths.Size.PRESET);
         }
+        wasReset = true;
         setPieces(HudPosition.Pieces.NONE);
     }
 
     private void save() {
         BarWidths.save(sizes);
-        HudPosition.save(pieces, this.width, this.height, frame().pieceBounds());
+        HudPosition.save(pieces, this.width, this.height, frame().pieceBounds(), wasReset);
         close();
     }
 

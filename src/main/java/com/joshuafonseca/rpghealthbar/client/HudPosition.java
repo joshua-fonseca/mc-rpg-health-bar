@@ -184,14 +184,17 @@ public final class HudPosition {
 
     /**
      * Saves every piece's position. Shown pieces are measured from the anchor nearest them (shared
-     * by pieces that touch); hidden ones keep the anchor they had.
+     * by pieces that touch); hidden ones keep the anchor they had, unless the positions were reset.
      *
      * @param shown each shown piece at its default spot
+     * @param reset whether every piece was put back to its default spot since they were last saved
      */
-    public static void save(Pieces pieces, int screenWidth, int screenHeight, Map<HudPiece, Bounds> shown) {
+    public static void save(Pieces pieces, int screenWidth, int screenHeight, Map<HudPiece, Bounds> shown, boolean reset) {
         Map<HudPiece, HudAnchor> anchors = anchors(pieces, screenWidth, screenHeight, shown);
         for (HudPiece piece : HudPiece.values()) {
-            HudAnchor anchor = anchors.getOrDefault(piece, ClientConfig.pieceAnchor(piece));
+            // The default spot is measured from the bottom center, so a hidden piece that was reset
+            // stays there at any screen size.
+            HudAnchor anchor = anchors.getOrDefault(piece, reset ? HudAnchor.BOTTOM_CENTER : ClientConfig.pieceAnchor(piece));
             Offset stored = pieces.get(piece).minus(anchorShift(anchor, screenWidth, screenHeight));
             ClientConfig.setPiecePosition(piece, anchor, stored.x(), stored.y());
         }
