@@ -147,13 +147,14 @@ public final class HudPositionMover {
     /**
      * With a thirst row in the layout, starts the rows stacked above hunger (air bubbles, other
      * mods') above it, however far {@code rightHeight} had got before Thirst Was Taken 2's layer.
-     * While riding a living entity thirst isn't shown, and the rows are left where they are.
+     * While riding a living entity thirst isn't shown, nor with the bars hidden (creative, spectator),
+     * and the rows are left where they are.
      */
     public static void keepThirstRow(GuiGraphics graphics, int rightHeight) {
         HudLayer.Frame frame = HudLayer.Frame.current(graphics.guiWidth(), graphics.guiHeight());
         Player player = Minecraft.getInstance().player;
         boolean row = frame.thirst() == ThirstMode.VANILLA || frame.thirst() == ThirstMode.BAR;
-        if (row && player != null && !(player.getVehicle() instanceof LivingEntity)) {
+        if (row && player != null && HudLayer.isVisible(Minecraft.getInstance()) && !(player.getVehicle() instanceof LivingEntity)) {
             Minecraft.getInstance().gui.rightHeight = Math.max(rightHeight, HudLayer.vanillaRowsStart(graphics.guiHeight(), frame));
         }
     }
