@@ -9,7 +9,7 @@ import com.mojang.blaze3d.vertex.BufferUploader;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -58,7 +58,22 @@ public final class BarRenderer {
     private record Style(int color, int width, int height, boolean framed) {
     }
 
-    private static final Map<Style, ResourceLocation> TEXTURES = new HashMap<>();
+    /** How many textures are kept; far more than one frame draws. */
+    private static final int MAX_TEXTURES = 128;
+    /**
+     * The textures painted so far, least recently drawn first. Every size a bar is resized through
+     * needs its own, so the oldest are freed once there are too many.
+     */
+    private static final Map<Style, ResourceLocation> TEXTURES = new LinkedHashMap<>(16, 0.75F, true) {
+        @Override
+        protected boolean removeEldestEntry(Map.Entry<Style, ResourceLocation> eldest) {
+            if (size() <= MAX_TEXTURES) {
+                return false;
+            }
+            Minecraft.getInstance().getTextureManager().release(eldest.getValue());
+            return true;
+        }
+    };
 
     private BarRenderer() {
     }
