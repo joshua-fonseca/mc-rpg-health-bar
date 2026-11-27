@@ -37,6 +37,8 @@ final class ConfigPreview {
     private static final ResourceLocation FOOD_EMPTY = ResourceLocation.withDefaultNamespace("hud/food_empty");
     private static final ResourceLocation AIR = ResourceLocation.withDefaultNamespace("hud/air");
     private static final ResourceLocation AIR_BURSTING = ResourceLocation.withDefaultNamespace("hud/air_bursting");
+    private static final ResourceLocation MOUNT_CONTAINER = ResourceLocation.withDefaultNamespace("hud/heart/vehicle_container");
+    private static final ResourceLocation MOUNT_FULL = ResourceLocation.withDefaultNamespace("hud/heart/vehicle_full");
     private static final ResourceLocation HOTBAR = ResourceLocation.withDefaultNamespace("hud/hotbar");
     private static final ResourceLocation HOTBAR_SELECTION = ResourceLocation.withDefaultNamespace("hud/hotbar_selection");
     private static final int HOTBAR_WIDTH = 182;
@@ -110,26 +112,7 @@ final class ConfigPreview {
                 graphics.blitSprite(sprite, armor.left() + i * ICON_SPACING, armor.top(), ICON, ICON);
             }
         }
-        HudPosition.Bounds hunger = frame.pieceBounds().get(HudPiece.HUNGER);
-        if (frame.vanillaHunger() && hunger != null) {
-            for (int i = 0; i < 10; i++) {
-                int points = i * 2 + 1;
-                ResourceLocation sprite = points < FOOD ? FOOD_FULL : points == FOOD ? FOOD_HALF : FOOD_EMPTY;
-                graphics.blitSprite(sprite, hunger.right() - i * ICON_SPACING - ICON, hunger.top(), ICON, ICON);
-            }
-        }
-        HudPosition.Bounds thirst = frame.pieceBounds().get(HudPiece.THIRST);
-        if (frame.thirst() == ThirstMode.VANILLA && thirst != null) {
-            for (int i = 0; i < 10; i++) {
-                int points = i * 2 + 1;
-                int x = thirst.right() - i * ICON_SPACING - ICON;
-                // The mod's strip: the empty droplet, then fills over it, half at 16 and full at 32.
-                graphics.blit(ThirstCompat.ICONS, x, thirst.top(), 0, 0, ICON, ICON, THIRST_ICONS_WIDTH, ICON);
-                if (points <= THIRST) {
-                    graphics.blit(ThirstCompat.ICONS, x, thirst.top(), points < THIRST ? 32 : 16, 0, ICON, ICON, THIRST_ICONS_WIDTH, ICON);
-                }
-            }
-        }
+        drawFood(graphics, frame);
         HudPosition.Bounds air = frame.defaultAir();
         drawAir(graphics, air.right(), air.top());
 
@@ -148,6 +131,49 @@ final class ConfigPreview {
         graphics.drawString(font, LEVEL, levelX, levelY - 1, 0, false);
         graphics.drawString(font, LEVEL, levelX, levelY, LEVEL_COLOR, false);
         graphics.pose().popPose();
+    }
+
+    /** Sample hunger and thirst icons where the pieces are on Default, as laid out in {@code frame}, unmoved. */
+    private static void drawFood(GuiGraphics graphics, HudLayer.Frame frame) {
+        HudPosition.Bounds hunger = frame.pieceBounds().get(HudPiece.HUNGER);
+        if (frame.vanillaHunger() && hunger != null) {
+            drawHungerIcons(graphics, hunger);
+        }
+        HudPosition.Bounds thirst = frame.pieceBounds().get(HudPiece.THIRST);
+        if (frame.thirst() == ThirstMode.VANILLA && thirst != null) {
+            drawThirstIcons(graphics, thirst);
+        }
+    }
+
+    /** Sample hunger icons filling {@code box}. */
+    static void drawHungerIcons(GuiGraphics graphics, HudPosition.Bounds box) {
+        for (int i = 0; i < 10; i++) {
+            int points = i * 2 + 1;
+            ResourceLocation sprite = points < FOOD ? FOOD_FULL : points == FOOD ? FOOD_HALF : FOOD_EMPTY;
+            graphics.blitSprite(sprite, box.right() - i * ICON_SPACING - ICON, box.top(), ICON, ICON);
+        }
+    }
+
+    /** Sample thirst droplets filling {@code box}. */
+    static void drawThirstIcons(GuiGraphics graphics, HudPosition.Bounds box) {
+        for (int i = 0; i < 10; i++) {
+            int points = i * 2 + 1;
+            int x = box.right() - i * ICON_SPACING - ICON;
+            // The mod's strip: the empty droplet, then fills over it, half at 16 and full at 32.
+            graphics.blit(ThirstCompat.ICONS, x, box.top(), 0, 0, ICON, ICON, THIRST_ICONS_WIDTH, ICON);
+            if (points <= THIRST) {
+                graphics.blit(ThirstCompat.ICONS, x, box.top(), points < THIRST ? 32 : 16, 0, ICON, ICON, THIRST_ICONS_WIDTH, ICON);
+            }
+        }
+    }
+
+    /** A sample row of mount health ending at {@code right}. */
+    static void drawMountHealth(GuiGraphics graphics, int right, int top) {
+        for (int i = 0; i < 10; i++) {
+            int x = right - i * ICON_SPACING - ICON;
+            graphics.blitSprite(MOUNT_CONTAINER, x, top, ICON, ICON);
+            graphics.blitSprite(MOUNT_FULL, x, top, ICON, ICON);
+        }
     }
 
     /** Sample air bubbles in a row ending at {@code right}. */
@@ -171,7 +197,7 @@ final class ConfigPreview {
         int right = WIDTH;
         int bottom = VIRTUAL_HEIGHT;
         for (Map.Entry<HudPiece, HudPosition.Bounds> entry : frame.pieceBounds().entrySet()) {
-            if (entry.getKey() == HudPiece.AIR) {
+            if (entry.getKey() == HudPiece.AIR || entry.getKey() == HudPiece.MOUNT) {
                 continue;
             }
             HudPosition.Bounds piece = entry.getValue();

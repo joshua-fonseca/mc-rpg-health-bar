@@ -3,11 +3,11 @@ package com.joshuafonseca.rpghealthbar.config;
 import java.util.Locale;
 import net.minecraft.network.chat.Component;
 
-/** Where the air bubbles and mount health rows go, relative to hunger. */
+/** Where the air bubbles start, and which way mount health rows stack. */
 public enum AirPosition {
-    /** Stacked upward from above hunger, like vanilla. */
+    /** Above hunger, stacked upward, like vanilla. */
     ABOVE,
-    /** Stacked downward from under hunger. */
+    /** Under hunger, stacked downward. */
     BELOW;
 
     public Component displayName() {

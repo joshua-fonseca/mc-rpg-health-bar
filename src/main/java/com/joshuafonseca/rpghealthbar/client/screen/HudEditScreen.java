@@ -5,6 +5,7 @@ import com.joshuafonseca.rpghealthbar.client.HudLayer;
 import com.joshuafonseca.rpghealthbar.client.HudPosition;
 import com.joshuafonseca.rpghealthbar.client.HudPositionMover;
 import com.joshuafonseca.rpghealthbar.config.HudPiece;
+import com.joshuafonseca.rpghealthbar.config.ThirstMode;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
@@ -26,15 +27,16 @@ import org.lwjgl.glfw.GLFW;
  * or Cancel. In Advanced edit mode, dragging either end of the health, mana or XP bar resizes it
  * (the XP bar a cell at a time), and dragging the top of an upright hunger or thirst bar changes its
  * height. In a world the real HUD follows the drag; from the title screen a
- * preview is drawn instead.
+ * preview is drawn instead. Mount View shows the HUD as it is while riding, to move mount health.
  */
 public class HudEditScreen extends Screen {
     private static final int BUTTON_WIDTH = 70;
     private static final int BUTTON_HEIGHT = 20;
     private static final int BUTTON_GAP = 4;
+    private static final int VIEW_BUTTON_WIDTH = 100;
 
     /** Title, hint and buttons; moved to whichever half of the screen the HUD isn't in. */
-    private static final int CONTROLS_HEIGHT = 44;
+    private static final int CONTROLS_HEIGHT = 68;
     private static final int LINE_HEIGHT = 10;
     /** A bar's end can be grabbed this far either side of it. */
     private static final int EDGE_MARGIN = 2;
@@ -69,6 +71,9 @@ public class HudEditScreen extends Screen {
     private HudPosition.Pieces grabbedPieces = HudPosition.Pieces.NONE;
     private Mode mode = Mode.ALL;
     private boolean dragging;
+    /** Whether the HUD is shown as while riding; null until first opened, then as the player is. */
+    @Nullable
+    private Boolean mountView;
     /** Whether Reset was pressed, which also resets the pieces that aren't shown. */
     private boolean wasReset;
     /** In {@link Mode#ONE}, the piece last grabbed; the arrow keys move it. */
@@ -121,6 +126,19 @@ public class HudEditScreen extends Screen {
         buttons.add(addRenderableWidget(Button.builder(CommonComponents.GUI_CANCEL, button -> close())
                 .bounds(x + step * 3, 0, BUTTON_WIDTH, BUTTON_HEIGHT).build()));
 
+        if (mountView == null) {
+            mountView = HudPositionMover.mountShown(this.minecraft);
+        }
+        HudPosition.setPreviewMounted(mountView);
+        buttons.add(addRenderableWidget(Button.builder(viewButtonName(), button -> {
+                    mountView = !mountView;
+                    HudPosition.setPreviewMounted(mountView);
+                    selected = null;
+                    button.setMessage(viewButtonName());
+                    placeControls();
+                })
+                .bounds(this.width / 2 - VIEW_BUTTON_WIDTH / 2, 0, VIEW_BUTTON_WIDTH, BUTTON_HEIGHT).build()));
+
         if (sizes == null) {
             sizes = new EnumMap<>(BarWidths.saved());
             BarWidths.setPreview(sizes);
@@ -128,6 +146,25 @@ public class HudEditScreen extends Screen {
         // Start from the saved positions, or re-clamp the dragged ones if the window was resized.
         // This also places the controls.
         setPieces(pieces != null ? pieces : frame().pieces());
+    }
+
+    /** The view the button switches to. */
+    private Component viewButtonName() {
+        return Component.translatable(mountView ? "rpghealthbar.edit.view.normal" : "rpghealthbar.edit.view.mount");
+    }
+
+    /** The pieces the current view shows, where they're drawn: mount health in place of hunger and thirst in Mount View. */
+    private Map<HudPiece, HudPosition.Bounds> shownBounds(HudLayer.Frame frame) {
+        Map<HudPiece, HudPosition.Bounds> shown = frame.placedBounds();
+        shown.keySet().removeIf(piece -> !showsInView(piece));
+        return shown;
+    }
+
+    private boolean showsInView(HudPiece piece) {
+        if (!mountView) {
+            return piece != HudPiece.MOUNT;
+        }
+        return piece != HudPiece.HUNGER && piece != HudPiece.HUNGER_VERTICAL && piece != HudPiece.THIRST && piece != HudPiece.THIRST_VERTICAL;
     }
 
     /**
@@ -138,7 +175,7 @@ public class HudEditScreen extends Screen {
         HudLayer.Frame frame = frame();
         int top = CONTROLS_MARGIN;
         int bottom = this.height - CONTROLS_MARGIN - controlsHeight();
-        HudPosition.Bounds box = frame.bounds();
+        HudPosition.Bounds box = HudPosition.union(shownBounds(frame).values());
         boolean hudInTopHalf = (box.top() + box.bottom()) / 2 < this.height / 2;
         int[] candidates = {hudInTopHalf ? bottom : top, hudInTopHalf ? top : bottom, this.height / 2 - controlsHeight() / 2};
         controlsTop = candidates[0];
@@ -150,8 +187,10 @@ public class HudEditScreen extends Screen {
                 controlsTop = candidates[i];
             }
         }
-        for (AbstractButton button : buttons) {
-            button.setY(controlsTop + controlsHeight() - BUTTON_HEIGHT);
+        // The view button, added last, goes on a row under the others.
+        for (int i = 0; i < buttons.size(); i++) {
+            int rowsBelow = i == buttons.size() - 1 ? 0 : 1;
+            buttons.get(i).setY(controlsTop + controlsHeight() - BUTTON_HEIGHT - rowsBelow * (BUTTON_HEIGHT + BUTTON_GAP));
         }
     }
 
@@ -166,7 +205,7 @@ public class HudEditScreen extends Screen {
                 this.font.width(Component.translatable("rpghealthbar.edit.hint.resize")))) / 2;
         HudPosition.Bounds controls = new HudPosition.Bounds(this.width / 2 - halfWidth, y, this.width / 2 + halfWidth, y + controlsHeight());
         int area = 0;
-        for (HudPosition.Bounds box : frame.placedBounds().values()) {
+        for (HudPosition.Bounds box : shownBounds(frame).values()) {
             int w = Math.min(box.right(), controls.right()) - Math.max(box.left(), controls.left());
             int h = Math.min(box.bottom(), controls.bottom()) - Math.max(box.top(), controls.top());
             if (w > 0 && h > 0) {
@@ -177,15 +216,7 @@ public class HudEditScreen extends Screen {
     }
 
     private HudLayer.Frame frame() {
-        return HudLayer.Frame.compute(this.width, this.height);
-    }
-
-    /**
-     * Every piece the settings ask for, at its default spot, including a thirst row not shown right
-     * now (while riding): it still moves with the set, so it needs room and a shared anchor.
-     */
-    private Map<HudPiece, HudPosition.Bounds> allPieceBounds() {
-        return HudLayer.Frame.preview(this.width, this.height).pieceBounds();
+        return HudLayer.Frame.preview(this.width, this.height);
     }
 
     /** Shows the pieces where they'd be saved, each kept on screen. */
@@ -195,15 +226,17 @@ public class HudEditScreen extends Screen {
             clamped = clamped.with(entry.getKey(), HudPosition.clamp(requested.get(entry.getKey()), this.width, this.height, entry.getValue()));
         }
         HudPosition.setPreview(clamped);
-        // With the air rows where they follow, if they haven't been moved on their own.
-        pieces = frame().pieces();
-        HudPosition.setPreview(pieces);
+        pieces = clamped;
         placeControls();
     }
 
-    /** Moves every piece by the same amount, as far as keeps them all on screen. */
+    /**
+     * Moves every piece by the same amount, as far as keeps the ones the view shows on screen; one
+     * it doesn't show stops at the screen's edge.
+     */
     private void moveAll(HudPosition.Pieces from, HudPosition.Offset delta) {
-        HudPosition.Bounds bounds = HudPosition.union(HudPosition.placed(HudLayer.Frame.setBounds(allPieceBounds(), from), from::get).values());
+        HudPosition.Bounds bounds = HudPosition.union(HudPosition.placed(frame().pieceBounds(), from::get).entrySet().stream()
+                .filter(entry -> showsInView(entry.getKey())).map(Map.Entry::getValue).toList());
         setPieces(from.shiftedBy(HudPosition.clamp(delta, this.width, this.height, bounds)));
     }
 
@@ -213,12 +246,13 @@ public class HudEditScreen extends Screen {
             sizes.replaceAll((piece, size) -> BarWidths.Size.PRESET);
         }
         wasReset = true;
-        setPieces(HudPosition.Pieces.NONE);
+        setPieces(frame().defaultPieces());
     }
 
     private void save() {
         BarWidths.save(sizes);
-        HudPosition.save(pieces, this.width, this.height, allPieceBounds(), wasReset);
+        HudLayer.Frame frame = frame();
+        HudPosition.save(pieces, this.width, this.height, frame.pieceBounds(), frame.airDefault(), wasReset);
         close();
     }
 
@@ -235,6 +269,7 @@ public class HudEditScreen extends Screen {
     @Override
     public void removed() {
         HudPosition.setPreview(null);
+        HudPosition.setPreviewMounted(null);
         BarWidths.setPreview(null);
         showResizeCursor(null);
     }
@@ -257,12 +292,8 @@ public class HudEditScreen extends Screen {
         super.render(graphics, mouseX, mouseY, partialTick);
         HudLayer.Frame frame = frame();
 
-        HudPreview.drawIfHidden(graphics, this.minecraft, frame, false);
-        // Sample bubbles where the air rows go, while the game isn't showing any.
-        if (!HudPositionMover.stackedRowsShown(this.minecraft)) {
-            HudPosition.Bounds air = frame.placed(HudPiece.AIR);
-            ConfigPreview.drawAir(graphics, air.right(), air.top());
-        }
+        HudPreview.drawIfHidden(graphics, this.minecraft, frame, false, mountView);
+        drawSamples(graphics, frame);
 
         graphics.drawCenteredString(this.font, this.title, this.width / 2, controlsTop, 0xFFFFFF);
         Edge hoveredEdge = resizing == null && !dragging && getChildAt(mouseX, mouseY).isEmpty() ? edgeAt(mouseX, mouseY) : null;
@@ -274,7 +305,7 @@ public class HudEditScreen extends Screen {
         } else if (dragging) {
             highlight(graphics, frame, mode == Mode.ALL ? null : selected, GRABBED_HIGHLIGHT);
         } else if (mode == Mode.ALL) {
-            if (frame.bounds().contains(mouseX, mouseY)) {
+            if (HudPosition.union(shownBounds(frame).values()).contains(mouseX, mouseY)) {
                 highlight(graphics, frame, null, HOVER_HIGHLIGHT);
             }
         } else {
@@ -288,6 +319,32 @@ public class HudEditScreen extends Screen {
         graphics.drawCenteredString(this.font, Component.translatable(hint), this.width / 2, controlsTop + LINE_HEIGHT, 0xFFFFFF);
         if (BarWidths.advanced()) {
             graphics.drawCenteredString(this.font, Component.translatable("rpghealthbar.edit.hint.resize"), this.width / 2, controlsTop + LINE_HEIGHT * 2, 0xFFFFFF);
+        }
+    }
+
+    /** Sample icons for what the view shows but the game isn't drawing. */
+    private void drawSamples(GuiGraphics graphics, HudLayer.Frame frame) {
+        boolean mountShown = HudPositionMover.mountShown(this.minecraft);
+        if (mountView) {
+            if (!mountShown) {
+                HudPosition.Bounds mount = frame.placed(HudPiece.MOUNT);
+                ConfigPreview.drawMountHealth(graphics, mount.right(), mount.top());
+            }
+        } else if (mountShown) {
+            // Riding, the game draws no hunger or thirst icons.
+            if (frame.vanillaHunger()) {
+                ConfigPreview.drawHungerIcons(graphics, frame.placed(HudPiece.HUNGER));
+            }
+            if (frame.thirst() == ThirstMode.VANILLA) {
+                ConfigPreview.drawThirstIcons(graphics, frame.placed(HudPiece.THIRST));
+            }
+        }
+        if (!HudPositionMover.airShown(this.minecraft)) {
+            // Clear of the sample mount health, as the real bubbles would be.
+            HudPosition.Bounds mount = mountView
+                    ? HudPositionMover.mountArea(frame, this.height, mountShown ? HudPositionMover.mountRows(this.minecraft) : 1) : null;
+            HudPosition.Bounds air = HudPositionMover.airArea(frame, this.height, mount);
+            ConfigPreview.drawAir(graphics, air.right(), air.top());
         }
     }
 
@@ -318,7 +375,7 @@ public class HudEditScreen extends Screen {
             return null;
         }
         HudLayer.Frame frame = frame();
-        for (Map.Entry<HudPiece, HudPosition.Bounds> entry : frame.placedBounds().entrySet()) {
+        for (Map.Entry<HudPiece, HudPosition.Bounds> entry : shownBounds(frame).entrySet()) {
             if (!BarWidths.resizable(entry.getKey())) {
                 continue;
             }
@@ -382,8 +439,8 @@ public class HudEditScreen extends Screen {
      * Lightens one piece, or every piece if {@code only} is null, exactly over its own pixels so
      * it doesn't get in the way of lining things up.
      */
-    private static void highlight(GuiGraphics graphics, HudLayer.Frame frame, @Nullable HudPiece only, int color) {
-        for (Map.Entry<HudPiece, HudPosition.Bounds> entry : frame.placedBounds().entrySet()) {
+    private void highlight(GuiGraphics graphics, HudLayer.Frame frame, @Nullable HudPiece only, int color) {
+        for (Map.Entry<HudPiece, HudPosition.Bounds> entry : shownBounds(frame).entrySet()) {
             if (only == null || entry.getKey() == only) {
                 HudPosition.Bounds box = entry.getValue();
                 graphics.fill(box.left(), box.top(), box.right(), box.bottom(), color);
@@ -412,7 +469,7 @@ public class HudEditScreen extends Screen {
             return true;
         }
         if (mode == Mode.ALL) {
-            if (frame().bounds().contains(mouseX, mouseY)) {
+            if (HudPosition.union(shownBounds(frame()).values()).contains(mouseX, mouseY)) {
                 dragging = true;
                 grabbedPieces = pieces;
                 grabX = mouseX;
@@ -437,7 +494,7 @@ public class HudEditScreen extends Screen {
     private HudPiece pieceAt(double mouseX, double mouseY) {
         HudLayer.Frame frame = frame();
         HudPiece near = null;
-        for (Map.Entry<HudPiece, HudPosition.Bounds> entry : frame.placedBounds().entrySet()) {
+        for (Map.Entry<HudPiece, HudPosition.Bounds> entry : shownBounds(frame).entrySet()) {
             HudPosition.Bounds bounds = entry.getValue();
             if (bounds.contains(mouseX, mouseY)) {
                 return entry.getKey();
@@ -460,7 +517,7 @@ public class HudEditScreen extends Screen {
             if (mode == Mode.ALL) {
                 moveAll(grabbedPieces, moved);
             } else if (selected != null) {
-                setPieces(pieces.movedAlone(selected, moved));
+                setPieces(pieces.with(selected, moved));
             }
             return true;
         }
@@ -493,7 +550,7 @@ public class HudEditScreen extends Screen {
             if (mode == Mode.ALL) {
                 moveAll(pieces, nudge);
             } else if (selected != null) {
-                setPieces(pieces.movedAlone(selected, pieces.get(selected).plus(nudge)));
+                setPieces(pieces.with(selected, pieces.get(selected).plus(nudge)));
             }
             return true;
         }

@@ -34,6 +34,9 @@ public final class HudPosition {
     /** Piece shifts while the position editor is open, so the real HUD follows the drag; null otherwise. */
     @Nullable
     private static Pieces preview;
+    /** While the position editor is open, whether it shows the HUD as it is while riding a mount; null otherwise. */
+    @Nullable
+    private static Boolean previewMounted;
 
     private HudPosition() {
     }
@@ -50,14 +53,9 @@ public final class HudPosition {
         }
     }
 
-    /**
-     * Each piece's shift from its default spot.
-     *
-     * @param airDetached whether {@link HudPiece#AIR} has been moved on its own; until then it
-     *                    follows another piece
-     */
-    public record Pieces(Map<HudPiece, Offset> offsets, boolean airDetached) {
-        public static final Pieces NONE = new Pieces(Map.of(), false);
+    /** Each piece's shift from its default spot. */
+    public record Pieces(Map<HudPiece, Offset> offsets) {
+        public static final Pieces NONE = new Pieces(Map.of());
 
         public Offset get(HudPiece piece) {
             return offsets.getOrDefault(piece, Offset.ZERO);
@@ -67,13 +65,7 @@ public final class HudPosition {
             Map<HudPiece, Offset> copy = new EnumMap<>(HudPiece.class);
             copy.putAll(offsets);
             copy.put(piece, offset);
-            return new Pieces(copy, airDetached);
-        }
-
-        /** A piece dragged or nudged on its own: moving the air rows stops them following. */
-        public Pieces movedAlone(HudPiece piece, Offset offset) {
-            Pieces moved = with(piece, offset);
-            return piece == HudPiece.AIR && !offset.equals(get(piece)) ? new Pieces(moved.offsets, true) : moved;
+            return new Pieces(copy);
         }
 
         /** Every piece, shown or not, moved by the same amount. */
@@ -82,7 +74,7 @@ public final class HudPosition {
             for (HudPiece piece : HudPiece.values()) {
                 moved.put(piece, get(piece).plus(delta));
             }
-            return new Pieces(moved, airDetached);
+            return new Pieces(moved);
         }
     }
 
@@ -155,14 +147,15 @@ public final class HudPosition {
     /**
      * Each piece's shift: the editor's preview, or the saved positions.
      *
-     * @param shown each shown piece at its default spot
+     * @param shown      each shown piece at its default spot
+     * @param airDefault where the air bubbles go from their box until they're moved
      */
-    public static Pieces pieces(int screenWidth, int screenHeight, Map<HudPiece, Bounds> shown) {
-        return preview != null ? preview : saved(screenWidth, screenHeight, shown);
+    public static Pieces pieces(int screenWidth, int screenHeight, Map<HudPiece, Bounds> shown, Offset airDefault) {
+        return preview != null ? preview : saved(screenWidth, screenHeight, shown, airDefault);
     }
 
     /** The saved positions for this screen size, with each shown piece kept on screen. */
-    public static Pieces saved(int screenWidth, int screenHeight, Map<HudPiece, Bounds> shown) {
+    private static Pieces saved(int screenWidth, int screenHeight, Map<HudPiece, Bounds> shown, Offset airDefault) {
         Map<HudPiece, Offset> shifts = new EnumMap<>(HudPiece.class);
         if (ClientConfig.LAYOUT_VERSION.get() < 2) {
             Offset set = legacySetOffset(screenWidth, screenHeight, shown);
@@ -176,30 +169,47 @@ public final class HudPosition {
                 shifts.put(piece, storedOffset(piece).plus(anchorShift(ClientConfig.pieceAnchor(piece), screenWidth, screenHeight)));
             }
         }
+        if (!ClientConfig.ROWS_PLACED.get()) {
+            // Saved before air and mount health had places of their own: they moved with hunger.
+            shifts.put(HudPiece.MOUNT, shifts.get(HudPiece.HUNGER));
+            shifts.put(HudPiece.AIR, shifts.get(HudPiece.HUNGER).plus(airDefault));
+        } else if (isUnmoved(HudPiece.AIR)) {
+            shifts.put(HudPiece.AIR, airDefault);
+        }
         for (Map.Entry<HudPiece, Bounds> entry : shown.entrySet()) {
             shifts.put(entry.getKey(), clamp(shifts.get(entry.getKey()), screenWidth, screenHeight, entry.getValue()));
         }
-        return new Pieces(shifts, ClientConfig.AIR_DETACHED.get());
+        return new Pieces(shifts);
     }
 
     /**
      * Saves every piece's position. Shown pieces are measured from the anchor nearest them (shared
      * by pieces that touch); hidden ones keep the anchor they had, unless the positions were reset.
      *
-     * @param shown each shown piece at its default spot
-     * @param reset whether every piece was put back to its default spot since they were last saved
+     * @param shown      each shown piece at its default spot
+     * @param airDefault where the air bubbles go from their box until they're moved
+     * @param reset      whether every piece was put back to its default spot since they were last saved
      */
-    public static void save(Pieces pieces, int screenWidth, int screenHeight, Map<HudPiece, Bounds> shown, boolean reset) {
+    public static void save(Pieces pieces, int screenWidth, int screenHeight, Map<HudPiece, Bounds> shown, Offset airDefault, boolean reset) {
         Map<HudPiece, HudAnchor> anchors = anchors(pieces, screenWidth, screenHeight, shown);
         for (HudPiece piece : HudPiece.values()) {
             // The default spot is measured from the bottom center, so a hidden piece that was reset
             // stays there at any screen size.
             HudAnchor anchor = anchors.getOrDefault(piece, reset ? HudAnchor.BOTTOM_CENTER : ClientConfig.pieceAnchor(piece));
             Offset stored = pieces.get(piece).minus(anchorShift(anchor, screenWidth, screenHeight));
+            if (piece == HudPiece.AIR && pieces.get(piece).equals(airDefault)) {
+                // Saved as unmoved, so it goes where Air Bubbles/Mount HP says if that changes.
+                anchor = HudAnchor.BOTTOM_CENTER;
+                stored = Offset.ZERO;
+            }
             ClientConfig.setPiecePosition(piece, anchor, stored.x(), stored.y());
         }
-        ClientConfig.setAirDetached(pieces.airDetached());
         ClientConfig.savePositions();
+    }
+
+    /** Whether a piece's saved position is the untouched one. */
+    private static boolean isUnmoved(HudPiece piece) {
+        return ClientConfig.pieceAnchor(piece) == HudAnchor.BOTTOM_CENTER && storedOffset(piece).equals(Offset.ZERO);
     }
 
     public static Offset clamp(Offset offset, int screenWidth, int screenHeight, Bounds bounds) {
@@ -212,6 +222,20 @@ public final class HudPosition {
 
     public static void setPreview(@Nullable Pieces pieces) {
         preview = pieces;
+    }
+
+    /** Whether the position editor is showing its positions on the HUD. */
+    public static boolean isPreviewing() {
+        return preview != null;
+    }
+
+    public static void setPreviewMounted(@Nullable Boolean mounted) {
+        previewMounted = mounted;
+    }
+
+    @Nullable
+    public static Boolean previewMounted() {
+        return previewMounted;
     }
 
     private static Offset storedOffset(HudPiece piece) {
@@ -232,10 +256,6 @@ public final class HudPosition {
      */
     private static Map<HudPiece, HudAnchor> anchors(Pieces pieces, int screenWidth, int screenHeight, Map<HudPiece, Bounds> shown) {
         Map<HudPiece, Bounds> placed = placed(shown, pieces::get);
-        if (!pieces.airDetached()) {
-            // Following another piece, it has no position of its own to keep together with others.
-            placed.remove(HudPiece.AIR);
-        }
         List<HudPiece> keys = new ArrayList<>(placed.keySet());
         List<Bounds> boxes = new ArrayList<>(placed.values());
         int[] group = new int[keys.size()];
@@ -276,7 +296,7 @@ public final class HudPosition {
 
     /** Pieces layout 1 didn't have, which don't count as part of its set. */
     private static boolean newerThanLayoutOne(HudPiece piece) {
-        return piece.isUpright() || piece == HudPiece.THIRST || piece == HudPiece.AIR;
+        return piece.isUpright() || piece == HudPiece.THIRST || piece == HudPiece.AIR || piece == HudPiece.MOUNT;
     }
 
     /**

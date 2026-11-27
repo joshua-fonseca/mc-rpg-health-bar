@@ -13,11 +13,10 @@ public enum HudPiece {
     THIRST("thirst"),
     /** The upright thirst bar, beside the hotbar by default; placed apart from {@link #THIRST}. */
     THIRST_VERTICAL("thirstVertical"),
-    /**
-     * The air bubbles and mount health rows. They follow hunger (or, without a horizontal hunger bar
-     * or icons, the health bar) until moved on their own.
-     */
+    /** The air bubbles, above hunger by default, or under it with Air Bubbles/Mount HP on Below. */
     AIR("air"),
+    /** Mount health, shown while riding in hunger's place by default; its rows grow up, or down on Below. */
+    MOUNT("mount"),
     HEALTH("health"),
     /** Iron's Spells' mana bar. */
     MANA("mana"),

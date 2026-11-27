@@ -10,7 +10,9 @@
   - Like its own bar, the bar recolors with Parched and Upset Stomach, outlines quenched with AppleSkin, and isn't shown while riding. Thirst can be moved on its own in the HUD Editor.
 - New **Vertical** choice for **Hunger**: an upright bar to the right of the hotbar, with AppleSkin's saturation outline and food preview. With thirst vertical too, hunger is nearest the hotbar.
 - In **Advanced** edit mode, vertical hunger and thirst bars can be made taller or shorter by dragging their top in the HUD Editor.
-- **Air bubbles and mount health** can be dragged on their own in the HUD Editor. Until you move them they follow hunger as before, or the health bar with Hunger on Vertical or Hidden.
+- **Air bubbles** and **mount health** now have places of their own and can each be dragged in the HUD Editor; they no longer move with hunger. A HUD you've already moved keeps them where they were.
+  - The new **Mount View** button shows the HUD as it is while riding, so mount health can be dragged.
+  - **Air Bubbles/Mount HP** sets where the bubbles start (above or under hunger) until you move them, and whether mount health's rows stack upward or downward.
 - The config screen's preview shows a hotbar under the HUD.
 - Fixed: if a future version of Iron's Spells or Ars Nouveau can't be read, its own mana bar now shows again instead of no mana bar at all.
 - Fixed: **Reset** in the HUD Editor didn't fully reset a piece that wasn't shown at the time, which could then move away from its default spot when the window size changed.

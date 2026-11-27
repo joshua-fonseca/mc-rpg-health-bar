@@ -15,6 +15,7 @@ import com.joshuafonseca.rpghealthbar.config.HalfBarMode;
 import com.joshuafonseca.rpghealthbar.config.HudPiece;
 import com.joshuafonseca.rpghealthbar.config.ThirstMode;
 import com.mojang.logging.LogUtils;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
@@ -65,6 +66,24 @@ public class RpgHealthBar {
         event.registerAbove(VanillaGuiLayers.PLAYER_HEALTH, HUD_LAYER, new HudLayer());
     }
 
+    private static boolean ridingWithMountHealth() {
+        Player player = Minecraft.getInstance().player;
+        return ClientConfig.ENABLED.get() && player != null && HudPositionMover.mountWithHealth(player) != null;
+    }
+
+    /** What the HUD Editor's view leaves out: mount health in its normal view, hunger and thirst in its mount view. */
+    private static boolean hiddenByEditorView(ResourceLocation name) {
+        Boolean mounted = HudPosition.previewMounted();
+        if (mounted == null) {
+            return false;
+        }
+        if (!mounted) {
+            return name.equals(VanillaGuiLayers.VEHICLE_HEALTH);
+        }
+        return name.equals(VanillaGuiLayers.FOOD_LEVEL) || name.equals(ConfluenceCompat.FOOD_LAYER) || AppleSkinCompat.isHungerOverlay(name)
+                || name.equals(ThirstCompat.LAYER);
+    }
+
     private static void hideVanillaLayers(RenderGuiLayerEvent.Pre event) {
         ResourceLocation name = event.getName();
         // Confluence's own displays replace these vanilla ones, and Confluence hides them later, at
@@ -112,8 +131,11 @@ public class RpgHealthBar {
                 || name.equals(AppleSkinCompat.HEALTH_RESTORED_LAYER)
                 // Its hunger overlays only fit the vanilla icons.
                 || (AppleSkinCompat.isHungerOverlay(name) && hungerReplaced)
+                // Riding, there are no hunger icons under them, and mount health may be elsewhere.
+                || (AppleSkinCompat.isHungerOverlay(name) && ridingWithMountHealth())
                 || (name.equals(VanillaGuiLayers.ARMOR_LEVEL) && armorReplaced)
-                || (name.equals(VanillaGuiLayers.FOOD_LEVEL) && hungerReplaced)) {
+                || (name.equals(VanillaGuiLayers.FOOD_LEVEL) && hungerReplaced)
+                || hiddenByEditorView(name)) {
             event.setCanceled(true);
         }
     }
