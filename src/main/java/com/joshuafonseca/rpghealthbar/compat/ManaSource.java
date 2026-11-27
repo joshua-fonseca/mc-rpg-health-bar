@@ -64,7 +64,8 @@ public enum ManaSource {
 
         @Override
         public boolean hidesOwnDisplay(ResourceLocation layer) {
-            return layer.equals(IronsSpellsCompat.MANA_OVERLAY);
+            // Kept if its mana can't be read, as there's no bar of ours to take its place.
+            return layer.equals(IronsSpellsCompat.MANA_OVERLAY) && available();
         }
     },
     /**
@@ -133,7 +134,8 @@ public enum ManaSource {
 
         @Override
         public boolean hidesOwnDisplay(ResourceLocation layer) {
-            return layer.equals(ArsNouveauCompat.MANA_LAYER);
+            // Kept if its mana can't be read, as there's no bar of ours to take its place.
+            return layer.equals(ArsNouveauCompat.MANA_LAYER) && available();
         }
 
         /** Ars's own bar is animated with rising bubbles. */
