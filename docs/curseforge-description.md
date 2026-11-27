@@ -97,7 +97,7 @@ Selecting a spell via spell wheel, the mana bar blinks according to how much man
 
 #### Advanced mode: resizing bars in the HUD Editor
 
-![The HUD Editor in Advanced mode: the health bar shortened from its right end, the mana bar from its left, and the XP bar made longer](https://raw.githubusercontent.com/joshua-fonseca/mc-rpg-health-bar/main/docs/images/resize-bars.png)
+![The HUD Editor in Advanced mode: the health bar shortened from its right end, the mana bar from its left, the XP bar made longer, and the vertical hunger and thirst bars made taller](https://raw.githubusercontent.com/joshua-fonseca/mc-rpg-health-bar/main/docs/images/resize-bars.png)
 
 #### Moving the whole HUD
 
@@ -105,7 +105,7 @@ Selecting a spell via spell wheel, the mana bar blinks according to how much man
 
 #### Moving a single piece
 
-![Moving one piece: the health bar](https://raw.githubusercontent.com/joshua-fonseca/mc-rpg-health-bar/main/docs/images/move-pieces.png)
+![Moving single pieces: the health bar and the air bubbles](https://raw.githubusercontent.com/joshua-fonseca/mc-rpg-health-bar/main/docs/images/move-pieces.png)
 
 #### Setting the item name height
 
@@ -117,4 +117,4 @@ Selecting a spell via spell wheel, the mana bar blinks according to how much man
 
 #### I will not judge you for your layouts even if it looks like this:
 
-![A chaotic layout: the health, mana and XP bars stretched and scattered across the screen at odd widths](https://raw.githubusercontent.com/joshua-fonseca/mc-rpg-health-bar/main/docs/images/layout-chaos.png)
+![Four chaotic layouts in a collage: bars stretched and scattered across the screen at odd widths and heights](https://raw.githubusercontent.com/joshua-fonseca/mc-rpg-health-bar/main/docs/images/layout-chaos.png)

@@ -102,7 +102,7 @@ Defaults are in bold:
 
 #### Advanced mode: resizing bars in the HUD Editor
 
-![The HUD Editor in Advanced mode: the health bar shortened from its right end, the mana bar from its left, and the XP bar made longer](docs/images/resize-bars.png)
+![The HUD Editor in Advanced mode: the health bar shortened from its right end, the mana bar from its left, the XP bar made longer, and the vertical hunger and thirst bars made taller](docs/images/resize-bars.png)
 
 #### Moving the whole HUD
 
@@ -110,7 +110,7 @@ Defaults are in bold:
 
 #### Moving a single piece
 
-![Moving one piece: the health bar](docs/images/move-pieces.png)
+![Moving single pieces: the health bar and the air bubbles](docs/images/move-pieces.png)
 
 #### Setting the item name height
 
