@@ -85,7 +85,8 @@ final class ConfigPreview {
         graphics.pose().pushPose();
         graphics.pose().translate(centerX, centerY, 0);
         graphics.pose().scale(scale, scale, 1);
-        graphics.pose().translate(-(preview.left() + preview.right()) / 2.0F, -(preview.top() + preview.bottom()) / 2.0F, 0);
+        // Whole pixels: on a half pixel, the vanilla icons pick up the texture rows beside them.
+        graphics.pose().translate(-((preview.left() + preview.right()) / 2), -((preview.top() + preview.bottom()) / 2), 0);
 
         HudValues values = new HudValues(HEALTH, 20, ABSORPTION, ARMOR, FOOD, 0, null, ManaSource.placeholders(60),
                 new ThirstCompat.Thirst(THIRST, 0, 20), StatusColors.HEALTH, StatusColors.HUNGER, StatusColors.THIRST, false);
