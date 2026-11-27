@@ -48,7 +48,7 @@ public class ItemNameScreen extends Screen {
         this.controlsTop = frame.bounds().top() < CONTROLS_MARGIN + CONTROLS_HEIGHT ? (this.height - CONTROLS_HEIGHT) / 2 : CONTROLS_MARGIN;
         int y = this.controlsTop + 14;
         this.slider = new HeightSlider(this.width / 2 - SLIDER_WIDTH / 2, y, SLIDER_WIDTH, BUTTON_HEIGHT,
-                this.slider != null ? this.slider.offset() : ClientConfig.ITEM_NAME_OFFSET.get());
+                this.slider != null ? this.slider.offset() : ClientConfig.read(ClientConfig.ITEM_NAME_OFFSET));
         this.slider.setTooltip(RpgConfigScreen.tooltip("itemNameOffset", "vanilla", "lower"));
         addRenderableWidget(this.slider);
         y += BUTTON_HEIGHT + BUTTON_GAP;
@@ -174,7 +174,7 @@ public class ItemNameScreen extends Screen {
         }
 
         void save() {
-            if (offset() != ClientConfig.ITEM_NAME_OFFSET.get()) {
+            if (offset() != ClientConfig.read(ClientConfig.ITEM_NAME_OFFSET)) {
                 ClientConfig.set(ClientConfig.ITEM_NAME_OFFSET, offset());
             }
         }

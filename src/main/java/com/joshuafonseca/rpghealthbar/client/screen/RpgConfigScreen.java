@@ -127,7 +127,7 @@ public class RpgConfigScreen extends Screen {
         super(Component.translatable("rpghealthbar.config.title"));
         this.parent = parent;
         for (ForgeConfigSpec.ConfigValue<?> value : EDITED) {
-            this.opened.put(value, value.get());
+            this.opened.put(value, ClientConfig.read(value));
         }
     }
 
@@ -166,7 +166,7 @@ public class RpgConfigScreen extends Screen {
         addRenderableWidget(Button.builder(Component.translatable("rpghealthbar.config.reset"), button -> confirmReset())
                 .bounds(footerLeft + (FOOTER_BUTTON_WIDTH + FOOTER_BUTTON_GAP) * 2, footerY, FOOTER_BUTTON_WIDTH, BUTTON_HEIGHT).build());
         this.previewButton = addRenderableWidget(new PreviewButton(button -> {
-            ClientConfig.set(ClientConfig.SHOW_PREVIEW, !ClientConfig.SHOW_PREVIEW.get());
+            ClientConfig.set(ClientConfig.SHOW_PREVIEW, !ClientConfig.read(ClientConfig.SHOW_PREVIEW));
             rebuildWidgets();
         }));
         this.previewButton.setPosition(this.width / 2 + this.font.width(this.title) / 2 + TITLE_GAP, (HEADER_HEIGHT - BUTTON_HEIGHT) / 2);
@@ -432,7 +432,7 @@ public class RpgConfigScreen extends Screen {
     private static WidgetRow textOption(String key, BarText current, ForgeConfigSpec.EnumValue<BarText> value, @Nullable ForgeConfigSpec.BooleanValue legacyShown) {
         return option(key, BarText.values(), current, BarText::displayName, text -> {
             ClientConfig.set(value, text);
-            if (legacyShown != null && !legacyShown.get()) {
+            if (legacyShown != null && !ClientConfig.read(legacyShown)) {
                 ClientConfig.set(legacyShown, true);
             }
         }, "left", "right", "center", "off");
@@ -500,7 +500,7 @@ public class RpgConfigScreen extends Screen {
      */
     @Override
     public void onClose() {
-        boolean changed = this.opened.entrySet().stream().anyMatch(entry -> !entry.getKey().get().equals(entry.getValue()));
+        boolean changed = this.opened.entrySet().stream().anyMatch(entry -> !ClientConfig.read(entry.getKey()).equals(entry.getValue()));
         if (!changed) {
             this.minecraft.setScreen(this.parent);
             return;
@@ -544,7 +544,7 @@ public class RpgConfigScreen extends Screen {
 
     @SuppressWarnings("unchecked")
     private static <T> void restore(ForgeConfigSpec.ConfigValue<T> value, Object opened) {
-        if (!value.get().equals(opened)) {
+        if (!ClientConfig.read(value).equals(opened)) {
             ClientConfig.set(value, (T) opened);
         }
     }

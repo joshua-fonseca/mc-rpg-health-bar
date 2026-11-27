@@ -408,11 +408,14 @@ public final class ClientConfig {
         PENDING.put(value, newValue);
     }
 
-    /** A value saved with the positions, including a change not written yet. */
+    /**
+     * A value as last changed, including a change not written yet, or one a reload has undone for
+     * now. For positions, and for deciding whether a setting needs changing.
+     */
     @SuppressWarnings("unchecked")
     public static <T> T read(ForgeConfigSpec.ConfigValue<T> value) {
-        Object pending = PENDING.get(value);
-        return pending != null ? (T) pending : value.get();
+        Object changed = PENDING.containsKey(value) ? PENDING.get(value) : EXPECTED.get(value);
+        return changed != null ? (T) changed : value.get();
     }
 
     @SuppressWarnings("unchecked")
