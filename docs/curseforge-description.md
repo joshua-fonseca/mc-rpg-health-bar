@@ -14,6 +14,7 @@ My original plan was to only replace the vanilla hearts with an RPG-style health
 *   **Status colors:** the health bar changes when poisoned, withered or frozen. The hunger bar changes with the Hunger effect. On 1.21.1, heart colors added by other mods are followed too.
 *   **Armor and hunger** can be the vanilla icons (default), thin bars, or hidden.
 *   **AppleSkin support:** saturation is outlined in yellow on the hunger bar, and held food's value flashes on it, like AppleSkin's preview on the icons.
+*   **Thirst Was Taken 2 support:** thirst as its droplet icons (default), a blue bar above hunger, an upright bar beside the hotbar, or hidden.
 *   **Heavy customization:** move individual pieces of the HUD wherever you like, and more, explained further down this page.
 
 #### Armor and hunger as bars, with absorption
@@ -45,6 +46,7 @@ My original plan was to only replace the vanilla hearts with an RPG-style health
 | <strong>Confluence: Otherworld</strong> (optional)      | Dark blue      | 1.1.4+                                                                                                                                                           | 1.2.9+                                                                                                                                        |
 | <strong>Ars Nouveau</strong> (optional)                 | Purple         | 5.8.2+                                                                                                                                                           | 4.2.4+                                                                                                                                        |
 | <strong>AppleSkin</strong> (optional)                   |                | 3.0.4+                                                                                                                                                           | 2.5.0+                                                                                                                                        |
+| <strong>Thirst Was Taken 2</strong> (optional)          |                | 1.1.0+                                                                                                                                                           | 1.5.0+                                                                                                                                        |
 | <strong>Double Hotbar</strong> (optional)               |                | Any (<a href="https://www.curseforge.com/projects/1563792" target="_blank" rel="nofollow">Double Hotbar NeoForge</a>, unofficial port by <em>retrospective</em>) | 1.3.2.1+ (<a href="https://www.curseforge.com/minecraft/mc-mods/double-hotbar" target="_blank" rel="nofollow">Double Hotbar</a> by sidezbros) |
 
 *   **Client-side only:** servers don't need it, and it works on servers that don't have it.
@@ -72,7 +74,7 @@ Note: compatibility mods may exist to have unified mana, but there are too many 
 
 #### Customization:
 
-*   **Move the HUD** by dragging it: can either move the whole set, including the XP bar and level, or each piece (armor, hunger, health, each mana bar, XP bar) on its own. It stays in place when you change the window size or GUI scale.
+*   **Move the HUD** by dragging it: can either move the whole set, including the XP bar and level, or each piece (armor, hunger, thirst, health, each mana bar, XP bar) on its own. It stays in place when you change the window size or GUI scale.
 *   **Advanced edit mode:** For users who want even more customization, you can set the health, mana and XP bars to any width by dragging their ends in the HUD Editor.
 *   **XP bar:** put the level number in the center or at either end, or hide the XP bar entirely.
 *   **Item name height:** set how high the held item's name sits, with a preview that moves as you change it. It starts at vanilla's height, which leaves room for mods that add hotbars.

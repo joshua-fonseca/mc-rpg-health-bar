@@ -131,6 +131,14 @@ dependencies {
         }
     }
 
+    // Thirst Was Taken 2 is optional: compiled against its oldest version with the player API, so
+    // newer-only methods aren't used by accident. `-PwithThirst` adds it to the dev client; it needs
+    // a newer NeoForge, so add `-Pneo_version=21.1.262` too. `-PthirstRuntimeVersion=...` runs another.
+    compileOnly "maven.modrinth:thirst-was-taken-2:${thirst_version}"
+    if (project.hasProperty('withThirst')) {
+        localRuntime("maven.modrinth:thirst-was-taken-2:${project.findProperty('thirstRuntimeVersion') ?: thirst_runtime_version}") { transitive = false }
+    }
+
     // Confluence: Otherworld is read by reflection, so it's not compiled against. `-PwithConfluence`
     // adds it and the libraries it needs to the dev client; `-PconfluenceRuntimeVersion=1.1.4` runs another version.
     if (project.hasProperty('withConfluence')) {

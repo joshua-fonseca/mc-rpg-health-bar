@@ -2,9 +2,11 @@ package com.joshuafonseca.rpghealthbar.client;
 
 import com.joshuafonseca.rpghealthbar.compat.AppleSkinCompat;
 import com.joshuafonseca.rpghealthbar.compat.ConfluenceCompat;
+import com.joshuafonseca.rpghealthbar.compat.ThirstCompat;
 import com.joshuafonseca.rpghealthbar.config.AirPosition;
 import com.joshuafonseca.rpghealthbar.config.ClientConfig;
 import com.joshuafonseca.rpghealthbar.config.HudPiece;
+import com.joshuafonseca.rpghealthbar.config.ThirstMode;
 import java.util.Map;
 import javax.annotation.Nullable;
 import net.minecraft.client.Minecraft;
@@ -55,6 +57,9 @@ public final class HudPositionMover {
     /** Gui.rightHeight before a row drawn below hunger, or -1; put back after it, see {@link #onPost}. */
     private static int rightHeightBefore = -1;
 
+    /** Gui.rightHeight before Thirst Was Taken 2's layer on Default, or -1; see {@link #keepThirstRow}. */
+    private static int rightHeightBeforeThirst = -1;
+
     private HudPositionMover() {
     }
 
@@ -75,6 +80,10 @@ public final class HudPositionMover {
         }
         ResourceLocation name = event.getName();
         boolean text = name.equals(VanillaGuiLayers.SELECTED_ITEM_NAME) || name.equals(VanillaGuiLayers.OVERLAY_MESSAGE);
+        if (name.equals(ThirstCompat.LAYER) && ThirstCompat.isAvailable()) {
+            moveThirstIcons(event.getGuiGraphics());
+            return;
+        }
         HudPiece piece = MOVED_LAYERS.get(name);
         if (piece == null && !text) {
             return;
@@ -116,6 +125,37 @@ public final class HudPositionMover {
             }
         }
         pushed = true;
+    }
+
+    /**
+     * Thirst Was Taken 2's droplets (Default): from where it stacks them above hunger to the thirst
+     * piece. Its layer only runs this far on Default; otherwise it's hidden.
+     */
+    private static void moveThirstIcons(GuiGraphics graphics) {
+        HudLayer.Frame frame = HudLayer.Frame.current(graphics.guiWidth(), graphics.guiHeight());
+        if (frame.thirst() != ThirstMode.VANILLA) {
+            return;
+        }
+        rightHeightBeforeThirst = Minecraft.getInstance().gui.rightHeight;
+        int stackedTop = graphics.guiHeight() - rightHeightBeforeThirst;
+        graphics.pose().pushPose();
+        HudPosition.moveTo(graphics.pose(), frame.pieceOffset(HudPiece.THIRST)
+                .plus(new HudPosition.Offset(0, frame.layout().thirstY() - stackedTop)));
+        pushed = true;
+    }
+
+    /**
+     * With a thirst row in the layout, starts the rows stacked above hunger (air bubbles, other
+     * mods') above it, however far {@code rightHeight} had got before Thirst Was Taken 2's layer.
+     * While riding a living entity thirst isn't shown, and the rows are left where they are.
+     */
+    public static void keepThirstRow(GuiGraphics graphics, int rightHeight) {
+        HudLayer.Frame frame = HudLayer.Frame.current(graphics.guiWidth(), graphics.guiHeight());
+        Player player = Minecraft.getInstance().player;
+        boolean row = frame.thirst() == ThirstMode.VANILLA || frame.thirst() == ThirstMode.BAR;
+        if (row && player != null && !(player.getVehicle() instanceof LivingEntity)) {
+            Minecraft.getInstance().gui.rightHeight = Math.max(rightHeight, HudLayer.vanillaRowsStart(graphics.guiHeight(), frame));
+        }
     }
 
     /**
@@ -170,6 +210,10 @@ public final class HudPositionMover {
             belowHeight += gui.rightHeight - rightHeightBefore;
             gui.rightHeight = rightHeightBefore;
             rightHeightBefore = -1;
+        }
+        if (rightHeightBeforeThirst >= 0) {
+            keepThirstRow(event.getGuiGraphics(), rightHeightBeforeThirst);
+            rightHeightBeforeThirst = -1;
         }
         if (pushed) {
             event.getGuiGraphics().pose().popPose();

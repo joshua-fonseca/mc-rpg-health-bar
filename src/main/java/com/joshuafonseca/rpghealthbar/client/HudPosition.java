@@ -156,7 +156,8 @@ public final class HudPosition {
         if (ClientConfig.LAYOUT_VERSION.get() < 2) {
             Offset set = legacySetOffset(screenWidth, screenHeight, shown);
             for (HudPiece piece : HudPiece.values()) {
-                shifts.put(piece, set.plus(storedOffset(piece)));
+                // The vertical thirst bar stands apart from the set, beside the hotbar.
+                shifts.put(piece, piece == HudPiece.THIRST_VERTICAL ? storedOffset(piece) : set.plus(storedOffset(piece)));
             }
         } else {
             for (HudPiece piece : HudPiece.values()) {
@@ -244,6 +245,10 @@ public final class HudPosition {
             }
             anchors.put(keys.get(i), HudAnchor.nearest((united.left() + united.right()) / 2, (united.top() + united.bottom()) / 2, screenWidth, screenHeight));
         }
+        // Left at its default spot, which is beside the hotbar, it stays there at any screen width.
+        if (anchors.containsKey(HudPiece.THIRST_VERTICAL) && pieces.get(HudPiece.THIRST_VERTICAL).equals(Offset.ZERO)) {
+            anchors.put(HudPiece.THIRST_VERTICAL, HudAnchor.BOTTOM_CENTER);
+        }
         return anchors;
     }
 
@@ -252,7 +257,10 @@ public final class HudPosition {
      * box around all shown pieces (each with its own shift).
      */
     private static Offset legacySetOffset(int screenWidth, int screenHeight, Map<HudPiece, Bounds> shown) {
-        Bounds bounds = union(placed(shown, HudPosition::storedOffset).values());
+        Map<HudPiece, Bounds> set = new EnumMap<>(shown);
+        // Newer than this layout, and apart from the set: counting it would move everything else.
+        set.remove(HudPiece.THIRST_VERTICAL);
+        Bounds bounds = union(placed(set, HudPosition::storedOffset).values());
         HudAnchor anchor = ClientConfig.ANCHOR.get();
         int left = anchor.x(screenWidth) - anchor.x(bounds.width()) + ClientConfig.OFFSET_X.get();
         int top = anchor.y(screenHeight) - anchor.y(bounds.height()) + ClientConfig.OFFSET_Y.get();

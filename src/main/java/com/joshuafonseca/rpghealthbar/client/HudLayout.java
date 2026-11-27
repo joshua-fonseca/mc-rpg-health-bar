@@ -6,7 +6,7 @@ import com.joshuafonseca.rpghealthbar.config.BarSize;
  * Positions of the bars in GUI-scaled pixels, at their default spot above the hotbar. Shared by
  * the HUD and the position editor.
  */
-public record HudLayout(int x, int top, int iconRowY, int halfBarY, int healthY, int healthWidth, int manaY, int manaBars) {
+public record HudLayout(int x, int top, int iconRowY, int halfBarY, int healthY, int healthWidth, int manaY, int manaBars, int thirstY) {
     /** Same width as the hotbar. */
     public static final int WIDTH = 182;
     /** Health and mana bars: just tall enough for their 7px text. */
@@ -21,13 +21,22 @@ public record HudLayout(int x, int top, int iconRowY, int halfBarY, int healthY,
     public static final int ICON_ROW_HEIGHT = 9;
     /** Ten 9px icons, 8px apart. */
     public static final int ICON_ROW_WIDTH = 81;
+    /** The vertical thirst bar is twice as tall as the hotbar (22px). */
+    public static final int VERTICAL_BAR_HEIGHT = 44;
+    /**
+     * Where the vertical thirst bar's left edge is, right of the screen's middle: past the hotbar, a
+     * left-handed player's offhand slot and the hotbar attack indicator.
+     */
+    public static final int VERTICAL_BAR_X = 122;
+    /** The vertical thirst bar's bottom edge is this far above the bottom of the screen. */
+    public static final int VERTICAL_BAR_BOTTOM_MARGIN = 2;
     /** Vertical gap between the armor/hunger, health and mana rows; same as between the XP bar and hotbar. */
     private static final int ROW_GAP = 2;
     /** The XP bar's top edge is at guiHeight - 29; the bars sit 2px above it. */
     private static final int BOTTOM_MARGIN = 31;
 
     /**
-     * Rows from top to bottom: armor/hunger, health, then the mana bars (Iron's Spells', then
+     * Rows from top to bottom: thirst, armor/hunger, health, then the mana bars (Iron's Spells', then
      * Confluence's). Health and each mana bar are as wide as {@link BarWidths} says, lined up on
      * the left.
      * <p>
@@ -37,10 +46,11 @@ public record HudLayout(int x, int top, int iconRowY, int halfBarY, int healthY,
      *
      * @param hasBars  whether armor or hunger is shown as a bar
      * @param hasIcons whether armor or hunger is shown as vanilla icons
+     * @param thirstHeight the thirst row's height (its icons' or bar's), or 0 for no thirst row
      * @param manaBars how many mana bars are drawn, see {@link com.joshuafonseca.rpghealthbar.compat.ManaSource}
      */
     public static HudLayout compute(int screenWidth, int screenHeight, boolean hasBars, boolean hasIcons, int manaBars,
-                                    int healthWidth) {
+                                    int healthWidth, int thirstHeight) {
         int x = screenWidth / 2 - WIDTH / 2;
         int bottom = screenHeight - BOTTOM_MARGIN;
         int manaY = bottom - manaBars * (MAIN_BAR_HEIGHT + ROW_GAP) + ROW_GAP;
@@ -48,8 +58,10 @@ public record HudLayout(int x, int top, int iconRowY, int halfBarY, int healthY,
         int rowHeight = hasIcons ? ICON_ROW_HEIGHT : hasBars ? HALF_BAR_HEIGHT : 0;
         int iconRowY = healthY - ROW_GAP - rowHeight;
         int halfBarY = iconRowY + (rowHeight - HALF_BAR_HEIGHT) / 2;
-        int top = rowHeight > 0 ? iconRowY : healthY;
-        return new HudLayout(x, top, iconRowY, halfBarY, healthY, healthWidth, manaY, manaBars);
+        int rowsTop = rowHeight > 0 ? iconRowY : healthY;
+        int thirstY = rowsTop - ROW_GAP - thirstHeight;
+        int top = thirstHeight > 0 ? thirstY : rowsTop;
+        return new HudLayout(x, top, iconRowY, halfBarY, healthY, healthWidth, manaY, manaBars, thirstY);
     }
 
     /** Full or half width: as wide as the hotbar, or as the armor and hunger bars. */

@@ -9,9 +9,11 @@ import com.joshuafonseca.rpghealthbar.client.screen.RpgConfigScreen;
 import com.joshuafonseca.rpghealthbar.compat.AppleSkinCompat;
 import com.joshuafonseca.rpghealthbar.compat.ConfluenceCompat;
 import com.joshuafonseca.rpghealthbar.compat.ManaSource;
+import com.joshuafonseca.rpghealthbar.compat.ThirstCompat;
 import com.joshuafonseca.rpghealthbar.config.ClientConfig;
 import com.joshuafonseca.rpghealthbar.config.HalfBarMode;
 import com.joshuafonseca.rpghealthbar.config.HudPiece;
+import com.joshuafonseca.rpghealthbar.config.ThirstMode;
 import com.mojang.logging.LogUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -76,6 +78,13 @@ public class RpgHealthBar {
             return;
         }
         if (!ClientConfig.ENABLED.get()) {
+            return;
+        }
+        // Thirst Was Taken 2's droplets show only on Default; the thirst row still counts for the
+        // rows stacked above it.
+        if (name.equals(ThirstCompat.LAYER) && ThirstCompat.isAvailable() && ClientConfig.THIRST_MODE.get() != ThirstMode.VANILLA) {
+            event.setCanceled(true);
+            HudPositionMover.keepThirstRow(event.getGuiGraphics(), Minecraft.getInstance().gui.rightHeight);
             return;
         }
         // Armor and hunger on Default leave whatever the game shows: the vanilla icons, or a mod's

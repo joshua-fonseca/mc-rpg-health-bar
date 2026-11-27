@@ -7,6 +7,10 @@ package com.joshuafonseca.rpghealthbar.config;
 public enum HudPiece {
     ARMOR("armor"),
     HUNGER("hunger"),
+    /** Thirst Was Taken 2's thirst, as its icons or our half bar, above hunger by default. */
+    THIRST("thirst"),
+    /** The upright thirst bar, beside the hotbar by default; placed apart from {@link #THIRST}. */
+    THIRST_VERTICAL("thirstVertical"),
     HEALTH("health"),
     /** Iron's Spells' mana bar. */
     MANA("mana"),

@@ -4,6 +4,7 @@ import com.joshuafonseca.rpghealthbar.client.BarWidths;
 import com.joshuafonseca.rpghealthbar.compat.AppleSkinCompat;
 import com.joshuafonseca.rpghealthbar.compat.CompatNotes;
 import com.joshuafonseca.rpghealthbar.compat.ManaSource;
+import com.joshuafonseca.rpghealthbar.compat.ThirstCompat;
 import com.joshuafonseca.rpghealthbar.config.AbsorptionDisplay;
 import com.joshuafonseca.rpghealthbar.config.AirPosition;
 import com.joshuafonseca.rpghealthbar.config.BarSize;
@@ -11,6 +12,7 @@ import com.joshuafonseca.rpghealthbar.config.BarText;
 import com.joshuafonseca.rpghealthbar.config.ClientConfig;
 import com.joshuafonseca.rpghealthbar.config.EditMode;
 import com.joshuafonseca.rpghealthbar.config.HalfBarMode;
+import com.joshuafonseca.rpghealthbar.config.ThirstMode;
 import com.joshuafonseca.rpghealthbar.config.HealthUnit;
 import com.joshuafonseca.rpghealthbar.config.LevelText;
 import java.util.ArrayList;
@@ -249,10 +251,13 @@ public class RpgConfigScreen extends Screen {
                 .create(0, 0, toggleWidth, BUTTON_HEIGHT, modState, (button, value) -> ClientConfig.set(ClientConfig.ENABLED, value))));
 
         list.addEntry(new Header(Component.translatable("rpghealthbar.config.section.armorHunger"),
-                AppleSkinCompat.isInstalled() ? Component.translatable("rpghealthbar.config.appleSkinDetected") : null, NOTE_COLOR));
+                survivalDetected(), NOTE_COLOR));
         // Each click cycles Vanilla → Bar → Hidden.
         list.addEntry(option("armorMode", HalfBarMode.values(), ClientConfig.ARMOR_MODE, HalfBarMode::displayName, "vanilla", "bar", "hidden"));
         list.addEntry(option("hungerMode", HalfBarMode.values(), ClientConfig.HUNGER_MODE, HalfBarMode::displayName, "vanilla", "bar", "hidden"));
+        if (ThirstCompat.isAvailable()) {
+            list.addEntry(option("thirstMode", ThirstMode.values(), ClientConfig.THIRST_MODE, ThirstMode::displayName, "vanilla", "bar", "vertical", "hidden"));
+        }
         list.addEntry(option("airPosition", AirPosition.values(), ClientConfig.AIR_POSITION, AirPosition::displayName, "above", "below"));
 
         list.addEntry(new Header(Component.translatable("rpghealthbar.config.section.health"), null, NOTE_COLOR));
@@ -361,7 +366,7 @@ public class RpgConfigScreen extends Screen {
      */
     private static List<ModConfigSpec.ConfigValue<?>> edited() {
         List<ModConfigSpec.ConfigValue<?>> edited = new ArrayList<>(List.of(ClientConfig.ENABLED, ClientConfig.ARMOR_MODE,
-                ClientConfig.HUNGER_MODE, ClientConfig.AIR_POSITION, ClientConfig.HEALTH_UNIT, ClientConfig.ABSORPTION_DISPLAY,
+                ClientConfig.HUNGER_MODE, ClientConfig.THIRST_MODE, ClientConfig.AIR_POSITION, ClientConfig.HEALTH_UNIT, ClientConfig.ABSORPTION_DISPLAY,
                 ClientConfig.HEALTH_TEXT, ClientConfig.SHOW_HEALTH_TEXT, ClientConfig.HEALTH_SIZE));
         for (ManaSource source : ManaSource.values()) {
             edited.add(source.textValue());
@@ -375,6 +380,16 @@ public class RpgConfigScreen extends Screen {
         }
         edited.addAll(List.of(ClientConfig.LEVEL_TEXT, ClientConfig.EDIT_MODE, ClientConfig.XP_BAR_SHOWN));
         return edited;
+    }
+
+    /** Which of AppleSkin and Thirst Was Taken 2 were found, for the Armor + Hunger header; null for neither. */
+    @Nullable
+    private static Component survivalDetected() {
+        boolean appleSkin = AppleSkinCompat.isInstalled();
+        if (ThirstCompat.isAvailable()) {
+            return Component.translatable(appleSkin ? "rpghealthbar.config.appleSkinThirstDetected" : "rpghealthbar.config.thirstDetected");
+        }
+        return appleSkin ? Component.translatable("rpghealthbar.config.appleSkinDetected") : null;
     }
 
     /** "(Iron's + Confluence detected)", or that none was. */

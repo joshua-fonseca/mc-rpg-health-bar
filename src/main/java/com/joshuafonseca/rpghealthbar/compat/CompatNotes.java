@@ -33,7 +33,9 @@ public final class CompatNotes {
             new Requirement(IronsSpellsCompat.MODID, "Iron's", "3.4.0"),
             new Requirement(AppleSkinCompat.MODID, "AppleSkin", "3.0.4"),
             // The first version whose mana is a decimal, as read now.
-            new Requirement(ConfluenceCompat.MODID, "Confluence", "1.1.4"));
+            new Requirement(ConfluenceCompat.MODID, "Confluence", "1.1.4"),
+            // The first version with the player methods of its API.
+            new Requirement(ThirstCompat.MODID, "Thirst Was Taken 2", "1.1.0"));
 
     private CompatNotes() {
     }
@@ -65,6 +67,9 @@ public final class CompatNotes {
         }
         if (!noted.contains(ArsNouveauCompat.MODID) && installedVersion(ArsNouveauCompat.MODID).isPresent() && !ArsNouveauCompat.isWorking()) {
             notes.add(new Note(Component.translatable("rpghealthbar.config.compat.failed", "Ars"), true));
+        }
+        if (!noted.contains(ThirstCompat.MODID) && installedVersion(ThirstCompat.MODID).isPresent() && !ThirstCompat.isAvailable()) {
+            notes.add(new Note(Component.translatable("rpghealthbar.config.compat.failed", "Thirst Was Taken 2"), true));
         }
         // Confluence adds Ars Nouveau's max mana (above Ars's starting max) to its own even with
         // convertArsNouveauMana off; counted before Ars sets it, that's -50, and Confluence's max goes below 0.

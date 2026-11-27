@@ -1,9 +1,11 @@
 package com.joshuafonseca.rpghealthbar.client;
 
 import com.joshuafonseca.rpghealthbar.compat.ManaSource;
+import com.joshuafonseca.rpghealthbar.compat.ThirstCompat;
 import com.joshuafonseca.rpghealthbar.config.ClientConfig;
 import com.joshuafonseca.rpghealthbar.config.HalfBarMode;
 import com.joshuafonseca.rpghealthbar.config.HudPiece;
+import com.joshuafonseca.rpghealthbar.config.ThirstMode;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
@@ -36,8 +38,7 @@ public class HudLayer implements LayeredDraw.Layer {
         HudPosition.moveTo(graphics.pose(), HudPosition.Offset.ZERO);
         // Riding a mount whose health vanilla shows, its hearts take hunger's place, as in vanilla.
         boolean mounted = HudPositionMover.mountWithHealth(player) != null;
-        HudRenderer.render(graphics, minecraft.font, frame.layout(), values, frame.showArmor(), frame.showHunger() && !mounted,
-                frame.pieces(), true);
+        HudRenderer.render(graphics, minecraft.font, frame, values, frame.showHunger() && !mounted, frame.pieces(), true);
         graphics.pose().popPose();
     }
 
@@ -59,7 +60,8 @@ public class HudLayer implements LayeredDraw.Layer {
      */
     public record Frame(HudLayout layout, HudPosition.Bounds bounds, HudPosition.Pieces pieces,
                         Map<HudPiece, HudPosition.Bounds> pieceBounds,
-                        boolean showArmor, boolean showHunger, boolean vanillaArmor, boolean vanillaHunger) {
+                        boolean showArmor, boolean showHunger, boolean vanillaArmor, boolean vanillaHunger,
+                        ThirstMode thirst) {
         /** The HUD's frame, shared by every layer that needs it; cleared when the GUI starts drawing. */
         @Nullable
         private static Frame current;
@@ -86,12 +88,30 @@ public class HudLayer implements LayeredDraw.Layer {
             boolean vanillaArmor = armorMode == HalfBarMode.VANILLA;
             boolean vanillaHunger = hungerMode == HalfBarMode.VANILLA;
 
+            // Hidden without Thirst Was Taken 2.
+            ThirstMode thirst = ThirstCompat.isAvailable() ? ClientConfig.THIRST_MODE.get() : ThirstMode.HIDDEN;
+            int thirstHeight = switch (thirst) {
+                case VANILLA -> HudLayout.ICON_ROW_HEIGHT;
+                case BAR -> HudLayout.HALF_BAR_HEIGHT;
+                case VERTICAL, HIDDEN -> 0;
+            };
+
             HudLayout layout = HudLayout.compute(screenWidth, screenHeight, showArmor || showHunger, vanillaArmor || vanillaHunger, ManaSource.shownBars().size(),
-                    BarWidths.width(HudPiece.HEALTH));
-            Map<HudPiece, HudPosition.Bounds> pieceBounds = pieceBounds(screenHeight, layout, armorMode, hungerMode);
+                    BarWidths.width(HudPiece.HEALTH), thirstHeight);
+            Map<HudPiece, HudPosition.Bounds> pieceBounds = pieceBounds(screenWidth, screenHeight, layout, armorMode, hungerMode, thirst);
             HudPosition.Pieces pieces = HudPosition.pieces(screenWidth, screenHeight, pieceBounds);
             HudPosition.Bounds bounds = HudPosition.union(HudPosition.placed(pieceBounds, pieces::get).values());
-            return new Frame(layout, bounds, pieces, pieceBounds, showArmor, showHunger, vanillaArmor, vanillaHunger);
+            return new Frame(layout, bounds, pieces, pieceBounds, showArmor, showHunger, vanillaArmor, vanillaHunger, thirst);
+        }
+
+        /** The piece our thirst bar is drawn in, or null with no thirst bar of ours. */
+        @Nullable
+        public HudPiece thirstBar() {
+            return switch (thirst) {
+                case BAR -> HudPiece.THIRST;
+                case VERTICAL -> HudPiece.THIRST_VERTICAL;
+                case VANILLA, HIDDEN -> null;
+            };
         }
 
         /** Each shown piece where it's drawn: its default box moved by its shift. */
@@ -110,7 +130,8 @@ public class HudLayer implements LayeredDraw.Layer {
         }
 
         /** Each shown piece at its default position. Health and XP are always shown; each mana bar is its own piece. */
-        private static Map<HudPiece, HudPosition.Bounds> pieceBounds(int screenHeight, HudLayout layout, HalfBarMode armorMode, HalfBarMode hungerMode) {
+        private static Map<HudPiece, HudPosition.Bounds> pieceBounds(int screenWidth, int screenHeight, HudLayout layout, HalfBarMode armorMode,
+                                                                    HalfBarMode hungerMode, ThirstMode thirst) {
             Map<HudPiece, HudPosition.Bounds> bounds = new EnumMap<>(HudPiece.class);
             int left = layout.x();
             int right = left + HudLayout.WIDTH;
@@ -125,6 +146,15 @@ public class HudLayer implements LayeredDraw.Layer {
                 bounds.put(HudPiece.HUNGER, new HudPosition.Bounds(right - HudLayout.ICON_ROW_WIDTH, layout.iconRowY(), right, iconBottom));
             } else if (hungerMode == HalfBarMode.BAR) {
                 bounds.put(HudPiece.HUNGER, new HudPosition.Bounds(layout.hungerX(), layout.halfBarY(), right, barBottom));
+            }
+            if (thirst == ThirstMode.VANILLA) {
+                bounds.put(HudPiece.THIRST, new HudPosition.Bounds(right - HudLayout.ICON_ROW_WIDTH, layout.thirstY(), right, layout.thirstY() + HudLayout.ICON_ROW_HEIGHT));
+            } else if (thirst == ThirstMode.BAR) {
+                bounds.put(HudPiece.THIRST, new HudPosition.Bounds(layout.hungerX(), layout.thirstY(), right, layout.thirstY() + HudLayout.HALF_BAR_HEIGHT));
+            } else if (thirst == ThirstMode.VERTICAL) {
+                int barLeft = screenWidth / 2 + HudLayout.VERTICAL_BAR_X;
+                int bottom = screenHeight - HudLayout.VERTICAL_BAR_BOTTOM_MARGIN;
+                bounds.put(HudPiece.THIRST_VERTICAL, new HudPosition.Bounds(barLeft, bottom - HudLayout.VERTICAL_BAR_HEIGHT, barLeft + HudLayout.MAIN_BAR_HEIGHT, bottom));
             }
             int healthLeft = left - BarWidths.left(HudPiece.HEALTH);
             bounds.put(HudPiece.HEALTH, new HudPosition.Bounds(healthLeft, layout.healthY(), healthLeft + layout.healthWidth(), layout.healthY() + HudLayout.MAIN_BAR_HEIGHT));
