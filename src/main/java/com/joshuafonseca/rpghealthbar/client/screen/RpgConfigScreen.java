@@ -467,18 +467,20 @@ public class RpgConfigScreen extends Screen {
             this.editModeButton.setPosition(this.width - EDIT_MODE_MARGIN - this.editModeButton.getWidth(), (this.layout.getHeaderHeight() - BUTTON_HEIGHT) / 2);
         }
         // The preview goes left of the list, scaled down to fit the room there. The list is placed
-        // as if the two were centered together, the preview taking only the width it needs.
+        // as if centered together with a preview of a set width, so it stays put as settings change
+        // the preview's size.
         int listWidth = PREVIEW_ROW_WIDTH + LIST_SIDE * 2;
         int room = this.width - listWidth - PREVIEW_GAP - PREVIEW_MARGIN * 2;
-        float scale = Math.min(1.0F, Math.min((float) room / ConfigPreview.width(), (float) this.layout.getContentHeight() / ConfigPreview.height()));
+        int reserved = Math.min(room, ConfigPreview.reservedWidth());
         this.list.screenWidth = this.width;
-        if (ClientConfig.SHOW_PREVIEW.get() && scale >= MIN_PREVIEW_SCALE) {
-            this.previewScale = scale;
-            int previewWidth = Math.round(ConfigPreview.width() * scale);
-            int left = (this.width - previewWidth - PREVIEW_GAP - listWidth) / 2;
-            int listX = left + previewWidth + PREVIEW_GAP;
+        if (ClientConfig.SHOW_PREVIEW.get() && reserved >= ConfigPreview.reservedWidth() * MIN_PREVIEW_SCALE) {
+            int left = (this.width - reserved - PREVIEW_GAP - listWidth) / 2;
+            int listX = left + reserved + PREVIEW_GAP;
             // In the middle of the space beside the rows, not up against them.
             this.previewX = (listX + LIST_SIDE) / 2;
+            int space = listX + LIST_SIDE - PREVIEW_MARGIN * 2;
+            this.previewScale = Math.min(1.0F, Math.min((float) space / ConfigPreview.width(),
+                    (float) this.layout.getContentHeight() / ConfigPreview.height()));
             this.previewY = this.layout.getHeaderHeight() + this.layout.getContentHeight() / 2;
             this.list.rowWidth = PREVIEW_ROW_WIDTH;
             this.list.updateSizeAndPosition(listWidth, this.layout.getContentHeight(), this.layout.getHeaderHeight());

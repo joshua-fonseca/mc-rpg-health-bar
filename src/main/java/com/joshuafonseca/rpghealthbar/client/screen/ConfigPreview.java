@@ -83,6 +83,15 @@ final class ConfigPreview {
         return layout.right() - layout.left();
     }
 
+    /**
+     * The width the config screen keeps beside its options: the preview's with every upright bar
+     * showing. It doesn't follow the settings, so changing them never moves the options.
+     */
+    static int reservedWidth() {
+        int last = ThirstCompat.isAvailable() ? 1 : 0;
+        return HudLayer.Frame.uprightLeft(WIDTH, last) + HudLayout.MAIN_BAR_HEIGHT - (HOTBAR_LEFT - 1);
+    }
+
     /** Draws the preview centered on {@code (centerX, centerY)}, scaled by {@code scale}; nothing while the mod is off. */
     static void draw(GuiGraphics graphics, Font font, int centerX, int centerY, float scale) {
         if (!ClientConfig.ENABLED.get()) {
