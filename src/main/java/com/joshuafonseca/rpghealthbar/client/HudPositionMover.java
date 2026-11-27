@@ -77,6 +77,11 @@ public final class HudPositionMover {
         return drawnRows;
     }
 
+    /** Counts rows drawn away from the stack above the bars, for {@link #drawnRows}. */
+    static void addDrawnRows(HudPosition.Bounds area) {
+        drawnRows.add(area);
+    }
+
     /** Called as the GUI starts drawing. */
     public static void newFrame() {
         drawnRows.clear();
@@ -255,10 +260,14 @@ public final class HudPositionMover {
         return player.getVehicle() instanceof LivingEntity vehicle && vehicle.showVehicleHealth() ? vehicle : null;
     }
 
-    /** Rows of mount health vanilla draws: 10 hearts a row, up to 30 hearts (as in Gui.getVehicleMaxHearts). */
-    private static int vehicleRows(LivingEntity mount) {
-        int hearts = Math.min((int) (mount.getMaxHealth() + 0.5F) / 2, 30);
-        return Math.max(1, (hearts + 9) / 10);
+    /** Hearts of mount health vanilla draws, up to 30 (as in Gui.getVehicleMaxHearts). */
+    static int vehicleHearts(LivingEntity mount) {
+        return Math.min((int) (mount.getMaxHealth() + 0.5F) / 2, 30);
+    }
+
+    /** Rows of mount health vanilla draws: 10 hearts a row. */
+    static int vehicleRows(LivingEntity mount) {
+        return Math.max(1, (vehicleHearts(mount) + 9) / 10);
     }
 
     public static void onPost(RenderGuiLayerEvent.Post event) {

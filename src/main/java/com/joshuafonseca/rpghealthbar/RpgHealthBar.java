@@ -5,6 +5,7 @@ import com.joshuafonseca.rpghealthbar.client.HudLayer;
 import com.joshuafonseca.rpghealthbar.client.HudPosition;
 import com.joshuafonseca.rpghealthbar.client.XpBarRenderer;
 import com.joshuafonseca.rpghealthbar.client.HudPositionMover;
+import com.joshuafonseca.rpghealthbar.client.MountHealthLayer;
 import com.joshuafonseca.rpghealthbar.client.screen.RpgConfigScreen;
 import com.joshuafonseca.rpghealthbar.compat.AppleSkinCompat;
 import com.joshuafonseca.rpghealthbar.compat.ConfluenceCompat;
@@ -40,6 +41,7 @@ public class RpgHealthBar {
     public static final Logger LOGGER = LogUtils.getLogger();
 
     public static final ResourceLocation HUD_LAYER = ResourceLocation.fromNamespaceAndPath(MODID, "hud");
+    public static final ResourceLocation MOUNT_LAYER = ResourceLocation.fromNamespaceAndPath(MODID, "mount_health");
 
     public RpgHealthBar(IEventBus modEventBus, ModContainer modContainer) {
         modContainer.registerConfig(ModConfig.Type.CLIENT, ClientConfig.SPEC);
@@ -64,6 +66,8 @@ public class RpgHealthBar {
         // Directly after the hearts, so vanilla layers drawn later (armor, food, air, mount health)
         // see the leftHeight/rightHeight we reserve and stack above our bars.
         event.registerAbove(VanillaGuiLayers.PLAYER_HEALTH, HUD_LAYER, new HudLayer());
+        // Where vanilla's mount health is, before the air bubbles.
+        event.registerAbove(VanillaGuiLayers.VEHICLE_HEALTH, MOUNT_LAYER, new MountHealthLayer());
     }
 
     private static boolean ridingWithMountHealth() {
@@ -135,6 +139,8 @@ public class RpgHealthBar {
                 || (AppleSkinCompat.isHungerOverlay(name) && ridingWithMountHealth())
                 || (name.equals(VanillaGuiLayers.ARMOR_LEVEL) && armorReplaced)
                 || (name.equals(VanillaGuiLayers.FOOD_LEVEL) && hungerReplaced)
+                // Its rows only stack upward; ours, drawn instead, stack downward.
+                || (name.equals(VanillaGuiLayers.VEHICLE_HEALTH) && MountHealthLayer.replacesVanilla())
                 || hiddenByEditorView(name)) {
             event.setCanceled(true);
         }
