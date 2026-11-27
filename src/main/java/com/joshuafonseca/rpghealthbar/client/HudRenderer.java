@@ -29,6 +29,8 @@ public final class HudRenderer {
     private static final int ARMOR_COLOR = 0xFFB0B0B0;
     /** Saturation is outlined on the hunger bar in this color, like AppleSkin's outlines on the food icons. */
     private static final int SATURATION_COLOR = 0xFFF0D030;
+    /** How far the upright hunger bar's border is darkened from its fill's color, toward black. */
+    private static final float HUNGER_BORDER_DARKEN = 0.68F;
     /** Quenched is outlined on the thirst bar in a pale blue, as saturation is on the hunger bar. */
     private static final int QUENCHED_COLOR = 0xFFB8F0FF;
     /** With food held, what eating it would add flashes on the hunger bar, as fast as AppleSkin's preview on the icons. */
@@ -142,8 +144,9 @@ public final class HudRenderer {
         BarRenderer.drawTrack(graphics, x, y, width, height, framed);
         BarRenderer.drawFill(graphics, x, y, width, height, framed, values.food() / MAX_FOOD, values.hungerColor(), false);
         if (framed) {
-            // Brown (or dark green with the Hunger effect) along the fill, rather than nearly black.
-            BarRenderer.drawFillBorder(graphics, x, y, width, height, values.food() / MAX_FOOD, StatusColors.lost(values.hungerColor()));
+            // Dark brown (or dark green with the Hunger effect) along the fill.
+            BarRenderer.drawFillBorder(graphics, x, y, width, height, values.food() / MAX_FOOD,
+                    BarRenderer.mix(values.hungerColor(), 0xFF000000, HUNGER_BORDER_DARKEN));
         }
         AppleSkinCompat.HeldFood held = values.heldFood();
         float flash = held == null ? 0 : held.flashAlpha() * pulse(FOOD_PREVIEW_FLASH_MILLIS);
