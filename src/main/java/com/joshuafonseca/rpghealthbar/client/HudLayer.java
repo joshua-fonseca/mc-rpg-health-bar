@@ -10,8 +10,11 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.Nullable;
+import net.minecraft.client.AttackIndicatorStatus;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.Options;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.client.gui.overlay.ForgeGui;
 import net.minecraftforge.client.gui.overlay.IGuiOverlay;
@@ -152,9 +155,13 @@ public class HudLayer implements IGuiOverlay {
             } else if (thirst == ThirstMode.BAR) {
                 bounds.put(HudPiece.THIRST, new HudPosition.Bounds(layout.hungerX(), layout.thirstY(), right, layout.thirstY() + HudLayout.HALF_BAR_HEIGHT));
             } else if (thirst == ThirstMode.VERTICAL) {
-                int barLeft = screenWidth / 2 + HudLayout.VERTICAL_BAR_X;
-                int bottom = screenHeight - HudLayout.VERTICAL_BAR_BOTTOM_MARGIN;
-                bounds.put(HudPiece.THIRST_VERTICAL, new HudPosition.Bounds(barLeft, bottom - HudLayout.VERTICAL_BAR_HEIGHT, barLeft + HudLayout.MAIN_BAR_HEIGHT, bottom));
+                // By the player's settings rather than what's on screen, so the bar doesn't jump around.
+                Options options = Minecraft.getInstance().options;
+                boolean leftHanded = options.mainHand().get() == HumanoidArm.LEFT;
+                int barLeft = HudLayout.verticalBarX(screenWidth, leftHanded,
+                        !leftHanded && options.attackIndicator().get() == AttackIndicatorStatus.HOTBAR);
+                bounds.put(HudPiece.THIRST_VERTICAL, new HudPosition.Bounds(barLeft, screenHeight - HudLayout.VERTICAL_BAR_HEIGHT,
+                        barLeft + HudLayout.MAIN_BAR_HEIGHT, screenHeight));
             }
             int healthLeft = left - BarWidths.left(HudPiece.HEALTH);
             bounds.put(HudPiece.HEALTH, new HudPosition.Bounds(healthLeft, layout.healthY(), healthLeft + layout.healthWidth(), layout.healthY() + HudLayout.MAIN_BAR_HEIGHT));
