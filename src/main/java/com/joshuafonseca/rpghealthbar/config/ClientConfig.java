@@ -1,11 +1,17 @@
 package com.joshuafonseca.rpghealthbar.config;
 
 import com.electronwill.nightconfig.core.UnmodifiableConfig;
+import com.electronwill.nightconfig.core.file.FileWatcher;
+import com.joshuafonseca.rpghealthbar.RpgHealthBar;
+import java.nio.file.Path;
 import java.util.EnumMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.concurrent.locks.LockSupport;
 import net.minecraftforge.common.ForgeConfigSpec;
+import net.minecraftforge.fml.config.ConfigTracker;
+import net.minecraftforge.fml.config.ModConfig;
 
 /** Stored in config/rpghealthbar-client.toml. Values are read every frame, so changes apply immediately. */
 public final class ClientConfig {
@@ -25,6 +31,8 @@ public final class ClientConfig {
     /** How many client ticks after the last write the reloads are taken to be done. */
     private static final int SETTLE_TICKS = 20;
     private static int ticksToSettle;
+    /** How long a running reload is given to finish when the game closes; they take milliseconds. */
+    private static final long RELOAD_WAIT_NANOS = 100_000_000L;
     /** Whether a change a reload undid is being written again, and how often that has finished. */
     private static boolean repairing;
     private static int repairs;
@@ -395,9 +403,25 @@ public final class ClientConfig {
 
     /** Writes every waiting value at once, when the game closes. */
     public static void writeAllPending() {
+        if (PENDING.isEmpty() && EXPECTED.isEmpty()) {
+            return;
+        }
+        stopReloading();
         queueUndone();
         while (!PENDING.isEmpty()) {
             writePending();
+        }
+    }
+
+    /**
+     * Stops Forge reloading the file when it changes, so writes made back to back can't be undone;
+     * only for when the game is closing. Waits for a reload that's already running.
+     */
+    private static void stopReloading() {
+        String file = ConfigTracker.INSTANCE.getConfigFileName(RpgHealthBar.MODID, ModConfig.Type.CLIENT);
+        if (file != null) {
+            FileWatcher.defaultInstance().removeWatch(Path.of(file));
+            LockSupport.parkNanos(RELOAD_WAIT_NANOS);
         }
     }
 
