@@ -50,18 +50,28 @@ public final class ThirstCompat {
     }
 
     /**
-     * The player's thirst, or null when the mod's own bar wouldn't show it (riding a living entity,
-     * or thirst turned off for the player) or it can't be read.
+     * Whether the mod's own bar would show the player's thirst: not while riding a living entity,
+     * with thirst turned off for the player, or if it can't be read.
      */
+    public static boolean isShown(Player player) {
+        if (!isAvailable() || player.getVehicle() instanceof LivingEntity) {
+            return false;
+        }
+        try {
+            return ThirstApiBridge.isEnabled(player);
+        } catch (LinkageError | RuntimeException e) {
+            disable(e);
+            return false;
+        }
+    }
+
+    /** The player's thirst, or null when it isn't shown ({@link #isShown}) or can't be read. */
     @Nullable
     public static Thirst read(Player player) {
-        if (!isAvailable() || player.getVehicle() instanceof LivingEntity) {
+        if (!isShown(player)) {
             return null;
         }
         try {
-            if (!ThirstApiBridge.isEnabled(player)) {
-                return null;
-            }
             // Like the mod's own bar, quenched is only outlined with AppleSkin.
             float quenched = AppleSkinCompat.isInstalled() && quenchedOverlayOn() ? ThirstApiBridge.quenched(player) : 0;
             return new Thirst(ThirstApiBridge.thirst(player), quenched, ThirstApiBridge.max());
