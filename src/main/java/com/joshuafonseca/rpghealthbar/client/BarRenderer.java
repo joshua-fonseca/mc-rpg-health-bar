@@ -166,7 +166,7 @@ public final class BarRenderer {
     }
 
     /**
-     * Outlines a frameless bar from {@code fromFraction} to {@code toFraction} in one color (which
+     * Outlines a bar (on a framed one, over its border) from {@code fromFraction} to {@code toFraction} in one color (which
      * may be translucent): its top and bottom rows, and its left end if {@code closedStart}. The
      * right end is left open.
      */

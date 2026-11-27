@@ -172,8 +172,8 @@ public final class HudRenderer {
         BarRenderer.drawTrack(graphics, 0, 0, length, thickness, true);
         BarRenderer.drawFill(graphics, 0, 0, length, thickness, true, fraction, values.thirstColor(), true);
         if (quenched > 0) {
-            // Inside the border.
-            BarRenderer.drawOutline(graphics, 1, 1, length - 2, thickness - 2, 0, quenched, QUENCHED_COLOR, true);
+            // On the border.
+            BarRenderer.drawOutline(graphics, 0, 0, length, thickness, 0, quenched, QUENCHED_COLOR, true);
         }
         graphics.pose().popPose();
     }
