@@ -51,7 +51,7 @@ My original plan was to only replace the vanilla hearts with an RPG-style health
 
 *   **Client-side only:** servers don't need it, and it works on servers that don't have it.
 *   Works with other mods that draw near the hotbar the same way: simply drag the HUD above them.
-*   Air bubbles and mount health stay vanilla, stacked above hunger or below it until you drag them elsewhere.
+*   Air bubbles and mount health stay vanilla; mount health takes hunger's place until you drag it elsewhere.
 *   **Texture packs:** armor and hunger on Default use your pack's icons, and the hotbar, XP bar, air bubbles and mount health stay vanilla, so packs restyle them. The health and mana bars, and armor and hunger as bars, are drawn by the mod and don't change with a pack.
 
 #### Iron's Spells: what spell cost preview looks like (honestly you aren't missing much)
@@ -74,7 +74,7 @@ Selecting a spell via spell wheel, the mana bar blinks according to how much man
 
 #### Customization:
 
-*   **Move the HUD** by dragging it: can either move the whole set, including the XP bar and level, or each piece (armor, hunger, thirst, health, each mana bar, XP bar, air bubbles with mount health) on its own. It stays in place when you change the window size or GUI scale.
+*   **Move the HUD** by dragging it: can either move the whole set, including the XP bar and level, or each piece (armor, hunger, thirst, health, each mana bar, XP bar, air bubbles, mount health) on its own. It stays in place when you change the window size or GUI scale.
 *   **Customize the bar sizes:**
     *   **Simple edit mode:** Comes with preset sizes for you to choose from
     *   **Advanced edit mode:** For users who want even more customization, you can set the health, mana and XP bars to any width, and vertical hunger and thirst bars to any height, by dragging their ends in the HUD Editor.
@@ -82,7 +82,7 @@ Selecting a spell via spell wheel, the mana bar blinks according to how much man
     * For health and mana you can put their labels in the center or at either end, or hide it.
     * For the XP bar you can put the level number in the center or at either end, or hide the XP bar entirely.
 *   **Item name height:** set how high the held item's name sits, with a preview that moves as you change it. It starts at vanilla's height, which leaves room for mods that add hotbars.
-*   **Air bubbles and mount health** can sit above hunger, like vanilla, or below it, for layouts with health or mana above hunger, and can be dragged anywhere on their own.
+*   **Air bubbles and mount health** can be dragged anywhere (**Mount View** in the HUD Editor shows mount health). By default the bubbles sit above hunger and mount health's rows stack upward, like vanilla; with **Below**, the bubbles start under hunger and the rows stack downward, for layouts with health or mana above hunger.
 *   **On/off switch:** turn the whole mod off for a fully vanilla HUD, and back on, without losing your settings.
 *   **Live preview:** the config screen can show the HUD beside the options, drawn as your settings would, so you see each change without leaving the screen.
 *   **Everything in game:** changes show on the HUD as you make them, no restart. Save Settings keeps them, and leaving without saving asks first.

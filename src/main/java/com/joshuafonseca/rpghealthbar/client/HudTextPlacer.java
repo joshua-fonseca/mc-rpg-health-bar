@@ -2,6 +2,8 @@ package com.joshuafonseca.rpghealthbar.client;
 
 import com.joshuafonseca.rpghealthbar.config.ClientConfig;
 import com.joshuafonseca.rpghealthbar.config.HudPiece;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.client.gui.overlay.ForgeGui;
@@ -127,27 +129,20 @@ public final class HudTextPlacer {
         int top = Math.min(vanillaTop + TEXT_ROOM, screenHeight - HOTBAR_HEIGHT);
         boolean stacked = false;
         boolean grew = true;
+        List<HudPosition.Bounds> boxes = new ArrayList<>();
+        for (Map.Entry<HudPiece, HudPosition.Bounds> entry : frame.placedBounds().entrySet()) {
+            // Air and mount health only take room where their rows are drawn, below.
+            boolean rows = entry.getKey() == HudPiece.AIR || entry.getKey() == HudPiece.MOUNT;
+            if (!rows && (entry.getKey() == HudPiece.XP ? xpRowShown : barsShown)) {
+                boxes.add(entry.getValue());
+            }
+        }
+        if (barsShown) {
+            boxes.addAll(HudPositionMover.drawnRows());
+        }
         while (grew) {
             grew = false;
-            for (Map.Entry<HudPiece, HudPosition.Bounds> entry : frame.placedBounds().entrySet()) {
-                boolean shown = entry.getKey() == HudPiece.XP ? xpRowShown : barsShown;
-                if (!shown) {
-                    continue;
-                }
-                HudPosition.Bounds box = entry.getValue();
-                if (entry.getKey() == HudPiece.AIR) {
-                    // Following another piece, its rows count as rows stacked above the bars (or
-                    // under hunger). Moved on its own, it takes room only while rows are drawn.
-                    int height = HudPositionMover.detachedHeight();
-                    if (!frame.pieces().airDetached() || height == 0) {
-                        continue;
-                    }
-                    box = new HudPosition.Bounds(box.left(), box.top() - height + HudPositionMover.ROW_HEIGHT, box.right(), box.bottom());
-                }
-                if (entry.getKey() == HudPiece.HUNGER) {
-                    // With air and mount health below hunger, they're part of it here.
-                    box = new HudPosition.Bounds(box.left(), box.top(), box.right(), box.bottom() + HudPositionMover.belowHeight());
-                }
+            for (HudPosition.Bounds box : boxes) {
                 boolean overHotbar = box.right() > hotbarLeft && box.left() < hotbarRight;
                 if (overHotbar && box.top() < top && box.bottom() > top - TEXT_ROOM) {
                     top = box.top();

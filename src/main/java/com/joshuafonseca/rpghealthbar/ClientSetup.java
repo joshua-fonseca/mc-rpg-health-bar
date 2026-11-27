@@ -78,6 +78,21 @@ final class ClientSetup {
         event.registerAbove(VanillaGuiOverlay.EXPERIENCE_BAR.id(), "experience_bar", new XpBarOverlay());
     }
 
+    /**
+     * What the HUD Editor's view leaves out: mount health in its normal view, hunger and thirst in its
+     * mount view (AppleSkin's food overlays draw with the food overlay, so they go with it).
+     */
+    private static boolean hiddenByEditorView(ResourceLocation id) {
+        Boolean mounted = HudPosition.previewMounted();
+        if (mounted == null) {
+            return false;
+        }
+        if (!mounted) {
+            return id.equals(VanillaGuiOverlay.MOUNT_HEALTH.id());
+        }
+        return id.equals(VanillaGuiOverlay.FOOD_LEVEL.id()) || id.equals(ConfluenceCompat.FOOD_LAYER) || id.equals(ThirstCompat.LAYER);
+    }
+
     private static void hideVanillaOverlays(RenderGuiOverlayEvent.Pre event) {
         ResourceLocation id = event.getOverlay().id();
         // Confluence's own displays replace these vanilla ones, and Confluence hides them later, at
@@ -121,7 +136,8 @@ final class ClientSetup {
                 // The mana mods' own displays, which our bars replace.
                 || ManaSource.hidesAnyOwnDisplay(id)
                 || (id.equals(VanillaGuiOverlay.ARMOR_LEVEL.id()) && armorReplaced)
-                || (id.equals(VanillaGuiOverlay.FOOD_LEVEL.id()) && hungerReplaced)) {
+                || (id.equals(VanillaGuiOverlay.FOOD_LEVEL.id()) && hungerReplaced)
+                || hiddenByEditorView(id)) {
             event.setCanceled(true);
         }
     }

@@ -6,6 +6,8 @@ import com.joshuafonseca.rpghealthbar.config.AirPosition;
 import com.joshuafonseca.rpghealthbar.config.ClientConfig;
 import com.joshuafonseca.rpghealthbar.config.HudPiece;
 import com.joshuafonseca.rpghealthbar.config.ThirstMode;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import javax.annotation.Nullable;
 import net.minecraft.client.Minecraft;
@@ -30,11 +32,10 @@ public final class HudPositionMover {
     private static final Map<ResourceLocation, HudPiece> MOVED_OVERLAYS = Map.ofEntries(
             Map.entry(VanillaGuiOverlay.JUMP_BAR.id(), HudPiece.XP),
             Map.entry(VanillaGuiOverlay.ARMOR_LEVEL.id(), HudPiece.ARMOR),
-            // Vanilla stacks air and mount health (which replaces food while riding) on the food side;
-            // they're placed by the air piece, below.
+            // Vanilla stacks air and mount health (which replaces food while riding) on the food side.
             Map.entry(VanillaGuiOverlay.FOOD_LEVEL.id(), HudPiece.HUNGER),
             Map.entry(VanillaGuiOverlay.AIR_LEVEL.id(), HudPiece.AIR),
-            Map.entry(VanillaGuiOverlay.MOUNT_HEALTH.id(), HudPiece.AIR),
+            Map.entry(VanillaGuiOverlay.MOUNT_HEALTH.id(), HudPiece.MOUNT),
             // Confluence's own armor and hunger icons, shown with Armor or Hunger on Default, sit
             // where vanilla's would.
             Map.entry(ConfluenceCompat.ARMOR_LAYER, HudPiece.ARMOR),
@@ -45,14 +46,13 @@ public final class HudPositionMover {
 
     /** Vanilla's rows are 9px icons plus a 1px gap. */
     public static final int ROW_HEIGHT = 10;
-    /** Height of the air and mount health rows already drawn below hunger this frame. */
-    private static int belowHeight;
-    /** Height of the air and mount health rows drawn this frame at the spot they were moved to. */
-    private static int detachedHeight;
-    /** Whether the row being drawn is one of those. */
-    private static boolean drawingDetached;
-    /** ForgeGui.rightHeight before a row drawn below hunger, or -1; put back after it, see {@link #onPost}. */
+    /** Where this frame's air and mount health rows were drawn, for those that took no room above the bars. */
+    private static final List<HudPosition.Bounds> drawnRows = new ArrayList<>();
+    /** ForgeGui.rightHeight before an air or mount health overlay, or -1; see {@link #onPost}. */
     private static int rightHeightBefore = -1;
+    /** Where that overlay's rows are drawn, and whether they're where rows above the bars normally stack. */
+    private static HudPosition.Bounds rowsArea;
+    private static boolean rowsStacked;
 
     /** ForgeGui.rightHeight before Thirst Was Taken 2's overlay on Default, or -1; see {@link #keepThirstRow}. */
     private static int rightHeightBeforeThirst = -1;
@@ -60,20 +60,17 @@ public final class HudPositionMover {
     private HudPositionMover() {
     }
 
-    /** How far the air and mount health rows drawn below hunger this frame reach under it. */
-    public static int belowHeight() {
-        return belowHeight;
-    }
-
-    /** How tall the air and mount health rows moved on their own are this frame; 0 if none are drawn. */
-    public static int detachedHeight() {
-        return detachedHeight;
+    /**
+     * The air and mount health rows drawn this frame anywhere but stacked above the bars, which the
+     * held item's name also has to stay clear of.
+     */
+    public static List<HudPosition.Bounds> drawnRows() {
+        return drawnRows;
     }
 
     /** Called as the GUI starts drawing. */
     public static void newFrame() {
-        detachedHeight = 0;
-        belowHeight = 0;
+        drawnRows.clear();
     }
 
     /** Registered at high priority, after replaced overlays are cancelled and before other mods draw on them. */
@@ -92,19 +89,9 @@ public final class HudPositionMover {
         GuiGraphics graphics = event.getGuiGraphics();
         HudLayer.Frame frame = HudLayer.Frame.current(graphics.guiWidth(), graphics.guiHeight());
         graphics.pose().pushPose();
-        boolean airRows = piece == HudPiece.AIR;
-        boolean detached = airRows && frame.pieces().airDetached();
-        HudPosition.moveTo(graphics.pose(), airRows && !detached ? frame.airFollowOffset() : frame.pieceOffset(piece));
-        if (airRows && Minecraft.getInstance().gui instanceof ForgeGui gui) {
-            int rows = id.equals(VanillaGuiOverlay.MOUNT_HEALTH.id()) ? vehicleRows() : 1;
-            if (detached) {
-                placeDetached(graphics, gui, frame, rows);
-            } else if (ClientConfig.AIR_POSITION.get() == AirPosition.BELOW) {
-                HudPosition.Bounds hunger = frame.pieceBounds().get(HudPiece.HUNGER);
-                if (hunger != null) {
-                    placeBelow(graphics, gui, hunger, rows);
-                }
-            }
+        HudPosition.moveTo(graphics.pose(), frame.pieceOffset(piece));
+        if ((piece == HudPiece.AIR || piece == HudPiece.MOUNT) && Minecraft.getInstance().gui instanceof ForgeGui gui) {
+            placeRows(graphics, gui, frame, piece);
         }
         pushed = true;
     }
@@ -140,39 +127,77 @@ public final class HudPositionMover {
     }
 
     /**
-     * Moves a row (or mount health's rows) from where vanilla stacks it above hunger to under hunger
-     * and the rows already put there. Vanilla draws the first row at the top of the free space and
-     * further mount health rows upward from it.
+     * Moves the air bubbles' or mount health's rows from where vanilla stacks them above hunger to
+     * their piece. Vanilla draws the first row lowest and any more above it.
      */
-    private static void placeBelow(GuiGraphics graphics, ForgeGui gui, HudPosition.Bounds hunger, int rows) {
+    private static void placeRows(GuiGraphics graphics, ForgeGui gui, HudLayer.Frame frame, HudPiece piece) {
+        int mountRows = mountRows(Minecraft.getInstance());
+        HudPosition.Bounds area;
+        if (piece == HudPiece.MOUNT) {
+            area = mountArea(frame, graphics.guiHeight(), Math.max(1, mountRows));
+        } else {
+            // Mount health is only in the way if it's drawn, which the HUD Editor's normal view doesn't.
+            boolean mountDrawn = mountRows > 0 && !Boolean.FALSE.equals(HudPosition.previewMounted());
+            area = airArea(frame, graphics.guiHeight(), mountDrawn ? mountArea(frame, graphics.guiHeight(), mountRows) : null);
+        }
         int vanillaFirstRow = graphics.guiHeight() - gui.rightHeight;
-        int firstRow = hunger.bottom() + 1 + belowHeight + (rows - 1) * ROW_HEIGHT;
-        graphics.pose().translate(0, firstRow - vanillaFirstRow, 0);
+        int firstRow = area.bottom() - HudLayout.ICON_ROW_HEIGHT;
+        // The pose is already shifted by the piece's offset.
+        graphics.pose().translate(0, firstRow - frame.pieceOffset(piece).y() - vanillaFirstRow, 0);
         rightHeightBefore = gui.rightHeight;
+        rowsArea = area;
+        // At their default spot above the bars, other mods' rows stack on top of them.
+        rowsStacked = ClientConfig.AIR_POSITION.get() == AirPosition.ABOVE && frame.pieceOffset(piece).equals(HudPosition.Offset.ZERO);
     }
 
     /**
-     * Moves a row (or mount health's rows) from where vanilla stacks it to the air piece: the first
-     * drawn at its spot and the rest upward from it, as in vanilla, but no higher than the screen's
-     * top.
+     * Where {@code rows} rows of mount health are drawn: from the mount piece upward, or downward with
+     * Air Bubbles/Mount HP on Below, and moved back on screen if they'd reach past its edge.
      */
-    private static void placeDetached(GuiGraphics graphics, ForgeGui gui, HudLayer.Frame frame, int rows) {
-        int vanillaFirstRow = graphics.guiHeight() - gui.rightHeight;
-        HudPosition.Offset offset = frame.pieceOffset(HudPiece.AIR);
-        int firstRow = frame.pieceBounds().get(HudPiece.AIR).top() - detachedHeight;
-        // The pose is already shifted by the offset.
-        firstRow = Math.max(firstRow, (rows - 1) * ROW_HEIGHT - offset.y());
-        graphics.pose().translate(0, firstRow - vanillaFirstRow, 0);
-        rightHeightBefore = gui.rightHeight;
-        drawingDetached = true;
+    public static HudPosition.Bounds mountArea(HudLayer.Frame frame, int screenHeight, int rows) {
+        HudPosition.Bounds first = frame.placed(HudPiece.MOUNT);
+        int extra = (rows - 1) * ROW_HEIGHT;
+        int top = ClientConfig.AIR_POSITION.get() == AirPosition.BELOW ? first.top() : first.top() - extra;
+        int height = first.height() + extra;
+        top = Math.max(0, Math.min(top, screenHeight - height));
+        return new HudPosition.Bounds(first.left(), top, first.right(), top + height);
     }
 
-    /** Whether the game is drawing air bubbles or mount health right now. */
-    public static boolean stackedRowsShown(Minecraft minecraft) {
-        if (!HudLayer.isVisible(minecraft) || !(minecraft.getCameraEntity() instanceof Player player)) {
-            return false;
+    /**
+     * Where the air bubbles are drawn: at their piece, or past mount health's rows if those are in the
+     * way, above them or, with Air Bubbles/Mount HP on Below, under them.
+     *
+     * @param mount where mount health's rows are drawn, or null if they aren't
+     */
+    public static HudPosition.Bounds airArea(HudLayer.Frame frame, int screenHeight, @Nullable HudPosition.Bounds mount) {
+        HudPosition.Bounds air = frame.placed(HudPiece.AIR);
+        if (mount == null || !air.intersects(mount)) {
+            return air;
         }
-        return mountWithHealth(player) != null || player.isEyeInFluid(FluidTags.WATER) || player.getAirSupply() < player.getMaxAirSupply();
+        int gap = ROW_HEIGHT - air.height();
+        int above = mount.top() - ROW_HEIGHT;
+        int below = mount.bottom() + gap;
+        boolean down = ClientConfig.AIR_POSITION.get() == AirPosition.BELOW;
+        // The other way if there's no room.
+        int top = down ? (below + air.height() <= screenHeight ? below : above) : (above >= 0 ? above : below);
+        return new HudPosition.Bounds(air.left(), top, air.right(), top + air.height());
+    }
+
+    /** How many rows of mount health the player's mount has; 0 without a mount whose health is shown. */
+    public static int mountRows(Minecraft minecraft) {
+        LivingEntity mount = minecraft.player == null ? null : mountWithHealth(minecraft.player);
+        return mount == null ? 0 : vehicleRows(mount);
+    }
+
+    /** Whether the game is drawing air bubbles right now. */
+    public static boolean airShown(Minecraft minecraft) {
+        return HudLayer.isVisible(minecraft) && minecraft.getCameraEntity() instanceof Player player
+                && (player.isEyeInFluid(FluidTags.WATER) || player.getAirSupply() < player.getMaxAirSupply());
+    }
+
+    /** Whether the game is drawing mount health right now. */
+    public static boolean mountShown(Minecraft minecraft) {
+        return HudLayer.isVisible(minecraft) && minecraft.getCameraEntity() instanceof Player player && mountWithHealth(player) != null;
     }
 
     /**
@@ -184,17 +209,14 @@ public final class HudPositionMover {
         return player.getVehicle() instanceof LivingEntity vehicle && vehicle.showVehicleHealth() ? vehicle : null;
     }
 
-    /** Rows of mount health vanilla draws: 10 hearts a row, up to 30 hearts (as in ForgeGui.renderHealthMount). */
-    private static int vehicleRows(LivingEntity mount) {
-        int hearts = Math.min((int) (mount.getMaxHealth() + 0.5F) / 2, 30);
-        return Math.max(1, (hearts + 9) / 10);
+    /** Hearts of mount health vanilla draws, up to 30 (as in ForgeGui.renderHealthMount). */
+    static int vehicleHearts(LivingEntity mount) {
+        return Math.min((int) (mount.getMaxHealth() + 0.5F) / 2, 30);
     }
 
-    /** {@link #vehicleRows(LivingEntity)} for the local player's mount; 1 if there's none. */
-    private static int vehicleRows() {
-        Player player = Minecraft.getInstance().player;
-        LivingEntity mount = player == null ? null : mountWithHealth(player);
-        return mount == null ? 1 : vehicleRows(mount);
+    /** Rows of mount health vanilla draws: 10 hearts a row. */
+    static int vehicleRows(LivingEntity mount) {
+        return Math.max(1, (vehicleHearts(mount) + 9) / 10);
     }
 
     /**
@@ -228,23 +250,24 @@ public final class HudPositionMover {
             pushed = false;
             rightHeightBefore = -1;
             rightHeightBeforeThirst = -1;
-            drawingDetached = false;
         }
     }
 
     /** Registered at the lowest priority, so mods drawing on the overlay in Post are shifted too. */
     public static void onPost(RenderGuiOverlayEvent.Post event) {
         if (rightHeightBefore >= 0 && Minecraft.getInstance().gui instanceof ForgeGui gui) {
-            // Rows drawn below hunger, or elsewhere, take no room above it, so rows stacked above
-            // (other mods') and the held item's name don't leave a gap for them.
-            int height = gui.rightHeight - rightHeightBefore;
-            if (drawingDetached) {
-                detachedHeight += height;
-                drawingDetached = false;
+            boolean drawn = gui.rightHeight != rightHeightBefore;
+            if (drawn && rowsStacked) {
+                int screenHeight = event.getGuiGraphics().guiHeight();
+                gui.rightHeight = Math.max(rightHeightBefore, screenHeight - rowsArea.top() + ROW_HEIGHT);
             } else {
-                belowHeight += height;
+                // Rows drawn elsewhere take no room above the bars, so rows stacked there (other
+                // mods') and the held item's name don't leave a gap for them.
+                if (drawn) {
+                    drawnRows.add(rowsArea);
+                }
+                gui.rightHeight = rightHeightBefore;
             }
-            gui.rightHeight = rightHeightBefore;
         }
         rightHeightBefore = -1;
         if (rightHeightBeforeThirst >= 0 && Minecraft.getInstance().gui instanceof ForgeGui gui) {

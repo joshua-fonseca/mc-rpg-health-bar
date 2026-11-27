@@ -28,6 +28,12 @@ public record HudValues(float health, float maxHealth, float absorption, float a
                 player.hasEffect(MobEffects.REGENERATION));
     }
 
+    /** These values with another thirst. */
+    public HudValues withThirst(@Nullable ThirstCompat.Thirst other) {
+        return new HudValues(health, maxHealth, absorption, armor, food, saturation, heldFood, mana, other,
+                healthColor, hungerColor, thirstColor, regenerating);
+    }
+
     /** Shown in the position editor when there's no player to read from (e.g. opened from the title screen). */
     public static HudValues placeholder() {
         return new HudValues(20, 20, 0, 10, 20, 0, null, ManaSource.placeholders(100),

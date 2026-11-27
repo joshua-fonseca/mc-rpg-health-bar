@@ -65,7 +65,7 @@ public final class ClientConfig {
             .defineEnum("thirstMode", ThirstMode.VANILLA);
 
     public static final ForgeConfigSpec.EnumValue<AirPosition> AIR_POSITION = BUILDER
-            .comment("Where the air bubbles and mount health rows go: ABOVE hunger (stacked upward, like vanilla) or BELOW it (stacked downward).")
+            .comment("ABOVE: the air bubbles start above hunger and mount health rows stack upward, like vanilla. BELOW: the air bubbles start under hunger and the rows stack downward.")
             .translation("rpghealthbar.config.airPosition")
             .defineEnum("airPosition", AirPosition.ABOVE);
 
@@ -258,10 +258,10 @@ public final class ClientConfig {
     private static final Map<HudPiece, ForgeConfigSpec.IntValue> PIECE_OFFSETS_X = new EnumMap<>(HudPiece.class);
     private static final Map<HudPiece, ForgeConfigSpec.IntValue> PIECE_OFFSETS_Y = new EnumMap<>(HudPiece.class);
 
-    public static final ForgeConfigSpec.BooleanValue AIR_DETACHED = BUILDER
-            .comment("Layout 2: whether the air bubbles and mount health rows have been moved on their own. Otherwise they follow hunger, or the health bar without horizontal hunger.")
-            .translation("rpghealthbar.config.airDetached")
-            .define("airDetached", false);
+    public static final ForgeConfigSpec.BooleanValue ROWS_PLACED = BUILDER
+            .comment("Layout 2: whether the air bubbles and mount health have positions of their own. Set automatically; until then they're where hunger is.")
+            .translation("rpghealthbar.config.rowsPlaced")
+            .define("rowsPlaced", false);
 
     static {
         for (HudPiece piece : HudPiece.values()) {
@@ -318,19 +318,15 @@ public final class ClientConfig {
         queue(PIECE_OFFSETS_Y.get(piece), y);
     }
 
-    /** Whether the air rows have been moved on their own, including a change not written yet. */
-    public static boolean airDetached() {
-        return read(AIR_DETACHED);
-    }
-
-    /** Saved with the positions, by {@link #savePositions}. */
-    public static void setAirDetached(boolean detached) {
-        queue(AIR_DETACHED, detached);
+    /** Whether the air bubbles and mount health have saved positions of their own, including a change not written yet. */
+    public static boolean rowsPlaced() {
+        return read(ROWS_PLACED);
     }
 
     /** Marks the positions as layout 2; they're written to the file over the next few ticks. */
     public static void savePositions() {
         queue(LAYOUT_VERSION, 2);
+        queue(ROWS_PLACED, true);
     }
 
     /**
