@@ -149,8 +149,8 @@ public final class HudRenderer {
 
     /**
      * The thirst bar in {@code box}, with quenched outlined like saturation: a thin half bar, or
-     * upright in the health bar's style, filling from the bottom. The upright one has no empty part
-     * and no bright tip: it's only as tall as the thirst left, bordered all around.
+     * upright in the health bar's style, filling from the bottom. The upright one's empty part is
+     * see-through inside its border, and its fill has no bright tip.
      */
     private static void renderThirst(GuiGraphics graphics, HudPosition.Bounds box, boolean vertical, HudValues values) {
         ThirstCompat.Thirst thirst = values.thirst();
@@ -170,11 +170,8 @@ public final class HudRenderer {
         graphics.pose().pushPose();
         graphics.pose().translate(box.left(), box.bottom(), 0);
         graphics.pose().mulPose(Axis.ZP.rotationDegrees(-90));
-        int filled = BarRenderer.columns(length, true, fraction);
-        if (filled > 0) {
-            // A full bar of the filled length, so its border closes over the top.
-            BarRenderer.drawFill(graphics, 0, 0, filled + 2, thickness, true, 1.0F, values.thirstColor(), false);
-        }
+        BarRenderer.drawBorder(graphics, 0, 0, length, thickness);
+        BarRenderer.drawFill(graphics, 0, 0, length, thickness, true, fraction, values.thirstColor(), false);
         if (quenched > 0) {
             // On the border.
             BarRenderer.drawOutline(graphics, 0, 0, length, thickness, 0, quenched, QUENCHED_COLOR, true);

@@ -68,10 +68,7 @@ public final class BarRenderer {
         graphics.drawManaged(() -> {
             int inset = framed ? 1 : 0;
             if (framed) {
-                graphics.fill(x + 1, y, x + width - 1, y + 1, TRACK_BORDER);
-                graphics.fill(x + 1, y + height - 1, x + width - 1, y + height, TRACK_BORDER);
-                graphics.fill(x, y + 1, x + 1, y + height - 1, TRACK_BORDER);
-                graphics.fill(x + width - 1, y + 1, x + width, y + height - 1, TRACK_BORDER);
+                drawBorder(graphics, x, y, width, height);
             }
             int rows = height - 2 * inset;
             for (int row = 0; row < rows; row++) {
@@ -82,6 +79,16 @@ public final class BarRenderer {
                 int right = x + width - inset - (corner ? 1 : 0);
                 graphics.fill(left, rowY, right, rowY + 1, trackRowColor(row, rows));
             }
+        });
+    }
+
+    /** A framed empty bar's border alone, for a bar whose empty part is see-through. */
+    public static void drawBorder(GuiGraphics graphics, int x, int y, int width, int height) {
+        graphics.drawManaged(() -> {
+            graphics.fill(x + 1, y, x + width - 1, y + 1, TRACK_BORDER);
+            graphics.fill(x + 1, y + height - 1, x + width - 1, y + height, TRACK_BORDER);
+            graphics.fill(x, y + 1, x + 1, y + height - 1, TRACK_BORDER);
+            graphics.fill(x + width - 1, y + 1, x + width, y + height - 1, TRACK_BORDER);
         });
     }
 
