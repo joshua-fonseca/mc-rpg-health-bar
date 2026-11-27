@@ -2,20 +2,20 @@
 
 ## 2.2.0 (unreleased)
 
-- **Air bubbles and mount health** can be dragged on their own in the HUD Editor. Until you move them they follow hunger as before, or the health bar with Hunger on Vertical or Hidden.
-- The config screen's preview shows a hotbar under the HUD.
-- Fixed: on 1.20.1, closing the game right after saving positions in the HUD Editor could lose some of them.
-- Fixed: on 1.20.1, **Reset to Defaults**, or answering **No** to keeping changes, could leave a setting unchanged.
-- Fixed: **Reset** in the HUD Editor didn't fully reset a piece that wasn't shown at the time, which could then move away from its default spot when the window size changed.
-- Fixed: if a future version of Iron's Spells or Ars Nouveau can't be read, its own mana bar now shows again instead of no mana bar at all.
-- New **Vertical** choice for **Hunger**: an upright bar to the right of the hotbar, with AppleSkin's saturation outline and food preview. With thirst vertical too, hunger is nearest the hotbar.
-- In **Advanced** edit mode, vertical hunger and thirst bars can be made taller or shorter by dragging their top in the HUD Editor.
 - **Thirst Was Taken 2 support** (1.1.0+ on 1.21.1, 1.5.0+ on 1.20.1), with a new **Thirst** option:
   - **Default**: its droplet icons, in a row above hunger that moves with the HUD.
   - **Bar**: a blue half-width bar above the hunger bar.
   - **Vertical**: an upright blue bar to the right of the hotbar, one and a half times as tall as it.
   - **Hidden**.
   - Like its own bar, the bar recolors with Parched and Upset Stomach, outlines quenched with AppleSkin, and isn't shown while riding. Thirst can be moved on its own in the HUD Editor.
+- New **Vertical** choice for **Hunger**: an upright bar to the right of the hotbar, with AppleSkin's saturation outline and food preview. With thirst vertical too, hunger is nearest the hotbar.
+- In **Advanced** edit mode, vertical hunger and thirst bars can be made taller or shorter by dragging their top in the HUD Editor.
+- **Air bubbles and mount health** can be dragged on their own in the HUD Editor. Until you move them they follow hunger as before, or the health bar with Hunger on Vertical or Hidden.
+- The config screen's preview shows a hotbar under the HUD.
+- Fixed: if a future version of Iron's Spells or Ars Nouveau can't be read, its own mana bar now shows again instead of no mana bar at all.
+- Fixed: **Reset** in the HUD Editor didn't fully reset a piece that wasn't shown at the time, which could then move away from its default spot when the window size changed.
+- Fixed: on 1.20.1, **Reset to Defaults**, or answering **No** to keeping changes, could leave a setting unchanged.
+- Fixed: on 1.20.1, closing the game right after saving positions in the HUD Editor could lose some of them.
 
 ## 2.1.0 (2026-11-25)
 

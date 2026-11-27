@@ -9,7 +9,7 @@ My original plan was to only replace the vanilla hearts with an RPG-style health
 ## Features
 
 *   **Health bar** that goes beyond the vanilla max of 20 for mods that increase max health (`32/40`).
-*   **Absorption** fills the health bar in yellow, and the text shows it separately (`15.5+4/20`), added in (`19.5/20`), or as `+4` at the bar's right end.
+*   **Absorption** fills the health bar in yellow, and the text shows it separately (`15.5+4/20`), added in (`19.5/20`), or as (`+4`) at the bar's right end.
 *   **Mana bar support:** Supports appropriately colored mana bars (depends on magic mod) in the same style as the health bar.
 *   **Status colors:** the health bar changes when poisoned, withered or frozen. The hunger bar changes with the Hunger effect. On 1.21.1, heart colors added by other mods are followed too.
 *   **Armor and hunger** can be the vanilla icons (default), thin bars, or hidden. Hunger can also be an upright bar beside the hotbar.
@@ -50,7 +50,7 @@ My original plan was to only replace the vanilla hearts with an RPG-style health
 | <strong>Double Hotbar</strong> (optional)               |                | Any (<a href="https://www.curseforge.com/projects/1563792" target="_blank" rel="nofollow">Double Hotbar NeoForge</a>, unofficial port by <em>retrospective</em>) | 1.3.2.1+ (<a href="https://www.curseforge.com/minecraft/mc-mods/double-hotbar" target="_blank" rel="nofollow">Double Hotbar</a> by sidezbros) |
 
 *   **Client-side only:** servers don't need it, and it works on servers that don't have it.
-*   Works with other mods that draw near the hotbar the same way: drag the HUD, or just the pieces in the way, clear of them.
+*   Works with other mods that draw near the hotbar the same way: simply drag the HUD above them.
 *   Air bubbles and mount health stay vanilla, stacked above hunger or below it until you drag them elsewhere.
 *   **Texture packs:** armor and hunger on Default use your pack's icons, and the hotbar, XP bar, air bubbles and mount health stay vanilla, so packs restyle them. The health and mana bars, and armor and hunger as bars, are drawn by the mod and don't change with a pack.
 
@@ -60,15 +60,15 @@ Selecting a spell via spell wheel, the mana bar blinks according to how much man
 
 ![Choosing a spell in Iron's spell wheel shows the mana it costs on the mana bar, then casting it uses that mana](https://raw.githubusercontent.com/joshua-fonseca/mc-rpg-health-bar/main/docs/images/spell-cast.gif)
 
-#### Compatibility for those using multiple magic mods together and want unified mana 
+#### Compatibility for those using multiple magic mods together and want unified mana
 
-| Magic mods              | 1.21.1 (NeoForge)                                                 | 1.20.1 (Forge) |
-| ----------------------- | ----------------------------------------------------------------- | -------------- |
-| **Iron's + Confluence** | Supported. Turn on `convertIronsSpellMana` in Confluence's config | Unsupported    |
-| **Iron's + Ars**        | Unsupported                                                       | Unsupported    |
-| **Confluence + Ars**    | Supported. Turn on `convertArsNouveauMana` in Confluence's config | Unsupported    |
+| Magic mods                           | 1.21.1 (NeoForge)                                                            | 1.20.1 (Forge) |
+| ------------------------------------ | ---------------------------------------------------------------------------- | -------------- |
+| <strong>Iron's + Confluence</strong> | Supported. Turn on <code>convertIronsSpellMana</code> in Confluence's config | Unsupported    |
+| <strong>Iron's + Ars</strong>        | Unsupported                                                                  | Unsupported    |
+| <strong>Confluence + Ars</strong>    | Supported. Turn on <code>convertArsNouveauMana</code> in Confluence's config | Unsupported    |
 
-Note: compatibility mods may exist to have unified mana, but there are too many variations of them, so RPG Health Bar will not support them. Magic mods are only tested in pairs, so using more than two at a time may behave unexpectedly.
+**Note:** I'm aware compatibility mods exist to have unified mana, but there are too many variations of them, so RPG Health Bar will not support them. Also Magic mods are only tested in pairs, so using more than two at a time may behave unexpectedly.
 
 ## Settings
 
