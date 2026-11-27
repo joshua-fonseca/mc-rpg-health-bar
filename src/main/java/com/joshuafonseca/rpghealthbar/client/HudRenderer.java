@@ -17,6 +17,7 @@ import net.minecraft.util.Mth;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiConsumer;
 
 /** Draws the bar group at a layout. Used by the HUD layer and the position editor's preview. */
 public final class HudRenderer {
@@ -73,17 +74,24 @@ public final class HudRenderer {
      * @param live whether these are the player's real values; only then are losses shown as a
      *             shrinking darker section (the editor's placeholder values would otherwise
      *             look like a loss when switching back)
+     * @param mounted whether mount health has taken hunger's place, so hunger isn't drawn
      * @param pieces each piece's shift from its place in the layout
      */
-    public static void render(GuiGraphics graphics, Font font, HudLayer.Frame frame, HudValues values, boolean showHunger,
+    public static void render(GuiGraphics graphics, Font font, HudLayer.Frame frame, HudValues values, boolean mounted,
                               HudPosition.Pieces pieces, boolean live) {
         HudLayout layout = frame.layout();
         // Each bar keeps its own half when the other one isn't shown as a bar.
         if (frame.showArmor()) {
             inPiece(graphics, pieces, HudPiece.ARMOR, () -> renderHalfBar(graphics, layout.x(), layout, values.armor() / MAX_ARMOR, ARMOR_COLOR));
         }
-        if (showHunger) {
-            inPiece(graphics, pieces, HudPiece.HUNGER, () -> renderHunger(graphics, layout, values));
+        if (frame.showHunger() && !mounted) {
+            inPiece(graphics, pieces, HudPiece.HUNGER, () -> renderHungerBar(graphics, layout.hungerX(), layout.halfBarY(),
+                    HudLayout.HALF_BAR_WIDTH, HudLayout.HALF_BAR_HEIGHT, false, values));
+        }
+        HudPosition.Bounds uprightHunger = frame.pieceBounds().get(HudPiece.HUNGER_VERTICAL);
+        if (uprightHunger != null && !mounted) {
+            inPiece(graphics, pieces, HudPiece.HUNGER_VERTICAL, () -> upright(graphics, uprightHunger,
+                    (length, thickness) -> renderHungerBar(graphics, 0, 0, length, thickness, true, values)));
         }
         HudPiece thirstBar = frame.thirstBar();
         if (thirstBar != null && values.thirst() != null) {
@@ -126,17 +134,17 @@ public final class HudRenderer {
         BarRenderer.drawFill(graphics, x, y, HudLayout.HALF_BAR_WIDTH, HudLayout.HALF_BAR_HEIGHT, false, fraction, color, false);
     }
 
-    /** The hunger bar, with AppleSkin's saturation outline and held-food preview when it's installed. */
-    private static void renderHunger(GuiGraphics graphics, HudLayout layout, HudValues values) {
-        int x = layout.hungerX();
-        int y = layout.halfBarY();
-        int width = HudLayout.HALF_BAR_WIDTH;
-        int height = HudLayout.HALF_BAR_HEIGHT;
-        renderHalfBar(graphics, x, layout, values.food() / MAX_FOOD, values.hungerColor());
+    /**
+     * The hunger bar, half-width or upright (framed), with AppleSkin's saturation outline and
+     * held-food preview when it's installed.
+     */
+    private static void renderHungerBar(GuiGraphics graphics, int x, int y, int width, int height, boolean framed, HudValues values) {
+        BarRenderer.drawTrack(graphics, x, y, width, height, framed);
+        BarRenderer.drawFill(graphics, x, y, width, height, framed, values.food() / MAX_FOOD, values.hungerColor(), false);
         AppleSkinCompat.HeldFood held = values.heldFood();
         float flash = held == null ? 0 : held.flashAlpha() * pulse(FOOD_PREVIEW_FLASH_MILLIS);
         if (held != null && held.food() > values.food()) {
-            BarRenderer.drawSection(graphics, x, y, width, height, false, values.food() / MAX_FOOD, held.food() / MAX_FOOD, values.hungerColor(), false, flash);
+            BarRenderer.drawSection(graphics, x, y, width, height, framed, values.food() / MAX_FOOD, held.food() / MAX_FOOD, values.hungerColor(), false, flash);
         }
         if (values.saturation() > 0) {
             BarRenderer.drawOutline(graphics, x, y, width, height, 0, values.saturation() / MAX_FOOD, SATURATION_COLOR, true);
@@ -148,34 +156,37 @@ public final class HudRenderer {
     }
 
     /**
+     * Draws a bar that {@code bar} lays down from the origin, given its length and thickness, turned
+     * a quarter so its left end is at the bottom of {@code box}.
+     */
+    private static void upright(GuiGraphics graphics, HudPosition.Bounds box, BiConsumer<Integer, Integer> bar) {
+        graphics.pose().pushPose();
+        graphics.pose().translate(box.left(), box.bottom(), 0);
+        graphics.pose().mulPose(Axis.ZP.rotationDegrees(-90));
+        bar.accept(box.height(), box.width());
+        graphics.pose().popPose();
+    }
+
+    /**
      * The thirst bar in {@code box}, with quenched outlined like saturation: a thin half bar, or
      * upright in the health bar's style, filling from the bottom, without the bright tip.
      */
     private static void renderThirst(GuiGraphics graphics, HudPosition.Bounds box, boolean vertical, HudValues values) {
+        if (vertical) {
+            upright(graphics, box, (length, thickness) -> renderThirstBar(graphics, 0, 0, length, thickness, true, values));
+        } else {
+            renderThirstBar(graphics, box.left(), box.top(), box.width(), box.height(), false, values);
+        }
+    }
+
+    private static void renderThirstBar(GuiGraphics graphics, int x, int y, int width, int height, boolean framed, HudValues values) {
         ThirstCompat.Thirst thirst = values.thirst();
-        float fraction = thirst.thirst() / thirst.max();
-        float quenched = thirst.quenched() / thirst.max();
-        if (!vertical) {
-            BarRenderer.drawTrack(graphics, box.left(), box.top(), box.width(), box.height(), false);
-            BarRenderer.drawFill(graphics, box.left(), box.top(), box.width(), box.height(), false, fraction, values.thirstColor(), false);
-            if (quenched > 0) {
-                BarRenderer.drawOutline(graphics, box.left(), box.top(), box.width(), box.height(), 0, quenched, QUENCHED_COLOR, true);
-            }
-            return;
+        BarRenderer.drawTrack(graphics, x, y, width, height, framed);
+        BarRenderer.drawFill(graphics, x, y, width, height, framed, thirst.thirst() / thirst.max(), values.thirstColor(), false);
+        if (thirst.quenched() > 0) {
+            // On the bar's edge: over the border of a framed one.
+            BarRenderer.drawOutline(graphics, x, y, width, height, 0, thirst.quenched() / thirst.max(), QUENCHED_COLOR, true);
         }
-        // Drawn lying down from the origin, then turned a quarter so its left end is at the bottom.
-        int length = box.height();
-        int thickness = box.width();
-        graphics.pose().pushPose();
-        graphics.pose().translate(box.left(), box.bottom(), 0);
-        graphics.pose().mulPose(Axis.ZP.rotationDegrees(-90));
-        BarRenderer.drawTrack(graphics, 0, 0, length, thickness, true);
-        BarRenderer.drawFill(graphics, 0, 0, length, thickness, true, fraction, values.thirstColor(), false);
-        if (quenched > 0) {
-            // On the border.
-            BarRenderer.drawOutline(graphics, 0, 0, length, thickness, 0, quenched, QUENCHED_COLOR, true);
-        }
-        graphics.pose().popPose();
     }
 
     private static void renderHealth(GuiGraphics graphics, Font font, HudLayout layout, HudValues values, boolean live) {

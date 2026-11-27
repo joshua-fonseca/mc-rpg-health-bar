@@ -28,7 +28,7 @@ final class HudPreview {
         if (inWorld && HudLayer.isVisible(minecraft)) {
             return;
         }
-        HudRenderer.render(graphics, minecraft.font, frame, HudValues.placeholder(), frame.showHunger(), frame.pieces(), false);
+        HudRenderer.render(graphics, minecraft.font, frame, HudValues.placeholder(), false, frame.pieces(), false);
         if (!inWorld && ClientConfig.XP_BAR_SHOWN.get()) {
             HudPosition.Bounds xp = frame.placed(HudPiece.XP);
             graphics.fill(xp.left(), xp.top(), xp.right(), xp.bottom(), XP_BAR_COLOR);

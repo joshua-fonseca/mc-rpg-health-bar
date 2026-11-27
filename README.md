@@ -18,7 +18,7 @@ This is the **1.20.1 (Forge)** branch. The 1.21.1 (NeoForge) version is on [`mai
 - **Absorption** fills the bar in gold, and the text shows it separately (`15.5+4/20`), added in (`19.5/20`), or as `+4` at the bar's right end.
 - **Mana bar support:** an overhaul of the mana bars from Iron's Spells 'n Spellbooks, Confluence: Otherworld and Ars Nouveau, in the same style as the health bar, replacing their own.
 - **Status colors:** like the vanilla hearts, the health bar turns green-yellow when poisoned, black when withered and light blue when frozen, and the hunger bar turns green with the Hunger effect. On 1.21.1, heart colors added by other mods are followed too.
-- **Armor and hunger** as the vanilla icons (default), thin bars, or hidden.
+- **Armor and hunger** as the vanilla icons (default), thin bars, or hidden. Hunger can also be an upright bar beside the hotbar.
 - **AppleSkin support:** saturation is outlined in yellow on the hunger bar, and held food's value flashes on it, like AppleSkin's preview on the icons.
 - **Thirst Was Taken 2 support:** thirst as its droplet icons (default), a blue bar above hunger, an upright bar beside the hotbar, or hidden.
 
@@ -71,7 +71,7 @@ Defaults are in bold:
 |  | Mod State | **Enabled**, Disabled (a fully vanilla HUD; your settings are kept) |
 |  | Edit mode (top right) | **Simple** (preset widths), Advanced (the health, mana and XP bars' widths are set by dragging their ends in the HUD Editor, and the width options become Edit in HUD Editor buttons) |
 | **Armor + Hunger** | Armor | **Default** (armor icons, or another mod's armor display), Bar, Hidden |
-|  | Hunger | **Default** (hunger icons, or another mod's hunger display), Bar, Hidden |
+|  | Hunger | **Default** (hunger icons, or another mod's hunger display), Bar, Vertical (an upright bar beside the hotbar), Hidden |
 |  | Thirst (only with Thirst Was Taken 2) | **Default** (its droplet icons, above hunger), Bar (above the hunger bar), Vertical (an upright bar beside the hotbar), Hidden |
 |  | Air Bubbles/Mount HP | **Above** hunger, Below it |
 | **Health** | Health Units | **HP** (20 for a full vanilla bar), Hearts (10) |
