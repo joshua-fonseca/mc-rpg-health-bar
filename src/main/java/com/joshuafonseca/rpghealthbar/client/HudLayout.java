@@ -30,7 +30,7 @@ public record HudLayout(int x, int top, int iconRowY, int halfBarY, int healthY,
     /** The hotbar attack indicator, right of a right-handed player's hotbar, ends this far from it. */
     private static final int ATTACK_INDICATOR_END = 24;
     /** Vertical gap between the armor/hunger, health and mana rows; same as between the XP bar and hotbar. */
-    private static final int ROW_GAP = 2;
+    static final int ROW_GAP = 2;
     /** The XP bar's top edge is at guiHeight - 29; the bars sit 2px above it. */
     private static final int BOTTOM_MARGIN = 31;
 
