@@ -120,6 +120,8 @@ public class RpgConfigScreen extends Screen {
     private PreviewButton previewButton;
     /** Whether the compatibility notes are shown; they start hidden. */
     private boolean compatOpen;
+    /** {@link ClientConfig#repairs} as of the options last being shown. */
+    private int shownRepairs;
 
     public RpgConfigScreen(Screen parent) {
         super(Component.translatable("rpghealthbar.config.title"));
@@ -131,6 +133,7 @@ public class RpgConfigScreen extends Screen {
 
     @Override
     protected void init() {
+        this.shownRepairs = ClientConfig.repairs();
         // Rebuilt on resize and when coming back from Item Name or the HUD Editor (whose bar widths
         // the preview is sized to, and which can change the Compatibility notes); keep the scroll position.
         double scroll = this.list != null ? this.list.getScrollAmount() : 0;
@@ -180,6 +183,14 @@ public class RpgConfigScreen extends Screen {
                             ClientConfig.set(ClientConfig.EDIT_MODE, value);
                             rebuildWidgets();
                         }));
+    }
+
+    @Override
+    public void tick() {
+        // An option may be showing a value from before it was written again.
+        if (this.shownRepairs != ClientConfig.repairs()) {
+            rebuildWidgets();
+        }
     }
 
     /**

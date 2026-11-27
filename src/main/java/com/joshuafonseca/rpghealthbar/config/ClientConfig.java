@@ -25,6 +25,9 @@ public final class ClientConfig {
     /** How many client ticks after the last write the reloads are taken to be done. */
     private static final int SETTLE_TICKS = 20;
     private static int ticksToSettle;
+    /** Whether a change a reload undid is being written again, and how often that has finished. */
+    private static boolean repairing;
+    private static int repairs;
 
     private static final ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
 
@@ -363,12 +366,23 @@ public final class ClientConfig {
             Map.Entry<ForgeConfigSpec.ConfigValue<?>, Object> entry = it.next();
             it.remove();
             write(entry.getKey(), entry.getValue());
+            if (repairing && PENDING.isEmpty()) {
+                repairing = false;
+                repairs++;
+            }
         } else if (!EXPECTED.isEmpty() && --ticksToSettle <= 0) {
             queueUndone();
             if (PENDING.isEmpty()) {
                 EXPECTED.clear();
+            } else {
+                repairing = true;
             }
         }
+    }
+
+    /** Goes up each time undone changes have been written again, so screens can show them. */
+    public static int repairs() {
+        return repairs;
     }
 
     private static void queueUndone() {
