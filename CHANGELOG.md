@@ -2,33 +2,24 @@
 
 ## 2.2.0 (2026-11-27)
 
+- New **Vertical** choice for **Hunger**: an upright bar to the right of the hotbar.
 - **Thirst Was Taken 2 support** (1.1.0+ on 1.21.1, 1.5.0+ on 1.20.1), with a new **Thirst** option:
-  - **Default**: its droplet icons, in a row above hunger that moves with the HUD.
-  - **Bar**: a blue half-width bar above the hunger bar.
-  - **Vertical**: an upright blue bar to the right of the hotbar, one and a half times as tall as it.
-  - **Hidden**.
-  - Like its own bar, the bar recolors with Parched and Upset Stomach, outlines quenched with AppleSkin, and isn't shown while riding. Thirst can be moved on its own in the HUD Editor.
-- New **Vertical** choice for **Hunger**: an upright bar to the right of the hotbar, with AppleSkin's saturation outline and food preview. With thirst vertical too, hunger is nearest the hotbar.
-- In **Advanced** edit mode, vertical hunger and thirst bars can be made taller or shorter by dragging their top in the HUD Editor.
-- **Air bubbles** and **mount health** now have places of their own and can each be dragged in the HUD Editor; they no longer move with hunger. A HUD you've already moved keeps them where they were.
-  - The new **Mount View** button shows the HUD as it is while riding, with the horse's jump bar in the XP bar's place, so mount health can be dragged.
-  - **Air Bubbles/Mount HP** sets where the bubbles start (above or under hunger) until you move them, and whether mount health's extra rows are added above or below. With **Below**, the first ten hearts are now the top row.
-- The config screen's preview shows a hotbar under the HUD, and is centered in the space beside the options, which stay put as the preview changes width.
+  - Same display options as hunger and armor, with new vertical choice.
+- **Air bubbles** and **mount health** no longer move with hunger, and are their own pieces.
+  - The new **Mount View** button shows the HUD as if you're riding a horse so you can drag things there too.
+  - **Air Bubbles/Mount HP** option is now for if you want your bubbles/mount hp to grow upwards or downwards.
 - With the config screen's preview on, an option's description shows under the preview, by hovering anywhere on its row, instead of in a tooltip. With the preview off, tooltips show as before.
-- **XP Bar** has a new **Level Only** choice: just the level number, where it would be on the bar. **Level Text** still places it, and it moves with the XP bar in the HUD Editor.
-- New **XP Bar Width** option in **Simple** edit mode: **Full** or **Half** (nine cells). The horse's jump bar follows it.
-- The config screen's XP section is now titled **XP Bar/Mount Jump Bar**.
-- **Separate v2** absorption now writes the amount in parentheses: `(+4)`.
-- Without armor, the HUD Editor shows empty armor icons where they go, so you can see and drag them.
-- Fixed: the sample hunger icons in the config screen's preview and the HUD Editor had no outline.
-- Fixed: with Confluence, its hunger icons also showed while riding a mount with health.
-- Fixed: a horse's jump bar resized shorter lost its orange end, and a longer one had blue cells after it.
-- Fixed: with **XP Bar** on **Hidden**, the HUD Editor had an invisible XP bar that could be grabbed; the horse's jump bar is now moved and resized in **Mount View**, or while riding.
-- Fixed: resizing the bars or the window kept every size's bar image in memory until the game closed.
-- Fixed: if a future version of Iron's Spells or Ars Nouveau can't be read, its own mana bar now shows again instead of no mana bar at all.
-- Fixed: **Reset** in the HUD Editor didn't fully reset a piece that wasn't shown at the time, which could then move away from its default spot when the window size changed.
-- Fixed: on 1.20.1, **Reset to Defaults**, or answering **No** to keeping changes, could leave a setting unchanged.
-- Fixed: on 1.20.1, closing the game right after saving positions in the HUD Editor could lose some of them.
+- **XP Bar** now has more customization options. The horse jump bar follows it.
+- Bug fixes:
+  - Fixed: the sample hunger icons in the config screen's preview and the HUD Editor had no outline.
+  - Fixed: with Confluence, its hunger icons also showed while riding a mount with health.
+  - Fixed: a horse's jump bar resized would draw incorrectly.
+  - Fixed: resizing the bars or the window kept every size's bar image in memory until the game closed.
+  - Fixed: if a future version of Iron's Spells or Ars Nouveau can't be read, its own mana bar now shows again instead of no mana bar at all.
+  - Fixed: **Reset** in the HUD Editor didn't fully reset a piece that wasn't shown at the time, which could then move  away from its default spot when the window size changed.
+  - Fixed: on 1.20.1, **Reset to Defaults**, or answering **No** to keeping changes, could leave a setting unchanged.
+  - Fixed: on 1.20.1, closing the game right after saving positions in the HUD Editor could lose some of them.
+- Other cosmetic changes
 
 ## 2.1.0 (2026-11-25)
 
