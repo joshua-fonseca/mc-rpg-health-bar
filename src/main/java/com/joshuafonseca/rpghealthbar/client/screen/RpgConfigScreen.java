@@ -354,9 +354,9 @@ public class RpgConfigScreen extends Screen {
                 .described(advancedTooltip(key, howKey));
     }
 
-    /** The HUD Editor for a size's button: in Mount View for the XP bar's width without an XP bar, to show the jump bar. */
+    /** The HUD Editor for a size's button: in Mount View for the XP bar's width with XP Bar on Hidden, to show the jump bar. */
     private HudEditScreen editorFor(String key) {
-        return key.equals("xpWidth") && ClientConfig.xpBar() != XpBarMode.SHOWN ? HudEditScreen.mountView(this) : new HudEditScreen(this);
+        return key.equals("xpWidth") && ClientConfig.xpBar() == XpBarMode.HIDDEN ? HudEditScreen.mountView(this) : new HudEditScreen(this);
     }
 
     /**

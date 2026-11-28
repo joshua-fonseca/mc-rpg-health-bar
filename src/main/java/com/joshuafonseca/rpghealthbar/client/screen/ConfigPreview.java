@@ -131,26 +131,27 @@ final class ConfigPreview {
         if (xpBar == XpBarMode.SHOWN) {
             HudPosition.Bounds xp = frame.pieceBounds().get(HudPiece.XP);
             XpBarRenderer.drawXp(graphics, xp.left(), xp.top(), BarWidths.xpCells(), XP_PROGRESS_FRACTION);
-            // Centered on the bar like the mod draws it.
-            drawLevel(graphics, font, HudPositionMover.levelX(xp, font.width(LEVEL)), xp.top() - 1);
-        } else if (xpBar == XpBarMode.LEVEL_ONLY) {
-            drawLevel(graphics, font, frame.defaultLevel());
+        }
+        if (xpBar != XpBarMode.HIDDEN) {
+            drawLevel(graphics, font, frame.pieceBounds().get(HudPiece.XP), LEVEL);
         }
         graphics.pose().popPose();
     }
 
-    /** A sample level number on its own, in {@code box}. */
-    static void drawLevel(GuiGraphics graphics, Font font, HudPosition.Bounds box) {
-        drawLevel(graphics, font, HudPositionMover.centeredX(box, font.width(LEVEL)), box.top() + 1);
+    /** A level number where the mod draws it on the XP bar at {@code xp}, outlined like vanilla's. */
+    static void drawLevel(GuiGraphics graphics, Font font, HudPosition.Bounds xp, String level) {
+        int x = HudPositionMover.levelX(xp, font.width(level));
+        int y = xp.top() - 1;
+        graphics.drawString(font, level, x + 1, y, 0, false);
+        graphics.drawString(font, level, x - 1, y, 0, false);
+        graphics.drawString(font, level, x, y + 1, 0, false);
+        graphics.drawString(font, level, x, y - 1, 0, false);
+        graphics.drawString(font, level, x, y, LEVEL_COLOR, false);
     }
 
-    /** A sample level number, outlined like vanilla's. */
-    private static void drawLevel(GuiGraphics graphics, Font font, int x, int y) {
-        graphics.drawString(font, LEVEL, x + 1, y, 0, false);
-        graphics.drawString(font, LEVEL, x - 1, y, 0, false);
-        graphics.drawString(font, LEVEL, x, y + 1, 0, false);
-        graphics.drawString(font, LEVEL, x, y - 1, 0, false);
-        graphics.drawString(font, LEVEL, x, y, LEVEL_COLOR, false);
+    /** The sample level on the XP bar at {@code xp}. */
+    static void drawSampleLevel(GuiGraphics graphics, Font font, HudPosition.Bounds xp) {
+        drawLevel(graphics, font, xp, LEVEL);
     }
 
     /** Sample hunger and thirst icons where the pieces are on Default, as laid out in {@code frame}, unmoved. */

@@ -7,7 +7,6 @@ import com.joshuafonseca.rpghealthbar.config.ClientConfig;
 import com.joshuafonseca.rpghealthbar.config.HalfBarMode;
 import com.joshuafonseca.rpghealthbar.config.HudPiece;
 import com.joshuafonseca.rpghealthbar.config.ThirstMode;
-import com.joshuafonseca.rpghealthbar.config.XpBarMode;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
@@ -72,8 +71,6 @@ public class HudLayer implements LayeredDraw.Layer {
                         Map<HudPiece, HudPosition.Bounds> pieceBounds,
                         boolean showArmor, boolean showHunger, boolean vanillaArmor, boolean vanillaHunger,
                         ThirstMode thirst) {
-        private static final int LEVEL_SAMPLE_WIDTH = 12;
-
         /** The HUD's frame, shared by every layer that needs it; cleared when the GUI starts drawing. */
         @Nullable
         private static Frame current;
@@ -132,8 +129,7 @@ public class HudLayer implements LayeredDraw.Layer {
                     BarWidths.width(HudPiece.HEALTH), thirstHeight);
             Map<HudPiece, HudPosition.Bounds> pieceBounds = pieceBounds(screenWidth, screenHeight, layout, armorMode, hungerMode, thirst, thirstRow,
                     fullThirstHeight);
-            HudPosition.Pieces pieces = HudPosition.pieces(screenWidth, screenHeight, pieceBounds, airDefault(pieceBounds),
-                    levelDefault(pieceBounds));
+            HudPosition.Pieces pieces = HudPosition.pieces(screenWidth, screenHeight, pieceBounds, airDefault(pieceBounds));
             return new Frame(layout, pieces, pieceBounds, showArmor, showHunger, vanillaArmor, vanillaHunger, thirst);
         }
 
@@ -153,41 +149,9 @@ public class HudLayer implements LayeredDraw.Layer {
             return airDefault(pieceBounds);
         }
 
-        /** How wide the level's number is: the player's, or a two-digit sample's with none to show. */
-        private static int levelWidth() {
-            Minecraft minecraft = Minecraft.getInstance();
-            return minecraft.player != null && minecraft.player.experienceLevel > 0
-                    ? minecraft.font.width(String.valueOf(minecraft.player.experienceLevel)) : LEVEL_SAMPLE_WIDTH;
-        }
-
-        /**
-         * From the level's box to where its number sits on the XP bar, where Level Text puts it;
-         * nowhere without a level on its own.
-         */
-        private static HudPosition.Offset levelDefault(Map<HudPiece, HudPosition.Bounds> pieceBounds) {
-            HudPosition.Bounds level = pieceBounds.get(HudPiece.XP_LEVEL);
-            if (level == null) {
-                return HudPosition.Offset.ZERO;
-            }
-            // The box and its text are a pixel apart.
-            int onBar = HudPositionMover.levelX(pieceBounds.get(HudPiece.XP), level.width() - 2);
-            return new HudPosition.Offset(onBar - (level.left() + 1), 0);
-        }
-
-        public HudPosition.Offset levelDefault() {
-            return levelDefault(pieceBounds);
-        }
-
         /** Every piece at its default spot. */
         public HudPosition.Pieces defaultPieces() {
-            return HudPosition.Pieces.NONE.with(HudPiece.AIR, airDefault()).with(HudPiece.XP_LEVEL, levelDefault());
-        }
-
-        /** A sample level on its own where it goes until moved, with the XP bar unmoved too. */
-        public HudPosition.Bounds defaultLevel() {
-            HudPosition.Bounds level = pieceBounds.get(HudPiece.XP_LEVEL);
-            int left = HudPositionMover.levelX(pieceBounds.get(HudPiece.XP), LEVEL_SAMPLE_WIDTH) - 1;
-            return new HudPosition.Bounds(left, level.top(), left + LEVEL_SAMPLE_WIDTH + 2, level.bottom());
+            return HudPosition.Pieces.NONE.with(HudPiece.AIR, airDefault());
         }
 
         /** The air bubbles where they are until moved. */
@@ -273,9 +237,6 @@ public class HudLayer implements LayeredDraw.Layer {
                 bounds.put(piece, manaBounds(layout, row, piece));
             }
             bounds.put(HudPiece.XP, HudPosition.xpBar(screenHeight, layout));
-            if (ClientConfig.xpBar() == XpBarMode.LEVEL_ONLY) {
-                bounds.put(HudPiece.XP_LEVEL, HudPosition.xpLevel(screenHeight, layout, levelWidth()));
-            }
             return bounds;
         }
 

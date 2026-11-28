@@ -7,7 +7,7 @@ import net.minecraft.network.chat.Component;
 public enum XpBarMode {
     /** The bar with the level's number on it. */
     SHOWN,
-    /** Just the level's number, placed on its own. */
+    /** Just the level's number, where it is on the bar. */
     LEVEL_ONLY,
     HIDDEN;
 

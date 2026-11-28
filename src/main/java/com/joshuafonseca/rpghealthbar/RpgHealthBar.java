@@ -76,7 +76,7 @@ public class RpgHealthBar {
         return ClientConfig.ENABLED.get() && player != null && HudPositionMover.mountWithHealth(player) != null;
     }
 
-    /** What the HUD Editor's view leaves out: mount health in its normal view, hunger, thirst and a level on its own in its mount view. */
+    /** What the HUD Editor's view leaves out: mount health in its normal view, hunger, thirst and the level without its bar in its mount view. */
     private static boolean hiddenByEditorView(ResourceLocation name) {
         Boolean mounted = HudPosition.previewMounted();
         if (mounted == null) {
@@ -87,7 +87,7 @@ public class RpgHealthBar {
         }
         return name.equals(VanillaGuiLayers.FOOD_LEVEL) || name.equals(ConfluenceCompat.FOOD_LAYER) || AppleSkinCompat.isHungerOverlay(name)
                 || name.equals(ThirstCompat.LAYER)
-                // A level shown on its own isn't moved in that view, as none shows on a horse.
+                // Without its bar, the level would cover the jump bar there, and none shows on a horse.
                 || (name.equals(VanillaGuiLayers.EXPERIENCE_LEVEL) && ClientConfig.xpBar() == XpBarMode.LEVEL_ONLY);
     }
 
