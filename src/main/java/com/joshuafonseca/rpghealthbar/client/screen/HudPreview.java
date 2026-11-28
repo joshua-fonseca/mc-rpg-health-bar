@@ -29,7 +29,7 @@ final class HudPreview {
             return;
         }
         HudRenderer.render(graphics, minecraft.font, frame, HudValues.placeholder(), mounted, frame.pieces(), false);
-        if (!inWorld && ClientConfig.xpBar() == XpBarMode.LEVEL_ONLY) {
+        if (!inWorld && !mounted && ClientConfig.xpBar() == XpBarMode.LEVEL_ONLY) {
             ConfigPreview.drawLevel(graphics, minecraft.font, frame.placed(HudPiece.XP_LEVEL));
         }
         if (!inWorld && ClientConfig.xpBar() == XpBarMode.SHOWN) {

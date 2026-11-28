@@ -72,6 +72,8 @@ public class HudLayer implements IGuiOverlay {
                         Map<HudPiece, HudPosition.Bounds> pieceBounds,
                         boolean showArmor, boolean showHunger, boolean vanillaArmor, boolean vanillaHunger,
                         ThirstMode thirst) {
+        private static final int LEVEL_SAMPLE_WIDTH = 12;
+
         /** The HUD's frame, shared by every overlay that needs it; cleared when the GUI starts drawing. */
         @Nullable
         private static Frame current;
@@ -130,7 +132,8 @@ public class HudLayer implements IGuiOverlay {
                     BarWidths.width(HudPiece.HEALTH), thirstHeight);
             Map<HudPiece, HudPosition.Bounds> pieceBounds = pieceBounds(screenWidth, screenHeight, layout, armorMode, hungerMode, thirst, thirstRow,
                     fullThirstHeight);
-            HudPosition.Pieces pieces = HudPosition.pieces(screenWidth, screenHeight, pieceBounds, airDefault(pieceBounds));
+            HudPosition.Pieces pieces = HudPosition.pieces(screenWidth, screenHeight, pieceBounds, airDefault(pieceBounds),
+                    levelDefault(pieceBounds));
             return new Frame(layout, pieces, pieceBounds, showArmor, showHunger, vanillaArmor, vanillaHunger, thirst);
         }
 
@@ -150,9 +153,31 @@ public class HudLayer implements IGuiOverlay {
             return airDefault(pieceBounds);
         }
 
+        /**
+         * From the level's box to where a two-digit level sits on the XP bar, as wide as it is and
+         * where Level Text puts it; nowhere without a level on its own.
+         */
+        private static HudPosition.Offset levelDefault(Map<HudPiece, HudPosition.Bounds> pieceBounds) {
+            HudPosition.Bounds level = pieceBounds.get(HudPiece.XP_LEVEL);
+            if (level == null) {
+                return HudPosition.Offset.ZERO;
+            }
+            int onBar = XpBarOverlay.levelX(pieceBounds.get(HudPiece.XP), LEVEL_SAMPLE_WIDTH) + LEVEL_SAMPLE_WIDTH / 2;
+            return new HudPosition.Offset(onBar - (level.left() + level.right()) / 2, 0);
+        }
+
+        public HudPosition.Offset levelDefault() {
+            return levelDefault(pieceBounds);
+        }
+
         /** Every piece at its default spot. */
         public HudPosition.Pieces defaultPieces() {
-            return HudPosition.Pieces.NONE.with(HudPiece.AIR, airDefault());
+            return HudPosition.Pieces.NONE.with(HudPiece.AIR, airDefault()).with(HudPiece.XP_LEVEL, levelDefault());
+        }
+
+        /** The level on its own where it is until moved, with the XP bar unmoved too. */
+        public HudPosition.Bounds defaultLevel() {
+            return pieceBounds.get(HudPiece.XP_LEVEL).offset(levelDefault());
         }
 
         /** The air bubbles where they are until moved. */

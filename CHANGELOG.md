@@ -15,9 +15,10 @@
   - **Air Bubbles/Mount HP** sets where the bubbles start (above or under hunger) until you move them, and whether mount health's extra rows are added above or below. With **Below**, the first ten hearts are now the top row.
 - The config screen's preview shows a hotbar under the HUD, and is centered in the space beside the options, which stay put as the preview changes width.
 - With the config screen's preview on, an option's description shows under the preview, by hovering anywhere on its row, instead of in a tooltip. With the preview off, tooltips show as before.
-- **XP Bar** has a new **Level Only** choice: just the level number, which can be dragged on its own in the HUD Editor. Until you move it, it goes where the XP bar does.
+- **XP Bar** has a new **Level Only** choice: just the level number, which can be dragged on its own in the HUD Editor. Until you move it, it sits where it would on the XP bar, and follows the bar.
 - New **XP Bar Width** option in **Simple** edit mode: **Full** or **Half** (nine cells). The horse's jump bar follows it.
 - **Separate v2** absorption now writes the amount in parentheses: `(+4)`.
+- Fixed: with **XP Bar** on **Hidden**, the HUD Editor had an invisible XP bar that could be grabbed; the horse's jump bar is now moved and resized in **Mount View**, or while riding.
 - Fixed: resizing the bars or the window kept every size's bar image in memory until the game closed.
 - Fixed: if a future version of Iron's Spells or Ars Nouveau can't be read, its own mana bar now shows again instead of no mana bar at all.
 - Fixed: **Reset** in the HUD Editor didn't fully reset a piece that wasn't shown at the time, which could then move away from its default spot when the window size changed.

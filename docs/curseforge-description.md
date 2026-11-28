@@ -80,7 +80,8 @@ Selecting a spell via spell wheel, the mana bar blinks according to how much man
     *   **Advanced edit mode:** For users who want even more customization, you can set the health, mana and XP bars to any width, and vertical hunger and thirst bars to any height, by dragging their ends in the HUD Editor.
 *   **Customize the text labels on the bars:**
     * For health and mana you can put their labels in the center or at either end, or hide it.
-    * For the XP bar you can put the level number in the center or at either end, show **just the level number** (and drag it anywhere), or hide the XP bar entirely. In Simple edit mode it can also be full or half width.
+    * For the XP bar you can put the level number in the center or at either end, show **just the level number** (and drag it anywhere), or hide the XP bar entirely.
+    * The XP bar can be full or half width in Simple edit mode, or any number of cells in Advanced; the horse's jump bar follows it.
 *   **Item name height:** set how high the held item's name sits, with a preview that moves as you change it. It starts at vanilla's height, which leaves room for mods that add hotbars.
 *   **Air bubbles and mount health** can be dragged anywhere (**Mount View** in the HUD Editor shows mount health). By default the bubbles sit above hunger and mount health's rows stack upward, like vanilla; with **Below**, the bubbles start under hunger and the rows stack downward, for layouts with health or mana above hunger.
 *   **On/off switch:** turn the whole mod off for a fully vanilla HUD, and back on, without losing your settings.

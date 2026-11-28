@@ -139,7 +139,7 @@ final class ConfigPreview {
             XpBarRenderer.drawXp(graphics, xp.left(), xp.top(), BarWidths.xpCells(), XP_PROGRESS_FRACTION);
             XpBarOverlay.drawLevel(graphics, font, xp, LEVEL);
         } else if (xpBar == XpBarMode.LEVEL_ONLY) {
-            drawLevel(graphics, font, frame.pieceBounds().get(HudPiece.XP_LEVEL));
+            drawLevel(graphics, font, frame.defaultLevel());
         }
         graphics.pose().popPose();
     }

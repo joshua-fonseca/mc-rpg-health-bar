@@ -85,7 +85,7 @@ public class XpBarOverlay implements IGuiOverlay {
      * Where the level's number starts, for text {@code width} wide on the XP bar at {@code xp}:
      * centered, or {@link BarRenderer#TEXT_PADDING} in from the end Level Text picks.
      */
-    private static int levelX(HudPosition.Bounds xp, int width) {
+    static int levelX(HudPosition.Bounds xp, int width) {
         return switch (ClientConfig.LEVEL_TEXT.get()) {
             case LEFT -> xp.left() + BarRenderer.TEXT_PADDING;
             case RIGHT -> xp.right() - BarRenderer.TEXT_PADDING - width;
