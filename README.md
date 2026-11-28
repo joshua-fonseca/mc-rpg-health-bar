@@ -85,7 +85,7 @@ Defaults are in bold:
 |  | Ars Mana Bar Width (only with Ars Nouveau) | **Full**, Half |
 |  | Ars Mana Bubbles (only with Ars Nouveau) | **On** (bubbles rise through the bar, like on Ars's own), Off |
 | **XP Bar** | XP Bar | **Shown**, Level Only (just the level number, which can be moved on its own), Hidden (no XP bar or level). The jump bar still shows while riding |
-|  | Level Text (XP Bar on Shown or Level Only) | **Center**, Left, Right |
+|  | Level Text (greyed out with XP Bar on Hidden) | **Center**, Left, Right |
 |  | XP Bar Width | **Full** (18 cells, like vanilla), Half (9 cells). In Advanced mode: Edit in HUD Editor, and the XP bar is resized a cell at a time, its fill stretched over its length |
 | **Positioning** | Item Name... | Height of the held item's name: **Vanilla** (0), or pixels up (+) or down (-), down to right above the hotbar |
 |  | HUD Editor... | Drag the whole HUD (**Moving: All**) or a single piece (**Moving: One**); the arrow keys nudge it. In Advanced edit mode, drag a bar's ends (a vertical bar's top) to resize it. **Above the hotbar**, Reset puts it back |
