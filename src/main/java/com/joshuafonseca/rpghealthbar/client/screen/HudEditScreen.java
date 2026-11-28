@@ -2,6 +2,7 @@ package com.joshuafonseca.rpghealthbar.client.screen;
 
 import com.joshuafonseca.rpghealthbar.client.BarWidths;
 import com.joshuafonseca.rpghealthbar.client.HudLayer;
+import com.joshuafonseca.rpghealthbar.client.HudLayout;
 import com.joshuafonseca.rpghealthbar.client.HudPosition;
 import com.joshuafonseca.rpghealthbar.client.HudPositionMover;
 import com.joshuafonseca.rpghealthbar.client.MountHealthLayer;
@@ -248,11 +249,19 @@ public class HudEditScreen extends Screen {
 
     /**
      * Moves every piece by the same amount, as far as keeps the ones the view shows on screen; one
-     * it doesn't show stops at the screen's edge.
+     * it doesn't show stops at the screen's edge. A hidden XP bar still next to them counts as
+     * shown, so its jump bar keeps its room.
      */
     private void moveAll(HudPosition.Pieces from, HudPosition.Offset delta) {
-        HudPosition.Bounds bounds = HudPosition.union(HudPosition.placed(frame().pieceBounds(), from::get).entrySet().stream()
+        Map<HudPiece, HudPosition.Bounds> placed = HudPosition.placed(frame().pieceBounds(), from::get);
+        HudPosition.Bounds bounds = HudPosition.union(placed.entrySet().stream()
                 .filter(entry -> showsInView(entry.getKey())).map(Map.Entry::getValue).toList());
+        HudPosition.Bounds xp = placed.get(HudPiece.XP);
+        HudPosition.Bounds reach = xp.grow(HudLayout.ROW_GAP + 1);
+        if (!showsInView(HudPiece.XP) && placed.entrySet().stream()
+                .anyMatch(entry -> showsInView(entry.getKey()) && entry.getValue().intersects(reach))) {
+            bounds = bounds.union(xp);
+        }
         setPieces(from.shiftedBy(HudPosition.clamp(delta, this.width, this.height, bounds)));
     }
 
