@@ -170,8 +170,12 @@ final class ConfigPreview {
     static void drawHungerIcons(GuiGraphics graphics, HudPosition.Bounds box) {
         for (int i = 0; i < 10; i++) {
             int points = i * 2 + 1;
-            ResourceLocation sprite = points < FOOD ? FOOD_FULL : points == FOOD ? FOOD_HALF : FOOD_EMPTY;
-            graphics.blitSprite(sprite, box.right() - i * ICON_SPACING - ICON, box.top(), ICON, ICON);
+            int x = box.right() - i * ICON_SPACING - ICON;
+            // An empty container, then the food over it, as vanilla draws them.
+            graphics.blitSprite(FOOD_EMPTY, x, box.top(), ICON, ICON);
+            if (points <= FOOD) {
+                graphics.blitSprite(points < FOOD ? FOOD_FULL : FOOD_HALF, x, box.top(), ICON, ICON);
+            }
         }
     }
 
