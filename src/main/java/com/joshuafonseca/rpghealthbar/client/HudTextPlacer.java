@@ -75,7 +75,7 @@ public final class HudTextPlacer {
      *
      * @param barsShown  whether the bars are drawn
      * @param xpRowShown whether the XP piece's row is drawn: the XP bar, or the jump meter while riding
-     * @param levelShown whether the level's number is drawn on its own
+     * @param levelShown whether the level's number is drawn without the XP bar
      * @param creative   whether vanilla would draw the name lower, as in creative
      * @param rowsHeight vanilla's yShift: the taller of the two stacks of rows above the hotbar
      */
@@ -134,12 +134,8 @@ public final class HudTextPlacer {
         for (Map.Entry<HudPiece, HudPosition.Bounds> entry : frame.placedBounds().entrySet()) {
             // Air and mount health only take room where their rows are drawn, below.
             boolean rows = entry.getKey() == HudPiece.AIR || entry.getKey() == HudPiece.MOUNT;
-            boolean shown = switch (entry.getKey()) {
-                case XP -> xpRowShown;
-                case XP_LEVEL -> view.levelShown();
-                default -> barsShown;
-            };
-            if (!rows && shown) {
+            // A level without its bar still takes the XP piece's room.
+            if (!rows && (entry.getKey() == HudPiece.XP ? xpRowShown || view.levelShown() : barsShown)) {
                 boxes.add(entry.getValue());
             }
         }

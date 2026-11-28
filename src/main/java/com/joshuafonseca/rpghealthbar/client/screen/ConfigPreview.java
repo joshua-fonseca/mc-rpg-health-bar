@@ -137,16 +137,16 @@ final class ConfigPreview {
         if (xpBar == XpBarMode.SHOWN) {
             HudPosition.Bounds xp = frame.pieceBounds().get(HudPiece.XP);
             XpBarRenderer.drawXp(graphics, xp.left(), xp.top(), BarWidths.xpCells(), XP_PROGRESS_FRACTION);
-            XpBarOverlay.drawLevel(graphics, font, xp, LEVEL);
-        } else if (xpBar == XpBarMode.LEVEL_ONLY) {
-            drawLevel(graphics, font, frame.defaultLevel());
+        }
+        if (xpBar != XpBarMode.HIDDEN) {
+            drawSampleLevel(graphics, font, frame.pieceBounds().get(HudPiece.XP));
         }
         graphics.pose().popPose();
     }
 
-    /** A sample level number on its own, in {@code box}. */
-    static void drawLevel(GuiGraphics graphics, Font font, HudPosition.Bounds box) {
-        XpBarOverlay.drawLevelAlone(graphics, font, box, LEVEL);
+    /** The sample level on the XP bar at {@code xp}. */
+    static void drawSampleLevel(GuiGraphics graphics, Font font, HudPosition.Bounds xp) {
+        XpBarOverlay.drawLevel(graphics, font, xp, LEVEL);
     }
 
     /** Sample hunger and thirst icons where the pieces are on Default, as laid out in {@code frame}, unmoved. */

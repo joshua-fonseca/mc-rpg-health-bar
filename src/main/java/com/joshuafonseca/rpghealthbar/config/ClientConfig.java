@@ -274,11 +274,6 @@ public final class ClientConfig {
             .translation("rpghealthbar.config.rowsPlaced")
             .define("rowsPlaced", false);
 
-    public static final ForgeConfigSpec.BooleanValue XP_LEVEL_PLACED = BUILDER
-            .comment("Whether the level number shown on its own was moved in the HUD Editor. Set automatically; until then it goes where it sits on the XP bar.")
-            .translation("rpghealthbar.config.xpLevelPlaced")
-            .define("xpLevelPlaced", false);
-
     static {
         for (HudPiece piece : HudPiece.values()) {
             PIECE_ANCHORS.put(piece, BUILDER
@@ -342,16 +337,6 @@ public final class ClientConfig {
     /** Whether the air bubbles and mount health have saved positions of their own, including a change not written yet. */
     public static boolean rowsPlaced() {
         return read(ROWS_PLACED);
-    }
-
-    /** Whether the level shown on its own has a place of its own, rather than the XP bar's; includes a change not written yet. */
-    public static boolean levelPlaced() {
-        return read(XP_LEVEL_PLACED);
-    }
-
-    /** Written to the file with the positions, by {@link #savePositions}. */
-    public static void setLevelPlaced(boolean placed) {
-        queue(XP_LEVEL_PLACED, placed);
     }
 
     /** Marks the positions as layout 2; they're written to the file over the next few ticks. */

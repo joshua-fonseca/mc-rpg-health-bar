@@ -28,9 +28,6 @@ public final class HudPosition {
     /** The XP bar's bottom edge is this far above the bottom of the screen. */
     private static final int XP_BAR_BOTTOM_MARGIN = 24;
     private static final int XP_BAR_HEIGHT = 5;
-    /** The level's number on its own: three digits and their outline, where vanilla's bar has it. */
-    private static final int LEVEL_HEIGHT = 9;
-    private static final int LEVEL_BOTTOM_MARGIN = 22;
     /** Pieces closer than this share an anchor when saved (the default rows are 2px apart). */
     private static final int TOUCHING_GAP = 4;
 
@@ -137,17 +134,6 @@ public final class HudPosition {
     }
 
     /**
-     * The XP level's number on its own, in the middle of vanilla's XP bar; until it's moved, it's
-     * shifted from there to where it sits on the bar as set. A pixel wider than its text on each
-     * side, for the outline.
-     */
-    public static Bounds xpLevel(int screenHeight, HudLayout layout, int textWidth) {
-        int bottom = screenHeight - LEVEL_BOTTOM_MARGIN;
-        int left = layout.x() + (HudLayout.WIDTH - textWidth) / 2 - 1;
-        return new Bounds(left, bottom - LEVEL_HEIGHT, left + textWidth + 2, bottom);
-    }
-
-    /**
      * Positions the pose at the given shift from the default spot, replacing any horizontal or
      * vertical shift other mods applied to this layer. Every piece is placed only by this mod, so
      * other mods can't pull the HUD apart (e.g. a hotbar mod shifting the XP bar but not our bars).
@@ -162,16 +148,14 @@ public final class HudPosition {
      * Each piece's shift: the editor's preview, or the saved positions.
      *
      * @param shown      each shown piece at its default spot
-     * @param airDefault   where the air bubbles go from their box until they're moved
-     * @param levelDefault where the level on its own goes from its box, on top of the XP bar's shift,
-     *                     until it's moved
+     * @param airDefault where the air bubbles go from their box until they're moved
      */
-    public static Pieces pieces(int screenWidth, int screenHeight, Map<HudPiece, Bounds> shown, Offset airDefault, Offset levelDefault) {
-        return preview != null ? preview : saved(screenWidth, screenHeight, shown, airDefault, levelDefault);
+    public static Pieces pieces(int screenWidth, int screenHeight, Map<HudPiece, Bounds> shown, Offset airDefault) {
+        return preview != null ? preview : saved(screenWidth, screenHeight, shown, airDefault);
     }
 
     /** The saved positions for this screen size, with each shown piece kept on screen. */
-    private static Pieces saved(int screenWidth, int screenHeight, Map<HudPiece, Bounds> shown, Offset airDefault, Offset levelDefault) {
+    private static Pieces saved(int screenWidth, int screenHeight, Map<HudPiece, Bounds> shown, Offset airDefault) {
         Map<HudPiece, Offset> shifts = new EnumMap<>(HudPiece.class);
         if (ClientConfig.layoutVersion() < 2) {
             Offset set = legacySetOffset(screenWidth, screenHeight, shown);
@@ -195,12 +179,6 @@ public final class HudPosition {
         for (Map.Entry<HudPiece, Bounds> entry : shown.entrySet()) {
             shifts.put(entry.getKey(), clamp(shifts.get(entry.getKey()), screenWidth, screenHeight, entry.getValue()));
         }
-        if (!ClientConfig.levelPlaced()) {
-            // From where the XP bar ended up, kept on screen.
-            Offset level = shifts.get(HudPiece.XP).plus(levelDefault);
-            Bounds box = shown.get(HudPiece.XP_LEVEL);
-            shifts.put(HudPiece.XP_LEVEL, box == null ? level : clamp(level, screenWidth, screenHeight, box));
-        }
         return new Pieces(shifts);
     }
 
@@ -211,10 +189,8 @@ public final class HudPosition {
      * @param shown      each shown piece at its default spot
      * @param airDefault where the air bubbles go from their box until they're moved
      * @param reset      whether every piece was put back to its default spot since they were last saved
-     * @param levelPlaced whether the level on its own was moved, rather than following the XP bar
      */
-    public static void save(Pieces pieces, int screenWidth, int screenHeight, Map<HudPiece, Bounds> shown, Offset airDefault, boolean reset,
-                            boolean levelPlaced) {
+    public static void save(Pieces pieces, int screenWidth, int screenHeight, Map<HudPiece, Bounds> shown, Offset airDefault, boolean reset) {
         Map<HudPiece, HudAnchor> anchors = anchors(pieces, screenWidth, screenHeight, shown);
         for (HudPiece piece : HudPiece.values()) {
             // The default spot is measured from the bottom center, so a hidden piece that was reset
@@ -226,14 +202,8 @@ public final class HudPosition {
                 anchor = HudAnchor.BOTTOM_CENTER;
                 stored = Offset.ZERO;
             }
-            if (piece == HudPiece.XP_LEVEL && !levelPlaced) {
-                // Nothing of its own to keep: it follows the XP bar.
-                anchor = HudAnchor.BOTTOM_CENTER;
-                stored = Offset.ZERO;
-            }
             ClientConfig.setPiecePosition(piece, anchor, stored.x(), stored.y());
         }
-        ClientConfig.setLevelPlaced(levelPlaced);
         ClientConfig.savePositions();
     }
 
@@ -326,8 +296,7 @@ public final class HudPosition {
 
     /** Pieces layout 1 didn't have, which don't count as part of its set. */
     private static boolean newerThanLayoutOne(HudPiece piece) {
-        return piece.isUpright() || piece == HudPiece.THIRST || piece == HudPiece.AIR || piece == HudPiece.MOUNT
-                || piece == HudPiece.XP_LEVEL;
+        return piece.isUpright() || piece == HudPiece.THIRST || piece == HudPiece.AIR || piece == HudPiece.MOUNT;
     }
 
     /**
