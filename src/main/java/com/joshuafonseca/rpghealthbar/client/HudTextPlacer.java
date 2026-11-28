@@ -72,17 +72,18 @@ public final class HudTextPlacer {
      * What the item name's position depends on, besides the HUD's layout.
      *
      * @param barsShown  whether the bars are drawn
-     * @param xpRowShown whether the XP piece's row is drawn: the XP bar, or the jump meter while riding
-     * @param levelShown whether the level's number is drawn without the XP bar
+     * @param xpRowShown whether the XP piece's row is drawn: the XP bar or the level without it, or the
+     *                   jump meter while riding
      * @param creative   whether vanilla would draw the name lower, as in creative
      * @param rowsHeight vanilla's yShift: the taller of the two stacks of rows above the hotbar
      */
-    private record View(boolean barsShown, boolean xpRowShown, boolean levelShown, boolean creative, int rowsHeight) {
+    private record View(boolean barsShown, boolean xpRowShown, boolean creative, int rowsHeight) {
         static View current() {
             Minecraft minecraft = Minecraft.getInstance();
-            boolean xpRowShown = XpBarRenderer.xpBarShown(minecraft) || XpBarRenderer.jumpBarShown(minecraft);
+            boolean xpRowShown = XpBarRenderer.xpBarShown(minecraft) || XpBarRenderer.levelShown(minecraft)
+                    || XpBarRenderer.jumpBarShown(minecraft);
             boolean creative = minecraft.gameMode != null && !minecraft.gameMode.canHurtPlayer();
-            return new View(HudLayer.isVisible(minecraft), xpRowShown, XpBarRenderer.levelShown(minecraft), creative, HudTextPlacer.rowsHeight());
+            return new View(HudLayer.isVisible(minecraft), xpRowShown, creative, HudTextPlacer.rowsHeight());
         }
 
         /** Where vanilla draws the item name's top edge. */
@@ -107,7 +108,7 @@ public final class HudTextPlacer {
 
     private static View previewView(int screenHeight, HudLayer.Frame frame) {
         return HudLayer.isVisible(Minecraft.getInstance()) ? View.current()
-                : new View(true, ClientConfig.xpBar() == XpBarMode.SHOWN, ClientConfig.xpBar() == XpBarMode.LEVEL_ONLY, false,
+                : new View(true, ClientConfig.xpBar() != XpBarMode.HIDDEN, false,
                         HudLayer.vanillaRowsStart(screenHeight, frame));
     }
 
@@ -132,8 +133,7 @@ public final class HudTextPlacer {
         for (Map.Entry<HudPiece, HudPosition.Bounds> entry : frame.placedBounds().entrySet()) {
             // Air and mount health only take room where their rows are drawn, below.
             boolean rows = entry.getKey() == HudPiece.AIR || entry.getKey() == HudPiece.MOUNT;
-            // A level without its bar still takes the XP piece's room.
-            if (!rows && (entry.getKey() == HudPiece.XP ? xpRowShown || view.levelShown() : barsShown)) {
+            if (!rows && (entry.getKey() == HudPiece.XP ? xpRowShown : barsShown)) {
                 boxes.add(entry.getValue());
             }
         }

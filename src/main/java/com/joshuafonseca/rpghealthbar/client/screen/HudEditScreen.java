@@ -357,29 +357,28 @@ public class HudEditScreen extends Screen {
                 HudPosition.Bounds xp = frame.placed(HudPiece.XP);
                 XpBarRenderer.drawEmptyJump(graphics, xp.left(), xp.top(), BarWidths.xpCells());
             }
-        } else if (ClientConfig.xpBar() == XpBarMode.LEVEL_ONLY && !XpBarRenderer.jumpBarShown(this.minecraft)) {
-            // A shade where the bar would be, to grab it and drag its ends by, and the level over it.
-            HudPosition.Bounds xp = frame.placed(HudPiece.XP);
-            graphics.fill(xp.left(), xp.top(), xp.right(), xp.bottom(), NO_XP_BAR_COLOR);
-            if (XpBarRenderer.levelShown(this.minecraft)) {
-                ConfigPreview.drawLevel(graphics, this.font, xp, String.valueOf(this.minecraft.player.experienceLevel));
-            } else {
-                ConfigPreview.drawSampleLevel(graphics, this.font, xp);
-            }
-        }
-        if (mountView) {
             if (!mountShown) {
                 HudPosition.Bounds mount = frame.placed(HudPiece.MOUNT);
                 // A full row of hearts.
                 MountHealthLayer.drawHearts(graphics, mount.right(), mount.top(), 10, 20);
             }
-        } else if (mountShown) {
+        } else {
             // Riding, the game draws no hunger or thirst icons.
-            if (frame.vanillaHunger()) {
+            if (mountShown && frame.vanillaHunger()) {
                 ConfigPreview.drawHungerIcons(graphics, frame.placed(HudPiece.HUNGER));
             }
-            if (frame.thirst() == ThirstMode.VANILLA) {
+            if (mountShown && frame.thirst() == ThirstMode.VANILLA) {
                 ConfigPreview.drawThirstIcons(graphics, frame.placed(HudPiece.THIRST));
+            }
+            if (ClientConfig.xpBar() == XpBarMode.LEVEL_ONLY && !XpBarRenderer.jumpBarShown(this.minecraft)) {
+                // A shade where the bar would be, to grab it and drag its ends by, and the level over it.
+                HudPosition.Bounds xp = frame.placed(HudPiece.XP);
+                graphics.fill(xp.left(), xp.top(), xp.right(), xp.bottom(), NO_XP_BAR_COLOR);
+                if (XpBarRenderer.levelShown(this.minecraft)) {
+                    ConfigPreview.drawLevel(graphics, this.font, xp, String.valueOf(this.minecraft.player.experienceLevel));
+                } else {
+                    ConfigPreview.drawSampleLevel(graphics, this.font, xp);
+                }
             }
         }
         if (!HudPositionMover.airShown(this.minecraft)) {

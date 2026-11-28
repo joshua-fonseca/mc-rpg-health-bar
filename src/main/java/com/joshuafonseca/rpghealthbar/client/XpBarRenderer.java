@@ -49,8 +49,7 @@ public final class XpBarRenderer {
      * bar takes the XP bar's place), and with XP Bar on Shown.
      */
     public static boolean xpBarShown(Minecraft minecraft) {
-        return minecraft.player != null && minecraft.gameMode != null && minecraft.gameMode.hasExperience()
-                && minecraft.player.jumpableVehicle() == null && ClientConfig.xpBar() == XpBarMode.SHOWN;
+        return xpShown(minecraft, XpBarMode.SHOWN);
     }
 
     /**
@@ -58,9 +57,13 @@ public final class XpBarRenderer {
      * and above level 0.
      */
     public static boolean levelShown(Minecraft minecraft) {
+        return xpShown(minecraft, XpBarMode.LEVEL_ONLY) && minecraft.player.experienceLevel > 0;
+    }
+
+    /** Whether XP Bar is on {@code mode} where vanilla would show the XP bar. */
+    private static boolean xpShown(Minecraft minecraft, XpBarMode mode) {
         return minecraft.player != null && minecraft.gameMode != null && minecraft.gameMode.hasExperience()
-                && minecraft.player.jumpableVehicle() == null && ClientConfig.xpBar() == XpBarMode.LEVEL_ONLY
-                && minecraft.player.experienceLevel > 0;
+                && minecraft.player.jumpableVehicle() == null && ClientConfig.xpBar() == mode;
     }
 
     /** Whether the jump bar shows: riding something that jumps, like a horse. */
