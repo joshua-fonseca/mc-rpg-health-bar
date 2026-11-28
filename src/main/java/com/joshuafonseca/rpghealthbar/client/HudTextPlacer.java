@@ -2,6 +2,7 @@ package com.joshuafonseca.rpghealthbar.client;
 
 import com.joshuafonseca.rpghealthbar.config.ClientConfig;
 import com.joshuafonseca.rpghealthbar.config.HudPiece;
+import com.joshuafonseca.rpghealthbar.config.XpBarMode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -74,15 +75,16 @@ public final class HudTextPlacer {
      *
      * @param barsShown  whether the bars are drawn
      * @param xpRowShown whether the XP piece's row is drawn: the XP bar, or the jump meter while riding
+     * @param levelShown whether the level's number is drawn on its own
      * @param creative   whether vanilla would draw the name lower, as in creative
      * @param rowsHeight vanilla's yShift: the taller of the two stacks of rows above the hotbar
      */
-    private record View(boolean barsShown, boolean xpRowShown, boolean creative, int rowsHeight) {
+    private record View(boolean barsShown, boolean xpRowShown, boolean levelShown, boolean creative, int rowsHeight) {
         static View current() {
             Minecraft minecraft = Minecraft.getInstance();
             boolean xpRowShown = XpBarRenderer.xpBarShown(minecraft) || XpBarRenderer.jumpBarShown(minecraft);
             boolean creative = minecraft.gameMode != null && !minecraft.gameMode.canHurtPlayer();
-            return new View(HudLayer.isVisible(minecraft), xpRowShown, creative, HudTextPlacer.rowsHeight());
+            return new View(HudLayer.isVisible(minecraft), xpRowShown, XpBarRenderer.levelShown(minecraft), creative, HudTextPlacer.rowsHeight());
         }
 
         /** Where vanilla draws the item name's top edge. */
@@ -107,7 +109,8 @@ public final class HudTextPlacer {
 
     private static View previewView(int screenHeight, HudLayer.Frame frame) {
         return HudLayer.isVisible(Minecraft.getInstance()) ? View.current()
-                : new View(true, true, false, HudLayer.vanillaRowsStart(screenHeight, frame));
+                : new View(true, ClientConfig.xpBar() == XpBarMode.SHOWN, ClientConfig.xpBar() == XpBarMode.LEVEL_ONLY, false,
+                        HudLayer.vanillaRowsStart(screenHeight, frame));
     }
 
     /**
@@ -131,7 +134,12 @@ public final class HudTextPlacer {
         for (Map.Entry<HudPiece, HudPosition.Bounds> entry : frame.placedBounds().entrySet()) {
             // Air and mount health only take room where their rows are drawn, below.
             boolean rows = entry.getKey() == HudPiece.AIR || entry.getKey() == HudPiece.MOUNT;
-            if (!rows && (entry.getKey() == HudPiece.XP ? xpRowShown : barsShown)) {
+            boolean shown = switch (entry.getKey()) {
+                case XP -> xpRowShown;
+                case XP_LEVEL -> view.levelShown();
+                default -> barsShown;
+            };
+            if (!rows && shown) {
                 boxes.add(entry.getValue());
             }
         }

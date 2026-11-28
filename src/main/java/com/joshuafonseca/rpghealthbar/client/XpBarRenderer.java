@@ -1,6 +1,7 @@
 package com.joshuafonseca.rpghealthbar.client;
 
 import com.joshuafonseca.rpghealthbar.config.ClientConfig;
+import com.joshuafonseca.rpghealthbar.config.XpBarMode;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -46,7 +47,13 @@ public final class XpBarRenderer {
      */
     public static boolean xpBarShown(Minecraft minecraft) {
         return minecraft.player != null && minecraft.gameMode != null && minecraft.gameMode.hasExperience()
-                && minecraft.player.jumpableVehicle() == null && ClientConfig.XP_BAR_SHOWN.get();
+                && minecraft.player.jumpableVehicle() == null && ClientConfig.xpBar() == XpBarMode.SHOWN;
+    }
+
+    /** Whether the level's number shows on its own: as the XP bar would, with XP Bar on Level Only. */
+    public static boolean levelShown(Minecraft minecraft) {
+        return minecraft.player != null && minecraft.gameMode != null && minecraft.gameMode.hasExperience()
+                && minecraft.player.jumpableVehicle() == null && ClientConfig.xpBar() == XpBarMode.LEVEL_ONLY;
     }
 
     /** Whether the jump bar shows: riding something that jumps, like a horse. */
@@ -65,6 +72,11 @@ public final class XpBarRenderer {
     /** The XP bar filled to {@code fraction}. */
     public static void drawXp(GuiGraphics graphics, int x, int y, int cells, float fraction) {
         draw(graphics, x, y, cells, XP_BACKGROUND, XP_PROGRESS, fraction);
+    }
+
+    /** The jump bar with nothing charged: a sample for the HUD Editor. */
+    public static void drawEmptyJump(GuiGraphics graphics, int x, int y, int cells) {
+        draw(graphics, x, y, cells, JUMP_BACKGROUND, JUMP_PROGRESS, 0);
     }
 
     /** The jump bar, charging or cooling down, like vanilla's. */

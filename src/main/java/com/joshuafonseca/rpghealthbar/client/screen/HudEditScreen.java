@@ -5,8 +5,11 @@ import com.joshuafonseca.rpghealthbar.client.HudLayer;
 import com.joshuafonseca.rpghealthbar.client.HudPosition;
 import com.joshuafonseca.rpghealthbar.client.HudPositionMover;
 import com.joshuafonseca.rpghealthbar.client.MountHealthLayer;
+import com.joshuafonseca.rpghealthbar.client.XpBarRenderer;
+import com.joshuafonseca.rpghealthbar.config.ClientConfig;
 import com.joshuafonseca.rpghealthbar.config.HudPiece;
 import com.joshuafonseca.rpghealthbar.config.ThirstMode;
+import com.joshuafonseca.rpghealthbar.config.XpBarMode;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
@@ -163,9 +166,11 @@ public class HudEditScreen extends Screen {
 
     private boolean showsInView(HudPiece piece) {
         if (!mountView) {
-            return piece != HudPiece.MOUNT;
+            // With the level on its own, there's no XP bar to move until riding.
+            return piece != HudPiece.MOUNT && !(piece == HudPiece.XP && ClientConfig.xpBar() == XpBarMode.LEVEL_ONLY);
         }
-        return piece != HudPiece.HUNGER && piece != HudPiece.HUNGER_VERTICAL && piece != HudPiece.THIRST && piece != HudPiece.THIRST_VERTICAL;
+        // Riding, the jump bar is in the XP bar's place and there's no level.
+        return piece != HudPiece.XP_LEVEL && piece != HudPiece.HUNGER && piece != HudPiece.HUNGER_VERTICAL && piece != HudPiece.THIRST && piece != HudPiece.THIRST_VERTICAL;
     }
 
     /**
@@ -322,6 +327,16 @@ public class HudEditScreen extends Screen {
     /** Sample icons for what the view shows but the game isn't drawing. */
     private void drawSamples(GuiGraphics graphics, HudLayer.Frame frame) {
         boolean mountShown = HudPositionMover.mountShown(this.minecraft);
+        if (ClientConfig.xpBar() == XpBarMode.LEVEL_ONLY) {
+            if (mountView) {
+                if (!XpBarRenderer.jumpBarShown(this.minecraft)) {
+                    HudPosition.Bounds xp = frame.placed(HudPiece.XP);
+                    XpBarRenderer.drawEmptyJump(graphics, xp.left(), xp.top(), BarWidths.xpCells());
+                }
+            } else if (!XpBarRenderer.levelShown(this.minecraft) || this.minecraft.player.experienceLevel == 0) {
+                ConfigPreview.drawLevel(graphics, this.font, frame.placed(HudPiece.XP_LEVEL));
+            }
+        }
         if (mountView) {
             if (!mountShown) {
                 HudPosition.Bounds mount = frame.placed(HudPiece.MOUNT);

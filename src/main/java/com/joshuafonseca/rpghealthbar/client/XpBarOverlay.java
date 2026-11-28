@@ -31,17 +31,28 @@ public class XpBarOverlay implements IGuiOverlay {
         LocalPlayer player = minecraft.player;
         // Vanilla's conditions (see XpBarRenderer.xpBarShown), and hidden with F1.
         // Off, vanilla's own XP bar is drawn instead.
-        if (!ClientConfig.ENABLED.get() || player == null || minecraft.options.hideGui || !XpBarRenderer.xpBarShown(minecraft)) {
+        if (!ClientConfig.ENABLED.get() || player == null || minecraft.options.hideGui) {
+            return;
+        }
+        boolean bar = XpBarRenderer.xpBarShown(minecraft);
+        // The HUD Editor's mount view doesn't move a level on its own, as none shows on a horse.
+        boolean levelAlone = XpBarRenderer.levelShown(minecraft) && !Boolean.TRUE.equals(HudPosition.previewMounted());
+        if (!bar && !levelAlone) {
             return;
         }
         gui.setupOverlayRenderState(true, false);
         HudLayer.Frame frame = HudLayer.Frame.current(screenWidth, screenHeight);
-        HudPosition.Bounds xp = frame.pieceBounds().get(HudPiece.XP);
+        HudPiece piece = bar ? HudPiece.XP : HudPiece.XP_LEVEL;
+        HudPosition.Bounds box = frame.pieceBounds().get(piece);
 
         graphics.pose().pushPose();
-        HudPosition.moveTo(graphics.pose(), frame.pieceOffset(HudPiece.XP));
-        XpBarRenderer.renderXp(graphics, xp.left(), xp.top(), BarWidths.xpCells());
-        drawLevel(graphics, gui.getFont(), xp, player.experienceLevel);
+        HudPosition.moveTo(graphics.pose(), frame.pieceOffset(piece));
+        if (bar) {
+            XpBarRenderer.renderXp(graphics, box.left(), box.top(), BarWidths.xpCells());
+            drawLevel(graphics, gui.getFont(), box, player.experienceLevel);
+        } else {
+            drawLevelAlone(graphics, gui.getFont(), box, player.experienceLevel);
+        }
         graphics.pose().popPose();
     }
 
@@ -50,12 +61,19 @@ public class XpBarOverlay implements IGuiOverlay {
      * config screen's preview.
      */
     public static void drawLevel(GuiGraphics graphics, Font font, HudPosition.Bounds xp, int level) {
+        draw(graphics, font, level, levelX(xp, font.width(String.valueOf(level))), xp.top() - 6 + LEVEL_DROP);
+    }
+
+    /** The level on its own, centered in {@code box}, if above 0. */
+    public static void drawLevelAlone(GuiGraphics graphics, Font font, HudPosition.Bounds box, int level) {
+        draw(graphics, font, level, box.left() + (box.width() - font.width(String.valueOf(level))) / 2, box.top() + 1);
+    }
+
+    private static void draw(GuiGraphics graphics, Font font, int level, int textX, int textY) {
         if (level <= 0) {
             return;
         }
         String text = String.valueOf(level);
-        int textX = levelX(xp, font.width(text));
-        int textY = xp.top() - 6 + LEVEL_DROP;
         graphics.drawString(font, text, textX + 1, textY, 0, false);
         graphics.drawString(font, text, textX - 1, textY, 0, false);
         graphics.drawString(font, text, textX, textY + 1, 0, false);

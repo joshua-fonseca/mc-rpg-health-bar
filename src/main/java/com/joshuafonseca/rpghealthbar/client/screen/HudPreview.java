@@ -7,6 +7,7 @@ import com.joshuafonseca.rpghealthbar.client.HudRenderer;
 import com.joshuafonseca.rpghealthbar.client.HudValues;
 import com.joshuafonseca.rpghealthbar.config.ClientConfig;
 import com.joshuafonseca.rpghealthbar.config.HudPiece;
+import com.joshuafonseca.rpghealthbar.config.XpBarMode;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 
@@ -28,13 +29,16 @@ final class HudPreview {
             return;
         }
         HudRenderer.render(graphics, minecraft.font, frame, HudValues.placeholder(), mounted, frame.pieces(), false);
-        if (!inWorld && ClientConfig.XP_BAR_SHOWN.get()) {
+        if (!inWorld && ClientConfig.xpBar() == XpBarMode.LEVEL_ONLY) {
+            ConfigPreview.drawLevel(graphics, minecraft.font, frame.placed(HudPiece.XP_LEVEL));
+        }
+        if (!inWorld && ClientConfig.xpBar() == XpBarMode.SHOWN) {
             HudPosition.Bounds xp = frame.placed(HudPiece.XP);
             graphics.fill(xp.left(), xp.top(), xp.right(), xp.bottom(), XP_BAR_COLOR);
-            if (hotbar) {
-                int left = graphics.guiWidth() / 2 - HudLayout.WIDTH / 2;
-                graphics.fill(left, graphics.guiHeight() - HudLayout.HOTBAR_HEIGHT, left + HudLayout.WIDTH, graphics.guiHeight(), HOTBAR_COLOR);
-            }
+        }
+        if (!inWorld && hotbar) {
+            int left = graphics.guiWidth() / 2 - HudLayout.WIDTH / 2;
+            graphics.fill(left, graphics.guiHeight() - HudLayout.HOTBAR_HEIGHT, left + HudLayout.WIDTH, graphics.guiHeight(), HOTBAR_COLOR);
         }
     }
 }

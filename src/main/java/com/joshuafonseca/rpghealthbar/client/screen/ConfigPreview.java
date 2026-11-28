@@ -15,6 +15,7 @@ import com.joshuafonseca.rpghealthbar.compat.ThirstCompat;
 import com.joshuafonseca.rpghealthbar.config.ClientConfig;
 import com.joshuafonseca.rpghealthbar.config.HudPiece;
 import com.joshuafonseca.rpghealthbar.config.ThirstMode;
+import com.joshuafonseca.rpghealthbar.config.XpBarMode;
 import java.util.Map;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -132,14 +133,20 @@ final class ConfigPreview {
         HudPosition.Bounds air = frame.defaultAir();
         drawAir(graphics, air.right(), air.top());
 
-        if (!ClientConfig.XP_BAR_SHOWN.get()) {
-            graphics.pose().popPose();
-            return;
+        XpBarMode xpBar = ClientConfig.xpBar();
+        if (xpBar == XpBarMode.SHOWN) {
+            HudPosition.Bounds xp = frame.pieceBounds().get(HudPiece.XP);
+            XpBarRenderer.drawXp(graphics, xp.left(), xp.top(), BarWidths.xpCells(), XP_PROGRESS_FRACTION);
+            XpBarOverlay.drawLevel(graphics, font, xp, LEVEL);
+        } else if (xpBar == XpBarMode.LEVEL_ONLY) {
+            drawLevel(graphics, font, frame.pieceBounds().get(HudPiece.XP_LEVEL));
         }
-        HudPosition.Bounds xp = frame.pieceBounds().get(HudPiece.XP);
-        XpBarRenderer.drawXp(graphics, xp.left(), xp.top(), BarWidths.xpCells(), XP_PROGRESS_FRACTION);
-        XpBarOverlay.drawLevel(graphics, font, xp, LEVEL);
         graphics.pose().popPose();
+    }
+
+    /** A sample level number on its own, in {@code box}. */
+    static void drawLevel(GuiGraphics graphics, Font font, HudPosition.Bounds box) {
+        XpBarOverlay.drawLevelAlone(graphics, font, box, LEVEL);
     }
 
     /** Sample hunger and thirst icons where the pieces are on Default, as laid out in {@code frame}, unmoved. */

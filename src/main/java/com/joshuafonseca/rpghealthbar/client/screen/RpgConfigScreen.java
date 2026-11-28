@@ -15,6 +15,7 @@ import com.joshuafonseca.rpghealthbar.config.HalfBarMode;
 import com.joshuafonseca.rpghealthbar.config.ThirstMode;
 import com.joshuafonseca.rpghealthbar.config.HealthUnit;
 import com.joshuafonseca.rpghealthbar.config.LevelText;
+import com.joshuafonseca.rpghealthbar.config.XpBarMode;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -313,11 +314,18 @@ public class RpgConfigScreen extends Screen {
         }
 
         list.addEntry(new Header(Component.translatable("rpghealthbar.config.section.xp"), null, NOTE_COLOR));
-        list.addEntry(option("xpBar", new Boolean[]{true, false}, ClientConfig.XP_BAR_SHOWN,
-                shown -> Component.translatable("rpghealthbar.config.xpBar." + (shown ? "shown" : "hidden")), "shown", "hidden"));
-        list.addEntry(option("levelText", LevelText.values(), ClientConfig.LEVEL_TEXT, LevelText::displayName, "center", "left", "right"));
-        if (BarWidths.advanced()) {
-            list.addEntry(widthOption("xpWidth", null));
+        // The level's place and the width only matter with the bar, so their rows come and go with it.
+        list.addEntry(option("xpBar", XpBarMode.values(), ClientConfig.xpBar(), XpBarMode::displayName, mode -> {
+            ClientConfig.set(ClientConfig.XP_BAR, mode);
+            // The choice replaces a Hidden saved before this option existed.
+            if (!ClientConfig.read(ClientConfig.XP_BAR_SHOWN)) {
+                ClientConfig.set(ClientConfig.XP_BAR_SHOWN, true);
+            }
+            rebuildWidgets();
+        }, "shown", "level_only", "hidden"));
+        if (ClientConfig.xpBar() == XpBarMode.SHOWN) {
+            list.addEntry(option("levelText", LevelText.values(), ClientConfig.LEVEL_TEXT, LevelText::displayName, "center", "left", "right"));
+            list.addEntry(widthOption("xpWidth", ClientConfig.XP_SIZE));
         }
 
         list.addEntry(new Header(Component.translatable("rpghealthbar.config.section.positioning"), null, NOTE_COLOR));
@@ -415,7 +423,8 @@ public class RpgConfigScreen extends Screen {
                 edited.add(source.bubblesValue());
             }
         }
-        edited.addAll(List.of(ClientConfig.LEVEL_TEXT, ClientConfig.EDIT_MODE, ClientConfig.XP_BAR_SHOWN));
+        edited.addAll(List.of(ClientConfig.LEVEL_TEXT, ClientConfig.EDIT_MODE, ClientConfig.XP_BAR,
+                ClientConfig.XP_BAR_SHOWN, ClientConfig.XP_SIZE));
         return edited;
     }
 
