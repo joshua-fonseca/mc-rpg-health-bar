@@ -132,7 +132,8 @@ public class RpgHealthBar {
         if (name.equals(VanillaGuiLayers.PLAYER_HEALTH)
                 || name.equals(ConfluenceCompat.HEALTH_LAYER)
                 || (name.equals(ConfluenceCompat.ARMOR_LAYER) && armorReplaced)
-                || (name.equals(ConfluenceCompat.FOOD_LAYER) && hungerReplaced)
+                // Confluence draws its hunger while riding too, where vanilla shows mount health instead.
+                || (name.equals(ConfluenceCompat.FOOD_LAYER) && (hungerReplaced || ridingWithMountHealth()))
                 // The mana mods' own displays, which our bars replace.
                 || ManaSource.hidesAnyOwnDisplay(name)
                 // Its heart previews would draw over our bars.
