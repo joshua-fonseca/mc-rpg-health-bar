@@ -18,6 +18,7 @@ import com.joshuafonseca.rpghealthbar.config.ThirstMode;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.client.ConfigScreenHandler;
 import net.minecraftforge.client.event.RegisterGuiOverlaysEvent;
 import net.minecraftforge.client.event.RenderGuiEvent;
@@ -81,6 +82,11 @@ final class ClientSetup {
         event.registerAbove(VanillaGuiOverlay.EXPERIENCE_BAR.id(), "experience_bar", new XpBarOverlay());
     }
 
+    private static boolean ridingWithMountHealth() {
+        Player player = Minecraft.getInstance().player;
+        return player != null && HudPositionMover.mountWithHealth(player) != null;
+    }
+
     /**
      * What the HUD Editor's view leaves out: mount health in its normal view, hunger and thirst in its
      * mount view (AppleSkin's food overlays draw with the food overlay, so they go with it).
@@ -135,7 +141,8 @@ final class ClientSetup {
                 || id.equals(VanillaGuiOverlay.EXPERIENCE_BAR.id())
                 || id.equals(ConfluenceCompat.HEALTH_LAYER)
                 || (id.equals(ConfluenceCompat.ARMOR_LAYER) && armorReplaced)
-                || (id.equals(ConfluenceCompat.FOOD_LAYER) && hungerReplaced)
+                // Confluence draws its hunger while riding too, where vanilla shows mount health instead.
+                || (id.equals(ConfluenceCompat.FOOD_LAYER) && (hungerReplaced || ridingWithMountHealth()))
                 // The mana mods' own displays, which our bars replace.
                 || ManaSource.hidesAnyOwnDisplay(id)
                 || (id.equals(VanillaGuiOverlay.ARMOR_LEVEL.id()) && armorReplaced)

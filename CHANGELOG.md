@@ -18,6 +18,7 @@
 - **XP Bar** has a new **Level Only** choice: just the level number, where it would be on the bar. **Level Text** still places it, and it moves with the XP bar in the HUD Editor.
 - New **XP Bar Width** option in **Simple** edit mode: **Full** or **Half** (nine cells). The horse's jump bar follows it.
 - **Separate v2** absorption now writes the amount in parentheses: `(+4)`.
+- Fixed: with Confluence, its hunger icons also showed while riding a mount with health.
 - Fixed: a horse's jump bar resized shorter lost its orange end, and a longer one had blue cells after it.
 - Fixed: with **XP Bar** on **Hidden**, the HUD Editor had an invisible XP bar that could be grabbed; the horse's jump bar is now moved and resized in **Mount View**, or while riding.
 - Fixed: resizing the bars or the window kept every size's bar image in memory until the game closed.

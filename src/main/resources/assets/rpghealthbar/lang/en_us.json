@@ -11,7 +11,7 @@
   "rpghealthbar.config.section.armorHunger": "Armor + Hunger",
   "rpghealthbar.config.section.health": "Health",
   "rpghealthbar.config.section.mana": "Mana",
-  "rpghealthbar.config.section.xp": "XP Bar",
+  "rpghealthbar.config.section.xp": "XP Bar/Mount Jump Bar",
   "rpghealthbar.config.section.positioning": "Positioning",
   "rpghealthbar.config.appleSkinDetected": "(AppleSkin detected)",
   "rpghealthbar.config.thirstDetected": "(Thirst Was Taken 2 detected)",
