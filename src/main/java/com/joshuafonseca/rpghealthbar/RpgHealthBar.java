@@ -15,6 +15,7 @@ import com.joshuafonseca.rpghealthbar.config.ClientConfig;
 import com.joshuafonseca.rpghealthbar.config.HalfBarMode;
 import com.joshuafonseca.rpghealthbar.config.HudPiece;
 import com.joshuafonseca.rpghealthbar.config.ThirstMode;
+import com.joshuafonseca.rpghealthbar.config.XpBarMode;
 import com.mojang.logging.LogUtils;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.client.Minecraft;
@@ -75,7 +76,7 @@ public class RpgHealthBar {
         return ClientConfig.ENABLED.get() && player != null && HudPositionMover.mountWithHealth(player) != null;
     }
 
-    /** What the HUD Editor's view leaves out: mount health in its normal view, hunger and thirst in its mount view. */
+    /** What the HUD Editor's view leaves out: mount health in its normal view, hunger, thirst and a level on its own in its mount view. */
     private static boolean hiddenByEditorView(ResourceLocation name) {
         Boolean mounted = HudPosition.previewMounted();
         if (mounted == null) {
@@ -85,7 +86,9 @@ public class RpgHealthBar {
             return name.equals(VanillaGuiLayers.VEHICLE_HEALTH);
         }
         return name.equals(VanillaGuiLayers.FOOD_LEVEL) || name.equals(ConfluenceCompat.FOOD_LAYER) || AppleSkinCompat.isHungerOverlay(name)
-                || name.equals(ThirstCompat.LAYER);
+                || name.equals(ThirstCompat.LAYER)
+                // A level shown on its own isn't moved in that view, as none shows on a horse.
+                || (name.equals(VanillaGuiLayers.EXPERIENCE_LEVEL) && ClientConfig.xpBar() == XpBarMode.LEVEL_ONLY);
     }
 
     private static void hideVanillaLayers(RenderGuiLayerEvent.Pre event) {
@@ -114,8 +117,9 @@ public class RpgHealthBar {
         // display that replaces them, like Confluence's. Otherwise ours replaces both.
         boolean armorReplaced = ClientConfig.ARMOR_MODE.get() != HalfBarMode.VANILLA;
         boolean hungerReplaced = ClientConfig.HUNGER_MODE.get() != HalfBarMode.VANILLA;
-        if ((name.equals(VanillaGuiLayers.EXPERIENCE_BAR) || name.equals(VanillaGuiLayers.EXPERIENCE_LEVEL)) && !ClientConfig.XP_BAR_SHOWN.get()) {
-            // XP Bar set to Hidden; the jump bar still shows while riding.
+        if ((name.equals(VanillaGuiLayers.EXPERIENCE_BAR) && ClientConfig.xpBar() != XpBarMode.SHOWN)
+                || (name.equals(VanillaGuiLayers.EXPERIENCE_LEVEL) && ClientConfig.xpBar() == XpBarMode.HIDDEN)) {
+            // XP Bar set to Level Only or Hidden; the jump bar still shows while riding.
             event.setCanceled(true);
             return;
         }

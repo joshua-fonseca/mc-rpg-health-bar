@@ -117,17 +117,21 @@ public final class HudPositionMover {
             pushed = true;
             return;
         }
+        if (name.equals(VanillaGuiLayers.EXPERIENCE_LEVEL) && frame.pieceBounds().containsKey(HudPiece.XP_LEVEL)) {
+            piece = HudPiece.XP_LEVEL;
+        }
         graphics.pose().pushPose();
         HudPosition.moveTo(graphics.pose(), frame.pieceOffset(piece));
         if (event.getName().equals(VanillaGuiLayers.EXPERIENCE_LEVEL)) {
             // Vanilla draws the level above the XP bar; center it on the bar instead, and put it at
-            // the end the Level Text setting asks for.
+            // the end the Level Text setting asks for. On its own, it's centered in its box.
             Minecraft minecraft = Minecraft.getInstance();
             int levelX = 0;
             if (minecraft.player != null) {
                 int width = minecraft.font.width(String.valueOf(minecraft.player.experienceLevel));
                 int vanillaX = (graphics.guiWidth() - width) / 2;
-                levelX = levelX(frame.pieceBounds().get(HudPiece.XP), width) - vanillaX;
+                HudPosition.Bounds box = frame.pieceBounds().get(piece);
+                levelX = (piece == HudPiece.XP_LEVEL ? centeredX(box, width) : levelX(box, width)) - vanillaX;
             }
             graphics.pose().translate(levelX, LEVEL_DROP, 0);
         }
@@ -175,8 +179,13 @@ public final class HudPositionMover {
         return switch (ClientConfig.LEVEL_TEXT.get()) {
             case LEFT -> xp.left() + BarRenderer.TEXT_PADDING;
             case RIGHT -> xp.right() - BarRenderer.TEXT_PADDING - width;
-            case CENTER -> xp.left() + (xp.right() - xp.left() - width) / 2;
+            case CENTER -> centeredX(xp, width);
         };
+    }
+
+    /** Where text {@code width} wide starts when centered in {@code box}. */
+    public static int centeredX(HudPosition.Bounds box, int width) {
+        return box.left() + (box.width() - width) / 2;
     }
 
     /**

@@ -2,7 +2,7 @@ package com.joshuafonseca.rpghealthbar.config;
 
 /**
  * The parts of the HUD that can be moved on their own in HUD Editor. The vanilla elements move with
- * the piece they belong to: the level and jump meter with XP.
+ * the piece they belong to: the level (unless shown on its own) and jump meter with XP.
  */
 public enum HudPiece {
     ARMOR("armor"),
@@ -24,7 +24,9 @@ public enum HudPiece {
     CONFLUENCE_MANA("confluenceMana"),
     /** Ars Nouveau's mana bar, below the others. */
     ARS_MANA("arsMana"),
-    XP("xp");
+    XP("xp"),
+    /** The XP level's number on its own, with XP Bar on Level Only; until moved, it goes where the XP bar does. */
+    XP_LEVEL("xpLevel");
 
     private final String key;
 

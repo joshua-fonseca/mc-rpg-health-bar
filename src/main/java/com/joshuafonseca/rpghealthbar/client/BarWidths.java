@@ -26,6 +26,7 @@ public final class BarWidths {
     public static final int MIN_WIDTH = 20;
     public static final int XP_CELL_WIDTH = 10;
     public static final int VANILLA_XP_CELLS = 18;
+    public static final int HALF_XP_CELLS = VANILLA_XP_CELLS / 2;
     /** One cell in each half. */
     public static final int MIN_XP_CELLS = 2;
     /** The shortest the upright bars can be made. */
@@ -42,7 +43,7 @@ public final class BarWidths {
     /**
      * Where each resizable bar's size is stored: its custom width (cells for the XP bar, the height
      * for an upright bar), how far left its left end was dragged (not for upright bars), and its
-     * Simple mode preset (none for the XP bar and upright bars).
+     * Simple mode preset (none for upright bars).
      */
     private record Settings(ModConfigSpec.IntValue width, @Nullable ModConfigSpec.IntValue left, @Nullable ModConfigSpec.EnumValue<BarSize> preset) {
     }
@@ -55,7 +56,7 @@ public final class BarWidths {
         for (ManaSource source : ManaSource.values()) {
             settings.put(source.piece(), new Settings(source.width(), source.left(), source.size()));
         }
-        settings.put(HudPiece.XP, new Settings(ClientConfig.XP_CELLS, ClientConfig.XP_LEFT, null));
+        settings.put(HudPiece.XP, new Settings(ClientConfig.XP_CELLS, ClientConfig.XP_LEFT, ClientConfig.XP_SIZE));
         settings.put(HudPiece.HUNGER_VERTICAL, new Settings(ClientConfig.HUNGER_VERTICAL_HEIGHT, null, null));
         settings.put(HudPiece.THIRST_VERTICAL, new Settings(ClientConfig.THIRST_VERTICAL_HEIGHT, null, null));
         return settings;
@@ -95,7 +96,10 @@ public final class BarWidths {
     /** How many cells long the XP bar is. */
     public static int xpCells() {
         int custom = advanced() ? custom(HudPiece.XP) : 0;
-        return custom > 0 ? custom : VANILLA_XP_CELLS;
+        if (custom > 0) {
+            return custom;
+        }
+        return preset(HudPiece.XP) == BarSize.HALF ? HALF_XP_CELLS : VANILLA_XP_CELLS;
     }
 
     /** Whether the XP bar isn't vanilla's length or spot, so the mod draws it. */

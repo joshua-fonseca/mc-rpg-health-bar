@@ -14,6 +14,7 @@ import com.joshuafonseca.rpghealthbar.compat.ThirstCompat;
 import com.joshuafonseca.rpghealthbar.config.ClientConfig;
 import com.joshuafonseca.rpghealthbar.config.HudPiece;
 import com.joshuafonseca.rpghealthbar.config.ThirstMode;
+import com.joshuafonseca.rpghealthbar.config.XpBarMode;
 import java.util.Map;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -126,21 +127,30 @@ final class ConfigPreview {
         HudPosition.Bounds air = frame.defaultAir();
         drawAir(graphics, air.right(), air.top());
 
-        if (!ClientConfig.XP_BAR_SHOWN.get()) {
-            graphics.pose().popPose();
-            return;
+        XpBarMode xpBar = ClientConfig.xpBar();
+        if (xpBar == XpBarMode.SHOWN) {
+            HudPosition.Bounds xp = frame.pieceBounds().get(HudPiece.XP);
+            XpBarRenderer.drawXp(graphics, xp.left(), xp.top(), BarWidths.xpCells(), XP_PROGRESS_FRACTION);
+            // Centered on the bar like the mod draws it.
+            drawLevel(graphics, font, HudPositionMover.levelX(xp, font.width(LEVEL)), xp.top() - 1);
+        } else if (xpBar == XpBarMode.LEVEL_ONLY) {
+            drawLevel(graphics, font, frame.pieceBounds().get(HudPiece.XP_LEVEL));
         }
-        HudPosition.Bounds xp = frame.pieceBounds().get(HudPiece.XP);
-        XpBarRenderer.drawXp(graphics, xp.left(), xp.top(), BarWidths.xpCells(), XP_PROGRESS_FRACTION);
-        // Outlined like vanilla's, and centered on the bar like the mod draws it.
-        int levelX = HudPositionMover.levelX(xp, font.width(LEVEL));
-        int levelY = xp.top() - 1;
-        graphics.drawString(font, LEVEL, levelX + 1, levelY, 0, false);
-        graphics.drawString(font, LEVEL, levelX - 1, levelY, 0, false);
-        graphics.drawString(font, LEVEL, levelX, levelY + 1, 0, false);
-        graphics.drawString(font, LEVEL, levelX, levelY - 1, 0, false);
-        graphics.drawString(font, LEVEL, levelX, levelY, LEVEL_COLOR, false);
         graphics.pose().popPose();
+    }
+
+    /** A sample level number on its own, in {@code box}. */
+    static void drawLevel(GuiGraphics graphics, Font font, HudPosition.Bounds box) {
+        drawLevel(graphics, font, HudPositionMover.centeredX(box, font.width(LEVEL)), box.top() + 1);
+    }
+
+    /** A sample level number, outlined like vanilla's. */
+    private static void drawLevel(GuiGraphics graphics, Font font, int x, int y) {
+        graphics.drawString(font, LEVEL, x + 1, y, 0, false);
+        graphics.drawString(font, LEVEL, x - 1, y, 0, false);
+        graphics.drawString(font, LEVEL, x, y + 1, 0, false);
+        graphics.drawString(font, LEVEL, x, y - 1, 0, false);
+        graphics.drawString(font, LEVEL, x, y, LEVEL_COLOR, false);
     }
 
     /** Sample hunger and thirst icons where the pieces are on Default, as laid out in {@code frame}, unmoved. */

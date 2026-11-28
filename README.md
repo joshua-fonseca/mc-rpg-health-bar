@@ -23,8 +23,8 @@ A highly customizable, client-side GUI mod. Replaces the vanilla hearts with an 
 <details>
 <summary><b>Customization</b> (click to expand)</summary>
 
-- **Half-size bars:** health and mana can each be full or half width.
-- **Move the HUD** by dragging it: the whole set, including the XP bar and level, or each piece (armor, hunger, thirst, health, each mana bar, XP bar, air bubbles, mount health) on its own. It stays in place when you change the window size or GUI scale.
+- **Half-size bars:** health, mana and the XP bar can each be full or half width.
+- **Move the HUD** by dragging it: the whole set, including the XP bar and level, or each piece (armor, hunger, thirst, health, each mana bar, XP bar or just its level number, air bubbles, mount health) on its own. It stays in place when you change the window size or GUI scale.
 - **Item name height:** set how high the held item's name sits, with a preview that moves as you change it. It starts at vanilla's height, which leaves room for mods that add hotbars.
 - **Air bubbles and mount health** can be dragged anywhere (**Mount View** in the HUD Editor shows mount health). By default the bubbles sit above hunger and mount health's rows stack upward, like vanilla; with **Below**, the bubbles start under hunger and the rows stack downward, for layouts with health or mana above hunger.
 - **Text position:** the numbers on the health and mana bars can sit on the left, right or center, or be turned off.
@@ -84,9 +84,9 @@ Defaults are in bold:
 |  | Ars Mana Text (only with Ars Nouveau) | **Left**, Right, Center, Off |
 |  | Ars Mana Bar Width (only with Ars Nouveau) | **Full**, Half |
 |  | Ars Mana Bubbles (only with Ars Nouveau) | **On** (bubbles rise through the bar, like on Ars's own), Off |
-| **XP Bar** | XP Bar | **Shown**, Hidden (no XP bar or level; the jump bar still shows while riding) |
-|  | Level Text | **Center**, Left, Right |
-|  | XP Bar Width (Advanced only) | Edit in HUD Editor: the XP bar is resized a cell at a time, its fill stretched over its length (**18 cells**, like vanilla) |
+| **XP Bar** | XP Bar | **Shown**, Level Only (just the level number, which can be moved on its own), Hidden (no XP bar or level). The jump bar still shows while riding |
+|  | Level Text (XP Bar on Shown) | **Center**, Left, Right |
+|  | XP Bar Width (XP Bar on Shown) | **Full** (18 cells, like vanilla), Half (9 cells). In Advanced mode: Edit in HUD Editor, and the XP bar is resized a cell at a time, its fill stretched over its length |
 | **Positioning** | Item Name... | Height of the held item's name: **Vanilla** (0), or pixels up (+) or down (-), down to right above the hotbar |
 |  | HUD Editor... | Drag the whole HUD (**Moving: All**) or a single piece (**Moving: One**); the arrow keys nudge it. In Advanced edit mode, drag a bar's ends (a vertical bar's top) to resize it. **Above the hotbar**, Reset puts it back |
 

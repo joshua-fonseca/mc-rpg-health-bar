@@ -7,6 +7,7 @@ import com.joshuafonseca.rpghealthbar.config.ClientConfig;
 import com.joshuafonseca.rpghealthbar.config.HalfBarMode;
 import com.joshuafonseca.rpghealthbar.config.HudPiece;
 import com.joshuafonseca.rpghealthbar.config.ThirstMode;
+import com.joshuafonseca.rpghealthbar.config.XpBarMode;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
@@ -237,6 +238,9 @@ public class HudLayer implements LayeredDraw.Layer {
                 bounds.put(piece, manaBounds(layout, row, piece));
             }
             bounds.put(HudPiece.XP, HudPosition.xpBar(screenHeight, layout));
+            if (ClientConfig.xpBar() == XpBarMode.LEVEL_ONLY) {
+                bounds.put(HudPiece.XP_LEVEL, HudPosition.xpLevel(screenHeight, layout));
+            }
             return bounds;
         }
 

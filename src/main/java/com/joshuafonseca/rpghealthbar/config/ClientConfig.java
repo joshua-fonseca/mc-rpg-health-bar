@@ -84,10 +84,21 @@ public final class ClientConfig {
             .translation("rpghealthbar.config.levelText")
             .defineEnum("levelText", LevelText.CENTER);
 
-    public static final ModConfigSpec.BooleanValue XP_BAR_SHOWN = BUILDER
-            .comment("Whether the XP bar and its level number are shown. The jump bar still shows while riding.")
+    public static final ModConfigSpec.EnumValue<XpBarMode> XP_BAR = BUILDER
+            .comment("What of the XP bar is shown: SHOWN (the bar and its level number), LEVEL_ONLY (just the number) or HIDDEN. The jump bar still shows while riding.")
             .translation("rpghealthbar.config.xpBar")
+            .defineEnum("xpBar", XpBarMode.SHOWN);
+
+    // Before xpBar: whether the XP bar was shown. False still hides it, until XP Bar is set in the
+    // config screen.
+    public static final ModConfigSpec.BooleanValue XP_BAR_SHOWN = BUILDER
+            .comment("Replaced by xpBar; false hides the XP bar and level, as before.")
             .define("xpBarShown", true);
+
+    public static final ModConfigSpec.EnumValue<BarSize> XP_SIZE = BUILDER
+            .comment("Width of the XP bar: FULL (as wide as the hotbar, 18 cells) or HALF (9 cells).")
+            .translation("rpghealthbar.config.xpSize")
+            .defineEnum("xpSize", BarSize.FULL);
 
     public static final ModConfigSpec.EnumValue<BarText> CONFLUENCE_MANA_TEXT = BUILDER
             .comment("Where the numbers go on Confluence's mana bar: LEFT, RIGHT, CENTER or OFF.")
@@ -115,7 +126,7 @@ public final class ClientConfig {
             .define("arsManaBubbles", true);
 
     public static final ModConfigSpec.EnumValue<EditMode> EDIT_MODE = BUILDER
-            .comment("SIMPLE: the bars' widths are the presets above (healthSize, manaSize, confluenceManaSize, arsManaSize). ADVANCED: the widths and heights below, set by dragging the bars' ends in Config → HUD Editor.")
+            .comment("SIMPLE: the bars' widths are the presets above (healthSize, manaSize, confluenceManaSize, arsManaSize, xpSize). ADVANCED: the widths and heights below, set by dragging the bars' ends in Config → HUD Editor.")
             .translation("rpghealthbar.config.editMode")
             .defineEnum("editMode", EditMode.SIMPLE);
 
@@ -141,7 +152,7 @@ public final class ClientConfig {
             .defineInRange("arsManaWidth", 0, 0, 10000);
 
     public static final ModConfigSpec.IntValue XP_CELLS = BUILDER
-            .comment("Advanced only: how many cells long the XP bar is (vanilla's has 18); 0 keeps vanilla's.")
+            .comment("Advanced only: how many cells long the XP bar is (vanilla's has 18); 0 uses xpSize.")
             .translation("rpghealthbar.config.xpCells")
             .defineInRange("xpCells", 0, 0, 1000);
 
@@ -263,6 +274,11 @@ public final class ClientConfig {
     /** Where Iron's mana bar's numbers go, honoring an Off saved before manaText existed. */
     public static BarText manaText() {
         return SHOW_MANA_TEXT.get() ? MANA_TEXT.get() : BarText.OFF;
+    }
+
+    /** What of the XP bar is shown, honoring a Hidden saved before xpBar existed. */
+    public static XpBarMode xpBar() {
+        return XP_BAR_SHOWN.get() ? XP_BAR.get() : XpBarMode.HIDDEN;
     }
 
     public static HudAnchor pieceAnchor(HudPiece piece) {
