@@ -244,6 +244,11 @@ public final class ClientConfig {
             .translation("rpghealthbar.config.rowsPlaced")
             .define("rowsPlaced", false);
 
+    public static final ModConfigSpec.BooleanValue XP_LEVEL_PLACED = BUILDER
+            .comment("Whether the level number shown on its own was moved in the HUD Editor. Set automatically; until then it goes where it sits on the XP bar.")
+            .translation("rpghealthbar.config.xpLevelPlaced")
+            .define("xpLevelPlaced", false);
+
     static {
         for (HudPiece piece : HudPiece.values()) {
             PIECE_ANCHORS.put(piece, BUILDER
@@ -298,6 +303,16 @@ public final class ClientConfig {
         PIECE_ANCHORS.get(piece).set(anchor);
         PIECE_OFFSETS_X.get(piece).set(x);
         PIECE_OFFSETS_Y.get(piece).set(y);
+    }
+
+    /** Whether the level shown on its own has a place of its own, rather than the XP bar's. */
+    public static boolean levelPlaced() {
+        return XP_LEVEL_PLACED.get();
+    }
+
+    /** Written to the file by {@link #savePositions}. */
+    public static void setLevelPlaced(boolean placed) {
+        XP_LEVEL_PLACED.set(placed);
     }
 
     /** Marks the positions as layout 2 and writes the config file. */

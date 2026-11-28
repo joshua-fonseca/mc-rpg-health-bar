@@ -78,6 +78,8 @@ public class HudEditScreen extends Screen {
     /** Whether the HUD is shown as while riding; null until first opened, then as the player is. */
     @Nullable
     private Boolean mountView;
+    /** Whether the level on its own goes where the XP bar does, not having been moved itself. */
+    private boolean levelFollows = !ClientConfig.levelPlaced();
     /** Whether Reset was pressed, which also resets the pieces that aren't shown. */
     private boolean wasReset;
     /** In {@link Mode#ONE}, the piece last grabbed; the arrow keys move it. */
@@ -107,6 +109,13 @@ public class HudEditScreen extends Screen {
     public HudEditScreen(Screen parent) {
         super(Component.translatable("rpghealthbar.edit.title"));
         this.parent = parent;
+    }
+
+    /** Opened in Mount View. */
+    static HudEditScreen mountView(Screen parent) {
+        HudEditScreen screen = new HudEditScreen(parent);
+        screen.mountView = true;
+        return screen;
     }
 
     @Override
@@ -166,8 +175,9 @@ public class HudEditScreen extends Screen {
 
     private boolean showsInView(HudPiece piece) {
         if (!mountView) {
-            // With the level on its own, there's no XP bar to move until riding.
-            return piece != HudPiece.MOUNT && !(piece == HudPiece.XP && ClientConfig.xpBar() == XpBarMode.LEVEL_ONLY);
+            // Without the XP bar (Level Only or Hidden), there's only its jump bar to move, while it's drawn.
+            return piece != HudPiece.MOUNT && !(piece == HudPiece.XP && ClientConfig.xpBar() != XpBarMode.SHOWN
+                    && !XpBarRenderer.jumpBarShown(this.minecraft));
         }
         // Riding, the jump bar is in the XP bar's place and there's no level.
         return piece != HudPiece.XP_LEVEL && piece != HudPiece.HUNGER && piece != HudPiece.HUNGER_VERTICAL && piece != HudPiece.THIRST && piece != HudPiece.THIRST_VERTICAL;
@@ -231,6 +241,12 @@ public class HudEditScreen extends Screen {
         for (Map.Entry<HudPiece, HudPosition.Bounds> entry : frame().pieceBounds().entrySet()) {
             clamped = clamped.with(entry.getKey(), HudPosition.clamp(requested.get(entry.getKey()), this.width, this.height, entry.getValue()));
         }
+        HudLayer.Frame frame = frame();
+        HudPosition.Bounds level = frame.pieceBounds().get(HudPiece.XP_LEVEL);
+        if (levelFollows && level != null) {
+            clamped = clamped.with(HudPiece.XP_LEVEL,
+                    HudPosition.clamp(clamped.get(HudPiece.XP).plus(frame.levelDefault()), this.width, this.height, level));
+        }
         HudPosition.setPreview(clamped);
         pieces = clamped;
         placeControls();
@@ -246,19 +262,28 @@ public class HudEditScreen extends Screen {
         setPieces(from.shiftedBy(HudPosition.clamp(delta, this.width, this.height, bounds)));
     }
 
+    /** Moves the grabbed piece to {@code offset}. A level moved itself stops following the XP bar. */
+    private void moveSelected(HudPosition.Offset offset) {
+        if (selected == HudPiece.XP_LEVEL && !offset.equals(pieces.get(selected))) {
+            levelFollows = false;
+        }
+        setPieces(pieces.with(selected, offset));
+    }
+
     /** Puts every piece back above the hotbar, and in Advanced mode each bar back to its preset width. */
     private void reset() {
         if (BarWidths.advanced()) {
             sizes.replaceAll((piece, size) -> BarWidths.Size.PRESET);
         }
         wasReset = true;
+        levelFollows = true;
         setPieces(frame().defaultPieces());
     }
 
     private void save() {
         BarWidths.save(sizes);
         HudLayer.Frame frame = frame();
-        HudPosition.save(pieces, this.width, this.height, frame.pieceBounds(), frame.airDefault(), wasReset);
+        HudPosition.save(pieces, this.width, this.height, frame.pieceBounds(), frame.airDefault(), wasReset, !levelFollows);
         close();
     }
 
@@ -331,15 +356,13 @@ public class HudEditScreen extends Screen {
     /** Sample icons for what the view shows but the game isn't drawing. */
     private void drawSamples(GuiGraphics graphics, HudLayer.Frame frame) {
         boolean mountShown = HudPositionMover.mountShown(this.minecraft);
-        if (ClientConfig.xpBar() == XpBarMode.LEVEL_ONLY) {
-            if (mountView) {
-                if (!XpBarRenderer.jumpBarShown(this.minecraft)) {
-                    HudPosition.Bounds xp = frame.placed(HudPiece.XP);
-                    XpBarRenderer.drawEmptyJump(graphics, xp.left(), xp.top(), BarWidths.xpCells());
-                }
-            } else if (!XpBarRenderer.levelShown(this.minecraft) || this.minecraft.player.experienceLevel == 0) {
-                ConfigPreview.drawLevel(graphics, this.font, frame.placed(HudPiece.XP_LEVEL));
+        if (mountView) {
+            if (ClientConfig.xpBar() != XpBarMode.SHOWN && !XpBarRenderer.jumpBarShown(this.minecraft)) {
+                HudPosition.Bounds xp = frame.placed(HudPiece.XP);
+                XpBarRenderer.drawEmptyJump(graphics, xp.left(), xp.top(), BarWidths.xpCells());
             }
+        } else if (ClientConfig.xpBar() == XpBarMode.LEVEL_ONLY && !XpBarRenderer.levelShown(this.minecraft)) {
+            ConfigPreview.drawLevel(graphics, this.font, frame.placed(HudPiece.XP_LEVEL));
         }
         if (mountView) {
             if (!mountShown) {
@@ -511,6 +534,11 @@ public class HudEditScreen extends Screen {
     private HudPiece pieceAt(double mouseX, double mouseY) {
         HudLayer.Frame frame = frame();
         HudPiece near = null;
+        // A level on its own wins over the bar it may be lying on.
+        HudPosition.Bounds level = shownBounds(frame).get(HudPiece.XP_LEVEL);
+        if (level != null && level.contains(mouseX, mouseY)) {
+            return HudPiece.XP_LEVEL;
+        }
         for (Map.Entry<HudPiece, HudPosition.Bounds> entry : shownBounds(frame).entrySet()) {
             HudPosition.Bounds bounds = entry.getValue();
             if (bounds.contains(mouseX, mouseY)) {
@@ -534,7 +562,7 @@ public class HudEditScreen extends Screen {
             if (mode == Mode.ALL) {
                 moveAll(grabbedPieces, moved);
             } else if (selected != null) {
-                setPieces(pieces.with(selected, moved));
+                moveSelected(moved);
             }
             return true;
         }
@@ -567,7 +595,7 @@ public class HudEditScreen extends Screen {
             if (mode == Mode.ALL) {
                 moveAll(pieces, nudge);
             } else if (selected != null) {
-                setPieces(pieces.with(selected, pieces.get(selected).plus(nudge)));
+                moveSelected(pieces.get(selected).plus(nudge));
             }
             return true;
         }

@@ -137,7 +137,10 @@ public final class HudPosition {
         return new Bounds(left, bottom - XP_BAR_HEIGHT, left + BarWidths.width(HudPiece.XP), bottom);
     }
 
-    /** The XP level's number on its own at its default position, in the middle of vanilla's XP bar. */
+    /**
+     * The XP level's number on its own, in the middle of vanilla's XP bar; until it's moved, it's
+     * shifted from there to where it sits on the bar as set.
+     */
     public static Bounds xpLevel(int screenHeight, HudLayout layout) {
         int bottom = screenHeight - LEVEL_BOTTOM_MARGIN;
         int left = layout.x() + (HudLayout.WIDTH - LEVEL_WIDTH) / 2;
@@ -159,14 +162,16 @@ public final class HudPosition {
      * Each piece's shift: the editor's preview, or the saved positions.
      *
      * @param shown      each shown piece at its default spot
-     * @param airDefault where the air bubbles go from their box until they're moved
+     * @param airDefault   where the air bubbles go from their box until they're moved
+     * @param levelDefault where the level on its own goes from its box, on top of the XP bar's shift,
+     *                     until it's moved
      */
-    public static Pieces pieces(int screenWidth, int screenHeight, Map<HudPiece, Bounds> shown, Offset airDefault) {
-        return preview != null ? preview : saved(screenWidth, screenHeight, shown, airDefault);
+    public static Pieces pieces(int screenWidth, int screenHeight, Map<HudPiece, Bounds> shown, Offset airDefault, Offset levelDefault) {
+        return preview != null ? preview : saved(screenWidth, screenHeight, shown, airDefault, levelDefault);
     }
 
     /** The saved positions for this screen size, with each shown piece kept on screen. */
-    private static Pieces saved(int screenWidth, int screenHeight, Map<HudPiece, Bounds> shown, Offset airDefault) {
+    private static Pieces saved(int screenWidth, int screenHeight, Map<HudPiece, Bounds> shown, Offset airDefault, Offset levelDefault) {
         Map<HudPiece, Offset> shifts = new EnumMap<>(HudPiece.class);
         if (ClientConfig.LAYOUT_VERSION.get() < 2) {
             Offset set = legacySetOffset(screenWidth, screenHeight, shown);
@@ -187,11 +192,14 @@ public final class HudPosition {
         } else if (isUnmoved(HudPiece.AIR)) {
             shifts.put(HudPiece.AIR, airDefault);
         }
-        if (isUnmoved(HudPiece.XP_LEVEL)) {
-            shifts.put(HudPiece.XP_LEVEL, shifts.get(HudPiece.XP));
-        }
         for (Map.Entry<HudPiece, Bounds> entry : shown.entrySet()) {
             shifts.put(entry.getKey(), clamp(shifts.get(entry.getKey()), screenWidth, screenHeight, entry.getValue()));
+        }
+        if (!ClientConfig.levelPlaced()) {
+            // From where the XP bar ended up, kept on screen.
+            Offset level = shifts.get(HudPiece.XP).plus(levelDefault);
+            Bounds box = shown.get(HudPiece.XP_LEVEL);
+            shifts.put(HudPiece.XP_LEVEL, box == null ? level : clamp(level, screenWidth, screenHeight, box));
         }
         return new Pieces(shifts);
     }
@@ -203,14 +211,12 @@ public final class HudPosition {
      * @param shown      each shown piece at its default spot
      * @param airDefault where the air bubbles go from their box until they're moved
      * @param reset      whether every piece was put back to its default spot since they were last saved
+     * @param levelPlaced whether the level on its own was moved, rather than following the XP bar
      */
-    public static void save(Pieces pieces, int screenWidth, int screenHeight, Map<HudPiece, Bounds> shown, Offset airDefault, boolean reset) {
+    public static void save(Pieces pieces, int screenWidth, int screenHeight, Map<HudPiece, Bounds> shown, Offset airDefault, boolean reset,
+                            boolean levelPlaced) {
         Map<HudPiece, HudAnchor> anchors = anchors(pieces, screenWidth, screenHeight, shown);
         for (HudPiece piece : HudPiece.values()) {
-            // A level never placed on its own keeps going where the XP bar does.
-            if (piece == HudPiece.XP_LEVEL && !shown.containsKey(piece) && isUnmoved(piece)) {
-                continue;
-            }
             // The default spot is measured from the bottom center, so a hidden piece that was reset
             // stays there at any screen size.
             HudAnchor anchor = anchors.getOrDefault(piece, reset ? HudAnchor.BOTTOM_CENTER : ClientConfig.pieceAnchor(piece));
@@ -220,13 +226,14 @@ public final class HudPosition {
                 anchor = HudAnchor.BOTTOM_CENTER;
                 stored = Offset.ZERO;
             }
-            if (piece == HudPiece.XP_LEVEL && pieces.get(piece).equals(pieces.get(HudPiece.XP))) {
-                // Saved as unmoved, so it follows the XP bar.
+            if (piece == HudPiece.XP_LEVEL && !levelPlaced) {
+                // Nothing of its own to keep: it follows the XP bar.
                 anchor = HudAnchor.BOTTOM_CENTER;
                 stored = Offset.ZERO;
             }
             ClientConfig.setPiecePosition(piece, anchor, stored.x(), stored.y());
         }
+        ClientConfig.setLevelPlaced(levelPlaced);
         ClientConfig.savePositions();
     }
 

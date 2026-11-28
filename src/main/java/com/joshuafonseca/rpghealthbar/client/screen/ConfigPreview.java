@@ -134,7 +134,7 @@ final class ConfigPreview {
             // Centered on the bar like the mod draws it.
             drawLevel(graphics, font, HudPositionMover.levelX(xp, font.width(LEVEL)), xp.top() - 1);
         } else if (xpBar == XpBarMode.LEVEL_ONLY) {
-            drawLevel(graphics, font, frame.pieceBounds().get(HudPiece.XP_LEVEL));
+            drawLevel(graphics, font, frame.defaultLevel());
         }
         graphics.pose().popPose();
     }

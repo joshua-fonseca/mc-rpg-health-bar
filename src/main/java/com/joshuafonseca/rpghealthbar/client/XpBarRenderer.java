@@ -48,10 +48,14 @@ public final class XpBarRenderer {
                 && minecraft.player.jumpableVehicle() == null && ClientConfig.xpBar() == XpBarMode.SHOWN;
     }
 
-    /** Whether the level's number shows on its own: as the XP bar would, with XP Bar on Level Only. */
+    /**
+     * Whether the level's number shows on its own: as the XP bar would, with XP Bar on Level Only,
+     * and above level 0.
+     */
     public static boolean levelShown(Minecraft minecraft) {
         return minecraft.player != null && minecraft.gameMode != null && minecraft.gameMode.hasExperience()
-                && minecraft.player.jumpableVehicle() == null && ClientConfig.xpBar() == XpBarMode.LEVEL_ONLY;
+                && minecraft.player.jumpableVehicle() == null && ClientConfig.xpBar() == XpBarMode.LEVEL_ONLY
+                && minecraft.player.experienceLevel > 0;
     }
 
     /** Whether the jump bar shows: riding something that jumps, like a horse. */

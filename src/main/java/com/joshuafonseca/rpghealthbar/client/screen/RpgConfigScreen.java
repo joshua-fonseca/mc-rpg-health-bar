@@ -349,10 +349,15 @@ public class RpgConfigScreen extends Screen {
 
     private WidgetRow editorRow(String key, String howKey) {
         return new WidgetRow(label(key),
-                Button.builder(Component.translatable("rpghealthbar.config.editInHudEditor"), button -> this.minecraft.setScreen(new HudEditScreen(this)))
+                Button.builder(Component.translatable("rpghealthbar.config.editInHudEditor"), button -> this.minecraft.setScreen(editorFor(key)))
                         .size(VALUE_WIDTH, BUTTON_HEIGHT)
                         .build())
                 .described(advancedTooltip(key, howKey));
+    }
+
+    /** The HUD Editor for a size's button: in Mount View for the XP bar's width without an XP bar, to show the jump bar. */
+    private HudEditScreen editorFor(String key) {
+        return key.equals("xpWidth") && ClientConfig.xpBar() != XpBarMode.SHOWN ? HudEditScreen.mountView(this) : new HudEditScreen(this);
     }
 
     /**
