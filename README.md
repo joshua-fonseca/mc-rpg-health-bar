@@ -94,7 +94,7 @@ Defaults are in bold:
 
 #### The config screen
 
-![The config screen: options in sections on the right, and the preview of the HUD on the left](docs/images/config.png)
+![The config screen: options in sections on the right, and on the left the preview of the HUD with the hovered option's description under it](docs/images/config.png)
 
 #### Advanced mode: the width options open the HUD Editor
 
