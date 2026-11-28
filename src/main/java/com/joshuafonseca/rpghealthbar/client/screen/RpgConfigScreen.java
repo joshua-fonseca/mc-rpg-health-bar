@@ -314,8 +314,6 @@ public class RpgConfigScreen extends Screen {
         }
 
         list.addEntry(new Header(Component.translatable("rpghealthbar.config.section.xp"), null, NOTE_COLOR));
-        // Without a level there's no place for it to set, so it's greyed out. The width stays, as the
-        // jump bar has it too.
         list.addEntry(option("xpBar", XpBarMode.values(), ClientConfig.xpBar(), XpBarMode::displayName, mode -> {
             ClientConfig.set(ClientConfig.XP_BAR, mode);
             // The choice replaces a Hidden saved before this option existed.
@@ -324,8 +322,10 @@ public class RpgConfigScreen extends Screen {
             }
             rebuildWidgets();
         }, "shown", "level_only", "hidden"));
+        // Without a level there's no place for it to set, so it's greyed out.
         list.addEntry(option("levelText", LevelText.values(), ClientConfig.LEVEL_TEXT, LevelText::displayName, "center", "left", "right")
                 .active(ClientConfig.xpBar() != XpBarMode.HIDDEN));
+        // Listed whatever XP Bar is on, as the jump bar has this width too.
         list.addEntry(widthOption("xpWidth", ClientConfig.XP_SIZE));
 
         list.addEntry(new Header(Component.translatable("rpghealthbar.config.section.positioning"), null, NOTE_COLOR));
