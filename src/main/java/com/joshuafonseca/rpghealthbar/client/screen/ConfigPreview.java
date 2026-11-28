@@ -123,11 +123,7 @@ final class ConfigPreview {
 
         HudPosition.Bounds armor = frame.pieceBounds().get(HudPiece.ARMOR);
         if (frame.vanillaArmor() && armor != null) {
-            for (int i = 0; i < 10; i++) {
-                int points = i * 2 + 1;
-                int u = points < ARMOR ? ARMOR_FULL_U : points == ARMOR ? ARMOR_HALF_U : ARMOR_EMPTY_U;
-                graphics.blit(ICONS, armor.left() + i * ICON_SPACING, armor.top(), u, ARMOR_V, ICON, ICON);
-            }
+            drawArmorIcons(graphics, armor, ARMOR);
         }
         drawFood(graphics, frame);
         HudPosition.Bounds air = frame.defaultAir();
@@ -171,6 +167,15 @@ final class ConfigPreview {
             if (points <= FOOD) {
                 graphics.blit(ICONS, x, box.top(), points < FOOD ? FOOD_FULL_U : FOOD_HALF_U, FOOD_V, ICON, ICON);
             }
+        }
+    }
+
+    /** Sample armor icons filling {@code box}, showing {@code armorPoints}. */
+    static void drawArmorIcons(GuiGraphics graphics, HudPosition.Bounds box, float armorPoints) {
+        for (int i = 0; i < 10; i++) {
+            int points = i * 2 + 1;
+            int u = points < armorPoints ? ARMOR_FULL_U : points == armorPoints ? ARMOR_HALF_U : ARMOR_EMPTY_U;
+            graphics.blit(ICONS, box.left() + i * ICON_SPACING, box.top(), u, ARMOR_V, ICON, ICON);
         }
     }
 

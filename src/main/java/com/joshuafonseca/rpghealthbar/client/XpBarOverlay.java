@@ -35,10 +35,9 @@ public class XpBarOverlay implements IGuiOverlay {
             return;
         }
         boolean bar = XpBarRenderer.xpBarShown(minecraft);
-        // Without the bar, the level would cover the jump bar in the HUD Editor's mount view, and
-        // none shows on a horse.
-        boolean level = bar || XpBarRenderer.levelShown(minecraft) && !Boolean.TRUE.equals(HudPosition.previewMounted());
-        if (!level) {
+        boolean level = bar || XpBarRenderer.levelShown(minecraft);
+        // The HUD Editor's mount view has the jump bar here instead, as on a horse.
+        if (!level || Boolean.TRUE.equals(HudPosition.previewMounted())) {
             return;
         }
         gui.setupOverlayRenderState(true, false);

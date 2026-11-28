@@ -11,7 +11,7 @@
 - New **Vertical** choice for **Hunger**: an upright bar to the right of the hotbar, with AppleSkin's saturation outline and food preview. With thirst vertical too, hunger is nearest the hotbar.
 - In **Advanced** edit mode, vertical hunger and thirst bars can be made taller or shorter by dragging their top in the HUD Editor.
 - **Air bubbles** and **mount health** now have places of their own and can each be dragged in the HUD Editor; they no longer move with hunger. A HUD you've already moved keeps them where they were.
-  - The new **Mount View** button shows the HUD as it is while riding, so mount health can be dragged.
+  - The new **Mount View** button shows the HUD as it is while riding, with the horse's jump bar in the XP bar's place, so mount health can be dragged.
   - **Air Bubbles/Mount HP** sets where the bubbles start (above or under hunger) until you move them, and whether mount health's extra rows are added above or below. With **Below**, the first ten hearts are now the top row.
 - The config screen's preview shows a hotbar under the HUD, and is centered in the space beside the options, which stay put as the preview changes width.
 - With the config screen's preview on, an option's description shows under the preview, by hovering anywhere on its row, instead of in a tooltip. With the preview off, tooltips show as before.
@@ -19,6 +19,7 @@
 - New **XP Bar Width** option in **Simple** edit mode: **Full** or **Half** (nine cells). The horse's jump bar follows it.
 - The config screen's XP section is now titled **XP Bar/Mount Jump Bar**.
 - **Separate v2** absorption now writes the amount in parentheses: `(+4)`.
+- Without armor, the HUD Editor shows empty armor icons where they go, so you can see and drag them.
 - Fixed: with Confluence, its hunger icons also showed while riding a mount with health.
 - Fixed: a horse's jump bar resized shorter lost its orange end, and a longer one had blue cells after it.
 - Fixed: with **XP Bar** on **Hidden**, the HUD Editor had an invisible XP bar that could be grabbed; the horse's jump bar is now moved and resized in **Mount View**, or while riding.

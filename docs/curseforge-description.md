@@ -83,7 +83,7 @@ Selecting a spell via spell wheel, the mana bar blinks according to how much man
     * For the XP bar you can put the level number in the center or at either end, show **just the level number**, or hide the XP bar entirely.
     * The XP bar can be full or half width in Simple edit mode, or any number of cells in Advanced; the horse's jump bar follows it.
 *   **Item name height:** set how high the held item's name sits, with a preview that moves as you change it. It starts at vanilla's height, which leaves room for mods that add hotbars.
-*   **Air bubbles and mount health** can be dragged anywhere (**Mount View** in the HUD Editor shows mount health). By default the bubbles sit above hunger and mount health's rows stack upward, like vanilla; with **Below**, the bubbles start under hunger and the rows stack downward, for layouts with health or mana above hunger.
+*   **Air bubbles and mount health** can be dragged anywhere (**Mount View** in the HUD Editor shows mount health, and the horse's jump bar in place of the XP bar). By default the bubbles sit above hunger and mount health's rows stack upward, like vanilla; with **Below**, the bubbles start under hunger and the rows stack downward, for layouts with health or mana above hunger.
 *   **On/off switch:** turn the whole mod off for a fully vanilla HUD, and back on, without losing your settings.
 *   **Live preview:** the config screen can show the HUD beside the options, drawn as your settings would, so you see each change without leaving the screen. Hover over an option and what it does is written under the preview.
 *   **Everything in game:** changes show on the HUD as you make them, no restart. Save Settings keeps them, and leaving without saving asks first.
