@@ -14,7 +14,9 @@ import net.minecraft.world.entity.PlayerRideableJumping;
  * vanilla's own sprites so texture packs still apply. Vanilla's bar is a 1px rounded end, nine cells
  * (9px, with a 1px divider between each), a 2px center piece, nine more cells and the other end. A
  * longer or shorter bar has the same ends and center with more or fewer cells on each side, so 18
- * cells is exactly vanilla's. The fill is stretched over the whole length.
+ * cells is exactly vanilla's. The last two of vanilla's cells differ on the jump bar (its orange
+ * tail, for the highest jump), so they stay at the right end, about a cell for every nine. The fill
+ * is stretched over the whole length.
  */
 public final class XpBarRenderer {
     private static final ResourceLocation XP_BACKGROUND = ResourceLocation.withDefaultNamespace("hud/experience_bar_background");
@@ -35,6 +37,9 @@ public final class XpBarRenderer {
     /** Each side has nine cells and eight dividers; more are repeated from them. */
     private static final int SIDE_CELLS = 9;
     private static final int SIDE_DIVIDERS = 8;
+    /** The right side's cells before the tail's two, and the tail's share of the bar: one cell in this many. */
+    private static final int BODY_CELLS = 7;
+    private static final int CELLS_PER_TAIL_CELL = 9;
 
     private XpBarRenderer() {
     }
@@ -109,8 +114,9 @@ public final class XpBarRenderer {
 
     /**
      * The left end, the left side's cells, the center, the right side's cells and the right end, cut
-     * off {@code visible} pixels in. Each side's cells count out from the center, so with nine on
-     * each side every column is vanilla's own.
+     * off {@code visible} pixels in. The left side's cells count out from the center; the right
+     * side's count from the center up to the tail, which takes vanilla's last cell at the end and the
+     * one before it for the rest. With nine on each side every column is vanilla's own.
      */
     private static void drawCells(GuiGraphics graphics, ResourceLocation sprite, int x, int y, int cells, int visible) {
         int step = BarWidths.XP_CELL_WIDTH;
@@ -126,11 +132,23 @@ public final class XpBarRenderer {
             }
         }
         at = drawColumns(graphics, sprite, x, y, CENTER, CENTER_WIDTH, at, visible);
+        int tail = Math.min(rightCells, Math.max(1, Math.round(cells / (float) CELLS_PER_TAIL_CELL)));
         for (int i = 0; i < rightCells; i++) {
-            if (i > 0) {
-                at = drawColumns(graphics, sprite, x, y, RIGHT_DIVIDER + ((i - 1) % SIDE_DIVIDERS) * step, 1, at, visible);
+            int fromEnd = rightCells - 1 - i;
+            // Which of vanilla's right side cells this one is, and the divider before it.
+            int source;
+            int divider;
+            if (fromEnd < tail) {
+                source = fromEnd == 0 ? SIDE_CELLS - 1 : BODY_CELLS;
+                divider = RIGHT_CELL + source * step - 1;
+            } else {
+                source = i % BODY_CELLS;
+                divider = RIGHT_DIVIDER + ((i - 1) % (BODY_CELLS - 1)) * step;
             }
-            at = drawColumns(graphics, sprite, x, y, RIGHT_CELL + (i % SIDE_CELLS) * step, CELL_BODY, at, visible);
+            if (i > 0) {
+                at = drawColumns(graphics, sprite, x, y, divider, 1, at, visible);
+            }
+            at = drawColumns(graphics, sprite, x, y, RIGHT_CELL + source * step, CELL_BODY, at, visible);
         }
         drawColumns(graphics, sprite, x, y, RIGHT_END, 1, at, visible);
     }
