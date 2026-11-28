@@ -26,7 +26,7 @@ A highly customizable, client-side GUI mod. Replaces the vanilla hearts with an 
 - **Half-size bars:** health, mana and the XP bar can each be full or half width.
 - **Move the HUD** by dragging it: the whole set, including the XP bar and level, or each piece (armor, hunger, thirst, health, each mana bar, XP bar, air bubbles, mount health) on its own. It stays in place when you change the window size or GUI scale.
 - **Item name height:** set how high the held item's name sits, with a preview that moves as you change it. It starts at vanilla's height, which leaves room for mods that add hotbars.
-- **Air bubbles and mount health** can be dragged anywhere (**Mount View** in the HUD Editor shows mount health). By default the bubbles sit above hunger and mount health's rows stack upward, like vanilla; with **Below**, the bubbles start under hunger and the rows stack downward, for layouts with health or mana above hunger.
+- **Air bubbles and mount health** can be dragged anywhere (**Mount View** in the HUD Editor shows mount health, and the horse's jump bar in place of the XP bar). By default the bubbles sit above hunger and mount health's rows stack upward, like vanilla; with **Below**, the bubbles start under hunger and the rows stack downward, for layouts with health or mana above hunger.
 - **Text position:** the numbers on the health and mana bars can sit on the left, right or center, or be turned off.
 - **On/off switch:** turn the whole mod off for a fully vanilla HUD, and back on, without losing your settings.
 - **Live preview:** the config screen can show the HUD beside the options, drawn as your settings would, so you see each change without leaving the screen.

@@ -32,7 +32,7 @@ final class HudPreview {
         if (!inWorld && !mounted && ClientConfig.xpBar() == XpBarMode.LEVEL_ONLY) {
             ConfigPreview.drawSampleLevel(graphics, minecraft.font, frame.placed(HudPiece.XP));
         }
-        if (!inWorld && ClientConfig.xpBar() == XpBarMode.SHOWN) {
+        if (!inWorld && !mounted && ClientConfig.xpBar() == XpBarMode.SHOWN) {
             HudPosition.Bounds xp = frame.placed(HudPiece.XP);
             graphics.fill(xp.left(), xp.top(), xp.right(), xp.bottom(), XP_BAR_COLOR);
         }

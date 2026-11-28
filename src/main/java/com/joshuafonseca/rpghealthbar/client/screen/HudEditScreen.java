@@ -362,7 +362,7 @@ public class HudEditScreen extends Screen {
     private void drawSamples(GuiGraphics graphics, HudLayer.Frame frame) {
         boolean mountShown = HudPositionMover.mountShown(this.minecraft);
         if (mountView) {
-            if (ClientConfig.xpBar() != XpBarMode.SHOWN && !XpBarRenderer.jumpBarShown(this.minecraft)) {
+            if (!XpBarRenderer.jumpBarShown(this.minecraft)) {
                 HudPosition.Bounds xp = frame.placed(HudPiece.XP);
                 XpBarRenderer.drawEmptyJump(graphics, xp.left(), xp.top(), BarWidths.xpCells());
             }
@@ -389,6 +389,11 @@ public class HudEditScreen extends Screen {
                     ConfigPreview.drawSampleLevel(graphics, this.font, xp);
                 }
             }
+        }
+        // Without armor no icons are drawn, which would leave nothing to see or aim at.
+        boolean armorDrawn = HudLayer.isVisible(this.minecraft) && this.minecraft.player.getArmorValue() > 0;
+        if (frame.vanillaArmor() && !armorDrawn) {
+            ConfigPreview.drawArmorIcons(graphics, frame.placed(HudPiece.ARMOR), 0);
         }
         if (!HudPositionMover.airShown(this.minecraft)) {
             // Clear of the sample mount health, as the real bubbles would be.

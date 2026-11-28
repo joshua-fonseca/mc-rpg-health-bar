@@ -76,7 +76,7 @@ public class RpgHealthBar {
         return ClientConfig.ENABLED.get() && player != null && HudPositionMover.mountWithHealth(player) != null;
     }
 
-    /** What the HUD Editor's view leaves out: mount health in its normal view, hunger, thirst and the level without its bar in its mount view. */
+    /** What the HUD Editor's view leaves out: mount health in its normal view, hunger and thirst in its mount view. */
     private static boolean hiddenByEditorView(ResourceLocation name) {
         Boolean mounted = HudPosition.previewMounted();
         if (mounted == null) {
@@ -86,9 +86,7 @@ public class RpgHealthBar {
             return name.equals(VanillaGuiLayers.VEHICLE_HEALTH);
         }
         return name.equals(VanillaGuiLayers.FOOD_LEVEL) || name.equals(ConfluenceCompat.FOOD_LAYER) || AppleSkinCompat.isHungerOverlay(name)
-                || name.equals(ThirstCompat.LAYER)
-                // Without its bar, the level would cover the jump bar there, and none shows on a horse.
-                || (name.equals(VanillaGuiLayers.EXPERIENCE_LEVEL) && ClientConfig.xpBar() == XpBarMode.LEVEL_ONLY);
+                || name.equals(ThirstCompat.LAYER);
     }
 
     private static void hideVanillaLayers(RenderGuiLayerEvent.Pre event) {
@@ -117,9 +115,11 @@ public class RpgHealthBar {
         // display that replaces them, like Confluence's. Otherwise ours replaces both.
         boolean armorReplaced = ClientConfig.ARMOR_MODE.get() != HalfBarMode.VANILLA;
         boolean hungerReplaced = ClientConfig.HUNGER_MODE.get() != HalfBarMode.VANILLA;
-        if ((name.equals(VanillaGuiLayers.EXPERIENCE_BAR) && ClientConfig.xpBar() != XpBarMode.SHOWN)
-                || (name.equals(VanillaGuiLayers.EXPERIENCE_LEVEL) && ClientConfig.xpBar() == XpBarMode.HIDDEN)) {
-            // XP Bar set to Level Only or Hidden; the jump bar still shows while riding.
+        boolean mountView = Boolean.TRUE.equals(HudPosition.previewMounted());
+        if ((name.equals(VanillaGuiLayers.EXPERIENCE_BAR) && (mountView || ClientConfig.xpBar() != XpBarMode.SHOWN))
+                || (name.equals(VanillaGuiLayers.EXPERIENCE_LEVEL) && (mountView || ClientConfig.xpBar() == XpBarMode.HIDDEN))) {
+            // XP Bar set to Level Only or Hidden, or the HUD Editor's mount view, which has the jump
+            // bar in its place as on a horse; the jump bar still shows while riding.
             event.setCanceled(true);
             return;
         }
