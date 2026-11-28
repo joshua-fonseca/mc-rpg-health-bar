@@ -190,7 +190,7 @@
   "rpghealthbar.config.manaText.tooltip.off.name": "Off",
   "rpghealthbar.config.manaText.tooltip.off": "just the bar.",
   "rpghealthbar.config.levelText": "Level Text",
-  "rpghealthbar.config.levelText.tooltip": "Where the XP level's number goes on the XP bar.",
+  "rpghealthbar.config.levelText.tooltip": "Where the XP level's number goes on the XP bar. With Level Only, this applies until you move the number.",
   "rpghealthbar.config.levelText.tooltip.center.name": "Center",
   "rpghealthbar.config.levelText.tooltip.center": "in the middle, like vanilla.",
   "rpghealthbar.config.levelText.tooltip.left.name": "Left",
