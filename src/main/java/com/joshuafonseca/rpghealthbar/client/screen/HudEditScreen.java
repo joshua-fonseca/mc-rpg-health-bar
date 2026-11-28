@@ -73,6 +73,8 @@ public class HudEditScreen extends Screen {
     private HudPosition.Pieces pieces;
     /** While dragging everything: the pieces where the drag started. */
     private HudPosition.Pieces grabbedPieces = HudPosition.Pieces.NONE;
+    /** While dragging everything: whether the level followed the XP bar where the drag started. */
+    private boolean grabbedLevelFollows;
     private Mode mode = Mode.ALL;
     private boolean dragging;
     /** Whether the HUD is shown as while riding; null until first opened, then as the player is. */
@@ -254,20 +256,43 @@ public class HudEditScreen extends Screen {
 
     /**
      * Moves every piece by the same amount, as far as keeps the ones the view shows on screen; one
-     * it doesn't show stops at the screen's edge.
+     * it doesn't show stops at the screen's edge. A level following an XP bar that stops short moves
+     * with the rest, no longer following.
+     *
+     * @param followed whether the level followed the XP bar at {@code from}
      */
-    private void moveAll(HudPosition.Pieces from, HudPosition.Offset delta) {
-        HudPosition.Bounds bounds = HudPosition.union(HudPosition.placed(frame().pieceBounds(), from::get).entrySet().stream()
+    private void moveAll(HudPosition.Pieces from, boolean followed, HudPosition.Offset delta) {
+        Map<HudPiece, HudPosition.Bounds> pieceBounds = frame().pieceBounds();
+        HudPosition.Bounds bounds = HudPosition.union(HudPosition.placed(pieceBounds, from::get).entrySet().stream()
                 .filter(entry -> showsInView(entry.getKey())).map(Map.Entry::getValue).toList());
-        setPieces(from.shiftedBy(HudPosition.clamp(delta, this.width, this.height, bounds)));
+        HudPosition.Offset moved = HudPosition.clamp(delta, this.width, this.height, bounds);
+        HudPosition.Offset xp = from.get(HudPiece.XP).plus(moved);
+        levelFollows = followed && (!pieceBounds.containsKey(HudPiece.XP_LEVEL)
+                || HudPosition.clamp(xp, this.width, this.height, pieceBounds.get(HudPiece.XP)).equals(xp));
+        setPieces(from.shiftedBy(moved));
     }
 
-    /** Moves the grabbed piece to {@code offset}. A level moved itself stops following the XP bar. */
+    /**
+     * Moves the grabbed piece to {@code offset}, kept on screen. A level moved itself stops
+     * following the XP bar.
+     */
     private void moveSelected(HudPosition.Offset offset) {
-        if (selected == HudPiece.XP_LEVEL && !offset.equals(pieces.get(selected))) {
+        HudPosition.Offset moved = HudPosition.clamp(offset, this.width, this.height, frame().pieceBounds().get(selected));
+        if (selected == HudPiece.XP_LEVEL && !moved.equals(pieces.get(selected))) {
             levelFollows = false;
         }
-        setPieces(pieces.with(selected, offset));
+        setPieces(pieces.with(selected, moved));
+    }
+
+    /** Lets go of a piece the view no longer shows: the jump bar, once off the horse. */
+    private void dropUnshown() {
+        if (selected != null && !showsInView(selected)) {
+            selected = null;
+            dragging = false;
+        }
+        if (resizing != null && !showsInView(resizing.piece())) {
+            resizing = null;
+        }
     }
 
     /** Puts every piece back above the hotbar, and in Advanced mode each bar back to its preset width. */
@@ -508,6 +533,7 @@ public class HudEditScreen extends Screen {
             if (HudPosition.union(shownBounds(frame()).values()).contains(mouseX, mouseY)) {
                 dragging = true;
                 grabbedPieces = pieces;
+                grabbedLevelFollows = levelFollows;
                 grabX = mouseX;
                 grabY = mouseY;
                 return true;
@@ -549,6 +575,7 @@ public class HudEditScreen extends Screen {
 
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
+        dropUnshown();
         if (resizing != null) {
             resize(mouseX, mouseY);
             return true;
@@ -556,7 +583,7 @@ public class HudEditScreen extends Screen {
         if (dragging) {
             HudPosition.Offset moved = new HudPosition.Offset((int) Math.round(mouseX - grabX), (int) Math.round(mouseY - grabY));
             if (mode == Mode.ALL) {
-                moveAll(grabbedPieces, moved);
+                moveAll(grabbedPieces, grabbedLevelFollows, moved);
             } else if (selected != null) {
                 moveSelected(moved);
             }
@@ -587,9 +614,10 @@ public class HudEditScreen extends Screen {
             default -> 0;
         };
         if (dx != 0 || dy != 0) {
+            dropUnshown();
             HudPosition.Offset nudge = new HudPosition.Offset(dx, dy);
             if (mode == Mode.ALL) {
-                moveAll(pieces, nudge);
+                moveAll(pieces, levelFollows, nudge);
             } else if (selected != null) {
                 moveSelected(pieces.get(selected).plus(nudge));
             }
