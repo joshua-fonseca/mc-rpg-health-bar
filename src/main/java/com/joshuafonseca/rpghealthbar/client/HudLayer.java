@@ -153,17 +153,25 @@ public class HudLayer implements IGuiOverlay {
             return airDefault(pieceBounds);
         }
 
+        /** How wide the level's number is: the player's, or a two-digit sample's with none to show. */
+        private static int levelWidth() {
+            Minecraft minecraft = Minecraft.getInstance();
+            return minecraft.player != null && minecraft.player.experienceLevel > 0
+                    ? minecraft.font.width(String.valueOf(minecraft.player.experienceLevel)) : LEVEL_SAMPLE_WIDTH;
+        }
+
         /**
-         * From the level's box to where a two-digit level sits on the XP bar, as wide as it is and
-         * where Level Text puts it; nowhere without a level on its own.
+         * From the level's box to where its number sits on the XP bar, where Level Text puts it;
+         * nowhere without a level on its own.
          */
         private static HudPosition.Offset levelDefault(Map<HudPiece, HudPosition.Bounds> pieceBounds) {
             HudPosition.Bounds level = pieceBounds.get(HudPiece.XP_LEVEL);
             if (level == null) {
                 return HudPosition.Offset.ZERO;
             }
-            int onBar = XpBarOverlay.levelX(pieceBounds.get(HudPiece.XP), LEVEL_SAMPLE_WIDTH) + LEVEL_SAMPLE_WIDTH / 2;
-            return new HudPosition.Offset(onBar - (level.left() + level.right()) / 2, 0);
+            // The box and its text are a pixel apart.
+            int onBar = XpBarOverlay.levelX(pieceBounds.get(HudPiece.XP), level.width() - 2);
+            return new HudPosition.Offset(onBar - (level.left() + 1), 0);
         }
 
         public HudPosition.Offset levelDefault() {
@@ -175,9 +183,11 @@ public class HudLayer implements IGuiOverlay {
             return HudPosition.Pieces.NONE.with(HudPiece.AIR, airDefault()).with(HudPiece.XP_LEVEL, levelDefault());
         }
 
-        /** The level on its own where it is until moved, with the XP bar unmoved too. */
+        /** A sample level on its own where it goes until moved, with the XP bar unmoved too. */
         public HudPosition.Bounds defaultLevel() {
-            return pieceBounds.get(HudPiece.XP_LEVEL).offset(levelDefault());
+            HudPosition.Bounds level = pieceBounds.get(HudPiece.XP_LEVEL);
+            int left = XpBarOverlay.levelX(pieceBounds.get(HudPiece.XP), LEVEL_SAMPLE_WIDTH) - 1;
+            return new HudPosition.Bounds(left, level.top(), left + LEVEL_SAMPLE_WIDTH + 2, level.bottom());
         }
 
         /** The air bubbles where they are until moved. */
@@ -264,7 +274,7 @@ public class HudLayer implements IGuiOverlay {
             }
             bounds.put(HudPiece.XP, HudPosition.xpBar(screenHeight, layout));
             if (ClientConfig.xpBar() == XpBarMode.LEVEL_ONLY) {
-                bounds.put(HudPiece.XP_LEVEL, HudPosition.xpLevel(screenHeight, layout));
+                bounds.put(HudPiece.XP_LEVEL, HudPosition.xpLevel(screenHeight, layout, levelWidth()));
             }
             return bounds;
         }

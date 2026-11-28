@@ -29,7 +29,6 @@ public final class HudPosition {
     private static final int XP_BAR_BOTTOM_MARGIN = 24;
     private static final int XP_BAR_HEIGHT = 5;
     /** The level's number on its own: three digits and their outline, where vanilla's bar has it. */
-    private static final int LEVEL_WIDTH = 20;
     private static final int LEVEL_HEIGHT = 9;
     private static final int LEVEL_BOTTOM_MARGIN = 22;
     /** Pieces closer than this share an anchor when saved (the default rows are 2px apart). */
@@ -139,12 +138,13 @@ public final class HudPosition {
 
     /**
      * The XP level's number on its own, in the middle of vanilla's XP bar; until it's moved, it's
-     * shifted from there to where it sits on the bar as set.
+     * shifted from there to where it sits on the bar as set. A pixel wider than its text on each
+     * side, for the outline.
      */
-    public static Bounds xpLevel(int screenHeight, HudLayout layout) {
+    public static Bounds xpLevel(int screenHeight, HudLayout layout, int textWidth) {
         int bottom = screenHeight - LEVEL_BOTTOM_MARGIN;
-        int left = layout.x() + (HudLayout.WIDTH - LEVEL_WIDTH) / 2;
-        return new Bounds(left, bottom - LEVEL_HEIGHT, left + LEVEL_WIDTH, bottom);
+        int left = layout.x() + (HudLayout.WIDTH - textWidth) / 2 - 1;
+        return new Bounds(left, bottom - LEVEL_HEIGHT, left + textWidth + 2, bottom);
     }
 
     /**

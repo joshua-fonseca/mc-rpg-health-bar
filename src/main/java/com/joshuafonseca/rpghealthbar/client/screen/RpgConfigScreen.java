@@ -314,7 +314,8 @@ public class RpgConfigScreen extends Screen {
         }
 
         list.addEntry(new Header(Component.translatable("rpghealthbar.config.section.xp"), null, NOTE_COLOR));
-        // Without a level there's no place for it to set. The width stays, as the jump bar has it too.
+        // Without a level there's no place for it to set, so it's greyed out. The width stays, as the
+        // jump bar has it too.
         list.addEntry(option("xpBar", XpBarMode.values(), ClientConfig.xpBar(), XpBarMode::displayName, mode -> {
             ClientConfig.set(ClientConfig.XP_BAR, mode);
             // The choice replaces a Hidden saved before this option existed.
@@ -323,9 +324,8 @@ public class RpgConfigScreen extends Screen {
             }
             rebuildWidgets();
         }, "shown", "level_only", "hidden"));
-        if (ClientConfig.xpBar() != XpBarMode.HIDDEN) {
-            list.addEntry(option("levelText", LevelText.values(), ClientConfig.LEVEL_TEXT, LevelText::displayName, "center", "left", "right"));
-        }
+        list.addEntry(option("levelText", LevelText.values(), ClientConfig.LEVEL_TEXT, LevelText::displayName, "center", "left", "right")
+                .active(ClientConfig.xpBar() != XpBarMode.HIDDEN));
         list.addEntry(widthOption("xpWidth", ClientConfig.XP_SIZE));
 
         list.addEntry(new Header(Component.translatable("rpghealthbar.config.section.positioning"), null, NOTE_COLOR));
@@ -930,6 +930,12 @@ public class RpgConfigScreen extends Screen {
         WidgetRow described(Component... descriptions) {
             this.descriptions = List.of(descriptions);
             this.tooltips = this.descriptions.stream().map(Tooltip::create).toList();
+            return this;
+        }
+
+        /** Greys the row's widgets out, so they can't be used, unless {@code active}. */
+        WidgetRow active(boolean active) {
+            this.widgets.forEach(widget -> widget.active = active);
             return this;
         }
 
