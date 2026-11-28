@@ -17,6 +17,7 @@
 - With the config screen's preview on, an option's description shows under the preview, by hovering anywhere on its row, instead of in a tooltip. With the preview off, tooltips show as before.
 - **XP Bar** has a new **Level Only** choice: just the level number, where it would be on the bar. **Level Text** still places it, and it moves with the XP bar in the HUD Editor.
 - New **XP Bar Width** option in **Simple** edit mode: **Full** or **Half** (nine cells). The horse's jump bar follows it.
+- The config screen's XP section is now titled **XP Bar/Mount Jump Bar**.
 - **Separate v2** absorption now writes the amount in parentheses: `(+4)`.
 - Fixed: the sample hunger icons in the config screen's preview and the HUD Editor had no outline.
 - Fixed: with Confluence, its hunger icons also showed while riding a mount with health.
